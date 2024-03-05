@@ -203,8 +203,7 @@ class AnimationModel extends ViewableWidgetModel
 
   double controllerValue = 0;
 
-  AnimationModel(WidgetModel parent, String? id)
-      : super(parent, id); // ; {key: value}
+  AnimationModel(WidgetModel super.parent, super.id); // ; {key: value}
 
   static AnimationModel? fromXml(WidgetModel parent, XmlElement xml)
   {

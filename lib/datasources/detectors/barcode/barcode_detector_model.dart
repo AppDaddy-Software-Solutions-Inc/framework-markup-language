@@ -48,7 +48,7 @@ class BarcodeDetectorModel extends DetectorModel implements IDetectable
   }
   bool get invert => _invert?.get() ?? true;
 
-  BarcodeDetectorModel(WidgetModel parent, String? id) : super(parent, id);
+  BarcodeDetectorModel(super.parent, super.id);
 
   static BarcodeDetectorModel? fromXml(WidgetModel parent, XmlElement xml)
   {

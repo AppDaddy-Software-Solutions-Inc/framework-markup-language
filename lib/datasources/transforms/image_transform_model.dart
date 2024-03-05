@@ -28,7 +28,7 @@ class ImageTransformModel extends TransformModel
   }
   String? get target => _target?.get();
 
-  ImageTransformModel(WidgetModel? parent, String? id) : super(parent, id);
+  ImageTransformModel(super.parent, super.id);
 
   static ImageTransformModel? fromXml(WidgetModel parent, XmlElement xml)
   {

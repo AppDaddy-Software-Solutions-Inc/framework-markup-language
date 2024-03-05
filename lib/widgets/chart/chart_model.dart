@@ -30,7 +30,7 @@ class ChartModel extends BoxModel
   @override
   bool get canExpandInfinitelyHigh => !hasBoundedHeight;
 
-  ChartModel(WidgetModel? parent, String? id,
+  ChartModel(super.parent, super.id,
       {
         dynamic type,
         dynamic showlegend,
@@ -38,7 +38,7 @@ class ChartModel extends BoxModel
         dynamic animated,
         dynamic selected,
         dynamic legendsize,
-      }) : super(parent, id) {
+      }) {
     this.selected         = selected;
     this.animated         = animated;
     this.horizontal       = horizontal;

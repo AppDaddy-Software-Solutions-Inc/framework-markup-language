@@ -14,7 +14,7 @@ if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image
 
 class BiometricsDetectorModel extends DetectorModel implements IDetectable
 {
-  BiometricsDetectorModel(WidgetModel parent, String? id) : super(parent, id);
+  BiometricsDetectorModel(super.parent, super.id);
 
   static BiometricsDetectorModel? fromXml(WidgetModel parent, XmlElement xml)
   {

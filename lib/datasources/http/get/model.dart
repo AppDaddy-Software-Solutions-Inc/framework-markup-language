@@ -15,7 +15,7 @@ class HttpGetModel extends HttpModel implements IDataSource
   @override
   bool get autoexecute => super.autoexecute ?? true;
 
-  HttpGetModel(WidgetModel parent, String? id) : super(parent, id);
+  HttpGetModel(super.parent, super.id);
 
   static HttpGetModel? fromXml(WidgetModel parent, XmlElement xml)
   {

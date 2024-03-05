@@ -13,7 +13,7 @@ File create(dynamic file, String url, String name, String mimeType, int size)
 
 class File extends FileBase
 {
-  File(dynamic file, String url, String name, String mimeType, int size) : super(file, url, name, mimeType, size);
+  File(super.file, super.url, super.name, String super.mimeType, super.size);
 
   @override
   Future<Uint8List?> read({int? start, int? end}) async

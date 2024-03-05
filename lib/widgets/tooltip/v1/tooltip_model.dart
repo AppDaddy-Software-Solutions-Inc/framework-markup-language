@@ -40,7 +40,7 @@ class TooltipModel extends DecoratedWidgetModel
   }
   String? get label => _label?.get();
 
-  TooltipModel(WidgetModel parent, String? id, {dynamic label, dynamic color}) : super(parent, id)
+  TooltipModel(WidgetModel super.parent, super.id, {dynamic label, dynamic color})
   {
     this.label = label;
     this.color = color;

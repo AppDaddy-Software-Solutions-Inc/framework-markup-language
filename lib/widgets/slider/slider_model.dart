@@ -171,8 +171,8 @@ class SliderModel extends FormFieldModel implements IFormField
   bool get range => _range?.get() ?? false;
 
   SliderModel(
-    WidgetModel parent,
-    String? id, {
+    WidgetModel super.parent,
+    super.id, {
     String? type,
     dynamic visible,
     dynamic mandatory,
@@ -191,7 +191,7 @@ class SliderModel extends FormFieldModel implements IFormField
     dynamic range,
     dynamic startvalue,
     dynamic endvalue,
-  }) : super(parent, id)
+  })
   {
     if (mandatory    != null) this.mandatory  = mandatory;
     if (editable     != null) this.editable   = editable;

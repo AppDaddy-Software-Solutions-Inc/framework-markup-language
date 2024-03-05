@@ -32,7 +32,7 @@ class RowModel extends BoxModel
     return flexible;
   }
 
-  RowModel(WidgetModel parent, String? id, {Scope? scope, dynamic data}) : super(parent, id, scope: scope, data: data);
+  RowModel(WidgetModel super.parent, super.id, {super.scope, super.data});
 
   static RowModel? fromXml(WidgetModel parent, XmlElement xml, {Scope? scope, dynamic data})
   {

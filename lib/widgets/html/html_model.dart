@@ -28,11 +28,11 @@ class HtmlModel extends DecoratedWidgetModel
   dynamic get value => _value?.get();
 
   HtmlModel(
-      WidgetModel parent,
-      String? id,
+      WidgetModel super.parent,
+      super.id,
       {
         dynamic value,
-      }) : super(parent, id)
+      })
   {
     if (value != null) this.value = value;
   }

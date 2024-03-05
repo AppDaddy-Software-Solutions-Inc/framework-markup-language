@@ -82,8 +82,7 @@ class SizeTransitionModel extends AnimationChildModel
 
   String? get align => _align?.get();
 
-  SizeTransitionModel(WidgetModel parent, String? id)
-      : super(parent, id); // ; {key: value}
+  SizeTransitionModel(super.parent, super.id); // ; {key: value}
 
   static SizeTransitionModel? fromXml(WidgetModel parent, XmlElement xml) {
     SizeTransitionModel? model;

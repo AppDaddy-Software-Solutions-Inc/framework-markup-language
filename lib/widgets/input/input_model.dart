@@ -234,8 +234,8 @@ class InputModel extends DecoratedInputModel implements IFormField {
   bool get wrap => _wrap?.get() ?? false;
 
   InputModel(
-    WidgetModel? parent,
-    String? id, {
+    super.parent,
+    super.id, {
     String? type,
     dynamic wrap,
     dynamic value,
@@ -254,7 +254,7 @@ class InputModel extends DecoratedInputModel implements IFormField {
     dynamic keyboardInput,
     dynamic format,
     dynamic maxlines,
-  }) : super(parent, id)
+  })
   {
     if (maxlines != null) this.maxlines = maxlines;
     if (wrap != null) this.wrap = wrap;

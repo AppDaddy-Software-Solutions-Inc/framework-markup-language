@@ -407,7 +407,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   // body type
   String? _bodyType;
 
-  DataSourceModel(WidgetModel parent, String? id) : super(parent, id);
+  DataSourceModel(WidgetModel super.parent, super.id);
 
   @override
   void deserialize(XmlElement xml)

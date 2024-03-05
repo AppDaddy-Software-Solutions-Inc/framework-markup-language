@@ -185,7 +185,7 @@ class TableRowModel extends BoxModel
     dirty = isDirty;
   }
 
-  TableRowModel(WidgetModel parent, String? id, {dynamic data}) : super(parent, id, scope: Scope(parent: parent.scope))
+  TableRowModel(WidgetModel super.parent, super.id, {dynamic data}) : super(scope: Scope(parent: parent.scope))
   {
     this.data = data;
     dirty = false;

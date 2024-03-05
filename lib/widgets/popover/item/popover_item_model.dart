@@ -51,12 +51,12 @@ class PopoverItemModel extends RowModel
   IconData? get icon => _icon?.get();
 
   PopoverItemModel(
-    WidgetModel parent,
-    String? id, {
+    super.parent,
+    super.id, {
     dynamic data,
     dynamic label,
     dynamic onclick,
-  }) : super(parent, id, scope: Scope(parent: parent.scope)) 
+  }) : super(scope: Scope(parent: parent.scope))
   {
     this.data    = data;
     this.label   = label;

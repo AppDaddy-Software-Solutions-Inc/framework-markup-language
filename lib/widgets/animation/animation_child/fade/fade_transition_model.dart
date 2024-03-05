@@ -52,8 +52,7 @@ class FadeTransitionModel extends AnimationChildModel
     return f;
   }
 
-  FadeTransitionModel(WidgetModel parent, String? id)
-      : super(parent, id); // ; {key: value}
+  FadeTransitionModel(super.parent, super.id); // ; {key: value}
 
   static FadeTransitionModel? fromXml(WidgetModel parent, XmlElement xml) {
     FadeTransitionModel? model;

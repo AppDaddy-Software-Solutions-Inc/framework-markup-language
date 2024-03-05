@@ -95,7 +95,7 @@ class TableRowCellModel extends BoxModel
   }
   String? get onChange => _onChange?.get();
 
-  TableRowCellModel(WidgetModel parent, String? id) : super(parent, id);
+  TableRowCellModel(WidgetModel super.parent, super.id);
 
   static TableRowCellModel? fromXml(WidgetModel parent, XmlElement xml) {
     TableRowCellModel? model;

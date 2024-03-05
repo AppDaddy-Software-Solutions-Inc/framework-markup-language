@@ -318,8 +318,8 @@ class SpanModel extends DecoratedWidgetModel
 
 
   SpanModel(
-      WidgetModel parent,
-      String? id,
+      WidgetModel super.parent,
+      super.id,
       {
         dynamic value,
         dynamic color,
@@ -346,7 +346,7 @@ class SpanModel extends DecoratedWidgetModel
         dynamic overflow,
         dynamic halign,
         dynamic style,
-      }) : super(parent, id) {
+      }) {
 
 
     if (color != null) this.color = color;

@@ -30,8 +30,8 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
   Map<int, dynamic> xValueMap = {};
   @override
   LineChartSeriesModel(
-    WidgetModel parent,
-    String? id, {
+    super.parent,
+    super.id, {
     dynamic x,
     dynamic y,
     dynamic color,
@@ -46,7 +46,7 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
     dynamic showarea,
     dynamic showline,
     dynamic showpoints,
-  }) : super(parent, id) {
+  }) {
     data = Data();
     this.x = x;
     this.y = y;

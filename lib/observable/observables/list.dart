@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
 import '../binding.dart';
-import '../scope.dart';
 import '../observable.dart' ;
 
 class ListObservable extends Observable with ListMixin<dynamic>
@@ -55,7 +54,7 @@ class ListObservable extends Observable with ListMixin<dynamic>
     return true;
   }
 
-  ListObservable(String? name, dynamic value, {Scope? scope, OnChangeCallback? listener, Getter? getter, Setter? setter}) : super(name, value, scope: scope, listener: listener, getter: getter, setter: setter);
+  ListObservable(super.name, super.value, {super.scope, super.listener, super.getter, super.setter});
 
   @override
   List get() => _value;

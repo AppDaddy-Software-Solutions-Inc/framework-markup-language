@@ -97,11 +97,11 @@ class MapModel extends BoxModel
   final List<MapMarkerModel> markers = [];
 
   MapModel(
-    WidgetModel parent,
-    String? id, {
+    WidgetModel super.parent,
+    super.id, {
     dynamic zoom,
     dynamic visible
-  }) : super(parent, id)
+  })
   {
     // instantiate busy observable
     busy = false;

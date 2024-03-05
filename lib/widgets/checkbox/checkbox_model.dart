@@ -269,8 +269,8 @@ class CheckboxModel extends FormFieldModel implements IFormField
   List? get label => _label?.get();
 
   CheckboxModel(
-    WidgetModel parent,
-    String? id, {
+    WidgetModel super.parent,
+    super.id, {
     dynamic visible,
     dynamic mandatory,
     dynamic editable,
@@ -288,7 +288,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
     dynamic post,
     dynamic onchange,
     dynamic wrap,
-  }) : super(parent, id)
+  })
   {
     if (mandatory    != null) this.mandatory    = mandatory;
     if (editable     != null) this.editable     = editable;

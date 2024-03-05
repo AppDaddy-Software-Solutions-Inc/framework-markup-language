@@ -262,7 +262,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     return myParameters;
   }
 
-  FrameworkModel(WidgetModel parent, String? id, {dynamic key, dynamic dependency, dynamic version, dynamic onstart, dynamic onreturn, dynamic orientation}) : super(parent, id, scope: Scope(id: id))
+  FrameworkModel(WidgetModel super.parent, super.id, {dynamic key, dynamic dependency, dynamic version, dynamic onstart, dynamic onreturn, dynamic orientation}) : super(scope: Scope(id: id))
   {
     this.key         = key;
     this.dependency  = dependency;

@@ -49,13 +49,12 @@ class IconModel extends DecoratedWidgetModel
     return width;
   }
 
-  IconModel(WidgetModel? parent, String? id,
+  IconModel(super.parent, super.id,
       {dynamic visible,
       dynamic icon,
       dynamic size,
       dynamic color,
-      dynamic opacity})
-      : super(parent, id) {
+      dynamic opacity}) {
     this.visible = visible;
     this.icon = icon;
     this.color = color;

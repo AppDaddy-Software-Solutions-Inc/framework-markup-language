@@ -90,7 +90,7 @@ class OptionModel extends RowModel
     return list;
   }
 
-  OptionModel(WidgetModel parent, String? id, {dynamic data, String? value}) : super(parent, id, scope: Scope(parent: parent.scope))
+  OptionModel(super.parent, super.id, {dynamic data, String? value}) : super(scope: Scope(parent: parent.scope))
   {
     this.data = data;
     if (value != null) this.value = value;

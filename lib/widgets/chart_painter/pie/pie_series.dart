@@ -30,8 +30,8 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
   List<PieChartSectionDataExtended> pieDataPoint = [];
 
   PieChartSeriesModel(
-      WidgetModel parent,
-      String? id, {
+      super.parent,
+      super.id, {
         dynamic x,
         dynamic y,
         dynamic color,
@@ -47,7 +47,7 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
         dynamic showline,
         dynamic showpoints,
       }
-      ) : super(parent, id)
+      )
   {
     data = Data();
     this.x = x;

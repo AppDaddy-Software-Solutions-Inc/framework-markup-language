@@ -9,7 +9,7 @@ import 'package:fml/helpers/helpers.dart';
 
 class LogModel extends DataSourceModel implements IDataSource
 {
-  LogModel(WidgetModel parent, String? id) : super(parent, id);
+  LogModel(super.parent, super.id);
 
   @override
   bool get autoexecute => super.autoexecute ?? true;

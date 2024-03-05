@@ -232,8 +232,7 @@ class Http
 }
 
 class MultipartRequest extends dart_http.MultipartRequest {
-  MultipartRequest(String method, Uri url, {this.onProgress})
-      : super(method, url);
+  MultipartRequest(super.method, super.url, {this.onProgress});
 
   final void Function(int bytes, int totalBytes)? onProgress;
 

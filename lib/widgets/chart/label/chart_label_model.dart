@@ -36,8 +36,8 @@ class ChartLabelModel extends WidgetModel
   List<ChartDataLabel> dataLabel = [];
 
   ChartLabelModel(
-    WidgetModel parent,
-    String? id, {
+    WidgetModel super.parent,
+    super.id, {
       dynamic color,
       dynamic anchor,
       dynamic position,
@@ -54,7 +54,7 @@ class ChartLabelModel extends WidgetModel
       dynamic y1,
       dynamic y2,
     }
-  ) : super(parent, id) {
+  ) {
     data = Data();
     this.color = color;
     this.anchor = anchor;

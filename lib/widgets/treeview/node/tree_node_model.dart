@@ -119,7 +119,7 @@ class TreeNodeModel extends DecoratedWidgetModel
   }
   bool? get selected => _selected?.get();
 
-  TreeNodeModel(WidgetModel parent, String?  id) : super(parent, id);
+  TreeNodeModel(WidgetModel super.parent, super.id);
 
   static TreeNodeModel? fromXml(WidgetModel parent, XmlElement xml)
   {

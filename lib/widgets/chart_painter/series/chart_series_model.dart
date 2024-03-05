@@ -68,8 +68,8 @@ class ChartPainterSeriesModel extends WidgetModel
   BoxModel? tooltip;
 
   ChartPainterSeriesModel(
-    WidgetModel parent,
-    String? id, {
+    WidgetModel super.parent,
+    super.id, {
       dynamic x,
       dynamic y,
         dynamic y0,
@@ -88,7 +88,7 @@ class ChartPainterSeriesModel extends WidgetModel
       dynamic showpoints,
         dynamic curved,
     }
-  ) : super(parent, id)
+  )
   {
     data = Data();
     this.x = x;

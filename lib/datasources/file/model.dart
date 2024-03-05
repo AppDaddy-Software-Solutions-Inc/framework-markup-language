@@ -16,7 +16,7 @@ class FileModel extends DataSourceModel implements IDataSource
   // detectors
   List<IDetectable>? detectors;
 
-  FileModel(WidgetModel parent, String? id) : super(parent, id);
+  FileModel(super.parent, super.id);
 
   static FileModel? fromXml(WidgetModel parent, XmlElement xml)
   {

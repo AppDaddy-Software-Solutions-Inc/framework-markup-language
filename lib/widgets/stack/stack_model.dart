@@ -15,7 +15,7 @@ class StackModel extends BoxModel
   @override
   String? get layout => "stack";
 
-  StackModel(WidgetModel parent, String? id) : super(parent, id);
+  StackModel(WidgetModel super.parent, super.id);
 
   static StackModel? fromXml(WidgetModel parent, XmlElement xml)
   {

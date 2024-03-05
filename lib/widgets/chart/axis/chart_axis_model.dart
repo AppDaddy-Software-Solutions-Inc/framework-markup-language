@@ -157,8 +157,8 @@ class ChartAxisModel extends WidgetModel
   bool get truncate => _truncate?.get() ?? false;
 
   ChartAxisModel(
-      WidgetModel? parent,
-      String?  id,
+      super.parent,
+      super.id,
       this.axis,
       {
         String? type,
@@ -182,7 +182,7 @@ class ChartAxisModel extends WidgetModel
         // dynamic intervaltype,
         // dynamic zoomfactor,
         // dynamic zoomposition,
-      }) : super(parent, id)
+      })
 
   {
     this.labelrotation  = labelrotation;

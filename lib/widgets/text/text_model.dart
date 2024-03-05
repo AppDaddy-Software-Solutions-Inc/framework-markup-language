@@ -354,8 +354,8 @@ class TextModel extends DecoratedWidgetModel
   String? get overflow => _overflow?.get();
 
   TextModel(
-    WidgetModel? parent,
-    String? id, {
+    super.parent,
+    super.id, {
     dynamic value,
     dynamic size,
     dynamic color,
@@ -384,7 +384,7 @@ class TextModel extends DecoratedWidgetModel
     dynamic overflow,
     dynamic halign,
     dynamic style,
-  }) : super(parent, id) 
+  })
   {
     if (value != null) this.value = value;
     if (size != null) this.size = size;

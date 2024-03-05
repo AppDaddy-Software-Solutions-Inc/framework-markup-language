@@ -21,7 +21,7 @@ class ModalModel extends BoxModel
   @override
   bool get expand => true;
 
-  ModalModel(WidgetModel parent, String?  id,
+  ModalModel(WidgetModel super.parent, super.id,
   {
     this.child,
     dynamic title,
@@ -34,7 +34,7 @@ class ModalModel extends BoxModel
     dynamic draggable,
     dynamic modal,
     dynamic closeable,
-    dynamic dismissible}) : super(parent, id)
+    dynamic dismissible})
   {
     if (title != null) this.title = title;
     if (width != null) this.width = width;

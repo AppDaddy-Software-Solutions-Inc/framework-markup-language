@@ -65,7 +65,7 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
   }
   int? get distance => _distance?.get();
   
-  BeaconModel(WidgetModel parent, String? id) : super(parent, id);
+  BeaconModel(super.parent, super.id);
 
   static BeaconModel? fromXml(WidgetModel parent, XmlElement xml)
   {

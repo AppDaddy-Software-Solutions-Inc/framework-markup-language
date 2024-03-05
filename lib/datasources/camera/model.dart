@@ -8,7 +8,7 @@ import 'package:fml/helpers/helpers.dart';
 
 class CameraImageModel extends FileModel implements IDataSource
 {
-  CameraImageModel(WidgetModel parent, String? id) : super(parent, id);
+  CameraImageModel(super.parent, super.id);
 
   static CameraImageModel? fromXml(WidgetModel parent, XmlElement xml)
   {

@@ -16,7 +16,7 @@ class GpsModel extends DataSourceModel implements IDataSource, IGpsListener
   @override
   bool get autoexecute => super.autoexecute ?? true;
 
-  GpsModel(WidgetModel parent, String? id) : super(parent, id);
+  GpsModel(super.parent, super.id);
 
   static GpsModel? fromXml(WidgetModel parent, XmlElement xml)
   {

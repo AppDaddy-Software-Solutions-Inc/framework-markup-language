@@ -220,7 +220,7 @@ class ListItemModel extends BoxModel
   }
   String? get onDelete => _onDelete?.get();
 
-  ListItemModel(WidgetModel parent, String?  id, {dynamic data, dynamic selected, dynamic onclick, this.type, dynamic title, dynamic backgroundcolor, dynamic margin}) : super(parent, id, scope: Scope(parent: parent.scope), data: data)
+  ListItemModel(WidgetModel super.parent, super.id, {super.data, dynamic selected, dynamic onclick, this.type, dynamic title, dynamic backgroundcolor, dynamic margin}) : super(scope: Scope(parent: parent.scope))
   {
     this.backgroundcolor  = backgroundcolor;
     dirty                 = false;

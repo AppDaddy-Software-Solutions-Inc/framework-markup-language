@@ -12,7 +12,7 @@ class TestDataModel extends DataSourceModel implements IDataSource
   @override
   bool get autoexecute => super.autoexecute ?? true;
 
-  TestDataModel(WidgetModel parent, String? id, {dynamic datastring}) : super(parent, id);
+  TestDataModel(super.parent, super.id, {dynamic datastring});
 
   static TestDataModel? fromXml(WidgetModel parent, XmlElement xml)
   {

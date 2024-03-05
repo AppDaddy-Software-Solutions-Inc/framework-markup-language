@@ -13,7 +13,7 @@ import 'package:fml/helpers/helpers.dart';
 class ApplicationManager extends StatefulWidget
 {
   final Widget? child;
-  ApplicationManager({Key? key, this.child}) : super(key: key);
+  ApplicationManager({super.key, this.child});
   @override
   State<ApplicationManager> createState() => _ApplicationManagerState();
 }

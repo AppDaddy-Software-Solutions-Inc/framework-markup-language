@@ -324,13 +324,12 @@ class ApplicationModel extends WidgetModel {
       // key must be supplied
       if (isNullOrEmpty(key)) return ok;
 
-      if (value == null) {
+      if (value == null) 
+      {
         _stash.map.remove(key);
         _stash.upsert();
         Binding? binding = Binding.fromString('$key.value');
-        if (binding != null) {
-          stash.observables.remove(stash.getObservable(binding));
-        }
+        if (binding != null) stash.observables.remove(stash.getObservable(binding)?.key);
         return ok;
       }
 

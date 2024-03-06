@@ -4,7 +4,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:flutter/material.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
@@ -230,8 +229,8 @@ class ButtonModel extends BoxModel
     // create text model bound to this label as default
     if (viewableChildren.isEmpty && label != null)
     {
-      children ??= [];
-      children!.add(TextModel(this, null, value: "{$id.label}", color: getTextColor(), weight: 500));
+      var model = TextModel(this, null, value: "{$id.label}", weight: 500);
+      (children ??= []).add(model);
     }
   }
 
@@ -272,27 +271,6 @@ class ButtonModel extends BoxModel
   Future<bool> onExit(BuildContext context) async
   {
     return await EventHandler(this).execute(_onexit);
-  }
-
-  Color getTextColor()
-  {
-    try
-    {
-      if (System().context == null) return Colors.grey;
-      switch (buttontype)
-      {
-        case 'elevated':
-          return Theme.of(System().context!).colorScheme.onPrimary;
-        case 'outlined':
-        case 'text':
-        default:
-          return color ?? Theme.of(System().context!).colorScheme.primary;
-      }
-    }
-    catch(e)
-    {
-      return Colors.grey;
-    }
   }
 
   // returns the inner content model

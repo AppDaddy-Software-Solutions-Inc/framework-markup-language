@@ -244,8 +244,7 @@ class DecoratedInputModel extends FormFieldModel
     radius = Xml.get(node: xml, tag: 'radius');
   }
 
-  //set the field color based on the error state
-
+  // set the field color based on the error state
   Color getFieldColor(BuildContext context) {
     // user defined
     if (color != null) return color!;

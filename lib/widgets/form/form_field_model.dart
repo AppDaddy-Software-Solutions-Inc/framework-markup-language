@@ -352,22 +352,11 @@ class FormFieldModel extends DecoratedWidgetModel
     removeAllListeners();
   }
 
-  //this stays here as it is used by checkbox and radio
-  Color setErrorBorderColor(BuildContext context, Color? borderColor)
+  Color getBorderColor(BuildContext context, Color? borderColor)
   {
-    if (enabled != false)
-    {
-      if (alarming)
-      {
-        return Theme.of(context).colorScheme.error;
-      }
-      else
-      {
-        return borderColor ?? Theme.of(context).colorScheme.surfaceVariant;
-      }
-    } else {
-      return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
-    }
+    if (!enabled) return Theme.of(context).disabledColor;
+    if (alarming) return Theme.of(context).colorScheme.error;
+    return borderColor ?? Theme.of(context).colorScheme.surfaceVariant;
   }
 
   Future<bool> onFocusLost(BuildContext context) async => await EventHandler(this).execute(_onfocuslost);

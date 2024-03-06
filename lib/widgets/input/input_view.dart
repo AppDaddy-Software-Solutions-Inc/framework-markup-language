@@ -465,7 +465,6 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
             width: widget.model.borderWidth),
       );
     }
-
   }
 
   _getSuffixIcon(Color hintTextColor)
@@ -493,19 +492,27 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   InputDecoration _getDecoration()
   {
     // set the border colors
-    Color? enabledBorderColor = widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
+    Color? enabledBorderColor  = widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
     Color? disabledBorderColor = Theme.of(context).disabledColor;
-    Color? focusBorderColor = Theme.of(context).focusColor;
-    Color? errorBorderColor = Theme.of(context).colorScheme.error;
+    Color? focusBorderColor    = Theme.of(context).focusColor;
+    Color? errorBorderColor    = Theme.of(context).colorScheme.error;
 
     String? hint = widget.model.hint;
     Color? hintTextColor = widget.model.textcolor?.withOpacity(0.7) ?? Theme.of(context).colorScheme.onSurfaceVariant;
     Color? errorTextColor = Theme.of(context).colorScheme.error;
 
-    double additionalTopPad = widget.model.border == "bottom" || widget.model.border == "underline" ? 3 : 15;
-    double additionalBottomPad = widget.model.border == "bottom" || widget.model.border == "underline" ? 14 : 15;
-
     double? fontsize = widget.model.size;
+
+    // set padding
+    double paddingTop = 15;
+    double paddingBottom = 15;
+    if (widget.model.border == "bottom" || widget.model.border == "underline")
+    {
+      paddingTop = 3;
+      paddingBottom = 14;
+    }
+    var padding = EdgeInsets.only(left: 10, top: paddingTop, right: 10, bottom: paddingBottom);
+    if (widget.model.dense == true) padding = EdgeInsets.only(left: 6, top: 0, right: 6, bottom: 0);
 
     var decoration = InputDecoration(
       isDense: false,
@@ -513,11 +520,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       hintMaxLines: 8,
       fillColor: widget.model.getFieldColor(context),
       filled: true,
-      contentPadding: widget.model.dense == true
-          ? EdgeInsets.only(
-          left: 6, top: 0, right: 6, bottom: 0)
-          : EdgeInsets.only(
-          left: 10, top: additionalTopPad, right: 10, bottom: additionalBottomPad),
+      contentPadding: padding,
       alignLabelWithHint: true,
       labelText: widget.model.dense ? null : hint,
       labelStyle: TextStyle(
@@ -642,13 +645,14 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         onChanged: _handleOnChange,
         onSubmitted: _handleSubmit);
 
+    // dense
     if (widget.model.dense) view = Padding(padding: EdgeInsets.all(4), child: view);
 
     // get the model constraints
     var modelConstraints = widget.model.constraints;
 
     // constrain the input to 200 pixels if not constrained by the model
-    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width = 800;
+    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width = 200;
 
     // add margins
     view = addMargins(view);

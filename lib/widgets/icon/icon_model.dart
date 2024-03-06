@@ -82,7 +82,7 @@ class IconModel extends DecoratedWidgetModel
     super.deserialize(xml);
 
     // properties
-    icon     = Xml.get(node: xml, tag: 'icon');
+    icon     = Xml.get(node: xml, tag: 'icon') ?? Xml.get(node: xml, tag: 'value');
     size     = Xml.get(node: xml, tag: 'size');
     opacity  = Xml.get(node: xml, tag: 'opacity');
   }

@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/helpers/string.dart';
+import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -92,9 +93,12 @@ class _TextViewState extends WidgetState<TextView>
     // build text spans
     List<InlineSpan> textSpans = _buildTextSpans(textShadow, textDecoStyle);
 
+    // text color
+    var color = Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
+
     var style = TextStyle(
         fontSize: widget.model.size ?? textStyle!.fontSize,
-        color: widget.model.color ?? theme?.colorScheme.onBackground,
+        color: widget.model.color ?? color,
         fontWeight: getTextWeight(),
         fontStyle: widget.model.italic ? FontStyle.italic : textStyle!.fontStyle,
         decoration: textDecoration);

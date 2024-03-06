@@ -112,10 +112,7 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
 
   onChange(double value) async
   {
-    if (widget.model.editable == false || widget.model.enabled == false)
-    {
-      return;
-    }
+    if (!widget.model.editable || !widget.model.enabled) return;
 
     // value changed?
     if (widget.model.value != value)
@@ -132,17 +129,15 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
     List modelValues = widget.model.value?.split(',') ?? [widget.model.minimum, widget.model.maximum];
     double value1 = toDouble(modelValues[0]) ??  widget.model.minimum ?? 0;
     double value2 = (modelValues.length > 1 ?  toDouble(modelValues[1]) : value1) ??  widget.model.maximum ?? 0;
-    if (widget.model.editable == false || widget.model.enabled == false) {
-      return;
-    } else if (toDouble(value1) != values.start) {
-      ///////////////////////////
+
+    if (!widget.model.editable || !widget.model.enabled) return;
+
+    if (toDouble(value1) != values.start)
+    {
       /* Retain Rollback Value */
-      ///////////////////////////
       dynamic old = '$value1,$value2';
 
-      //////////////////////////
       /* Fire on Change Event */
-      //////////////////////////
       await widget.model.answer('${values.start},${values.end}', range: true);
       if ('${values.start},${values.end}' != old) await widget.model.onChange(context);
     }

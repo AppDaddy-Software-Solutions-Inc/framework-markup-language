@@ -65,8 +65,8 @@ class BarcodeDetector implements IBarcodeDetector
     var reader = _multiFormatReader!;
 
     Map<dynamic, Object> hints   = <dynamic, Object>{};
-    hints[zxing.DecodeHintType.TRY_HARDER]    = (tryharder == true);
-    hints[zxing.DecodeHintType.ALSO_INVERTED] = (invert == true);
+    hints[zxing.DecodeHintType.tryHarder] = (tryharder == true);
+    hints[zxing.DecodeHintType.alsoInverted] = (invert == true);
     //hints[DecodeHintType.POSSIBLE_FORMATS] = BarcodeFormats.;
 
     Log().debug('Multi Decode Start');
@@ -86,8 +86,8 @@ class BarcodeDetector implements IBarcodeDetector
     var reader = _pDF417Reader!;
 
     Map<dynamic, Object> hints   = <dynamic, Object>{};
-    hints[zxing.DecodeHintType.TRY_HARDER]    = (tryharder == true);
-    hints[zxing.DecodeHintType.ALSO_INVERTED] = (invert == true);
+    hints[zxing.DecodeHintType.tryHarder] = (tryharder == true);
+    hints[zxing.DecodeHintType.alsoInverted] = (invert == true);
 
     Log().debug('PDF417 Decode Start');
     var result = reader.decode(bitmap, hints);
@@ -204,8 +204,8 @@ class BarcodeDetector implements IBarcodeDetector
     var reader = _code39Reader!;
 
     Map<dynamic, Object> hints   = <dynamic, Object>{};
-    hints[zxing.DecodeHintType.TRY_HARDER]    = (tryharder == true);
-    hints[zxing.DecodeHintType.ALSO_INVERTED] = (invert == true);
+    hints[zxing.DecodeHintType.tryHarder] = (tryharder == true);
+    hints[zxing.DecodeHintType.alsoInverted] = (invert == true);
 
     Log().debug('Code39 Decode Start');
     var result = reader.decode(bitmap, hints);
@@ -224,8 +224,8 @@ class BarcodeDetector implements IBarcodeDetector
     var reader = _qRCodeReader!;
 
     Map<dynamic, Object> hints   = <dynamic, Object>{};
-    hints[zxing.DecodeHintType.TRY_HARDER]    = (tryharder == true);
-    hints[zxing.DecodeHintType.ALSO_INVERTED] = (invert == true);
+    hints[zxing.DecodeHintType.tryHarder]  = (tryharder == true);
+    hints[zxing.DecodeHintType.alsoInverted] = (invert == true);
 
     Log().debug('QR Decode Start');
     var result = reader.decode(bitmap, hints);

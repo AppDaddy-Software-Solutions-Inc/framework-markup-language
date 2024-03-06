@@ -170,6 +170,9 @@ class WidgetModel implements IDataSourceListener {
     return fromXmlNode(parent, node, scope, data);
   }
 
+  // used in the sort process to deserialize
+  static final List<String> _topmost = ["VAR","BARCODE","BEACON","BIOMETRIC","DATA","DELETE","DETECTOR","FILEPICKER","GET","GPS","HTTP","LOG","MQTT","NFC","OCR","POST","PUT","SOCKET","SSE","STASH","TESTDATA","ZEBRA"];
+
   void deserialize(XmlElement xml)
   {
     // set busy
@@ -222,6 +225,7 @@ class WidgetModel implements IDataSourceListener {
     // set idle
     busy = false;
   }
+
 
   // bubble variables and datasources to the top of the deserialization sequence
   static final List<String> _topmost = ["VAR","BARCODE","BEACON","BIOMETRIC","DATA","DELETE","DETECTOR","FILEPICKER","GET","GPS","HTTP","LOG","MQTT","NFC","OCR","POST","PUT","SOCKET","SSE","STASH","TESTDATA","ZEBRA"];

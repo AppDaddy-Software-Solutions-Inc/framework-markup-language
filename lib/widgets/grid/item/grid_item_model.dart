@@ -91,7 +91,7 @@ class GridItemModel extends BoxModel
   }
   bool get dirty => _dirty?.get() ?? false;
 
-  GridItemModel(WidgetModel parent, String?  id, {dynamic data, dynamic backgroundcolor}) : super(parent, id, scope: Scope(parent: parent.scope), data: data);
+  GridItemModel(WidgetModel super.parent, super.id, {super.data, dynamic backgroundcolor}) : super(scope: Scope(parent: parent.scope));
 
   static GridItemModel? fromXml(WidgetModel parent, XmlElement? xml, {dynamic data})
   {

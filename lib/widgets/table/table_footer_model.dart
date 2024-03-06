@@ -46,7 +46,7 @@ class TableFooterModel extends BoxModel
   String? get valign => super.valign ?? table?.valign;
 
   
-  TableFooterModel(WidgetModel parent, String? id) : super(parent, id, scope: Scope(parent: parent.scope));
+  TableFooterModel(WidgetModel super.parent, super.id) : super(scope: Scope(parent: parent.scope));
 
   static TableFooterModel? fromXml(WidgetModel parent, XmlElement xml, {Map<dynamic, dynamic>? data})
   {

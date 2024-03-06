@@ -77,7 +77,7 @@ class TabModel extends BoxModel
   }
   bool get tabbutton => _tabbutton?.get() ?? true;
 
-  TabModel(WidgetModel parent, String? id, {String? type, String? title, dynamic visible, dynamic mandatory, dynamic gps, dynamic oncomplete, dynamic tabbar, dynamic tabbutton,}) : super(parent, id)
+  TabModel(WidgetModel super.parent, super.id, {String? type, String? title, dynamic visible, dynamic mandatory, dynamic gps, dynamic oncomplete, dynamic tabbar, dynamic tabbutton,})
   {
     this.tabbar = tabbar;
     this.tabbutton = tabbutton;

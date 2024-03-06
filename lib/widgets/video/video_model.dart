@@ -76,7 +76,7 @@ class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
   }
   String? get onInitialized => _onInitialized?.get();
 
-  VideoModel(WidgetModel parent, String?  id) : super(parent, id)
+  VideoModel(WidgetModel super.parent, super.id)
   {
     // instantiate busy observable
     busy = false;

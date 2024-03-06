@@ -584,7 +584,7 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
   }
   double? get rotation => _rotation?.get();
 
-  ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope, dynamic data}) : super(parent, id, scope: scope, data: data);
+  ViewableWidgetModel(super.parent, super.id, {super.scope, super.data});
 
   /// Deserializes the FML template elements, attributes and children
   @override

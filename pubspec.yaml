@@ -2,296 +2,228 @@ name: fml
 description: Flutter Markup Language
 homepage: https://fml.dev
 repository: https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language.git
-version: 2.0.1
+version: 3.0.0
 
 environment:
-  sdk: '>=2.17.0 <3.0.0'
+  sdk: '>=2.17.0 <5.0.0'
 
 dependencies:
 
   flutter:
     sdk: flutter
 
-  # Updated 2024/01/31
+  # to check package status, run -> flutter pub outdated
+
+  # this library version seems to fix issues when upgrading to
+  # 3.19
+  web: ^0.5.0
+
   audioplayers: ^5.2.1
   # MIT
 
-  # Updated 2023/02/21
   camera: ^0.10.3
   # BSD-3-Clause
 
-  # Updated 2024/01/31
   camera_windows: ^0.2.1+9
   # BSD-3-Clause
 
-  # Updated 2024/01/31
   collection: ^1.18.0
   # BSD-3-Clause
 
-  # Updated 2022/11/17
   # charts_flutter: ^0.12.0
   community_charts_flutter: ^1.0.1
   # Apache-2.0
 
-  # Updated 2022/11/17
   # charts_flutter: ^0.12.0
   community_charts_common: ^1.0.1
   # Apache-2.0
 
-  # Updated 2024/02/06
   connectivity_plus: ^5.0.2
   # BSD-3-Clause
 
-  # Updated 2022/05/26
   cross_file: ^0.3.3+1
   # BSD-3-Clause
 
-  # Updated 2022/05/26
   crypto: ^3.0.2
   # BSD-3-Clause
 
-  # Updated 2023/09/05
-  csv: ^5.0.2
-  # MIT
-
-  # Updated 2022/05/26
-  decimal: ^1.5.0
+  decimal: ^2.3.3
   # Apache-2.0
 
   # file picker with extension support
-  # Updated 2022/09/01
-  file_picker: ^5.0.1
+  file_picker: ^6.2.0
   # MIT
 
-  # Microsoft Logon
-  # Updated 2023/06/06
+  # Microsoft Logon - Newer versions of these packages require web < 0.5.0
   firebase_auth: ^4.9.0
-  # Updated 2023/06/23
   firebase_core: ^2.15.1
-  # Updated 2023/06/06
   # firebase_core_platform_interface: ^4.8.0
   # BSD-3-Clause
 
-  # Updated 2024/01/31
   fl_chart: ^0.66.1
 
-  # Updated 2024/01/31
   flutter_code_editor: ^0.3.1
   # Apache-2.0, MIT
 
-  # Updated 2024/02/16
-  flex_color_picker: 3.3.1
+  flex_color_picker: ^3.4.0
   # BSD-3-Clause
 
-  # Updated 2021/09/23
   flutter_beacon: ^0.5.1
   # BSD-3-Clause
 
-  # Updated 2023/03/13
   flutter_highlight: ^0.7.0
   # MIT
 
-  # Added 2022/06/10
   flutter_html: ^3.0.0-beta.2
   # MIT
 
-  # Updated 2022/12/29
   flutter_image_transform: ^1.0.1
   # MIT
 
-  # Updated 2024/01/31
   flutter_map: ^6.1.0
   # BSD-3-Clause
 
-  # Updated 2024/02/08
   flutter_multi_formatter: ^2.12.4
   # MIT
 
-  # Updated 2022/05/19
-  flutter_nfc_kit: ^3.3.1
+  flutter_nfc_kit: ^3.4.2
   # MIT
 
-  # Updated 2024/01/30
-  flutter_svg: ^2.0.9
+  flutter_svg: ^2.0.10+1
   # MIT
 
   # Updated 2024/02/14
   flutter_typeahead: ^5.2.0
   # BSD-2-Clause
 
-  # Updated 2022/12/30
-  geolocator: ^9.0.2
+  geolocator: ^11.0.0
   # MIT
 
-  # Updated 2024/03/04
-  google_fonts: 6.1.0
+  google_fonts: ^6.2.1
   # Apache-2.0
 
-  # Updated 2023/06/23
-  google_mlkit_barcode_scanning: ^0.7.0
+  google_mlkit_barcode_scanning: ^0.10.0
   # MIT
 
   # google_mlkit_face_detection: ^0.2.0
 
-  # Updated 2022/06/23
-  google_mlkit_text_recognition: ^0.8.1
+  google_mlkit_text_recognition: ^0.11.0
   # MIT
 
-  # Updated 2023/06/29
-  google_maps_flutter: ^2.3.1
+  google_maps_flutter: ^2.6.0
   # BSD-3-Clause
 
-  # Updated 2023/06/29
-  google_maps_flutter_web: ^0.5.0+1
+  google_maps_flutter_web: ^0.5.6+1
   # BSD-3-Clause, MIT
 
-  # Updated 2023/03/13
   highlight: ^0.7.0
   # MIT
 
-  # Updated 2022/05/26
   hive: ^2.2.3
   # Apache-2.0
 
-  # Updated 2024/01/31
-  http: ^1.2.0
+  http: ^1.2.1
   # BSD-3-Clause
 
-  # Updated 2022/11/06 // Our library "flutter_image_transform" is blocking this update
+  # Our library "flutter_image_transform" is blocking this update
   image: ^4.0.17
   # MIT
 
-  # Updated 2023/08/31
   intl: ^0.18.0
   # BSD-3-Clause
 
-  # Updated 2022/01/29
   jaguar_jwt: ^3.0.0
   # BSD-3-Clause
 
-  # Updated 2023/05/02
   jiffy: ^5.0.0
   # MIT
 
-  # Updated 2023/03/13
   js: ^0.6.5
   # BSD-3-Clause
 
-  # Updated 2024/01/31
   latlong2: ^0.9.0
   # BSD-3-Clause
 
-  # Updated 2023/03/13
   mime: ^1.0.4
   # BSD-3-Clause
 
-  # Updated 2023/01/05
-  mqtt_client: ^9.7.4
+  mqtt_client: ^10.2.0
   # BSD-3-Clause, MIT
 
-  # Updated 2023/03/13
   ndef: ^0.3.1
   # MIT
 
-  # Updated 2022/10/31
   open_filex: ^4.2.2
   # BSD-3-Clause, MIT
 
-  # Updated 2022-08-30
   path: ^1.8.2
   # BSD-3-Clause
 
-  # Updated 2022/06/08
   path_provider: ^2.0.11
   # BSD-3-Clause
 
-  # Updated 2022/10/21
-  perfect_freehand: ^1.0.4
+  perfect_freehand: ^2.3.2
   # MIT
 
-  # Updated 2022/05/26 - Warning, updating petitparser could potentially break the EVAL().
+  # Warning, updating petitparser could potentially break the EVAL().
   petitparser: ^5.0.0
   # MIT
 
-  # Updated 2022/05/26
-  photo_view: ^0.14.0
+  pluto_grid_plus: ^8.3.0
   # MIT
 
-  # Updated 2023/08/31
-  pluto_grid: ^7.0.2
+  pluto_grid_plus_export: ^1.0.4
   # MIT
 
-  # Updated 2023/08/31
-  pluto_grid_export: ^1.0.6
-  # MIT
-
-  # Updated 2022/05/26
   pointycastle: ^3.7.3
   # MIT
 
-  # Updated 2022/05/26
   provider: ^6.0.3
   # MIT
 
-  # Updated 2023/03/13
   quiver: ^3.2.1
   # Apache-2.0
 
-  # Updated 2022/05/26
   # syncfusion_flutter_charts: ^20.1.57
   # https://pub.dev/packages/syncfusion_flutter_charts/license
 
-  # Updated 2023/03/13
   stream_channel: ^2.1.1
   # BSD-3-Clause
 
-  # Updated 2022/05/26
   web_socket_channel: ^2.2.0
   # BSD-3-Clause
 
-  # Updated 2023/05/25
   universal_html: ^2.2.4
   # Apache-2.0
 
-  # Updated 2022/09/28
-  url_launcher: ^6.1.5
+  url_launcher: ^6.2.5
   # BSD-3-Clause
 
-  # Updated 2022/05/19
-  uuid: ^3.0.6
+  uuid: ^4.3.3
   # MIT
 
-  # Updated 2021/09/23
   validators: ^3.0.0
   # MIT
 
-  # Updated 2024/01/30
   video_player: ^2.8.2
   # BSD-3-Clause
 
-  # Updated 2023/4/3
-  video_player_win: ^2.2.2
+  video_player_win: ^2.3.5
   # BSD-3-Clause
 
-  # Updated 2023/02/28
-  visibility_detector: ^0.3.3
+  visibility_detector: ^0.4.0+2
   # BSD-3-Clause
 
-  # Updated 2023/03/19
-  webview_flutter: ^4.0.6
+  webview_flutter: ^4.7.0
   # BSD-3-Clause
 
-  # Updated 2022/05/26
   xml: ^6.1.0
   # MIT
 
-  # Updated 2023/02/06
-  xml2json: ^5.3.6
+  xml2json: ^6.2.2
   # MIT
 
-  # Updated 2021/09/23
-  zxing_lib: ^0.9.0
-
+  zxing_lib: ^1.1.2
   # Apache 2.0
 
 dev_dependencies:
@@ -299,9 +231,8 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  test: ^1.21.1
   dependency_validator: ^3.2.2
-  lints: ^2.0.1
+  lints: ^3.0.0
 
 flutter:
 

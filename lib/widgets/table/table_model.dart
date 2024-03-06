@@ -353,7 +353,7 @@ class TableModel extends BoxModel implements IForm
   }
   int get pageSize => _pageSize?.get() ?? 0;
   
-  TableModel(WidgetModel parent, String? id) : super(parent, id)
+  TableModel(WidgetModel super.parent, super.id)
   {
     // instantiate busy observable
     busy = false;
@@ -572,8 +572,9 @@ class TableModel extends BoxModel implements IForm
             break;
 
           case "csv" :
-            var bytes = await view.exportToCSVBytes();
-            if (bytes != null) Platform.fileSaveAs(bytes, "$name.csv");
+            var file = await view.exportToCSV();
+            var bytes = utf8.encode(file ?? "");
+            Platform.fileSaveAs(bytes, "$name.csv");
             break;
 
           case "pdf":

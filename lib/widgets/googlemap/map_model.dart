@@ -80,14 +80,14 @@ class MapModel extends DecoratedWidgetModel
   final List<MapLocationModel> locations = [];
 
   MapModel(
-    WidgetModel parent,
-    String? id, {
+    WidgetModel super.parent,
+    super.id, {
     this.style,
     dynamic zoom,
     this.mapType,
     dynamic visible,
     dynamic showAll,
-  }) : super(parent, id)
+  })
   {
     // instantiate busy observable
     busy = false;

@@ -55,14 +55,14 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
 
 
   PopoverModel(
-    WidgetModel parent,
-    String? id, {
+    WidgetModel super.parent,
+    super.id, {
       dynamic enabled,
       dynamic color,
       dynamic label,
       dynamic icon,
     }
-  ) : super(parent, id) {
+  ) {
     this.enabled = enabled;
     this.color = color;
     this.label = label;

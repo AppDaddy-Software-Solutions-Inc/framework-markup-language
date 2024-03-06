@@ -59,8 +59,8 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
 
   Widget buildCheckboxButton(OptionModel option)
   {
-    var selectedColor = widget.model.setErrorBorderColor(context, widget.model.color ?? Theme.of(context).colorScheme.primary);
-    var unselectedColor = widget.model.setErrorBorderColor(context, Theme.of(context).colorScheme.outline);
+    var selectedColor = widget.model.getBorderColor(context, widget.model.color ?? Theme.of(context).colorScheme.primary);
+    var unselectedColor = widget.model.getBorderColor(context, Theme.of(context).colorScheme.outline);
 
     var selected = (widget.model.selectedOptions.contains(option));
     var enabled = (widget.model.editable && widget.model.enabled);

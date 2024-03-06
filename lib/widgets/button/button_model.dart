@@ -156,7 +156,7 @@ class ButtonModel extends BoxModel
   @override
   bool get expand => _expand?.get() ?? false;
 
-  ButtonModel(WidgetModel? parent, String? id, {
+  ButtonModel(super.parent, super.id, {
     dynamic onclick,
     dynamic onenter,
     dynamic onexit,
@@ -173,7 +173,7 @@ class ButtonModel extends BoxModel
     dynamic maxheight,
     dynamic layout,
     List<WidgetModel>? children
-  }) : super(parent, id)
+  })
   {
     // constraints
     if (width     != null) this.width     = width;

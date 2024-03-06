@@ -84,7 +84,7 @@ class SplitModel extends BoxModel
   }
   Color? get dividerHandleColor => _dividerHandleColor?.get();
   
-  SplitModel(WidgetModel parent, String? id, {bool? vertical}) : super(parent, id)
+  SplitModel(WidgetModel super.parent, super.id, {bool? vertical})
   {
     if (vertical != null) _vertical = vertical;
   }

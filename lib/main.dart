@@ -64,7 +64,7 @@ void runMainApp()
 
 class Application extends StatelessWidget
 {
-  Application({Key? key}) : super(key: key);
+  Application({super.key});
 
   @override
   Widget build(BuildContext context)

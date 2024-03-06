@@ -46,51 +46,39 @@ class _SelectViewState extends WidgetState<SelectView>
 
   Widget addBorders(Widget view)
   {
-    // no borders
+    // border padding - this need to be changed to check border width
+    var padding = EdgeInsets.only(left: 10, top: 3, right: 0, bottom: 3);
+    if (widget.model.border == "none") padding = EdgeInsets.only(left: 10, top: 4, right: 10, bottom: 4);
+
+    // border radius
+    var radius = BorderRadius.circular(widget.model.radius.toDouble());
+
+    // border color
+    var color = widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
+    if (widget.model.alarming) color = widget.model.getBorderColor(context, widget.model.borderColor);
+    if (!widget.model.enabled) color = Theme.of(context).disabledColor;
+
+    // border width
+    var width = widget.model.borderWidth.toDouble();
+
+    BoxDecoration decoration = BoxDecoration(
+        color: widget.model.getFieldColor(context),
+        border: Border.all(width: width, color: color),
+        borderRadius: radius);
+
+    // no border
     if (widget.model.border == 'none')
     {
-      view = Container(
-        padding: const EdgeInsets.fromLTRB(12, 2, 8, 2),
-        decoration: BoxDecoration(
-          color: widget.model.getFieldColor(context),
-          borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
-        ),
-        child: view,
-      );
-      return view;
+      decoration = BoxDecoration(color: widget.model.getFieldColor(context), borderRadius: radius);
     }
 
-    // only bottom borders
     if (widget.model.border == 'bottom' || widget.model.border == 'underline')
     {
-      view = Container(
-        padding: const EdgeInsets.fromLTRB(12, 0, 8, 3),
-        decoration: BoxDecoration(
-          color: widget.model.getFieldColor(context),
-          border: Border(
-            bottom: BorderSide(
-                width: widget.model.borderWidth.toDouble(),
-                color: widget.model.setErrorBorderColor(context, widget.model.borderColor)),
-          ),),
-        child: view,
-      );
-      return view;
+      decoration =  BoxDecoration(color: widget.model.getFieldColor(context),
+          border: Border(bottom: BorderSide(width: width, color: color)));
     }
 
-    // default - all borders
-    view = Container(
-      padding: const EdgeInsets.fromLTRB(12, 1, 9, 0),
-      decoration: BoxDecoration(
-        color: widget.model.getFieldColor(context),
-        border: Border.all(
-            width: widget.model.borderWidth.toDouble(),
-            color: widget.model.setErrorBorderColor(context, widget.model.borderColor)),
-        borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
-      ),
-      child: view,
-    );
-
-    return view;
+    return Container(padding: padding, decoration: decoration, child: view);
   }
 
   Widget addAlarmText(Widget view)
@@ -110,30 +98,49 @@ class _SelectViewState extends WidgetState<SelectView>
 
   Widget buildSelect()
   {
-    // hints
-    Widget? hint;
-    Widget? hintDisabled;
-    if (!isNullOrEmpty(widget.model.hint))
+    var hintColor = Theme.of(context).colorScheme.onSurfaceVariant;
+    if (widget.model.color != null)
     {
-      var ts = TextStyle(fontSize: widget.model.size,
-          color: widget.model.color != null
-              ? (widget.model.color?.computeLuminance() ?? 1) < 0.4
-              ? Colors.white.withOpacity(0.5)
-              : Colors.black.withOpacity(0.5)
-              : Theme.of(context).colorScheme.onSurfaceVariant);
-
-      var ts2 = TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.50));
-
-      hint = Text(widget.model.hint!, style: ts);
-      hintDisabled = Text(widget.model.hint!, style: ts2);
+      var luminance = widget.model.color!.computeLuminance();
+      hintColor = luminance < 0.4 ? Colors.white.withOpacity(0.5) : Colors.black.withOpacity(0.5);
     }
+
+    // set text style
+    var hintTextStyle = TextStyle(fontSize: (widget.model.size ?? 14) - 2, fontWeight: FontWeight.w300, color: hintColor);
+
+    var style = TextStyle(
+        color: widget.model.enabled ? widget.model.textcolor ?? Theme
+            .of(context)
+            .colorScheme
+            .onBackground : Theme.of(context).colorScheme.surfaceVariant,
+        fontSize: widget.model.size);
+
+    var decoration = InputDecoration(
+        contentPadding: EdgeInsets.only(bottom:2),
+        isDense: true,
+        hintText: widget.model.hint ?? '',
+        hintStyle: hintTextStyle,
+        border: InputBorder.none,
+        focusedBorder: InputBorder.none);
+
+    // hints
+    var hint = TextField(
+        enabled: widget.model.enabled,
+        autofocus: false,
+        style: style,
+        readOnly: true,
+        decoration: decoration,
+        textAlignVertical: TextAlignVertical.center);
+
+    double defaultHeight = widget.model.height ?? 48;
+    if (defaultHeight < 48) defaultHeight = 48;
 
     // border radius
     var borderRadius = BorderRadius.circular(widget.model.radius.toDouble() <= 24 ? widget.model.radius.toDouble() : 24);
 
     // widget is enabled?
     var enabled = (widget.model.enabled && !widget.model.busy);
-    if (!enabled) return widget.model.selectedOption?.getView() ?? Container(alignment: Alignment.centerLeft, height: widget.model.height ?? 48, child: hint ?? Text(''), );
+    if (!enabled) return widget.model.selectedOption?.getView() ?? Container(alignment: Alignment.centerLeft, height: defaultHeight, child: hint);
 
     // build options
     List<DropdownMenuItem<OptionModel>> options = [];
@@ -153,7 +160,7 @@ class _SelectViewState extends WidgetState<SelectView>
 
     // select
     Widget view = DropdownButton<OptionModel>(
-          itemHeight: widget.model.height ?? 48,
+          itemHeight: widget.model.height ?? defaultHeight,
           value: widget.model.selectedOption,
           hint: hint,
           focusNode: focus,
@@ -163,7 +170,6 @@ class _SelectViewState extends WidgetState<SelectView>
           isExpanded: true,
           borderRadius: borderRadius,
           underline: Container(),
-          disabledHint: hintDisabled,
           focusColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.15));
 
     // defeat focus colors

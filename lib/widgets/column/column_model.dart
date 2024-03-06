@@ -32,7 +32,7 @@ class ColumnModel extends BoxModel
     return flexible;
   }
 
-  ColumnModel(WidgetModel parent, String? id, {Scope? scope, dynamic data}) : super(parent, id, scope: scope, data: data);
+  ColumnModel(WidgetModel super.parent, super.id, {super.scope, super.data});
 
   static ColumnModel? fromXml(WidgetModel parent, XmlElement xml, {Scope? scope, dynamic data})
   {

@@ -79,7 +79,7 @@ class DrawerModel extends DecoratedWidgetModel
   String? idTop;
   String? idBottom;
 
-  DrawerModel(WidgetModel parent, String? id, {
+  DrawerModel(WidgetModel super.parent, super.id, {
     dynamic side,
     dynamic rounded,
     dynamic handle,
@@ -95,7 +95,7 @@ class DrawerModel extends DecoratedWidgetModel
     this.idRight,
     this.idTop,
     this.idBottom,
-  }) : super(parent, id) {
+  }) {
     this.side = side;
     this.rounded = rounded;
     this.handle = handle;

@@ -59,7 +59,7 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable
   }
   bool get allowDrag => _allowDrag?.get() ?? false;
 
-  MenuModel(WidgetModel? parent, String?  id) : super(parent, id)
+  MenuModel(super.parent, super.id)
   {
     // instantiate busy observable
     busy = false;

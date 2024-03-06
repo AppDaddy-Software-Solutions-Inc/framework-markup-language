@@ -342,7 +342,7 @@ class DialogButton extends StatelessWidget {
 
   /// DialogButton constructor
   DialogButton({
-    Key? key,
+    super.key,
     required this.child,
     this.width,
     this.height = 40.0,
@@ -355,7 +355,7 @@ class DialogButton extends StatelessWidget {
     this.padding = const EdgeInsets.only(left: 6, right: 6),
     this.margin = const EdgeInsets.all(6),
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   /// Creates alert buttons based on constructor params
   @override

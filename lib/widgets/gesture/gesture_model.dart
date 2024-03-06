@@ -155,8 +155,8 @@ class GestureModel extends DecoratedWidgetModel
   }
 
   GestureModel(
-      WidgetModel parent,
-      String? id, {
+      WidgetModel super.parent,
+      super.id, {
         dynamic enabled,
         dynamic onclick,
         dynamic onlongpress,
@@ -166,7 +166,7 @@ class GestureModel extends DecoratedWidgetModel
         dynamic onswipeup,
         dynamic onswipedown,
         dynamic onrightclick,
-      }) : super(parent, id) {
+      }) {
     this.enabled      = enabled;
     this.onclick      = onclick;
     this.onlongpress  = onlongpress;

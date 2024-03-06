@@ -7,7 +7,7 @@ import 'package:fml/helpers/helpers.dart';
 
 class NoMatchModel extends BoxModel
 {
-  NoMatchModel(WidgetModel parent, String? id) : super(parent, id);
+  NoMatchModel(WidgetModel super.parent, super.id);
 
   static NoMatchModel? fromXml(WidgetModel parent, XmlElement xml)
   {

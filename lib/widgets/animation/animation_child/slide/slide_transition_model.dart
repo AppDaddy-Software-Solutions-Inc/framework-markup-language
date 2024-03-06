@@ -56,8 +56,7 @@ class SlideTransitionModel extends AnimationChildModel
 
   String? get direction => _direction?.get();
 
-  SlideTransitionModel(WidgetModel parent, String? id)
-      : super(parent, id); // ; {key: value}
+  SlideTransitionModel(super.parent, super.id); // ; {key: value}
 
   static SlideTransitionModel? fromXml(WidgetModel parent, XmlElement xml) {
     SlideTransitionModel? model;

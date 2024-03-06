@@ -6,7 +6,6 @@ import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/alarm/alarm_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:xml/xml.dart';
@@ -201,7 +200,7 @@ class FormFieldModel extends DecoratedWidgetModel
   // field offset
   Offset? offset;
 
-  FormFieldModel(WidgetModel? parent, String? id,
+  FormFieldModel(super.parent, super.id,
   {
     dynamic editable,
     dynamic enabled,
@@ -209,7 +208,7 @@ class FormFieldModel extends DecoratedWidgetModel
     dynamic mandatory,
     dynamic onchange,
     dynamic onfocuslost
-  }) : super(parent, id)
+  })
   {
     if (editable != null) this.editable = editable;
     if (enabled != null) this.enabled = enabled;
@@ -353,22 +352,11 @@ class FormFieldModel extends DecoratedWidgetModel
     removeAllListeners();
   }
 
-  //this stays here as it is used by checkbox and radio
-  Color setErrorBorderColor(BuildContext context, Color? borderColor)
+  Color getBorderColor(BuildContext context, Color? borderColor)
   {
-    if (enabled != false)
-    {
-      if (alarming)
-      {
-        return Theme.of(context).colorScheme.error;
-      }
-      else
-      {
-        return borderColor ?? Theme.of(context).colorScheme.surfaceVariant;
-      }
-    } else {
-      return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
-    }
+    if (!enabled) return Theme.of(context).disabledColor;
+    if (alarming) return Theme.of(context).colorScheme.error;
+    return borderColor ?? Theme.of(context).colorScheme.surfaceVariant;
   }
 
   Future<bool> onFocusLost(BuildContext context) async => await EventHandler(this).execute(_onfocuslost);

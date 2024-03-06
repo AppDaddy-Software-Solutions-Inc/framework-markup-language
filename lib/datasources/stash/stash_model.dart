@@ -10,7 +10,7 @@ import 'package:fml/helpers/helpers.dart';
 
 class StashModel extends DataSourceModel implements IDataSource
 {
-  StashModel(WidgetModel parent, String? id) : super(parent, id);
+  StashModel(super.parent, super.id);
 
   @override
   bool get autoexecute => super.autoexecute ?? true;

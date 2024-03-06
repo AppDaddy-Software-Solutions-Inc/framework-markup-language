@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:collection';
-import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/services.dart';
 import 'package:fml/data/data.dart';
@@ -19,9 +18,8 @@ import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:pluto_grid/pluto_grid.dart';
-import 'package:pluto_grid_export/pluto_grid_export.dart' as pluto_grid_export;
-import 'package:csv/csv.dart';
+import 'package:pluto_grid_plus/pluto_grid_plus.dart';
+import 'package:pluto_grid_plus_export/pluto_grid_plus_export.dart' as pluto_grid_export;
 
 enum Toggle {on, off}
 
@@ -211,7 +209,7 @@ class TableViewState extends WidgetState<TableView>
 
     // we override the key listener in order to enable input on
     // enterable fields
-    return hasEnterableFields ? FocusScope(child: cell, onKey: (FocusNode focusNode, RawKeyEvent event) => KeyEventResult.skipRemainingHandlers) : cell;
+    return hasEnterableFields ? FocusScope(child: cell, onKeyEvent: (FocusNode focusNode, KeyEvent event) => KeyEventResult.skipRemainingHandlers) : cell;
   }
 
   List<PlutoRow> applyFilters(List<PlutoRow> list)
@@ -669,43 +667,6 @@ class TableViewState extends WidgetState<TableView>
     }
   }
 
-  Future<String?> exportToCSV() async
-  {
-    if (stateManager == null) return null;
-
-    // This ensures we have built out all rows
-    buildAllRows();
-
-    // filter the list
-    var list = applyFilters(rows);
-
-    // sort the list
-    list = applySort(list);
-
-    // serialize the list
-    List<List<String?>> serialized = [];
-    for (var row in list)
-    {
-      serialized.add(getSerializedRow(stateManager!, row));
-    }
-
-    String csv = const ListToCsvConverter().convert(
-      [
-        getColumnTitles(stateManager!),
-        ...serialized,
-      ],
-      delimitAllFields: true);
-
-    return csv;
-  }
-
-  Future<Uint8List?> exportToCSVBytes() async
-  {
-    var file = await exportToCSV();
-    if (file == null) return null;
-    return const Utf8Encoder().convert(file);
-  }
-
   Future<Uint8List?> exportToPDF() async
   {
     if (stateManager == null) return null;
@@ -751,6 +712,32 @@ class TableViewState extends WidgetState<TableView>
 
     return bytes;
   }
+
+  Future<String?> exportToCSV() async
+  {
+    if (stateManager == null) return null;
+
+    // This ensures we have built out all rows
+    buildAllRows();
+
+    // filter the list
+    var list = applyFilters(rows);
+
+    // sort the list
+    list = applySort(list);
+
+    // serialize the list
+    List<List<String?>> serialized = [];
+    for (var row in list)
+    {
+      serialized.add(getSerializedRow(stateManager!, row));
+    }
+
+    // generate the report
+    var csv = pluto_grid_export.PlutoGridDefaultCsvExport().export(stateManager!);
+    return csv;
+  }
+
 
   PlutoLazyPagination _pageLoader(PlutoGridStateManager stateManager)
   {

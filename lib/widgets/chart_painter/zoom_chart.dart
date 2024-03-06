@@ -8,8 +8,8 @@ class ZoomableChart extends StatefulWidget {
     required this.builder,
   });
 
-  double maxX;
-  Widget Function(double, double) builder;
+  final double maxX;
+  final Widget Function(double, double) builder;
 
   @override
   State<ZoomableChart> createState() => _ZoomableChartState();

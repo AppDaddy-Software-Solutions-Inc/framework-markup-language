@@ -159,15 +159,15 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
               ? Colors.white.withOpacity(0.2)
               : t.onSecondary,
           animationDuration: Duration(milliseconds: 200),
-          onPressed: widget.model.enabled != false
+          onPressed: widget.model.enabled
               ? (widget.model.onTap ?? onTap)
               : null,
-          onLongPress: widget.model.enabled != false
+          onLongPress: widget.model.enabled
               ? (widget.model.onLongPress)
               : null,
           shape: shape);
 
-      if (widget.model.enabled != false) {
+      if (widget.model.enabled) {
         button = MouseRegion(cursor: SystemMouseCursors.click, child: button);
       }
 

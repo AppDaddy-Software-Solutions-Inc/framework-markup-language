@@ -54,8 +54,7 @@ class RotateTransitionModel extends AnimationChildModel
 
   String? get align => _align?.get();
 
-  RotateTransitionModel(WidgetModel parent, String? id)
-      : super(parent, id); // ; {key: value}
+  RotateTransitionModel(super.parent, super.id); // ; {key: value}
 
   static RotateTransitionModel? fromXml(WidgetModel parent, XmlElement xml) {
     RotateTransitionModel? model;

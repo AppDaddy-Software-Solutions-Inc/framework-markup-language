@@ -12,7 +12,7 @@ class HttpPatchModel extends HttpModel implements IDataSource
   @override
   String get method => "patch";
 
-  HttpPatchModel(WidgetModel parent, String? id) : super(parent, id);
+  HttpPatchModel(super.parent, super.id);
 
   static HttpPatchModel? fromXml(WidgetModel parent, XmlElement xml)
   {

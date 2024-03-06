@@ -36,7 +36,7 @@ class CardModel extends BoxModel
   @override
   Color? get color => super.color ?? Colors.white;
 
-  CardModel(WidgetModel parent, String? id) : super(parent, id, expandDefault: false);
+  CardModel(WidgetModel super.parent, super.id) : super(expandDefault: false);
 
   static CardModel? fromXml(WidgetModel parent, XmlElement xml)
   {

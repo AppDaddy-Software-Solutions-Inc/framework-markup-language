@@ -294,8 +294,8 @@ class FormModel extends BoxModel implements IForm
   }
 
   FormModel(
-    WidgetModel parent,
-    String? id, {
+    WidgetModel super.parent,
+    super.id, {
     String? type,
     String? title,
     dynamic status,
@@ -305,7 +305,7 @@ class FormModel extends BoxModel implements IForm
     dynamic mandatory,
     dynamic geocode,
     dynamic data,
-  }) : super(parent, id)
+  })
   {
     // instantiate busy observable
     busy = false;

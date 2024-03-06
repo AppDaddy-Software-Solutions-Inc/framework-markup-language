@@ -32,7 +32,7 @@ class SseModel extends HttpModel implements IDataSource
   }
   bool get connected => _connected?.get() ?? false;
   
-  SseModel(WidgetModel parent, String? id) : super(parent, id)
+  SseModel(super.parent, super.id)
   {
     connected = false;
   }

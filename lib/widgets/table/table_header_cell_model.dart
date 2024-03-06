@@ -192,7 +192,7 @@ class TableHeaderCellModel extends BoxModel
   }
   String? get onChange => _onChange?.get();
 
-  TableHeaderCellModel(WidgetModel parent, String? id) : super(parent, id);
+  TableHeaderCellModel(WidgetModel super.parent, super.id);
 
   static TableHeaderCellModel? fromXml(WidgetModel parent, XmlElement xml)
   {

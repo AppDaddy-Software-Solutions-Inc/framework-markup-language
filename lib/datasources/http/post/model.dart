@@ -12,7 +12,7 @@ class HttpPostModel extends HttpModel implements IDataSource
   @override
   String get method => "post";
 
-  HttpPostModel(WidgetModel parent, String? id) : super(parent, id);
+  HttpPostModel(super.parent, super.id);
 
   static HttpPostModel? fromXml(WidgetModel parent, XmlElement xml)
   {

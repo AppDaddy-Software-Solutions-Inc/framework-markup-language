@@ -295,7 +295,7 @@ class ThemeModel extends DecoratedWidgetModel
   }
   Color? get onErrorContainer => _onErrorContainer?.get();
 
-  ThemeModel(WidgetModel parent, String?  id) : super(parent, id, scope: Scope(id: myId));
+  ThemeModel(WidgetModel super.parent, super.id) : super(scope: Scope(id: myId));
 
   // Map<String, dynamic> themeValues = Map<String, dynamic>();
 

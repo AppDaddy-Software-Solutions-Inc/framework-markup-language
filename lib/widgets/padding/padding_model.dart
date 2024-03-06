@@ -12,7 +12,7 @@ class PaddingModel extends ColumnModel
   @override
   bool get expand => false;
 
-  PaddingModel(WidgetModel parent, String? id): super(parent, id);
+  PaddingModel(super.parent, super.id);
 
   static PaddingModel? fromXml(WidgetModel parent, XmlElement xml) {
     PaddingModel? model;

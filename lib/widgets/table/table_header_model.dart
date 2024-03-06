@@ -204,7 +204,7 @@ class TableHeaderModel extends BoxModel
   }
   String? get onDelete => _onDelete?.get();
 
-  TableHeaderModel(WidgetModel parent, String? id) : super(parent, id, scope: Scope(parent: parent.scope));
+  TableHeaderModel(WidgetModel super.parent, super.id) : super(scope: Scope(parent: parent.scope));
 
   static TableHeaderModel? fromXml(WidgetModel parent, XmlElement xml, {Map<dynamic, dynamic>? data})
   {

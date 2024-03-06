@@ -109,7 +109,7 @@ class ScrollerModel extends BoxModel implements IScrollable
   }
   bool get allowDrag => _allowDrag?.get() ?? false;
 
-  ScrollerModel(WidgetModel parent, String? id) : super(parent, id);
+  ScrollerModel(WidgetModel super.parent, super.id);
 
   static ScrollerModel? fromXml(WidgetModel parent, XmlElement xml)
   {

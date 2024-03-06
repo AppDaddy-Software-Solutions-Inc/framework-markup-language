@@ -32,8 +32,8 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
   List<BarChartRodStackItem> stackDataPoint = [];
 
   BarChartSeriesModel(
-      WidgetModel parent,
-      String? id, {
+      super.parent,
+      super.id, {
         dynamic x,
         dynamic y,
         dynamic color,
@@ -50,7 +50,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
         dynamic showline,
         dynamic showpoints,
       }
-      ) : super(parent, id)
+      )
   {
     data = Data();
     this.x = x;

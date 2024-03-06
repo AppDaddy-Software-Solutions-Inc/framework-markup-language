@@ -72,7 +72,7 @@ class TimerModel extends WidgetModel
   }
   String? get action => _action?.get();
 
-  TimerModel(WidgetModel parent, String? id, {dynamic action, dynamic enabled, dynamic frequency}) : super(parent, id)
+  TimerModel(WidgetModel super.parent, super.id, {dynamic action, dynamic enabled, dynamic frequency})
   {
     if (action    != null) this.action    = action;
     if (enabled   != null) this.enabled   = enabled;

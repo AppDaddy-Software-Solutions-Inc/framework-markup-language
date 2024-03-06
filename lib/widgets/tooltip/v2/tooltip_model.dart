@@ -122,7 +122,7 @@ class TooltipModel extends ViewableWidgetModel
   }
   int get timeout => _timeout?.get() ?? 0;
 
-  TooltipModel(WidgetModel parent, String? id) : super(parent, id);
+  TooltipModel(WidgetModel super.parent, super.id);
 
   static TooltipModel? fromXml(WidgetModel parent, XmlElement xml)
   {

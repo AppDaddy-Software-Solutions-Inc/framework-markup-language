@@ -143,8 +143,8 @@ class PositionedModel extends DecoratedWidgetModel
   @override
   double get depth => _depth?.get() ?? 1.0;
   
-  PositionedModel(WidgetModel parent,
-    String? id,
+  PositionedModel(WidgetModel super.parent,
+    super.id,
    {dynamic left,
     dynamic right,
     dynamic top,
@@ -152,8 +152,8 @@ class PositionedModel extends DecoratedWidgetModel
     dynamic xoffset,
     dynamic yoffset,
     dynamic depth,
-    Scope? scope
-    }) : super(parent, id, scope: scope)
+    super.scope
+    })
   {
     this.top     = top;
     this.bottom  = bottom;

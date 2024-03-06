@@ -70,8 +70,7 @@ class TweenModel extends AnimationChildModel
 
   String? get value => _value?.get();
 
-  TweenModel(WidgetModel parent, String? id)
-      : super(parent, id); // ; {key: value}
+  TweenModel(super.parent, super.id); // ; {key: value}
 
   static TweenModel? fromXml(WidgetModel parent, XmlElement xml) {
     TweenModel? model;

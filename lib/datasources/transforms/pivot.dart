@@ -186,7 +186,8 @@ class Pivot extends TransformModel implements ITransform
       value.forEach((key, value)
       {
         var v = value["sum"];
-        myrow[key] = v != null ? v.toString() : null;
+        myrow[key] = null;
+        if (v != null) myrow[key] = v.toString();
         sum = sum + (v ?? 0);
         count++;
       });

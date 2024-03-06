@@ -83,6 +83,21 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
   @override
   dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
+  /// If the input shows the clear icon on its right.
+  BooleanObservable? _clear;
+  set clear(dynamic v)
+  {
+    if (_clear != null)
+    {
+      _clear!.set(v);
+    }
+    else if (v != null)
+    {
+      _clear = BooleanObservable(Binding.toKey(id, 'clear'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get clear => _clear?.get() ?? false;
+
   //  maximum number of match results to show
   IntegerObservable? _rows;
   set rows(dynamic v)
@@ -134,7 +149,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
   }
   bool get obscure => _obscure?.get() ?? false;
 
-  TypeaheadModel(WidgetModel parent, String? id) : super(parent, id);
+  TypeaheadModel(WidgetModel super.parent, super.id);
 
   static TypeaheadModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -152,17 +167,13 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
 
     // set properties
     value = Xml.get(node: xml, tag: 'value');
-    hint = Xml.get(node: xml, tag: 'hint');
-    border = Xml.get(node: xml, tag: 'border');
-    borderColor = Xml.get(node: xml, tag: 'bordercolor');
-    borderWidth = Xml.get(node: xml, tag: 'borderwidth');
-    radius = Xml.get(node: xml, tag: 'radius');
     matchType = Xml.get(node: xml, tag: 'matchtype') ?? Xml.get(node: xml, tag: 'searchtype');
     rows = Xml.get(node: xml, tag: 'rows');
     caseSensitive = Xml.get(node: xml, tag: 'casesensitive');
     addempty  = toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
     obscure = Xml.get(node: xml, tag: 'obscure');
     readonly = Xml.get(node: xml, tag: 'readonly');
+    clear = Xml.get(node: xml, tag: 'clear');
 
     // holds no data model
     noData = findChildOfExactType(NoDataModel);

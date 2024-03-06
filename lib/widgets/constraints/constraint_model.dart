@@ -6,7 +6,6 @@ import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/observables/integer.dart';
 import 'package:fml/observable/observables/string.dart';
-import 'package:fml/observable/scope.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/constraints/constraint.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
@@ -15,7 +14,7 @@ import 'package:xml/xml.dart';
 
 class ConstraintModel extends WidgetModel
 {
-  ConstraintModel(WidgetModel? parent, String? id, {Scope? scope, dynamic data}) : super(parent, id, scope: scope, data: data);
+  ConstraintModel(super.parent, super.id, {super.scope, super.data});
 
   final Constraints system = Constraints();
 

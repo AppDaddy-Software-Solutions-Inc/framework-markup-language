@@ -104,7 +104,7 @@ class HttpModel extends DataSourceModel implements IDataSource
   }
   String? get response => _response?.get();
   
-  HttpModel(WidgetModel parent, String? id) : super(parent, id);
+  HttpModel(super.parent, super.id);
 
   static HttpModel? fromXml(WidgetModel parent, XmlElement xml)
   {

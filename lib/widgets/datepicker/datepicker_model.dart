@@ -135,12 +135,12 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
   bool get clear => _clear?.get() ?? false;
 
   DatepickerModel(
-    WidgetModel parent,
-    String? id, {
+    WidgetModel super.parent,
+    super.id, {
     String? type,
     dynamic format,
     dynamic clear,
-  }) : super(parent, id)
+  })
   {
     if (type         != null) this.type = type;
     if (format       != null) this.format = format;

@@ -12,7 +12,7 @@ class DrawerItemModel extends BoxModel
 {
   final DrawerPositions position;
 
-  DrawerItemModel(WidgetModel parent, String? id, this.position) : super(parent, id);
+  DrawerItemModel(WidgetModel super.parent, super.id, this.position);
 
   static DrawerItemModel? fromXml(WidgetModel parent, XmlElement? xml, DrawerPositions position)
   {

@@ -20,7 +20,7 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
   @override
   bool get autoexecute => super.autoexecute ?? true;
 
-  ZebraModel(WidgetModel parent, String? id) : super(parent, id);
+  ZebraModel(super.parent, super.id);
 
   static ZebraModel? fromXml(WidgetModel parent, XmlElement xml)
   {

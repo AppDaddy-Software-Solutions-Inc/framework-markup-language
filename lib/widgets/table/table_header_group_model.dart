@@ -111,7 +111,7 @@ class TableHeaderGroupModel extends BoxModel
   }
   String? get title => _title?.get();
 
-  TableHeaderGroupModel(WidgetModel parent, String? id) : super(parent, id);
+  TableHeaderGroupModel(WidgetModel super.parent, super.id);
 
   static TableHeaderGroupModel? fromXml(WidgetModel parent, XmlElement xml)
   {

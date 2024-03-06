@@ -48,7 +48,7 @@ class TableFooterCellModel extends BoxModel
   // position in row
   int get index => hdr?.cells.indexOf(this) ?? -1;
 
-  TableFooterCellModel(WidgetModel parent, String? id) : super(parent, id);
+  TableFooterCellModel(WidgetModel super.parent, super.id);
 
   static TableFooterCellModel? fromXml(WidgetModel parent, XmlElement xml)
   {

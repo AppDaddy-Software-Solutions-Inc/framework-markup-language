@@ -207,7 +207,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
   void _handleOnChange(String value)
   {
-    if (widget.model.editable == false)
+    if (!widget.model.editable)
     {
       widget.model.controller?.value = TextEditingValue(text: widget.model.value);
       return;
@@ -244,8 +244,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
   onFocusChange() async
   {
-    var editable = (widget.model.editable != false);
-    if (!editable) return;
+    if (!widget.model.editable) return;
 
     // commit changes on loss of focus
     if (!focus.hasFocus)
@@ -450,9 +449,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       borderRadius: BorderRadius.all(
           Radius.circular(0)),
       borderSide: BorderSide(
-          color: widget.model.editable == false
-              ? secondaryColor
-              : mainColor,
+          color: widget.model.editable ? mainColor : secondaryColor,
           width: widget.model.borderWidth),
     );}
 
@@ -465,7 +462,6 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
             width: widget.model.borderWidth),
       );
     }
-
   }
 
   _getSuffixIcon(Color hintTextColor)
@@ -476,7 +472,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         onPressed: () => widget.model.obscure = !widget.model.obscure,
       );
     }
-    else if (widget.model.enabled != false && widget.model.editable != false && widget.model.clear)
+    else if (widget.model.enabled && widget.model.editable && widget.model.clear)
     {
       return IconButton(padding: EdgeInsets.zero, icon: Icon(Icons.clear_rounded, size: 17, color: hintTextColor),
         onPressed: () {
@@ -493,19 +489,27 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   InputDecoration _getDecoration()
   {
     // set the border colors
-    Color? enabledBorderColor = widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
+    Color? enabledBorderColor  = widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
     Color? disabledBorderColor = Theme.of(context).disabledColor;
-    Color? focusBorderColor = Theme.of(context).focusColor;
-    Color? errorBorderColor = Theme.of(context).colorScheme.error;
+    Color? focusBorderColor    = Theme.of(context).focusColor;
+    Color? errorBorderColor    = Theme.of(context).colorScheme.error;
 
     String? hint = widget.model.hint;
     Color? hintTextColor = widget.model.textcolor?.withOpacity(0.7) ?? Theme.of(context).colorScheme.onSurfaceVariant;
     Color? errorTextColor = Theme.of(context).colorScheme.error;
 
-    double additionalTopPad = widget.model.border == "bottom" || widget.model.border == "underline" ? 3 : 15;
-    double additionalBottomPad = widget.model.border == "bottom" || widget.model.border == "underline" ? 14 : 15;
-
     double? fontsize = widget.model.size;
+
+    // set padding
+    double paddingTop = 15;
+    double paddingBottom = 15;
+    if (widget.model.border == "bottom" || widget.model.border == "underline")
+    {
+      paddingTop = 3;
+      paddingBottom = 14;
+    }
+    var padding = EdgeInsets.only(left: 10, top: paddingTop, right: 10, bottom: paddingBottom);
+    if (widget.model.dense == true) padding = EdgeInsets.only(left: 6, top: 0, right: 6, bottom: 0);
 
     var decoration = InputDecoration(
       isDense: false,
@@ -513,11 +517,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       hintMaxLines: 8,
       fillColor: widget.model.getFieldColor(context),
       filled: true,
-      contentPadding: widget.model.dense == true
-          ? EdgeInsets.only(
-          left: 6, top: 0, right: 6, bottom: 0)
-          : EdgeInsets.only(
-          left: 10, top: additionalTopPad, right: 10, bottom: additionalBottomPad),
+      contentPadding: padding,
       alignLabelWithHint: true,
       labelText: widget.model.dense ? null : hint,
       labelStyle: TextStyle(
@@ -567,8 +567,8 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
           child: Icon(widget.model.icon)) : null,
       prefixIconConstraints: BoxConstraints(maxHeight: 24),
       suffixIcon: _getSuffixIcon(hintTextColor),
-      suffixIconConstraints: (widget.model.enabled != false &&
-          widget.model.editable != false &&
+      suffixIconConstraints: (widget.model.enabled &&
+          widget.model.editable &&
           widget.model.clear)
           ? BoxConstraints(maxHeight: 20)
           : null,
@@ -613,7 +613,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         : TextInputAction.next;
 
     var style = TextStyle(
-        color: widget.model.enabled != false
+        color: widget.model.enabled
             ? enabledTextColor ?? Theme.of(context).colorScheme.onBackground
             : disabledTextColor,
         fontSize: fontsize);
@@ -631,7 +631,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         keyboardType: keyboard,
         textInputAction: action,
         inputFormatters: formatters,
-        enabled: (widget.model.enabled == false) ? false : true,
+        enabled: widget.model.enabled,
         style: style,
         textAlignVertical: widget.model.expand ? TextAlignVertical.top : TextAlignVertical.center,
         maxLength: length,
@@ -642,13 +642,14 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         onChanged: _handleOnChange,
         onSubmitted: _handleSubmit);
 
+    // dense
     if (widget.model.dense) view = Padding(padding: EdgeInsets.all(4), child: view);
 
     // get the model constraints
     var modelConstraints = widget.model.constraints;
 
     // constrain the input to 200 pixels if not constrained by the model
-    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width = 800;
+    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width = 200;
 
     // add margins
     view = addMargins(view);

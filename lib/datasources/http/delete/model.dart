@@ -12,7 +12,7 @@ class HttpDeleteModel extends HttpModel implements IDataSource
   @override
   String get method => "delete";
 
-  HttpDeleteModel(WidgetModel parent, String? id) : super(parent, id);
+  HttpDeleteModel(super.parent, super.id);
 
   static HttpDeleteModel? fromXml(WidgetModel parent, XmlElement xml)
   {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 
 class DecoratedInputModel extends FormFieldModel
@@ -190,7 +189,7 @@ class DecoratedInputModel extends FormFieldModel
   }
   double? get size => _size?.get() ?? 14;
 
-  DecoratedInputModel(WidgetModel? parent, String? id,
+  DecoratedInputModel(super.parent, super.id,
   {
     dynamic width,
     dynamic hint,
@@ -209,7 +208,7 @@ class DecoratedInputModel extends FormFieldModel
     dynamic textcolor,
     dynamic label,
 
-  }) : super(parent, id)
+  })
   {
     if (width != null) this.width = width;
     if (hint != null) this.hint = hint;
@@ -245,8 +244,7 @@ class DecoratedInputModel extends FormFieldModel
     radius = Xml.get(node: xml, tag: 'radius');
   }
 
-  //set the field color based on the error state
-
+  // set the field color based on the error state
   Color getFieldColor(BuildContext context) {
     // user defined
     if (color != null) return color!;

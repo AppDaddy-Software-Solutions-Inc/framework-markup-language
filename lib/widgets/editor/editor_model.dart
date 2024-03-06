@@ -55,7 +55,7 @@ class EditorModel extends DecoratedWidgetModel
   }
   String get language => _language?.get() ?? "xml";
 
-  EditorModel(WidgetModel? parent, String? id, {dynamic value, dynamic language}) : super(parent, id)
+  EditorModel(super.parent, super.id, {dynamic value, dynamic language})
   {
     if (value    != null) this.value = value;
     if (language != null) this.language = language;

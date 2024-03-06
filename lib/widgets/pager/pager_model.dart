@@ -92,12 +92,12 @@ class PagerModel extends BoxModel
     return v;
   }
 
-  PagerModel(WidgetModel parent, String? id,
+  PagerModel(WidgetModel super.parent, super.id,
   {
     dynamic pager,
     dynamic currentpage,
     dynamic color,
-  }) : super(parent, id)
+  })
   {
     // instantiate busy observable
     busy = false;

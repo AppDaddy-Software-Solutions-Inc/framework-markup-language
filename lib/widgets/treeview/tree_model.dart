@@ -51,7 +51,7 @@ class TreeModel extends BoxModel
   final List<TreeNodeModel> nodes = [];
   final List<TreeNodeModel?> youngestGeneration = [];
 
-  TreeModel(WidgetModel parent, String?  id) : super(parent, id);
+  TreeModel(WidgetModel super.parent, super.id);
 
   static TreeModel? fromXml(WidgetModel parent, XmlElement xml)
   {

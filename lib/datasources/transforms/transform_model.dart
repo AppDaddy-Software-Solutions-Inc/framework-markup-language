@@ -53,7 +53,7 @@ class TransformModel extends WidgetModel
   }
   String? get source => _source?.get();
 
-  TransformModel(WidgetModel? parent, String? id) : super(parent, id);
+  TransformModel(super.parent, super.id);
 
   static TransformModel? fromXml(WidgetModel parent, XmlElement xml)
   {

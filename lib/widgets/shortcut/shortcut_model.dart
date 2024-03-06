@@ -66,7 +66,7 @@ class ShortcutModel extends WidgetModel
   // holds the sequence of keys that make up the shortcut
   List<LogicalKeyboardKey> keySequence = [];
 
-  ShortcutModel(WidgetModel parent, String? id, {String? key, String? action}) : super(parent, id)
+  ShortcutModel(WidgetModel super.parent, super.id, {String? key, String? action})
   {
     this.key = key;
     this.action = action;
@@ -230,19 +230,19 @@ class ShortcutHandler
     LogicalKeyboardKey.metaRight.keyLabel
   ];
 
-  static bool get isShiftPressed => RawKeyboard.instance.keysPressed
+  static bool get isShiftPressed => HardwareKeyboard.instance.logicalKeysPressed
       .where((key) => shiftKeys.contains(key.keyLabel))
       .isNotEmpty;
 
-  static bool get isAltPressed => RawKeyboard.instance.keysPressed
+  static bool get isAltPressed => HardwareKeyboard.instance.logicalKeysPressed
       .where((key) => altKeys.contains(key.keyLabel))
       .isNotEmpty;
 
-  static bool get isCtrlPressed => RawKeyboard.instance.keysPressed
+  static bool get isCtrlPressed => HardwareKeyboard.instance.logicalKeysPressed
       .where((key) => ctrlKeys.contains(key.keyLabel))
       .isNotEmpty;
 
-  static bool get isMetaPressed => RawKeyboard.instance.keysPressed
+  static bool get isMetaPressed => HardwareKeyboard.instance.logicalKeysPressed
       .where((key) => metaKeys.contains(key.keyLabel))
       .isNotEmpty;
 

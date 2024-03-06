@@ -95,8 +95,8 @@ class ScribbleModel extends FormFieldModel implements IFormField
   String? get style => _style?.get();
 
   ScribbleModel(
-    WidgetModel parent,
-    String? id,
+    WidgetModel super.parent,
+    super.id,
    {dynamic mandatory,
     dynamic editable,
     dynamic enabled,
@@ -109,7 +109,7 @@ class ScribbleModel extends FormFieldModel implements IFormField
     dynamic weight,
     dynamic style,
     dynamic post,
-    }) : super(parent, id)
+    })
   {
     if (width  != null) this.width  = width;
     if (height != null) this.height = height;
@@ -175,18 +175,18 @@ class ScribbleModel extends FormFieldModel implements IFormField
 class SignatureModel extends ViewableWidgetModel
 {
 
-  final List<Point> points = [];
+  final List<PointVector> points = [];
   Color backgroundColor;
   Color penColor;
   double penStrokeWidth;
 
-  SignatureModel(WidgetModel parent, String? id, {
-    List<Point>? points,
+  SignatureModel(WidgetModel super.parent, super.id, {
+    List<PointVector>? points,
     double? width,
     double? height,
     this.backgroundColor = Colors.grey,
     this.penColor = Colors.black,
-    this.penStrokeWidth = 3.0}) : super(parent, id)
+    this.penStrokeWidth = 3.0})
   {
     if ((points != null) && (points.isNotEmpty)) this.points.addAll(points);
     if (width  != null) this.width  = width;

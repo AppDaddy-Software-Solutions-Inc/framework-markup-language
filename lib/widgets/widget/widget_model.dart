@@ -226,6 +226,10 @@ class WidgetModel implements IDataSourceListener {
     busy = false;
   }
 
+
+  // bubble variables and datasources to the top of the deserialization sequence
+  static final List<String> _topmost = ["VAR","BARCODE","BEACON","BIOMETRIC","DATA","DELETE","DETECTOR","FILEPICKER","GET","GPS","HTTP","LOG","MQTT","NFC","OCR","POST","PUT","SOCKET","SSE","STASH","TESTDATA","ZEBRA"];
+
   /// disposes of the model releasing resources and removing bindings
   void dispose() {
     // remove listeners

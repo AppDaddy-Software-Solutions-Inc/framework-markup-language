@@ -95,7 +95,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
   Widget _buildButton(Widget body)
   {
     var style = _getStyle();
-    var onPressed = (widget.model.onclick != null && widget.model.enabled != false) ? () => widget.model.onPress(context) : null;
+    var onPressed = (widget.model.onclick != null && widget.model.enabled) ? () => widget.model.onPress(context) : null;
 
     Widget view;
     switch (widget.model.buttontype)
@@ -112,7 +112,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
     }
 
     // If onclick is null or enabled is false we fade the button
-    if (widget.model.onclick == null || widget.model.enabled == false) view = Opacity(opacity: 0.9, child: view); // Disabled
+    if (widget.model.onclick == null || !widget.model.enabled) view = Opacity(opacity: 0.9, child: view); // Disabled
 
     return view;
   }

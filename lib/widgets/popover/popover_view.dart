@@ -74,7 +74,7 @@ class _PopoverViewState extends WidgetState<PopoverView>
         ]);
 
     Widget view = PopupMenuButton(
-        enabled: widget.model.enabled != false,
+        enabled: widget.model.enabled,
         color: Theme.of(context).colorScheme.surfaceVariant,
         icon: icon,
         padding: EdgeInsets.all(5),

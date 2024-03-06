@@ -27,8 +27,7 @@ class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserv
 
     bool value = widget.model.value;
     String? label = widget.model.label;
-    bool canSwitch =
-        (widget.model.enabled != false && widget.model.editable != false);
+    bool canSwitch = widget.model.enabled && widget.model.editable;
     double width = widget.model.width;
 
     //////////
@@ -86,8 +85,7 @@ class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserv
 
   onChange(bool value) async
   {
-    var editable = (widget.model.editable != false);
-    if (!editable) return;
+    if (!widget.model.editable) return;
 
     // value changed?
     if (widget.model.value != value)

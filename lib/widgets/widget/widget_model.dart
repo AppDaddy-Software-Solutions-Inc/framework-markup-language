@@ -170,6 +170,9 @@ class WidgetModel implements IDataSourceListener {
     return fromXmlNode(parent, node, scope, data);
   }
 
+  // used in the sort process to deserialize
+  static final List<String> _topmost = ["VAR","BARCODE","BEACON","BIOMETRIC","DATA","DELETE","DETECTOR","FILEPICKER","GET","GPS","HTTP","LOG","MQTT","NFC","OCR","POST","PUT","SOCKET","SSE","STASH","TESTDATA","ZEBRA"];
+
   void deserialize(XmlElement xml)
   {
     // set busy
@@ -186,12 +189,21 @@ class WidgetModel implements IDataSourceListener {
     IDataSource? source = scope?.getDataSource(datasource);
     source?.register(this);
 
-    // deserialize children
-    // we sort the elements moving vars and datasources to the top of the
+    // we first sort the elements moving vars and datasources to the top of the
     // deserialization sequence in order to avoid excessive deferred bindings
-    children?.clear();
     var elements = xml.children.whereType<XmlElement>().toList();
-    if (elements.length > 1) elements.sort((e1,e2) => _compare(e1,e2));
+    if (elements.length > 1)
+    {
+      var topmost = elements.where((element) => _topmost.contains(element.name.toString())).toList();
+      if (topmost.isNotEmpty && topmost.length != elements.length)
+      {
+        elements.removeWhere((element) => topmost.contains(element));
+        elements.insertAll(0, topmost);
+      }
+    }
+
+    // deserialize children
+    children?.clear();
     for (var element in elements)
     {
       // deserialize the model
@@ -200,32 +212,18 @@ class WidgetModel implements IDataSourceListener {
       // add model to the datasource list
       if (model is IDataSource)
       {
-        datasources ??= [];
-        datasources!.add(model as IDataSource);
+        (datasources ??= []).add(model as IDataSource);
       }
 
       // add model to the child list
       else if (model != null)
       {
-        children ??= [];
-        children!.add(model);
+        (children ??= []).add(model);
       }
     }
 
     // set idle
     busy = false;
-  }
-
-  // bubble variables and datasources to the top of the deserialization sequence
-  static final List<String> _topmost = ["VAR","BARCODE","BEACON","BIOMETRIC","DATA","DELETE","DETECTOR","FILEPICKER","GET","GPS","HTTP","LOG","MQTT","NFC","OCR","POST","PUT","SOCKET","SSE","STASH","TESTDATA","ZEBRA"];
-  static int _compare(XmlElement e1, XmlElement e2)
-  {
-    var a = _topmost.contains(e1.name.toString());
-    var b = _topmost.contains(e2.name.toString());
-    if ((!a && !b) || (a && b)) return 0;
-    if (a && !b) return -1;
-    if (!a && b) return 1;
-    return 0;
   }
 
   /// disposes of the model releasing resources and removing bindings

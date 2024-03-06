@@ -30,7 +30,9 @@ class _GestureViewState extends WidgetState<GestureView>
     Offset? dragStart;
     Offset? dragEnd;
 
-    return (widget.model.enabled == false) ? child : GestureDetector(
+    if (!widget.model.enabled) return child;
+
+    return GestureDetector(
         onTap: onTap,
         onLongPress: onLongPress,
         onDoubleTap: onDoubleTap,

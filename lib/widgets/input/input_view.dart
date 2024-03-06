@@ -207,7 +207,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
   void _handleOnChange(String value)
   {
-    if (widget.model.editable == false)
+    if (!widget.model.editable)
     {
       widget.model.controller?.value = TextEditingValue(text: widget.model.value);
       return;
@@ -244,8 +244,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
   onFocusChange() async
   {
-    var editable = (widget.model.editable != false);
-    if (!editable) return;
+    if (!widget.model.editable) return;
 
     // commit changes on loss of focus
     if (!focus.hasFocus)
@@ -450,9 +449,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       borderRadius: BorderRadius.all(
           Radius.circular(0)),
       borderSide: BorderSide(
-          color: widget.model.editable == false
-              ? secondaryColor
-              : mainColor,
+          color: widget.model.editable ? mainColor : secondaryColor,
           width: widget.model.borderWidth),
     );}
 
@@ -475,7 +472,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         onPressed: () => widget.model.obscure = !widget.model.obscure,
       );
     }
-    else if (widget.model.enabled != false && widget.model.editable != false && widget.model.clear)
+    else if (widget.model.enabled && widget.model.editable && widget.model.clear)
     {
       return IconButton(padding: EdgeInsets.zero, icon: Icon(Icons.clear_rounded, size: 17, color: hintTextColor),
         onPressed: () {
@@ -570,8 +567,8 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
           child: Icon(widget.model.icon)) : null,
       prefixIconConstraints: BoxConstraints(maxHeight: 24),
       suffixIcon: _getSuffixIcon(hintTextColor),
-      suffixIconConstraints: (widget.model.enabled != false &&
-          widget.model.editable != false &&
+      suffixIconConstraints: (widget.model.enabled &&
+          widget.model.editable &&
           widget.model.clear)
           ? BoxConstraints(maxHeight: 20)
           : null,
@@ -616,7 +613,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         : TextInputAction.next;
 
     var style = TextStyle(
-        color: widget.model.enabled != false
+        color: widget.model.enabled
             ? enabledTextColor ?? Theme.of(context).colorScheme.onBackground
             : disabledTextColor,
         fontSize: fontsize);
@@ -634,7 +631,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         keyboardType: keyboard,
         textInputAction: action,
         inputFormatters: formatters,
-        enabled: (widget.model.enabled == false) ? false : true,
+        enabled: widget.model.enabled,
         style: style,
         textAlignVertical: widget.model.expand ? TextAlignVertical.top : TextAlignVertical.center,
         maxLength: length,

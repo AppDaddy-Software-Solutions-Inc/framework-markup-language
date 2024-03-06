@@ -109,7 +109,7 @@ class _SelectViewState extends WidgetState<SelectView>
     var hintTextStyle = TextStyle(fontSize: (widget.model.size ?? 14) - 2, fontWeight: FontWeight.w300, color: hintColor);
 
     var style = TextStyle(
-        color: widget.model.enabled != false ? widget.model.textcolor ?? Theme
+        color: widget.model.enabled ? widget.model.textcolor ?? Theme
             .of(context)
             .colorScheme
             .onBackground : Theme.of(context).colorScheme.surfaceVariant,

@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -236,15 +235,6 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     return decoration;
   }
 
-  _getSuffixIcon2(Color hintTextColor)
-  {
-    if (widget.model.enabled && widget.model.editable && widget.model.clear)
-    {
-      return IconButton(padding: EdgeInsets.zero, icon: Icon(Icons.clear_rounded, size: 40, color: hintTextColor), onPressed: setControllerText(""));
-    }
-    return null;
-  }
-
   _getBorder(Color mainColor, Color? secondaryColor)
   {
     secondaryColor ??= mainColor;
@@ -265,9 +255,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
         borderRadius: BorderRadius.all(
             Radius.circular(0)),
         borderSide: BorderSide(
-            color: widget.model.editable == false
-                ? secondaryColor
-                : mainColor,
+            color: widget.model.editable ? mainColor : secondaryColor,
             width: widget.model.borderWidth),
       );}
 

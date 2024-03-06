@@ -127,9 +127,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
         borderRadius: BorderRadius.all(
             Radius.circular(0)),
         borderSide: BorderSide(
-            color: widget.model.editable == false
-                ? secondaryColor
-                : mainColor,
+            color: widget.model.editable ? mainColor : secondaryColor,
             width: widget.model.borderWidth),
       );}
 
@@ -184,7 +182,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
       },
       onTap: () async {
         focusNode!.requestFocus();
-        if (widget.model.editable != false) {
+        if (widget.model.editable) {
           widget.model.isPicking = true;
 
           await widget.model.show(context, widget.model.mode, widget.model.type,
@@ -202,9 +200,9 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
             onChanged: (val) => onChange(val),
             controller: cont,
             autofocus: false,
-            enabled: (widget.model.enabled == false) ? false : true,
+            enabled: widget.model.enabled,
             style: TextStyle(
-                color: widget.model.enabled != false
+                color: widget.model.enabled
                     ? enabledTextColor ??
                     Theme.of(context).colorScheme.onBackground
                     : disabledTextColor,

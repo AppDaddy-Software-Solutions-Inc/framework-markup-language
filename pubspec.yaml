@@ -16,7 +16,7 @@ dependencies:
 
   # this library version seems to fix issues when upgrading to
   # 3.19
-  web: ^0.5.0
+  web: ^0.5.1
 
   audioplayers: ^5.2.1
   # MIT
@@ -113,7 +113,7 @@ dependencies:
   google_maps_flutter: ^2.6.0
   # BSD-3-Clause
 
-  google_maps_flutter_web: ^0.5.6+1
+  google_maps_flutter_web: ^0.5.6+2
   # BSD-3-Clause, MIT
 
   highlight: ^0.7.0
@@ -205,7 +205,7 @@ dependencies:
   validators: ^3.0.0
   # MIT
 
-  video_player: ^2.8.2
+  video_player: ^2.8.3
   # BSD-3-Clause
 
   video_player_win: ^2.3.5

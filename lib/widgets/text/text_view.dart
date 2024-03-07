@@ -20,7 +20,6 @@ class TextView extends StatefulWidget implements IWidgetView
 
 class _TextViewState extends WidgetState<TextView>
 {
-  ThemeData? theme;
   String? text;
 
   // google fonts
@@ -77,51 +76,46 @@ class _TextViewState extends WidgetState<TextView>
     }
   }
 
+  Color _getTextColor()
+  {
+    if (widget.model.color != null) return widget.model.color!;
+    return Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
+  }
+
   Widget _getRichTextView({required bool rebuild})
   {
-    TextStyle? textStyle = _getStyle();
-    TextOverflow textOverflow = _getOverflow();
-    TextAlign textAlign = _getAlign();
-    TextDecoration textDecoration = _getDecoration();
-    TextDecorationStyle? textDecoStyle = _getDecorationStyle();
-    Shadow? textShadow = _getShadow();
-
     // re-parse the text
     if (rebuild) _parseText(widget.model.value);
 
     // build text spans
-    List<InlineSpan> textSpans = _buildTextSpans(textShadow, textDecoStyle);
-
-    // text color
-    var color = Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
+    List<InlineSpan> textSpans = _buildTextSpans(_getTextShadow(), _getTextDecorationStyle());
 
     var style = TextStyle(
-        fontSize: widget.model.size ?? textStyle!.fontSize,
-        color: widget.model.color ?? color,
+        fontSize: widget.model.size ?? _getTextStyle()!.fontSize,
+        color: _getTextColor(),
         fontWeight: getTextWeight(),
-        fontStyle: widget.model.italic ? FontStyle.italic : textStyle!.fontStyle,
-        decoration: textDecoration);
+        fontStyle: widget.model.italic ? FontStyle.italic : _getTextStyle()!.fontStyle,
+        decoration: _getTextDecoration());
 
-    if (widget.model.selectable == true) {
-      return SelectableText.rich(TextSpan(children: textSpans, style: style), textAlign: textAlign);
-    }
-    return RichText(text: TextSpan(children: textSpans, style: style), overflow: textOverflow, textAlign: textAlign);
+    return (widget.model.selectable) ?
+      SelectableText.rich(TextSpan(children: textSpans, style: style), textAlign: _getTextAlignment()) :
+      RichText(text: TextSpan(children: textSpans, style: style), overflow: _getTextOverflow(), textAlign: _getTextAlignment());
   }
 
   Widget _getSimpleTextView()
   {
-    TextDecoration textDecoration = _getDecoration();
-    TextDecorationStyle? textDecoStyle = _getDecorationStyle();
-    Shadow? textShadow = _getShadow();
+    TextDecoration textDecoration = _getTextDecoration();
+    TextDecorationStyle? textDecoStyle = _getTextDecorationStyle();
+    Shadow? textShadow = _getTextShadow();
 
-    TextStyle? textstyle;
-    String? font = widget.model.font;
-    if (font != null && (libraryLoader?.isCompleted ?? false))
+    // text style
+    TextStyle? textStyle;
+    if (widget.model.font != null && (libraryLoader?.isCompleted ?? false))
     {
-      TextStyle? textStyle = _getStyle();
-      textstyle = fonts.GoogleFonts.getFont(
-          font,
-          fontSize: widget.model.size ?? textStyle?.fontSize,
+      textStyle = fonts.GoogleFonts.getFont(
+          color: _getTextColor(),
+          widget.model.font!,
+          fontSize: widget.model.size ?? _getTextStyle()?.fontSize,
           wordSpacing: widget.model.wordspace,
           letterSpacing: widget.model.letterspace,
           height: widget.model.lineheight,
@@ -135,7 +129,8 @@ class _TextViewState extends WidgetState<TextView>
     }
     else
     {
-      textstyle = TextStyle(
+      textStyle = TextStyle(
+          color: _getTextColor(),
           wordSpacing: widget.model.wordspace,
           letterSpacing: widget.model.letterspace,
           height: widget.model.lineheight,
@@ -148,14 +143,14 @@ class _TextViewState extends WidgetState<TextView>
           decorationThickness: widget.model.decorationweight);
     }
 
-    //SizedBox is used to make the text fit the size of the widget.
-    return SizedBox(width: widget.model.width,
-        child: widget.model.selectable == true
-            ? SelectableText(widget.model.value ?? '', style: textstyle)
-            : Text(widget.model.value ?? '', style: textstyle));
+    // selectable text?
+    var text = widget.model.selectable ? SelectableText(widget.model.value ?? '', style: textStyle) : Text(widget.model.value ?? '', style: textStyle);
+
+    // SizedBox is used to make the text fit the size of the widget.
+    return SizedBox(width: widget.model.width, child: text);
   }
 
-  TextOverflow _getOverflow()
+  TextOverflow _getTextOverflow()
   {
     TextOverflow textOverflow = TextOverflow.visible;
     switch (widget.model.overflow?.toLowerCase())
@@ -177,7 +172,7 @@ class _TextViewState extends WidgetState<TextView>
     return textOverflow;
   }
 
-  TextAlign _getAlign()
+  TextAlign _getTextAlignment()
   {
     TextAlign? textAlign = TextAlign.start;
     switch (widget.model.halign?.toLowerCase())
@@ -200,7 +195,7 @@ class _TextViewState extends WidgetState<TextView>
     return textAlign;
   }
 
-  TextDecoration _getDecoration()
+  TextDecoration _getTextDecoration()
   {
     TextDecoration textDecoration = TextDecoration.none;
     switch (widget.model.decoration?.toLowerCase())
@@ -219,9 +214,7 @@ class _TextViewState extends WidgetState<TextView>
   }
 
   FontWeight getTextWeight() {
-    if (widget.model.bold) {
-      return FontWeight.bold;
-    }
+    if (widget.model.bold) return FontWeight.bold;
     switch(widget.model.weight) {
       case 100:
         return FontWeight.w100;
@@ -246,7 +239,7 @@ class _TextViewState extends WidgetState<TextView>
     }
   }
 
-  TextDecorationStyle? _getDecorationStyle()
+  TextDecorationStyle? _getTextDecorationStyle()
   {
     TextDecorationStyle? textDecoStyle;
     switch (widget.model.decorationstyle?.toLowerCase())
@@ -270,12 +263,10 @@ class _TextViewState extends WidgetState<TextView>
     return textDecoStyle;
   }
 
-  TextStyle? _getStyle()
+  TextStyle? _getTextStyle()
   {
-    if (theme == null) return null;
-
     // get theme
-    var textTheme = theme!.textTheme;
+    var textTheme = Theme.of(context).textTheme;
 
     TextStyle? textStyle = textTheme.bodyMedium;
     switch (widget.model.style?.toLowerCase())
@@ -353,10 +344,10 @@ class _TextViewState extends WidgetState<TextView>
     return textStyle;
   }
 
-  Shadow? _getShadow()
+  Shadow? _getTextShadow()
   {
     if (widget.model.elevation <= 0) return null;
-    var color = widget.model.shadowcolor ?? theme?.colorScheme.outline.withOpacity(0.4) ?? Colors.black45;
+    var color = widget.model.shadowcolor ?? Theme.of(context).colorScheme.outline.withOpacity(0.4);
     return Shadow(color: color, blurRadius: widget.model.elevation, offset: Offset(widget.model.shadowx!,widget.model.shadowy!));
   }
 
@@ -399,12 +390,12 @@ class _TextViewState extends WidgetState<TextView>
               script = "sup";
               break;
             case "code":
-              codeBlockBG = theme?.colorScheme.surfaceVariant.withOpacity(0.7);
+              codeBlockBG = Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.7);
               codeBlockFont = 'Inconsolata';
               weight = FontWeight.w400;
               break;
             default:
-              codeBlockBG = theme?.colorScheme.surfaceVariant;
+              codeBlockBG = Theme.of(context).colorScheme.surfaceVariant;
               codeBlockFont = null;
               weight = getTextWeight();
               style = FontStyle.normal;
@@ -501,9 +492,6 @@ class _TextViewState extends WidgetState<TextView>
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
-
-    // get the theme
-    theme = Theme.of(context);
 
     // use this to optimize
     bool textHasChanged = (text != widget.model.value);

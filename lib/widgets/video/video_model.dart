@@ -114,13 +114,6 @@ class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
     onInitialized = Xml.get(node: xml, tag: 'oninitialized');
   }
 
-  @override
-  void dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
   Future<bool> start({bool force = false, bool refresh = false, String? key}) async
   {
     //if (camera != null) camera!.start();

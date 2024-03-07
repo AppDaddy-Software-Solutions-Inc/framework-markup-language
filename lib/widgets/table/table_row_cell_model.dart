@@ -161,12 +161,4 @@ class TableRowCellModel extends BoxModel
   static bool hasEnterableFields(TableRowCellModel cell) => cell.findDescendantsOfExactType(InputModel).isNotEmpty;
 
   bool get valueIsEval => _value?.isEval ?? false;
-
-
-  @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
 }

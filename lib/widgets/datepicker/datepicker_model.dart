@@ -193,13 +193,6 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
     padding = Xml.get(node: xml, tag: 'padding');
   }
 
-
-  @override
-  dispose() {
-// Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
   @override
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {

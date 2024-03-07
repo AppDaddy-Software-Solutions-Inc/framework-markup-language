@@ -95,6 +95,7 @@ class WidgetModel implements IDataSourceListener {
 
   // scope
   Scope? scope;
+  late final bool isLocalScope;
 
   // context
   BuildContext? get context {
@@ -130,6 +131,7 @@ class WidgetModel implements IDataSourceListener {
 
     // set the scope
     this.scope = scope ?? Scope.of(this);
+    isLocalScope = scope != null;
 
     // set the framework
     framework = findAncestorOfExactType(FrameworkModel);
@@ -241,6 +243,9 @@ class WidgetModel implements IDataSourceListener {
     // dispose of all children
     children?.forEach((child) => child.dispose());
     children?.clear();
+
+    // dispose of the local scope
+    if (isLocalScope) scope?.dispose();
   }
 
   /// forces and associated views to rebuild

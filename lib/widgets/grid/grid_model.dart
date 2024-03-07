@@ -392,8 +392,6 @@ class GridModel extends BoxModel implements IScrollable
   @override
   dispose()
   {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-
     // clear items
     items.forEach((_,item) => item.dispose());
     items.clear();

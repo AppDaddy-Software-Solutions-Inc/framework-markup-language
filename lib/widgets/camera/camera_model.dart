@@ -323,13 +323,6 @@ class CameraModel extends CameraImageModel
   int i=0;
 
   @override
-  void dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
-  @override
   Future<bool> start({bool force = false, bool refresh = false, String? key}) async
   {
     camera?.start();

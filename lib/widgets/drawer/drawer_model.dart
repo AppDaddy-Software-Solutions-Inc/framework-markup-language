@@ -222,13 +222,6 @@ class DrawerModel extends DecoratedWidgetModel
     rounded = Xml.get(node: xml, tag: 'rounded');
   }
 
-  @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
   bool drawerExists(String drawer) {
     if (drawer == 'top') {
       return top != null;

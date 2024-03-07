@@ -93,13 +93,6 @@ class BarcodeDetectorModel extends DetectorModel implements IDetectable
   }
 
   @override
-  void dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
-  @override
   void detect(DetectableImage image, bool streamed) async
   {
     if (!busy)

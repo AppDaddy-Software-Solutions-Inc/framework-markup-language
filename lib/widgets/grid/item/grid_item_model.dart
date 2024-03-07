@@ -120,14 +120,6 @@ class GridItemModel extends BoxModel
     super.deserialize(xml);
   }
 
-  @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-    scope?.dispose();
-  }
-
   Future<bool> onTap() async
   {
     if (parent is GridModel)

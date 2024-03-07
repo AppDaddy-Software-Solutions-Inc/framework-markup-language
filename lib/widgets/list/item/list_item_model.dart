@@ -368,12 +368,4 @@ class ListItemModel extends BoxModel
     }
     return ok;
   }
-
-  @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-    scope?.dispose();
-  }
 }

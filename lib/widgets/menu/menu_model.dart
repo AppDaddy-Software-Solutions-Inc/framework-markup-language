@@ -184,8 +184,6 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable
   @override
   dispose()
   {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-
     // clear items
     for (var item in items) {
       item.dispose();

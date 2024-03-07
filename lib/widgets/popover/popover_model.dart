@@ -149,8 +149,6 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
 
   @override
   dispose() {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-
     // clear items
     for (var item in items)
     {

@@ -150,13 +150,6 @@ class ScrollerModel extends BoxModel implements IScrollable
     return await EventHandler(this).execute(_onscrolledtoend);
   }
 
-  @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
   Future<void> onPull(BuildContext context) async
   {
     await EventHandler(this).execute(_onpulldown);

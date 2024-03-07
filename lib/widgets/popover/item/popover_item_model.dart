@@ -89,13 +89,6 @@ class PopoverItemModel extends RowModel
     onclick = Xml.get(node: xml, tag: 'onclick');
   }
 
-  @override
-  dispose() 
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
   Future<bool> onTap() async
   {
     if (parent is PopoverModel)

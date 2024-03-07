@@ -80,12 +80,6 @@ class RotateTransitionModel extends AnimationChildModel
   }
 
   @override
-  dispose() {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
-  @override
   Future<bool?> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
     /// setter

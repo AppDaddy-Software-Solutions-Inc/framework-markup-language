@@ -78,12 +78,5 @@ class TooltipModel extends DecoratedWidgetModel
   }
 
   @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
-  @override
   Widget getView({Key? key}) => getReactiveView(TooltipView(this));
 }

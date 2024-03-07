@@ -72,7 +72,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
         obscureText: widget.model.obscure,
         style: style,
         readOnly: widget.model.readonly,
-        decoration: _getDecoration(),
+        decoration: _getTextDecoration(),
         textAlignVertical: TextAlignVertical.center);
 
     if (widget.model.clear)
@@ -141,30 +141,66 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     return Container(padding: padding, decoration: decoration, child: view);
   }
 
-  InputDecoration _getDecoration()
+  TextStyle _getLabelStyle({required Color color})
   {
-    // set the border colors
-    Color? enabledBorderColor = widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
-    Color? disabledBorderColor = Theme.of(context).disabledColor;
-    Color? focusBorderColor = Theme.of(context).focusColor;
-    Color? errorBorderColor = Theme.of(context).colorScheme.error;
+    var style = TextStyle(
+      fontSize: widget.model.size != null ? widget.model.size! - 2 : 14,
+      color: widget.model.getErrorHintColor(context, color: color),
+      shadows: <Shadow>[
+        Shadow(
+            offset: Offset(0.0, 0.5),
+            blurRadius: 2.0,
+            color: widget.model.color ?? Colors.transparent
+        ),
+        Shadow(
+            offset: Offset(0.0, 0.5),
+            blurRadius: 2.0,
+            color: widget.model.color ?? Colors.transparent
+        ),
+        Shadow(
+            offset: Offset(0.0, 0.5),
+            blurRadius: 2.0,
+            color: widget.model.color ?? Colors.transparent
+        ),
+      ],
+    );
+    return style;
+  }
 
-    String? hint = widget.model.hint;
-    Color? hintTextColor = widget.model.textcolor?.withOpacity(0.7) ?? Theme.of(context).colorScheme.onSurfaceVariant;
-    Color? errorTextColor = Theme.of(context).colorScheme.error;
+  Widget? _getPrefixIcon()
+  {
+    if (widget.model.icon == null) return null;
+    return Padding(
+        padding: EdgeInsets.only(
+            right: 10,
+            left: 10,
+            bottom: 0),
+        child: Icon(widget.model.icon));
+  }
 
-    double? fontsize = widget.model.size;
-
+  EdgeInsets _getTextPadding()
+  {
     // set padding
-    double paddingTop = 15;
-    double paddingBottom = 15;
+    double paddingTop = 0;//widget.model.paddingTop ?? 15;
+    double paddingBottom = widget.model.paddingBottom ?? 15;
+    double paddingLeft = widget.model.paddingLeft ?? 10;
+    double paddingRight = widget.model.paddingRight ?? 10;
     if (widget.model.border == "bottom" || widget.model.border == "underline")
     {
-      paddingTop = 3;
-      paddingBottom = 14;
+      paddingTop = widget.model.paddingTop ?? 3;
+      paddingBottom = widget.model.paddingBottom ?? 14;
     }
-    var padding = EdgeInsets.only(left: 10, top: paddingTop, right: 10, bottom: paddingBottom);
+    var padding = EdgeInsets.only(left: paddingLeft, top: paddingTop, right: paddingRight, bottom: paddingBottom);
     if (widget.model.dense == true) padding = EdgeInsets.only(left: 6, top: 0, right: 6, bottom: 0);
+
+    return padding;
+  }
+
+  InputDecoration _getTextDecoration()
+  {
+    // set colors
+    Color? color = widget.model.textcolor?.withOpacity(0.7) ?? Theme.of(context).colorScheme.onSurfaceVariant;
+    Color? borderColor = widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
 
     var decoration = InputDecoration(
       isDense: false,
@@ -172,64 +208,39 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
       hintMaxLines: 8,
       fillColor: widget.model.getFieldColor(context),
       filled: true,
-      contentPadding: padding,
+      contentPadding: _getTextPadding(),
       alignLabelWithHint: true,
-      labelText: widget.model.dense ? null : hint,
-      labelStyle: TextStyle(
-        fontSize: fontsize != null ? fontsize - 2 : 14,
-        color: widget.model.getErrorHintColor(context, color: hintTextColor),
-        shadows: <Shadow>[
-          Shadow(
-              offset: Offset(0.0, 0.5),
-              blurRadius: 2.0,
-              color: widget.model.color ?? Colors.transparent
-          ),
-          Shadow(
-              offset: Offset(0.0, 0.5),
-              blurRadius: 2.0,
-              color: widget.model.color ?? Colors.transparent
-          ),
-          Shadow(
-              offset: Offset(0.0, 0.5),
-              blurRadius: 2.0,
-              color: widget.model.color ?? Colors.transparent
-          ),
-        ],
-      ),
-      errorStyle: TextStyle(
-        fontSize: fontsize ?? 14,
-        fontWeight: FontWeight.w300,
-        color: errorTextColor,
-      ),
+
+      labelText: widget.model.dense ? null : widget.model.hint,
+      labelStyle: _getLabelStyle(color: color),
+
       errorText: widget.model.alarmText,
-      hintText: widget.model.dense ? hint : null,
-      hintStyle: TextStyle(
-        fontSize: fontsize ?? 14,
+      errorStyle: TextStyle(
+        fontSize: widget.model.size ?? 14,
         fontWeight: FontWeight.w300,
-        color: widget.model.getErrorHintColor(context, color: hintTextColor),
+        color: Theme.of(context).colorScheme.error,
       ),
 
+      hintText: widget.model.dense ? widget.model.hint : null,
+      hintStyle: TextStyle(fontSize: widget.model.size ?? 14,
+        fontWeight: FontWeight.w300,
+        color: widget.model.getErrorHintColor(context, color: color),
+      ),
 
       counterText: "",
-      // widget.model.error is getting set to null somewhere.
 
       //Icon Attributes
-      prefixIcon: widget.model.icon != null ? Padding(
-          padding: EdgeInsets.only(
-              right: 10,
-              left: 10,
-              bottom: 0),
-          child: Icon(widget.model.icon)) : null,
+      prefixIcon: _getPrefixIcon(),
       prefixIconConstraints: BoxConstraints(maxHeight: 24),
       suffixIcon: Icon(Icons.arrow_drop_down, size: 25),
 
       //border attributes
-      border: _getBorder(enabledBorderColor, null),
-      errorBorder: _getBorder(errorBorderColor, null),
-      focusedErrorBorder: _getBorder(errorBorderColor, null),
-      focusedBorder: _getBorder(focusBorderColor, null),
-      enabledBorder: _getBorder(enabledBorderColor, null),
-      disabledBorder: _getBorder(disabledBorderColor, enabledBorderColor),
+      border: _getBorder(borderColor, null),
+      errorBorder: _getBorder(Theme.of(context).colorScheme.error, null),
+      focusedErrorBorder: _getBorder(Theme.of(context).colorScheme.error, null),
+      focusedBorder: _getBorder(Theme.of(context).focusColor, null),
+      enabledBorder: _getBorder(borderColor, null),
+      disabledBorder: _getBorder(Theme.of(context).disabledColor, borderColor),
     );
 
     return decoration;
@@ -268,7 +279,6 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
             width: widget.model.borderWidth),
       );
     }
-
   }
 
   Future<List<OptionModel>> buildSuggestions(String pattern) async

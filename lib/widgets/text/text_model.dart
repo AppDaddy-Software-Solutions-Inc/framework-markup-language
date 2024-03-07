@@ -472,13 +472,6 @@ class TextModel extends DecoratedWidgetModel
     selectable = Xml.get(node: xml, tag: 'selectable');
   }
 
-  @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
   bool get isSpan => (parent is SpanModel);
 
   @override

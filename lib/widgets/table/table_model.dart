@@ -613,8 +613,6 @@ class TableModel extends BoxModel implements IForm
   @override
   dispose()
   {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-
     // cleanup
     header?.dispose();
 

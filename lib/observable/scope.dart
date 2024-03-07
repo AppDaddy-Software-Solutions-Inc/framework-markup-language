@@ -207,8 +207,6 @@ class Scope
 
   void dispose()
   {
-    // Log().debug('dispose called on => <$runtimeType id="$id">');
-
     // dispose of data sources
     final list = datasources.values.toList();
     for (var source in list) {

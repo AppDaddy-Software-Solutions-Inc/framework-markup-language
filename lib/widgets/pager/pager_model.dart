@@ -271,8 +271,6 @@ class PagerModel extends BoxModel
   @override
   dispose()
   {
-    // Log().debug ('dispose called on' + elementName);
-
     // clear pages
     for (var model in pages) {
       model.dispose();

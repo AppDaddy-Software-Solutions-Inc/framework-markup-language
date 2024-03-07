@@ -94,14 +94,6 @@ class MapMarkerModel extends DecoratedWidgetModel
     if ((datasource != null) && (scope != null) && (scope!.datasources.containsKey(datasource))) scope!.datasources[datasource!]!.remove(this);
   }
 
-  @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-    scope?.dispose();
-  }
-
   void onMarkerChange(Observable observable)
   {
     if (parent is MapModel)

@@ -324,14 +324,6 @@ class MenuItemModel extends DecoratedWidgetModel
     return await EventHandler(this).execute(_onclick);
   }
 
-
-  @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
   @override
   void onDrop(IDragDrop draggable, {Offset? dropSpot})
   {

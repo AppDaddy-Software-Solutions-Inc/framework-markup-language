@@ -750,9 +750,6 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
     // dispose of animations
     animations?.forEach((animation) => animation.dispose());
 
-    // dispose of local scope
-    scope?.dispose();
-
     // dispose
     super.dispose();
   }

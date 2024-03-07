@@ -108,7 +108,5 @@ class TableFooterModel extends BoxModel
     {
       cell.dispose();
     }
-
-    scope?.dispose();
   }
 }

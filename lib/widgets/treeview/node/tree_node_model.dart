@@ -164,12 +164,5 @@ class TreeNodeModel extends DecoratedWidgetModel
   }
 
   @override
-  dispose()
-  {
-    // Log().debug ('dispose called on' + elementName.toString());
-    super.dispose();
-  }
-
-  @override
   Widget getView({Key? key}) => getReactiveView(TreeNodeView(this));
 }

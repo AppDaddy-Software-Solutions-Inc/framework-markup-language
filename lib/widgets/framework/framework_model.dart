@@ -483,11 +483,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   // framework level dispose can happen asynchronously
   void dispose() async
   {
-    if (disposed)
-    {
-      Log().debug('Framework model has already been disposed => <FML name="$templateName" url="$url"/>');
-    }
-
+    if (disposed) Log().debug('Framework model has already been disposed => <FML name="$templateName" url="$url"/>');
     Log().debug('Dispose called on framework model => <FML name="$templateName" url="$url"/>');
 
     disposed = true;
@@ -500,9 +496,6 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
 
     // dispose drawer model
     drawer?.dispose();
-
-    // dispose of scope
-    scope?.dispose();
 
     // clear event listeners
     manager.listeners.clear();

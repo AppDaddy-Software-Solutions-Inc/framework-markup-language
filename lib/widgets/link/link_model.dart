@@ -152,13 +152,6 @@ class LinkModel extends ColumnModel
     onclick     = Xml.get(node: xml, tag: 'onclick');
   }
 
-  @override
-  dispose()
-  {
-// Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
   Future<bool> onClick(BuildContext context) async {
     if (!isNullOrEmpty(url))
     {

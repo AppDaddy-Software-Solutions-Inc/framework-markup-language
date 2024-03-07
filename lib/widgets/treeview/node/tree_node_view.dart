@@ -121,8 +121,5 @@ class _TreeNodeViewState extends WidgetState<TreeNodeView>
     widget.model.treeview!.focusTreeNode(node);
   }
 
-  onTap()
-  {
-    widget.model.expanded = !widget.model.expanded!;
-  }
+  onTap() => widget.model.expanded = !widget.model.expanded!;
 }

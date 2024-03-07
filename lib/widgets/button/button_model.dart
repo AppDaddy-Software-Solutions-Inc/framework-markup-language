@@ -234,13 +234,6 @@ class ButtonModel extends BoxModel
     }
   }
 
-  @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
   bool preventClicking = false;
   Timer? allowClicking;
 

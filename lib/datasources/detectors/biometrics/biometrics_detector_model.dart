@@ -32,19 +32,6 @@ class BiometricsDetectorModel extends DetectorModel implements IDetectable
     return model;
   }
 
-  /// Deserializes the FML template elements, attributes and children
-  @override
-  void deserialize(XmlElement xml)
-  {    super.deserialize(xml);
-  }
-
-  @override
-  void dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
   @override
   void detect(DetectableImage image, bool streamed) async
   {

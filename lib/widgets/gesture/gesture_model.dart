@@ -214,13 +214,6 @@ class GestureModel extends DecoratedWidgetModel
     onrightclick  = Xml.get(node: xml, tag: 'onrightclick');
   }
 
-  @override
-  dispose()
-  {
-// Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
   Future<bool> onClick(BuildContext context) async {
     if (onclick == null) return true;
     return await EventHandler(this).execute(_onclick);

@@ -301,7 +301,5 @@ class TableHeaderModel extends BoxModel
     {
       cell.dispose();
     }
-
-    scope?.dispose();
   }
 }

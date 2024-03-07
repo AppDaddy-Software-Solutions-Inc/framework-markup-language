@@ -221,13 +221,6 @@ class MapModel extends BoxModel
   }
 
   @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
-  @override
   List<Widget> inflate()
   {
     // process children

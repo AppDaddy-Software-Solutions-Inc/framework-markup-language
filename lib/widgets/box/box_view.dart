@@ -345,6 +345,14 @@ class _BoxViewState extends WidgetState<BoxView>
     // build the border decoration
     BoxDecoration? borderDecoration = border != null ? BoxDecoration(border: border, borderRadius: radius) : null;
 
+    InputDecorator(
+        decoration: InputDecoration(
+            labelText: 'Box',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            )),
+        child: Text("Container Content"));
+
     // blur the view
     if (widget.model.blur) view = _getBlurredView(view, borderDecoration);
 

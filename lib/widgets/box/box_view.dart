@@ -1,13 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/decoration/decoration_clipper.dart';
 import 'package:fml/widgets/box/decoration/labelled_box.dart';
 import 'package:fml/widgets/box/flex/flex_object.dart';
 import 'package:fml/widgets/box/stack/stack_object.dart';
 import 'package:fml/widgets/box/wrap/wrap_object.dart';
+import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
@@ -260,7 +260,7 @@ class _BoxViewState extends WidgetState<BoxView>
     var hasLabel = (widget.model.borderLabel != null && widget.model.border == "all");
     if (hasLabel)
     {
-      var lbl = Text(widget.model.borderLabel!, style: Theme.of(context).inputDecorationTheme.labelStyle);
+      var lbl = TextModel(null,null,value: widget.model.borderLabel, overflow: "ellipsis").getView();
       var box = Container(child: view);
       return LabelledBorderContainer(box,lbl,decoration: BoxDecoration(border: border, borderRadius: radius));
     }

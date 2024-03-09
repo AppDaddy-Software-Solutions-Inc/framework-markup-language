@@ -67,8 +67,6 @@ class LabelledContainerRenderer extends RenderBox with SlottedContainerRenderObj
   @override
   bool get sizedByParent => false;
 
-  late Size _childrenSize;
-
   // Returns children in hit test order.
   @override
   Iterable<RenderBox> get children {
@@ -85,21 +83,20 @@ class LabelledContainerRenderer extends RenderBox with SlottedContainerRenderObj
   @override
   void performLayout() {
 
+    // layout main container
     if (container != null) {
       container!.layout(constraints, parentUsesSize: true);
       _positionChild(container!, Offset.zero);
     }
 
-    // Lay out the bottom right child and position it at the bottom right corner
-    // of the top left child.
+    // layout the label
     if (label != null)
     {
-      label!.layout(constraints, parentUsesSize: true);
+      label!.layout(constraints.copyWith(maxWidth: math.max(0.0,((container?.size.width ?? 0.0) - gapStart - (gapPadding * 4)))), parentUsesSize: true);
       _positionChild(label!, labelOffset);
     }
 
-    // Calculate the overall size and constrain it to the given constraints.
-    // Any overflow is marked (in debug mode) during paint.
+    // calculate the overall size
     size = Size(container?.size.width ?? 0.0, (container?.size.height ?? 0.0));
   }
 
@@ -176,7 +173,7 @@ class LabelledContainerRenderer extends RenderBox with SlottedContainerRenderObj
   Size computeDryLayout(BoxConstraints constraints) {
     const BoxConstraints childConstraints = BoxConstraints();
     final Size containerSize = container?.computeDryLayout(childConstraints) ?? Size.zero;
-    final Size labelSize = label?.computeDryLayout(childConstraints) ?? Size.zero;
+    //final Size labelSize = label?.computeDryLayout(childConstraints) ?? Size.zero;
     return containerSize;
   }
 

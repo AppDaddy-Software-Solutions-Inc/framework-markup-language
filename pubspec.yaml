@@ -14,10 +14,6 @@ dependencies:
 
   # to check package status, run -> flutter pub outdated
 
-  # this library version seems to fix issues when upgrading to
-  # 3.19
-  web: ^0.5.1
-
   audioplayers: ^5.2.1
   # MIT
 

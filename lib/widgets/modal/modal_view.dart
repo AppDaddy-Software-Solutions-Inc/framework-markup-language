@@ -383,7 +383,7 @@ class ModalViewState extends WidgetState<ModalView>
   {
     Color c1 = t.onSurfaceVariant;
     Color c2 = t.primary;
-    Color c3 = widget.model.bordercolor;
+    Color c3 = widget.model.borderColor;
 
     var divider = Container(width: headerIconDividerSize, height:1);
 

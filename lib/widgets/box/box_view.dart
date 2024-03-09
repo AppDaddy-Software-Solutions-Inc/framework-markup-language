@@ -1,7 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/box/decoration/decoration_clipper.dart';
+import 'package:fml/widgets/box/decoration/labelled_box.dart';
 import 'package:fml/widgets/box/flex/flex_object.dart';
 import 'package:fml/widgets/box/stack/stack_object.dart';
 import 'package:fml/widgets/box/wrap/wrap_object.dart';
@@ -88,11 +91,11 @@ class _BoxViewState extends WidgetState<BoxView>
     bool hasBorder = widget.model.border != null && widget.model.border != 'none';
     if (hasBorder)
     {
-      var width = widget.model.borderwidth ?? 1;
+      var width = widget.model.borderWidth ?? 1;
       if (widget.model.border == 'all')
       {
         border = Border.all(
-            color: widget.model.bordercolor ?? theme.colorScheme.onInverseSurface,
+            color: widget.model.borderColor ?? theme.colorScheme.onInverseSurface,
             width: width);
       } else {
         border = Border(
@@ -100,25 +103,25 @@ class _BoxViewState extends WidgetState<BoxView>
               widget.model.border == 'vertical')
               ? BorderSide(
               width: width,
-              color: widget.model.bordercolor ?? theme.colorScheme.onInverseSurface)
+              color: widget.model.borderColor ?? theme.colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
           bottom: (widget.model.border == 'bottom' ||
               widget.model.border == 'vertical')
               ? BorderSide(
               width: width,
-              color: widget.model.bordercolor ?? theme.colorScheme.onInverseSurface)
+              color: widget.model.borderColor ?? theme.colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
           left: (widget.model.border == 'left' ||
               widget.model.border == 'horizontal')
               ? BorderSide(
               width: width,
-              color: widget.model.bordercolor ?? theme.colorScheme.onInverseSurface)
+              color: widget.model.borderColor ?? theme.colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
           right: (widget.model.border == 'right' ||
               widget.model.border == 'horizontal')
               ? BorderSide(
               width: width,
-              color: widget.model.bordercolor ?? theme.colorScheme.onInverseSurface)
+              color: widget.model.borderColor ?? theme.colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
         );
       }
@@ -130,8 +133,8 @@ class _BoxViewState extends WidgetState<BoxView>
   {
     var elevation = (widget.model.elevation ?? 0);
     if (elevation > 0) {
-      return BoxShadow(color: widget.model.shadowcolor, spreadRadius: elevation, blurRadius: elevation * 2,
-          offset: Offset(widget.model.shadowx, widget.model.shadowy));
+      return BoxShadow(color: widget.model.shadowColor, spreadRadius: elevation, blurRadius: elevation * 2,
+          offset: Offset(widget.model.shadowX, widget.model.shadowY));
     }
     return null;
   }
@@ -241,12 +244,27 @@ class _BoxViewState extends WidgetState<BoxView>
     {
       if (clip != Clip.none)
       {
-        view = ClipPath(clipper: _DecorationClipper(textDirection: Directionality.maybeOf(context), decoration: decoration), clipBehavior: clip, child: view);
+        view = ClipPath(clipper: DecorationClipper(textDirection: Directionality.maybeOf(context), decoration: decoration), clipBehavior: clip, child: view);
       }
       view = DecoratedBox(decoration: decoration, child: view);
     }
 
     return view;
+  }
+
+  Widget _buildOuterBox(Widget view, BorderRadius radius, BoxConstraints constraints)
+  {
+    Border? border = _getBorder();
+    if (border == null) return view;
+
+    var hasLabel = (widget.model.borderLabel != null && widget.model.border == "all");
+    if (hasLabel)
+    {
+      var lbl = Text(widget.model.borderLabel!, style: Theme.of(context).inputDecorationTheme.labelStyle);
+      var box = Container(child: view);
+      return LabelledBorderContainer(box,lbl,decoration: BoxDecoration(border: border, borderRadius: radius));
+    }
+    return Container(child: view, decoration: BoxDecoration(border: border, borderRadius: radius));
   }
 
   Widget _buildInnerContent(BoxConstraints constraints, WidgetAlignment alignment)
@@ -329,9 +347,6 @@ class _BoxViewState extends WidgetState<BoxView>
     // add padding around inner content
     view = addPadding(view);
 
-    // get the border
-    Border? border = _getBorder();
-
     // get the border radius
     BorderRadius? radius = BorderRadius.only(
         topRight: Radius.circular(widget.model.radiusTopRight),
@@ -342,25 +357,14 @@ class _BoxViewState extends WidgetState<BoxView>
     // build the box decoration
     BoxDecoration? decoration = _getBoxDecoration(radius);
 
-    // build the border decoration
-    BoxDecoration? borderDecoration = border != null ? BoxDecoration(border: border, borderRadius: radius) : null;
-
-    InputDecorator(
-        decoration: InputDecoration(
-            labelText: 'Box',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-            )),
-        child: Text("Container Content"));
-
     // blur the view
-    if (widget.model.blur) view = _getBlurredView(view, borderDecoration);
+    if (widget.model.blur) view = _getBlurredView(view, decoration);
 
     // build the inner content box
     view = _buildInnerBox(view, constraints, decoration, alignment.aligned, Clip.antiAlias);
 
     // build the outer border box
-    if (borderDecoration != null) view = Container(child: view, decoration: borderDecoration);
+    view = _buildOuterBox(view, radius, constraints);
 
     // set the view opacity
     if (widget.model.opacity != null) view = _getFadedView(view);
@@ -375,27 +379,5 @@ class _BoxViewState extends WidgetState<BoxView>
     view = addMargins(view);
 
     return view;
-  }
-}
-
-/// A clipper that uses [Decoration.getClipPath] to clip.
-class _DecorationClipper extends CustomClipper<Path>
-{
-  _DecorationClipper({TextDirection? textDirection, required this.decoration,
-  }) : textDirection = textDirection ?? TextDirection.ltr;
-
-  final TextDirection textDirection;
-  final Decoration decoration;
-
-  @override
-  Path getClip(Size size)
-  {
-    return decoration.getClipPath(Offset.zero & size, textDirection);
-  }
-
-  @override
-  bool shouldReclip(_DecorationClipper oldClipper)
-  {
-    return oldClipper.decoration != decoration || oldClipper.textDirection != textDirection;
   }
 }

@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/application/application_model.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/theme/themenotifier.dart';
 import 'package:fml/navigation/navigation_observer.dart';
@@ -127,7 +128,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
                 ? FloatingActionButton.extended(label: Text('Add App'), icon: Icon(Icons.add), onPressed: () => addAppDialog(), foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary, shape: rrbShape)
                 : FloatingActionButton.extended(onPressed: null, foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary, label: Text('Loading Apps'), shape: rrbShape),
             body: SafeArea(child: Stack(children: [Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomRight, end: Alignment.topLeft, stops: [0.4, 1.0], colors: [/*Theme.of(context).colorScheme.inversePrimary*/Theme.of(context).colorScheme.surfaceVariant, Theme.of(context).colorScheme.surface])),),
-              Center(child: Opacity(opacity: 0.03, child: Image(image: AssetImage('assets/images/fml-logo.png')))),
+              Center(child: Opacity(opacity: 0.03, child: Image(image: AssetImage('assets/images/logo.png', package: FmlEngine.package)))),
               Center(child: apps.isEmpty ? noAppDisplay : storeDisplay),
               Align(alignment: Alignment.bottomLeft, child: Column(mainAxisSize: MainAxisSize.min,
                 children: [
@@ -135,7 +136,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
                       child: Text('Privacy Policy', style: TextStyle(color: Colors.blueAccent, decoration: TextDecoration.underline)),
                       onTap: () => launchUrl(Uri(scheme: 'https', host: 'fml.dev' , path: '/privacy.html'))
                   ),),
-                  Padding(padding: EdgeInsets.only(left: 5), child: Text('${phrase.version} $version', style: TextStyle(color: Colors.black26)))
+                  Padding(padding: EdgeInsets.only(left: 5), child: Text('${phrase.version} ${FmlEngine.version}', style: TextStyle(color: Colors.black26)))
                 ],
               ),),
               Center(child: BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true).getView())]))

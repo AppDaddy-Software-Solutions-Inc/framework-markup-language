@@ -3,8 +3,8 @@ import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/datasource_listener_interface.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
@@ -107,7 +107,7 @@ class WidgetModel implements IDataSourceListener {
       }
     }
     if (parent != null) return parent!.context;
-    return applicationKey.currentContext;
+    return FmlEngine.key.currentContext;
   }
 
   // busy
@@ -151,7 +151,7 @@ class WidgetModel implements IDataSourceListener {
 
     // auto generated id
     String prefix = "auto";
-    if (kDebugMode)
+    if (FmlEngine.kDebugMode)
     {
       prefix = "$runtimeType";
       prefix = prefix.replaceAll(onlyAlpha,'');

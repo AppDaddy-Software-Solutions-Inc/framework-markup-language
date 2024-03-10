@@ -1,10 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/gestures.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:flutter/material.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/scroller/scroller_behavior.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
@@ -101,12 +101,12 @@ class MenuViewState extends WidgetState<MenuView> implements IEventScrolling
       tilesList.add(item.getView());
     }
 
-    double menuColPadding = isMobile ? 0.0 : 25.0;
-    double tilePadding = isMobile ? 5.0 : 0;
+    double menuColPadding = FmlEngine.isMobile ? 0.0 : 25.0;
+    double tilePadding = FmlEngine.isMobile ? 5.0 : 0;
 
     int tilesPerRow =
         ((/*MediaQuery.of(context).size.*/ width - (menuColPadding * 2)) ~/
-            (isMobile
+            (FmlEngine.isMobile
                 ? (170 + (tilePadding * 2))
                 : (270 + (tilePadding * 2))));
     int tileCountForRow = 0;

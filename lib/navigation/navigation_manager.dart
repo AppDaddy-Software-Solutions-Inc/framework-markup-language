@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/template/template_manager.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/modal/modal_manager_model.dart';
@@ -56,7 +57,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
     // get home page
     String? homePage = System.app?.homePage ?? "store";
-    if (!isWeb && appType == ApplicationTypes.multiApp) homePage = "store";
+    if (!FmlEngine.isWeb && FmlEngine.type == ApplicationTypes.multiApp) homePage = "store";
 
     // get start page
     String startPage = System.app?.startPage ?? homePage;
@@ -127,7 +128,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
     // deeplink specified
     String? url = configuration.uri?.toString();
-    if ((!isWeb) && (source == "system"))
+    if ((!FmlEngine.isWeb) && (source == "system"))
     {
       url = await _buildDeeplinkUrl(url);
       if (url == null) return;

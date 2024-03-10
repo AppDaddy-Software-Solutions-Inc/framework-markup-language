@@ -1,7 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:collection';
-import 'dart:html';
+import 'dart:io';
+import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/phrase.dart';
@@ -80,7 +81,7 @@ class TemplateManager
     try
     {
       // not supported on web
-      if (isWeb) throw('Local Files not supported in Browser');
+      if (FmlEngine.isWeb) throw('Local Files not supported in Browser');
 
       // get template from asset bundle
       var template = await rootBundle.loadString(url.replaceFirst("file://", "assets/"), cache: false);
@@ -99,8 +100,8 @@ class TemplateManager
     try
     {
       // not supported on web
-      if (isWeb)    throw('Local Files not supported in Browser');
-      if (isMobile) throw('Local Files not supported in Mobile');
+      if (FmlEngine.isWeb)    throw('Local Files not supported in Browser');
+      if (FmlEngine.isMobile) throw('Local Files not supported in Mobile');
 
       // get template from file
       Uri? uri = URI.parse(url);

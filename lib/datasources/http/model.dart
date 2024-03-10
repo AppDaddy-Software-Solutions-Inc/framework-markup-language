@@ -4,6 +4,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/http/http.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/hive/post.dart';
@@ -190,7 +191,7 @@ class HttpModel extends DataSourceModel implements IDataSource
     if (foreground == true && background == true) type = Types.either;
 
     // web is always in the foreground
-    if (isWeb) type = Types.foreground;
+    if (FmlEngine.isWeb) type = Types.foreground;
     if ((type == Types.either) && (System().connected)) type = Types.foreground;
 
     // process in the background

@@ -52,7 +52,7 @@
 
             <!-- logo -->
             <PAD left="20" />
-            <IMAGE height="30" url="assets://images/fml-logo.png" />
+            <IMAGE height="30" url="assets://images/logo.png" />
             <PAD left="10" />
             <TEXT size="20" value="FmlPad" visible="=!{isSmall}" />
             <PAD left="50" visible="=!{isSmall}" />

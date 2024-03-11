@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fml/config/config_model.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/hive/stash.dart';
@@ -260,7 +261,7 @@ class ApplicationModel extends WidgetModel {
 
       // mirror?
       var mirrorApi = model.settings["MIRROR_API"];
-      if (mirrorApi != null && !isWeb && scheme != "file") {
+      if (mirrorApi != null && !FmlEngine.isWeb && scheme != "file") {
         Uri? uri = URI.parse(mirrorApi, domain: domain);
         if (uri != null) {
           mirror = Mirror(uri.url);

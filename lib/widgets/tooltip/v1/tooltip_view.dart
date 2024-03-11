@@ -1,5 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/system.dart';
+import 'package:fml/fml.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/tooltip/v1/tooltip_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
@@ -34,7 +34,7 @@ class _TooltipViewState extends WidgetState<TooltipView>
     }
 
     dynamic activator;
-    if (isMobile) {
+    if (FmlEngine.isMobile) {
       activator = child;
     } else {
       activator = MouseRegion(cursor: SystemMouseCursors.click, child: child);

@@ -24,54 +24,8 @@ import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/application/application_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'dart:io' as io;
-
+import 'fml.dart';
 import 'widgets/framework/framework_model.dart';
-
-// application build version
-final String version = '3.0.0';
-
-// application title
-// only used in Android when viewing open applications
-final String applicationTitle = "Flutter Markup Language $version";
-
-// This url is used to locate config.xml on startup
-// Used in SingleApp only and on Web when developing on localhost
-// Set this to file://app
-//String get defaultDomain => 'http://10.69.4.245:81';
-//String get defaultDomain => 'http://10.67.130.75:8081';
-String get defaultDomain => 'https://test.appdaddy.co';
-//String get defaultDomain => 'http://hbrapsweb.goodyear.com:8081';
-//String get defaultDomain => 'http://ludapsweb.ec.goodyear.com:8081';
-//String get defaultDomain => 'http://tpkapsweb.tpk.goodyear.com:8081';
-//String get defaultDomain => 'http://10.69.4.149:81';
-// SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
-// MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-final ApplicationTypes appType = ApplicationTypes.multiApp;
-
-enum ApplicationTypes { singleApp, multiApp }
-
-// platform
-String get platform => isWeb
-    ? "web"
-    : isMobile
-        ? "mobile"
-        : "desktop";
-
-bool get isWeb => kIsWeb;
-bool get isMobile => !isWeb && (io.Platform.isAndroid || io.Platform.isIOS);
-bool get isDesktop => !isWeb && !isMobile;
-
-// This variable is used throughout the code to determine if debug messages
-// and their corresponding actions should be performed.
-// Putting this inside the System() class is problematic at startup
-// when log messages being written while System() is still be initialized.
-final bool kDebugMode = !kReleaseMode;
-
-typedef CommitCallback = Future<bool> Function();
-
-// used in context lookup
-var applicationKey = GlobalKey();
 
 class System extends WidgetModel implements IEventManager {
   static final String myId = "SYSTEM";
@@ -87,7 +41,7 @@ class System extends WidgetModel implements IEventManager {
   factory System() => _singleton;
   System._initialize() : super(null, myId, scope: Scope(id: myId)) {
     _initialize();
-    Platform.fml2js(version: version);
+    Platform.fml2js(version: FmlEngine.version);
   }
 
   // current application
@@ -125,7 +79,7 @@ class System extends WidgetModel implements IEventManager {
 
   /// Global System Observable
   StringObservable? _userplatform;
-  String? get userplatform => _userplatform?.get() ?? platform;
+  String? get userplatform => _userplatform?.get() ?? FmlEngine.platform;
 
   StringObservable? _useragent;
   String? get useragent => _useragent?.get() ?? Platform.useragent;
@@ -179,7 +133,7 @@ class System extends WidgetModel implements IEventManager {
   late String baseUrl;
 
   _initialize() async {
-    print('Initializing FML Engine V$version on ${Uri.base}...');
+    print('Initializing FML Engine V${FmlEngine.version} on ${Uri.base}...');
 
     // base URL changes (fragment is dropped) if
     // used past this point
@@ -203,7 +157,7 @@ class System extends WidgetModel implements IEventManager {
     await Connectivity(_connected!).initialize();
 
     // create empty applications folder
-    if (!isWeb) await _initFolders();
+    if (!FmlEngine.isWeb) await _initFolders();
 
     // set initial route
     await _initRoute();
@@ -254,15 +208,10 @@ class System extends WidgetModel implements IEventManager {
     _screenwidth = IntegerObservable(Binding.toKey('screenwidth'),
         PlatformDispatcher.instance.views.first.physicalSize.width,
         scope: scope);
-    _userplatform =
-        StringObservable(Binding.toKey('platform'), platform, scope: scope);
-    _useragent = StringObservable(
-        Binding.toKey('useragent'), Platform.useragent,
-        scope: scope);
-    _version =
-        StringObservable(Binding.toKey('version'), version, scope: scope);
-    _uuid = StringObservable(Binding.toKey('uuid'), newId(),
-        scope: scope, getter: newId);
+    _userplatform = StringObservable(Binding.toKey('platform'), FmlEngine.platform, scope: scope);
+    _useragent = StringObservable(Binding.toKey('useragent'), Platform.useragent, scope: scope);
+    _version = StringObservable(Binding.toKey('version'), FmlEngine.version, scope: scope);
+    _uuid = StringObservable(Binding.toKey('uuid'), newId(), scope: scope, getter: newId);
     // this satisfies/eliminates the compiler warning
     if (_uuid == null) print(_uuid);
 
@@ -303,7 +252,7 @@ class System extends WidgetModel implements IEventManager {
   Future<bool> _initFolders() async {
     bool ok = true;
 
-    if (isWeb) return ok;
+    if (FmlEngine.isWeb) return ok;
     try {
       // create applications folder
       String? folderpath = normalize(join(URI.rootPath, "applications"));
@@ -343,11 +292,11 @@ class System extends WidgetModel implements IEventManager {
 
   Future _initRoute() async {
     // set default app
-    if (isWeb || appType == ApplicationTypes.singleApp) {
-      var domain = defaultDomain;
+    if (FmlEngine.isWeb || FmlEngine.type == ApplicationTypes.singleApp) {
+      var domain = FmlEngine.domain;
 
       // replace default for testing
-      if (isWeb) {
+      if (FmlEngine.isWeb) {
         var uri = Uri.tryParse(baseUrl);
         if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) {
           domain = uri.url;

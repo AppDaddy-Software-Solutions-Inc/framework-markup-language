@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/event/handler.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/services.dart';
@@ -424,8 +425,8 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
         onHorizontalDragUpdate: (dragUpdateDetails) => drawer.onDragSheet(dragUpdateDetails, 'horizontal', true),
         onVerticalDragEnd: (dragEndDetails) => drawer.onDragEnd(dragEndDetails, 'vertical', false),
         onHorizontalDragEnd: (dragEndDetails) => drawer.onDragEnd(dragEndDetails, 'horizontal', false),
-        onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
-        onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
+        onLongPressStart: FmlEngine.kDebugMode ? (_) => onLongPressStart() : null,
+        onLongPressEnd:   FmlEngine.kDebugMode ? (_) => onLongPressEnd()   : null,
         child: drawer);
   }
 
@@ -433,7 +434,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   {
     // simulate a swipe to move back on all desktop applications
     // and mobile IOS applications
-    bool enableSwipeBack = isDesktop || (isMobile && System().useragent == "ios");
+    bool enableSwipeBack = FmlEngine.isDesktop || (FmlEngine.isMobile && System().useragent == "ios");
 
     // gesture detector is swipe back on IOS
     if (enableSwipeBack)
@@ -443,16 +444,16 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
           onHorizontalDragEnd: onDragEnd,
           onHorizontalDragUpdate: onDragUpdate,
           onTap: onTapHandler,
-          onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
-          onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
+          onLongPressStart: FmlEngine.kDebugMode ? (_) => onLongPressStart() : null,
+          onLongPressEnd:   FmlEngine.kDebugMode ? (_) => onLongPressEnd()   : null,
           child: view);
     }
 
     // standard gesture detector for commit
     return GestureDetector(behavior: HitTestBehavior.translucent,
         onTap: onTapHandler,
-        onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
-        onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
+        onLongPressStart: FmlEngine.kDebugMode ? (_) => onLongPressStart() : null,
+        onLongPressEnd:   FmlEngine.kDebugMode ? (_) => onLongPressEnd()   : null,
         child: view);
   }
 

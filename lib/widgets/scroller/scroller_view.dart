@@ -130,8 +130,8 @@ class ScrollerViewState extends WidgetState<ScrollerView>
             child: Stack(fit: StackFit.loose,
                 children: [
                   view,
-                  ScrollShadow(controller, 'top', Axis.vertical, widget.model.shadowcolor),
-                  ScrollShadow(controller, 'bottom', Axis.vertical, widget.model.shadowcolor),
+                  ScrollShadow(controller, 'top', Axis.vertical, widget.model.shadowColor),
+                  ScrollShadow(controller, 'bottom', Axis.vertical, widget.model.shadowColor),
                   SizedBox.expand(),
                 ]));
         break;
@@ -144,8 +144,8 @@ class ScrollerViewState extends WidgetState<ScrollerView>
             fit: StackFit.loose,
             children: [
               view,
-              ScrollShadow(controller, 'top', Axis.horizontal, widget.model.shadowcolor),
-              ScrollShadow(controller, 'bottom', Axis.horizontal, widget.model.shadowcolor),
+              ScrollShadow(controller, 'top', Axis.horizontal, widget.model.shadowColor),
+              ScrollShadow(controller, 'bottom', Axis.horizontal, widget.model.shadowColor),
               SizedBox.expand(),
             ],
           ),

@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/widgets/measure/measure_view.dart';
 import 'package:fml/helpers/string.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/modal/modal_manager_view.dart';
@@ -383,7 +383,7 @@ class ModalViewState extends WidgetState<ModalView>
   {
     Color c1 = t.onSurfaceVariant;
     Color c2 = t.primary;
-    Color c3 = widget.model.bordercolor;
+    Color c3 = widget.model.borderColor;
 
     var divider = Container(width: headerIconDividerSize, height:1);
 
@@ -479,11 +479,11 @@ class ModalViewState extends WidgetState<ModalView>
       Widget resizeableTL  = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpLeftDownRight, child: resize), onPanUpdate: onResizeTL, onTapDown: onBringToFront);
       Widget resizeableTR  = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpRightDownLeft, child: resize), onPanUpdate: onResizeTR, onTapDown: onBringToFront);
 
-      Widget resize2       = Container(width: isMobile ? 34 : 24, height: height);
+      Widget resize2       = Container(width: FmlEngine.isMobile ? 34 : 24, height: height);
       Widget resizeableL   = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: resize2), onPanUpdate: onResizeL, onTapDown: onBringToFront);
       Widget resizeableR   = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: resize2), onPanUpdate: onResizeR, onTapDown: onBringToFront);
 
-      Widget resize3       = Container(width: width, height: isMobile ? 34 : 24);
+      Widget resize3       = Container(width: width, height: FmlEngine.isMobile ? 34 : 24);
       Widget resizeableT   = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown, child: resize3), onPanUpdate: onResizeT, onTapDown: onBringToFront);
       Widget resizeableB   = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown, child: resize3), onPanUpdate: onResizeB, onTapDown: onBringToFront);
 

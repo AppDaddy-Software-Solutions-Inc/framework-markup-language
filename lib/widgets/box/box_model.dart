@@ -206,34 +206,49 @@ class BoxModel extends DecoratedWidgetModel
   }
 
   /// The color of the border for box, defaults to black54
-  ColorObservable? _bordercolor;
-  set bordercolor(dynamic v)
+  ColorObservable? _borderColor;
+  set borderColor(dynamic v)
   {
-    if (_bordercolor != null)
+    if (_borderColor != null)
     {
-      _bordercolor!.set(v);
+      _borderColor!.set(v);
     }
     else if (v != null)
     {
-      _bordercolor = ColorObservable(Binding.toKey(id, 'bordercolor'), v, scope: scope, listener: onPropertyChange);
+      _borderColor = ColorObservable(Binding.toKey(id, 'bordercolor'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get bordercolor => _bordercolor?.get();
+  Color? get borderColor => _borderColor?.get();
 
   /// The width of the containers border, defaults to 0
-  DoubleObservable? _borderwidth;
-  set borderwidth(dynamic v)
+  DoubleObservable? _borderWidth;
+  set borderWidth(dynamic v)
   {
-    if (_borderwidth != null)
+    if (_borderWidth != null)
     {
-      _borderwidth!.set(v);
+      _borderWidth!.set(v);
     }
     else if (v != null)
     {
-      _borderwidth = DoubleObservable(Binding.toKey(id, 'borderwidth'), v, scope: scope, listener: onPropertyChange);
+      _borderWidth = DoubleObservable(Binding.toKey(id, 'borderwidth'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  double? get borderwidth => _borderwidth?.get();
+  double? get borderWidth => _borderWidth?.get();
+
+  /// The border label
+  StringObservable? _borderLabel;
+  set borderLabel(dynamic v)
+  {
+    if (_borderLabel != null)
+    {
+      _borderLabel!.set(v);
+    }
+    else if (v != null)
+    {
+      _borderLabel = StringObservable(Binding.toKey(id, 'borderlabel'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get borderLabel => _borderLabel?.get();
 
   /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
   StringObservable? _border;
@@ -249,23 +264,23 @@ class BoxModel extends DecoratedWidgetModel
     }
   }
   String? get border => _border?.get()?.toLowerCase();
-
+  
   /// shadow attributes
   ///
   /// the color of the elevation shadow, defaults to black26
-  ColorObservable? _shadowcolor;
-  set shadowcolor(dynamic v)
+  ColorObservable? _shadowColor;
+  set shadowColor(dynamic v)
   {
-    if (_shadowcolor != null)
+    if (_shadowColor != null)
     {
-      _shadowcolor!.set(v);
+      _shadowColor!.set(v);
     }
     else if (v != null)
     {
-      _shadowcolor = ColorObservable(Binding.toKey(id, 'shadowcolor'), v, scope: scope, listener: onPropertyChange);
+      _shadowColor = ColorObservable(Binding.toKey(id, 'shadowcolor'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color get shadowcolor => _shadowcolor?.get() ?? Colors.black26;
+  Color get shadowColor => _shadowColor?.get() ?? Colors.black26;
 
   /// the elevation of the box. The blur radius is 2* the elevation. This is combined with the offsets when constraining the size.
   DoubleObservable? _elevation;
@@ -280,28 +295,28 @@ class BoxModel extends DecoratedWidgetModel
   double? get elevation => _elevation?.get();
 
   /// The x offset of the box FROM the shadow. 0,0 is center. This is combined with `elevation` when determining the size.
-  DoubleObservable? _shadowx;
-  set shadowx(dynamic v) {
-    if (_shadowx != null) {
-      _shadowx!.set(v);
+  DoubleObservable? _shadowX;
+  set shadowX(dynamic v) {
+    if (_shadowX != null) {
+      _shadowX!.set(v);
     } else if (v != null) {
-      _shadowx = DoubleObservable(Binding.toKey(id, 'shadowx'), v,
+      _shadowX = DoubleObservable(Binding.toKey(id, 'shadowx'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-  double get shadowx => _shadowx?.get() ?? 4;
+  double get shadowX => _shadowX?.get() ?? 4;
 
   /// The x offset of the box FROM the shadow. 0,0 is center. This is combined with `elevation` when determining the size.
-  DoubleObservable? _shadowy;
-  set shadowy(dynamic v) {
-    if (_shadowy != null) {
-      _shadowy!.set(v);
+  DoubleObservable? _shadowY;
+  set shadowY(dynamic v) {
+    if (_shadowY != null) {
+      _shadowY!.set(v);
     } else if (v != null) {
-      _shadowy = DoubleObservable(Binding.toKey(id, 'shadowy'), v,
+      _shadowY = DoubleObservable(Binding.toKey(id, 'shadowy'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-  double get shadowy => _shadowy?.get() ?? 4;
+  double get shadowY => _shadowY?.get() ?? 4;
 
   BoxModel(super.parent, super.id,{super.scope, this.expandDefault = true, super.data});
 
@@ -334,18 +349,19 @@ class BoxModel extends DecoratedWidgetModel
 
     /// Set Border Attributes
     radius = Xml.get(node: xml, tag: 'radius');
-    bordercolor = Xml.get(node: xml, tag: 'bordercolor');
-    borderwidth = Xml.get(node: xml, tag: 'borderwidth');
+    borderColor = Xml.get(node: xml, tag: 'bordercolor');
+    borderWidth = Xml.get(node: xml, tag: 'borderwidth');
+    borderLabel = Xml.get(node: xml, tag: 'borderlabel');
     border = Xml.get(node: xml, tag: 'border');
-    if (_border == null && (_radius != null || _bordercolor != null || _borderwidth != null))
+    if (_border == null && (_radius != null || _borderColor != null || _borderWidth != null || _borderLabel != null))
     {
       border = "all";
     }
 
     elevation = Xml.get(node: xml, tag: 'elevation');
-    shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');
-    shadowx = Xml.get(node: xml, tag: 'shadowx');
-    shadowy = Xml.get(node: xml, tag: 'shadowy');
+    shadowColor = Xml.get(node: xml, tag: 'shadowcolor');
+    shadowX = Xml.get(node: xml, tag: 'shadowx');
+    shadowY = Xml.get(node: xml, tag: 'shadowy');
 
     /// Build the layout
     layout  = Xml.get(node: xml, tag: 'layout');

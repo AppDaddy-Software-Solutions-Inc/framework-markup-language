@@ -212,6 +212,9 @@ class TemplateManager
     // return the error page
     if (result.isFail) fetchErrorTemplate(result);
 
+    // parse the template
+    if (result.isSuccess) result = _parse(result.template);
+
     // return template
     return Template.fromXmlDocument(name: url, xml: result.document, parameters: parameters);
   }
@@ -262,7 +265,7 @@ class TemplateManager
     if (result.isFail) return fetchErrorTemplate(result);
 
     // parse the template
-    result = _parse(result.template);
+    if (result.isSuccess) result = _parse(result.template);
 
     // invalid fml syntax
     if (result.isFail) return fetchErrorTemplate(result);

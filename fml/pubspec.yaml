@@ -25,7 +25,14 @@ flutter:
 
   assets:
     - assets/
-    - assets/images/
     - assets/applications/
 
-    # fmlpad
+    # counter app
+    - assets/applications/counter/
+    - assets/applications/counter/images/
+    - assets/applications/counter/templates/
+
+    # fmlpad app
+    - assets/applications/fmlpad/
+    - assets/applications/fmlpad/images/
+    - assets/applications/fmlpad/templates/

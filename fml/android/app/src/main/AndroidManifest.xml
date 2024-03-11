@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="co.appdaddy.fml">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="dev.fml">
 
     <uses-permission android:name="android.permission.INTERNET" android:required="true" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />

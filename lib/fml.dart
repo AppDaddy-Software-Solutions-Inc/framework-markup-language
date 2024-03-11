@@ -96,54 +96,60 @@ class FmlEngine
 
   FmlEngine._init()
   {
-    _initErrorBuilder();
+    // error builder
+    ErrorWidget.builder = _errorBuilder;
+
+    // hides all render flex exceptions
+    FlutterError.onError = _showError;
   }
 
-  _initErrorBuilder()
+  Widget launch()
   {
-    // error builder
-    ErrorWidget.builder = (FlutterErrorDetails details)
+    // fml engine
+    var engine = ChangeNotifierProvider<ThemeNotifier>(child: Application(key: FmlEngine.key), create: (_) => _setTheme());
+
+    // splash screen
+    var splash = Container(color: splashScreenColor, child: Splash(key: UniqueKey(), onInitializationComplete: () => runApp(engine)));
+
+    // launch the splash screen
+    runApp(splash);
+
+    return splash;
+  }
+
+  _setTheme()
+  {
+    try
     {
+      var font = System.theme.font;
+      return ThemeNotifier(MyTheme().deriveTheme(System.theme.colorScheme, googleFont: font));
+    }
+    catch(e)
+    {
+      Log().debug('Init Theme Error: $e \n(Configured fonts from https://fonts.google.com/ are case sensitive)');
+      return ThemeNotifier(MyTheme().deriveTheme(System.theme.colorScheme));
+    }
+  }
+
+  Widget _errorBuilder(FlutterErrorDetails details)
+  {
+      // log the error
       Log().error(details.exception.toString(), caller: 'ErrorWidget() : main.dart');
 
       // in debug mode shows the normal red screen  error
       if (kDebugMode) return ErrorWidget("${details.exception}\n${details.stack.toString()}");
 
-      // in release builds, shows a more user friendly interface
-      return Container(color: Colors.white,
-          alignment: Alignment.center,
-          child: Text('⚠️\n${Phrases().somethingWentWrong}',
-              style: const TextStyle(color: Colors.black), textAlign: TextAlign.center));
-    };
+      var style = const TextStyle(color: Colors.black);
+      var text = Text('⚠️\n${Phrases().somethingWentWrong}', style: style,  textAlign: TextAlign.center);
 
-    // hides all render flex exceptions
-    FlutterError.onError = (details)
-    {
+      // in release builds, shows a more user friendly interface
+      return Container(color: Colors.white, alignment: Alignment.center, child: text);
+  }
+
+  void _showError(FlutterErrorDetails details)
+  {
       bool show = false;
       if (details.exception.toString().startsWith("A Render")) show = false;
       if (show) FlutterError.presentError(details);
-    };
   }
-
-  launch() => runApp(Container(color: splashScreenColor, child: Splash(key: UniqueKey(), onInitializationComplete: _runApp)));
-}
-
-void _runApp()
-{
-  // run the application
-  runApp(ChangeNotifierProvider<ThemeNotifier>(
-      create: (_)
-      {
-        try
-        {
-          var font = System.theme.font;
-          return ThemeNotifier(MyTheme().deriveTheme(System.theme.colorScheme, googleFont: font));
-        }
-        catch(e)
-        {
-          Log().debug('Init Theme Error: $e \n(Configured fonts from https://fonts.google.com/ are case sensitive)');
-          return ThemeNotifier(MyTheme().deriveTheme(System.theme.colorScheme));
-        }
-      },
-      child: Application(key: FmlEngine.key)));
 }

@@ -25,5 +25,7 @@ flutter:
 
   assets:
     - assets/
-    - assets/applications/
     - assets/images/
+    - assets/applications/
+
+    # fmlpad

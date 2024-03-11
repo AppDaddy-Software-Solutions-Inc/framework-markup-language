@@ -22,6 +22,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/eval/eval.dart';
 import 'package:fml/widgets/trigger/trigger_model.dart';
 import 'package:fml/sound/sound.dart';
+import 'package:petitparser/core.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -214,7 +215,7 @@ class EventHandler extends Eval
 
       // parse the expression
       var myParsedResult = Expression.tryParse(myExpression);
-      var myParsedExpression = myParsedResult.isSuccess ? myParsedResult.value : null;
+      var myParsedExpression = (myParsedResult is Success) ? myParsedResult.value : null;
 
       // Unable to preparse
       if (myParsedExpression == null)

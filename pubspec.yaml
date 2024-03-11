@@ -5,7 +5,7 @@ repository: https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-La
 version: 3.0.0
 
 environment:
-  sdk: '>=2.17.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
 
@@ -70,9 +70,6 @@ dependencies:
   flutter_highlight: ^0.7.0
   # MIT
 
-  flutter_html: ^3.0.0-beta.2
-  # MIT
-
   flutter_image_transform: ^1.0.1
   # MIT
 
@@ -131,7 +128,7 @@ dependencies:
   jaguar_jwt: ^3.0.0
   # BSD-3-Clause
 
-  jiffy: ^5.0.0
+  jiffy: ^6.2.1
   # MIT
 
   js: ^0.6.5
@@ -152,8 +149,6 @@ dependencies:
   open_filex: ^4.2.2
   # BSD-3-Clause, MIT
 
-  package_info_plus: ^4.2.0
-
   path: ^1.8.2
   # BSD-3-Clause
 
@@ -164,7 +159,7 @@ dependencies:
   # MIT
 
   # Warning, updating petitparser could potentially break the EVAL().
-  petitparser: ^5.0.0
+  petitparser: ^6.0.2
   # MIT
 
   pluto_grid_plus: ^8.3.0
@@ -215,7 +210,7 @@ dependencies:
   webview_flutter: ^4.7.0
   # BSD-3-Clause
 
-  xml: ^6.1.0
+  xml: ^6.5.0
   # MIT
 
   xml2json: ^6.2.2

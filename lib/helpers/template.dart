@@ -128,7 +128,6 @@ import 'package:fml/widgets/trigger/trigger_model.dart';
 import 'package:fml/widgets/typeahead/typeahead_model.dart';
 import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:fml/widgets/video/video_model.dart';
-import 'package:fml/widgets/html/html_model.dart';
 import 'package:fml/widgets/span/span_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
@@ -569,13 +568,13 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       model = null;
       break;
 
-  // case "sfchart":
-  //   model = SFCHART.ChartModel.fromXml(parent, node);
-  //   break;
+    // case "sfchart":
+    //   model = SFCHART.ChartModel.fromXml(parent, node);
+    //   break;
 
-    case "HTML":
-      model = HtmlModel.fromXml(parent, node);
-      break;
+    // case "HTML":
+    //   model = HtmlModel.fromXml(parent, node);
+    //   break;
 
     case "CHECKBOX":
     case "CHECK":
@@ -624,7 +623,7 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       model = EditorModel.fromXml(parent, node);
       break;
 
-  // deprecated. use row/column/box with %sizing or flex
+    // deprecated. use row/column/box with %sizing or flex
     case "EXPAND":
     case "EXPANDED":
       model = ColumnModel.fromXml(parent, node);

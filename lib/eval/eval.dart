@@ -13,6 +13,7 @@ import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/input/input_formatters.dart';
 import 'package:flutter_multi_formatter/formatters/credit_card_number_input_formatter.dart';
 import 'package:flutter_multi_formatter/formatters/phone_input_formatter.dart';
+import 'package:petitparser/core.dart';
 
 /// Eval parses evaluation strings from FML templates
 ///
@@ -62,7 +63,7 @@ class Eval
 
       // parse the expression
       var myParsedResult = Expression.tryParse(myExpression);
-      var myParsedExpression = myParsedResult.isSuccess ? myParsedResult.value : null;
+      var myParsedExpression = (myParsedResult is Success) ? myParsedResult.value : null;
 
       // failed parse?
       if (myParsedExpression == null) throw(Exception('Failed to parse $myExpression. Error is ${myParsedResult.message}'));

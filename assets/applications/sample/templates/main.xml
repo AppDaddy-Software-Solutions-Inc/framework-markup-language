@@ -1,7 +1,7 @@
 <FML id="Home" version="1.00" center="true">
 	<SCROLL center="true">
 			<SBOX center="true" pad="20">
-			<IMAGE url="images/fml-logo.png" width="100"/>
+			<IMAGE url="images/logo.png" width="100"/>
 			<PAD top="20"/>
 			<TXT value="Flutter Markup Language" style="h4" />
 			<PAD top="40"/>

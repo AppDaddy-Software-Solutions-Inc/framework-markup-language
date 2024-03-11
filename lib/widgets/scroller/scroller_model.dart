@@ -139,7 +139,7 @@ class ScrollerModel extends BoxModel implements IScrollable
     layout          = Xml.get(node: xml, tag: 'layout') ?? Xml.get(node: xml, tag: 'direction');
     scrollbar       = Xml.get(node: xml, tag: 'scrollbar');
     onscrolledtoend = Xml.get(node: xml, tag: 'onscrolledtoend');
-    shadowcolor     = Xml.get(node: xml, tag: 'shadowcolor');
+    shadowColor     = Xml.get(node: xml, tag: 'shadowcolor');
     onpulldown      = Xml.get(node: xml, tag: 'onpulldown');
     allowDrag       = Xml.get(node: xml, tag: 'allowDrag');
   }

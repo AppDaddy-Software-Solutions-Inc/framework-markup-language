@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:fml/event/event.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/helpers/mime.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:universal_html/html.dart';
@@ -151,7 +152,7 @@ class Platform
     String? title;
     var e = window.document.getElementsByName("description");
     if (e.isNotEmpty && e.first is MetaElement) title = (e.first as MetaElement).content;
-    return title ?? applicationTitle;
+    return title ?? FmlEngine.title;
   }
 
   /// Using the js package we can capture calls from javascript within flutter.

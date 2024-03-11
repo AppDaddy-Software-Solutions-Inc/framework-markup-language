@@ -840,7 +840,7 @@ class TableViewState extends WidgetState<TableView>
     var dark = theme.brightness == Brightness.dark;
 
     // define color scheme
-    var borderColor       = widget.model.bordercolor ?? (dark ? Color(0xFFDDE2EB) : Color(0xFFDDE2EB));
+    var borderColor       = widget.model.borderColor ?? (dark ? Color(0xFFDDE2EB) : Color(0xFFDDE2EB));
     var textColor         = widget.model.textColor   ?? (dark ? Colors.white      : Colors.black);
     var backgroundColor   = widget.model.color       ?? (dark ? Color(0xFF111111) : Colors.white);
     var rowColor          = widget.model.color       ?? (dark ? Color(0xFF111111) : Colors.white);

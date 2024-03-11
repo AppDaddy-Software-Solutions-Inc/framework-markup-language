@@ -55,7 +55,7 @@ class ModalModel extends BoxModel
   Color? defaultBorderColor;
 
   @override
-  Color get bordercolor => super.bordercolor ?? defaultBorderColor ?? Colors.white;
+  Color get borderColor => super.borderColor ?? defaultBorderColor ?? Colors.white;
 
   // returns thge modal border radius for the header
   double get headerRadius => super.radiusTopRight;

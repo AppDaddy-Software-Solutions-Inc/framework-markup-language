@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/foundation.dart';
+import 'package:fml/fml.dart';
 import 'dart:io' show Platform;
 
 import 'package:fml/log/manager.dart';
@@ -14,7 +14,7 @@ class Sound {
   }
 
   void initPlayer() {
-    if (kIsWeb) {
+    if (FmlEngine.isWeb) {
       return; // Calls to Platform.isIOS fails on web
     } else if (Platform.isIOS)
     {

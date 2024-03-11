@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'package:fml/data/data.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/hive/log.dart' as hive_log;
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/system.dart';
 
 class Log
 {
@@ -41,7 +41,7 @@ class Log
       // if (kDebugMode) DialogService().show(type: DialogType.error, title: phrase.error, description: 'Exception: $exception Routine: $caller');
 
       // print in debug mode only
-      if (kDebugMode) print('Exception: $exception${caller != null ? ' -> $caller' : ''}');
+      if (FmlEngine.kDebugMode) print('Exception: $exception${caller != null ? ' -> $caller' : ''}');
 
       // add the entry
       hive_log.Log e = hive_log.Log(type: "exception", message: '$exception', caller: caller);
@@ -58,7 +58,7 @@ class Log
     try
     {
       // print in debug mode only
-      if (kDebugMode) print('Error: $message${caller != null ? ' -> $caller' : ''}');
+      if (FmlEngine.kDebugMode) print('Error: $message${caller != null ? ' -> $caller' : ''}');
 
       // add the entry
       hive_log.Log e = hive_log.Log(type: "error", message: message, caller: caller);
@@ -75,7 +75,7 @@ class Log
     try
     {
       // print in debug mode only
-      if (kDebugMode) print('Warning: $message${caller != null ? ' -> $caller' : ''}');
+      if (FmlEngine.kDebugMode) print('Warning: $message${caller != null ? ' -> $caller' : ''}');
 
       // add the entry
       hive_log.Log e = hive_log.Log(type: "warning", message: message, caller: caller);
@@ -92,7 +92,7 @@ class Log
     try
     {
       // print in debug mode only
-      if (kDebugMode) print('Info: $message${caller != null ? ' -> $caller' : ''}');
+      if (FmlEngine.kDebugMode) print('Info: $message${caller != null ? ' -> $caller' : ''}');
 
       // add the entry
       hive_log.Log e = hive_log.Log(type: "info", message: message, caller: caller);
@@ -108,7 +108,7 @@ class Log
   {
     try
     {
-      if (kDebugMode)
+      if (FmlEngine.kDebugMode)
       {
         print('Debug: $message${caller != null ? ' -> $caller' : ''}');
         hive_log.Log e = hive_log.Log(type: "debug", message: message, caller: caller);

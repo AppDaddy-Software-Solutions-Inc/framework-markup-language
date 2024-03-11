@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -131,7 +132,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
   {
     bool ok = true;
 
-    if (!isMobile)
+    if (!FmlEngine.isMobile)
     {
       System.toast("NFC is only available on mobile devices", duration: 4);
       return ok;
@@ -237,7 +238,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     /// setter
     if (scope == null) return null;
 
-    if (!isMobile)
+    if (!FmlEngine.isMobile)
     {
       System.toast("NFC is only available on mobile devices", duration: 4);
       statusmessage = "NFC is only available on mobile devices";

@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fml/log/manager.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 
@@ -43,6 +43,39 @@ class _SplashState extends State<Splash>
     return MaterialApp(debugShowCheckedModeBanner: false, title: '', home: _buildBody(constraints));
   }
 
+  Widget? _getSplashImage({required double width})
+  {
+    Widget? image;
+    try {
+      image = SvgPicture.asset("assets/images/splash.svg", width: width);
+    }
+    catch(e) {
+      image = null;
+    }
+    try {
+      if (image == null) image = Image.asset("assets/images/splash.gif", width: width);
+    }
+    catch(e) {
+      image = null;
+    }
+
+    // logo from package
+    try {
+      if (image == null) image = SvgPicture.asset("assets/images/splash.svg", package: FmlEngine.package, width: width);
+    }
+    catch(e) {
+      image = null;
+    }
+    try {
+      if (image == null) image = Image.asset("assets/images/splash.gif", package: FmlEngine.package, width: width);
+    }
+    catch(e) {
+      image = null;
+    }
+
+    return image;
+  }
+
   Widget _buildBody(BoxConstraints constraints)
   {
     // this set the initial splash image
@@ -52,21 +85,10 @@ class _SplashState extends State<Splash>
     var width = constraints.maxWidth - (constraints.maxWidth/(portrait ? 3 : 1.5));
     if (width > 500) width = 500;
 
-    dynamic svgLogo = Container();
-    dynamic gifLogo = Container();
-    try {
-      svgLogo = SvgPicture.asset("assets/images/splash.svg", width: width);
-    } catch(e)  {
-      Log().debug('$e');
-    }
-    try {
-      gifLogo = Image.asset("assets/images/splash.gif", width: width);
-    } catch(e) {
-      Log().debug('$e');
-    }
-    return Container(color: Colors.black, child: Stack(children: [
-      Center(child: gifLogo),
-      Center(child: svgLogo),
-    ]));
+    // get splash image
+    var image = _getSplashImage(width: width);
+
+    // return page
+    return Container(color: Colors.black, child: Center(child: image));
   }
 }

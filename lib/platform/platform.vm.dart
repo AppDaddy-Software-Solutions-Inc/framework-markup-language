@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:fml/fml.dart';
 import 'package:fml/helpers/mime.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
@@ -27,8 +28,8 @@ class Platform
   static Future<String?> get path async
   {
     // initialize the app root folder
-    if (isWeb) return null;
-    if (isMobile || (isDesktop && useragent == "macos")) return (await getApplicationDocumentsDirectory()).path;
+    if (FmlEngine.isWeb) return null;
+    if (FmlEngine.isMobile || (FmlEngine.isDesktop && useragent == "macos")) return (await getApplicationDocumentsDirectory()).path;
     return dirname(io.Platform.resolvedExecutable);
   }
 
@@ -247,7 +248,7 @@ class Platform
 
   static int getNavigationType() => 0;
 
-  static String get title => applicationTitle;
+  static String get title => FmlEngine.title;
 
   static void js2fml() {}
   static void fml2js({String? version}) {}

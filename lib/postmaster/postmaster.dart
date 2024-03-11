@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/datasources/http/http.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/hive/form.dart' as hive_pack;
 import 'package:fml/hive/post.dart' as hive_pack;
 import 'package:fml/observable/binding.dart';
@@ -87,7 +88,7 @@ class PostMaster
   Future<bool> start() async
   {
     // not in web
-    if (isWeb) return true;
+    if (FmlEngine.isWeb) return true;
     bool ok = await _post();
     return ok;
   }

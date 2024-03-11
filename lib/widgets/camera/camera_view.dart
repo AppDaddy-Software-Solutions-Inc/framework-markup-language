@@ -3,8 +3,8 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:camera/camera.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:fml/data/data.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
@@ -191,7 +191,7 @@ class CameraViewState extends WidgetState<CameraView>
 
       // a bug in the desktop controller causes the
       // program to crash if re-initialized;
-      if (isDesktop && controller != null)
+      if (FmlEngine.isDesktop && controller != null)
       {
         setState(() {});
         return;
@@ -242,11 +242,11 @@ class CameraViewState extends WidgetState<CameraView>
 
         // default the format
         var format = ImageFormatGroup.yuv420;
-        if (kIsWeb) format = ImageFormatGroup.jpeg;
+        if (FmlEngine.isWeb) format = ImageFormatGroup.jpeg;
 
         // default the resolution
         ResolutionPreset resolution = toEnum(widget.model.resolution, ResolutionPreset.values) ?? ResolutionPreset.medium;
-        if (widget.model.stream) resolution = (kIsWeb) ? ResolutionPreset.medium : ResolutionPreset.low;
+        if (widget.model.stream) resolution = (FmlEngine.isWeb) ? ResolutionPreset.medium : ResolutionPreset.low;
 
         // build the controller
         controller = CameraController(camera, resolution, imageFormatGroup: format, enableAudio: false);
@@ -338,7 +338,7 @@ class CameraViewState extends WidgetState<CameraView>
         // start stream
         if (widget.model.stream)
         {
-          if (!isDesktop) {
+          if (!FmlEngine.isDesktop) {
             controller!.startImageStream((stream) => onStream(stream, camera));
           } else {
             Log().error('Streaming is not yet supported on desktop');
@@ -553,7 +553,7 @@ class CameraViewState extends WidgetState<CameraView>
     children.add(view);
 
     // hack to initialize background camera stream. current camera widget doesn't support streaming in web
-    if ((kIsWeb) && (widget.model.stream) && (backgroundStream == null)) {
+    if ((FmlEngine.isWeb) && (widget.model.stream) && (backgroundStream == null)) {
       backgroundStream = StreamView(widget.model);
       if (backgroundStream != null) {
         children.add(Offstage(child: backgroundStream as Widget?));

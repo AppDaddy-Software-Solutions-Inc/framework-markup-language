@@ -28,11 +28,11 @@ class Reader
   {
     try
     {
-      methodChannel ??= MethodChannel('co.appdaddy.fml/command');
-      scanChannel ??= EventChannel('co.appdaddy.fml/scan');
+      methodChannel ??= MethodChannel('dev.fml.zebra/command');
+      scanChannel ??= EventChannel('dev.fml.zebra/scan');
 
       scanChannel!.receiveBroadcastStream().listen(_onEvent, onError: _onError);
-      _send("com.symbol.datawedge.api.CREATEPROFILE", "co.appdaddy.fml");
+      _send("com.symbol.datawedge.api.CREATEPROFILE", "dev.fml.zebra");
     }
     catch(e)
     {

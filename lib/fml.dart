@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:fml/theme/theme.dart';
 import 'dart:io' as io;
 
-enum ApplicationTypes { singleApp, multiApp }
+enum _ApplicationTypes { singleApp, multiApp }
 
 /// The FML Engine
 class FmlEngine
@@ -49,8 +49,9 @@ class FmlEngine
   static String get title => _title;
 
   // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-  static late ApplicationTypes _type;
-  static ApplicationTypes get type => _type;
+  static late _ApplicationTypes _type;
+  static bool get isMultiApp  => _type == _ApplicationTypes.multiApp;
+  static bool get isSingleApp => _type == _ApplicationTypes.singleApp;
 
   // splash screen background color
   static late Color _splashScreenColor;
@@ -73,8 +74,8 @@ class FmlEngine
     // application title
     String title = "My Application Title",
 
-    // application type = multiApp types launch the store on startup for desktop and mobile
-    ApplicationTypes type = ApplicationTypes.multiApp,
+    // app store - ignored on web. on desktop and mobile, store is launch if true
+    bool store = true,
 
     // splash screen color
     Color splashScreenColor = Colors.black})
@@ -85,7 +86,7 @@ class FmlEngine
     FmlEngine._domain = domain;
     FmlEngine._title = title;
     FmlEngine._version = version;
-    FmlEngine._type = type;
+    FmlEngine._type = (store && !isWeb) ? _ApplicationTypes.multiApp : _ApplicationTypes.singleApp;
     FmlEngine._splashScreenColor = splashScreenColor;
 
     // mark initialized

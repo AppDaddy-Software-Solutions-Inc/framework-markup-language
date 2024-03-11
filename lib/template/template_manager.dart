@@ -210,7 +210,7 @@ class TemplateManager
     if (result.isFail) result = await _fromDisk(url);
 
     // return the error page
-    if (result.isFail) fetchErrorTemplate(result);
+    if (result.isFail) return fetchErrorTemplate(result);
 
     // parse the template
     if (result.isSuccess) result = _parse(result.template);

@@ -2,8 +2,8 @@
 
 	<HEADER height="46" color="blue">
 		<ROW halign="between" valign="center" height="46">
-			<BTN onclick="back()" width="40">
-				<ICON icon="chevron_left" color="white"/>
+			<BTN onclick="back()">
+				<ICON icon="chevron_left" color="white" size="36"/>
 			</BTN>
 			<TEXT value="Counter App" size="20" color="white"/>
 			<PAD right="40"/>

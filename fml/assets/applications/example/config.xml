@@ -2,7 +2,7 @@
     <CONFIG>
 
         <!-- Settings -->
-        <APPLICATION_NAME 		value="SAMPLE APP" />
+        <APPLICATION_NAME 		value="EXAMPLE APP" />
         <APP_ICON	 			value="images/logo.png" />
         <HOME_PAGE       		value="templates/main.xml" />
         <LOGIN_PAGE             value=""/>

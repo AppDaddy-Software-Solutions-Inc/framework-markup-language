@@ -387,7 +387,7 @@ class AppFormState extends State<AppForm>
     var buttons = Padding(padding: const EdgeInsets.only(top: 10.0, bottom: 10),child: Align(alignment: Alignment.bottomCenter, child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [cancel,connect])));
     layout.add(buttons);
 
-    var b = BusyModel(Store(), visible: (busy.get() ?? false), observable: busy, modal: false, color: Colors.amberAccent).getView();
+    var b = BusyModel(Store(), visible: (busy.get() ?? false), observable: busy, modal: false).getView();
     var form = Form(key: _formKey, child: Column(children: layout, mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.start));
 
     return Stack(fit: StackFit.passthrough, children: [form,b]);

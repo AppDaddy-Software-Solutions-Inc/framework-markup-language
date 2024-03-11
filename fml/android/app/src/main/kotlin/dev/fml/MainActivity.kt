@@ -1,4 +1,7 @@
-package co.appdaddy.fml
+package dev.fml
+
+import dev.fml.zebra.ZebraInterface
+import dev.fml.zebra.ZebraScan
 
 import android.content.*
 import android.os.Bundle
@@ -16,17 +19,16 @@ import java.util.*
 import android.util.*
 import java.util.ArrayList
 
-
 //  This sample implementation is heavily based on the flutter demo at
 //  https://github.com/flutter/flutter/blob/master/examples/platform_channel/android/app/src/main/java/com/example/platformchannel/MainActivity.java
 
 class MainActivity: FlutterActivity() {
-    private val COMMAND_CHANNEL = "co.appdaddy.fml/command"
-    private val SCAN_CHANNEL = "co.appdaddy.fml/scan"
-    private val PROFILE_INTENT_ACTION = "co.appdaddy.fml.SCAN"
+    private val COMMAND_CHANNEL = "dev.fml.zebra/command"
+    private val SCAN_CHANNEL = "dev.fml.zebra/scan"
+    private val PROFILE_INTENT_ACTION = "dev.fml.zebra.SCAN"
     private val PROFILE_INTENT_BROADCAST = "2"
 
-    private val dwInterface = DWInterface()
+    private val zebraInterface = ZebraInterface()
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine)
@@ -37,10 +39,9 @@ class MainActivity: FlutterActivity() {
                         dataWedgeBroadcastReceiver = createDataWedgeBroadcastReceiver(events)
                         val intentFilter = IntentFilter()
                         intentFilter.addAction(PROFILE_INTENT_ACTION)
-                        intentFilter.addAction(DWInterface.DATAWEDGE_RETURN_ACTION)
-                        intentFilter.addCategory(DWInterface.DATAWEDGE_RETURN_CATEGORY)
-                        registerReceiver(
-                                dataWedgeBroadcastReceiver, intentFilter)
+                        intentFilter.addAction(ZebraInterface.DATAWEDGE_RETURN_ACTION)
+                        intentFilter.addCategory(ZebraInterface.DATAWEDGE_RETURN_CATEGORY)
+                        registerReceiver(dataWedgeBroadcastReceiver, intentFilter)
                     }
 
                     override fun onCancel(arguments: Any?) {
@@ -61,7 +62,7 @@ class MainActivity: FlutterActivity() {
 
                 if (command == "com.symbol.datawedge.api.CREATEPROFILE")
                     createDataWedgeProfile(parameter)
-                else dwInterface.sendCommandString(applicationContext, command, parameter)
+                else zebraInterface.sendCommandString(applicationContext, command, parameter)
             }
             else result.notImplemented()
         }
@@ -73,15 +74,15 @@ class MainActivity: FlutterActivity() {
                 if (intent.action.equals(PROFILE_INTENT_ACTION))
                 {
                     //  A barcode has been scanned
-                    var source  = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_SOURCE).toString()
-                    var barcode = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_DATA_STRING).toString()
-                    var format  = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_LABEL_TYPE).toString()
+                    var source  = intent.getStringExtra(ZebraInterface.DATAWEDGE_SCAN_EXTRA_SOURCE).toString()
+                    var barcode = intent.getStringExtra(ZebraInterface.DATAWEDGE_SCAN_EXTRA_DATA_STRING).toString()
+                    var format  = intent.getStringExtra(ZebraInterface.DATAWEDGE_SCAN_EXTRA_LABEL_TYPE).toString()
 
                     var date    = Calendar.getInstance().getTime()
                     var df      = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                     var dateTimeString = df.format(date)
 
-                    var currentScan = Scan(source, barcode, format, dateTimeString);
+                    var currentScan = ZebraScan(source, barcode, format, dateTimeString);
                     var data = currentScan.toJson();
 
                     // send the result
@@ -94,7 +95,7 @@ class MainActivity: FlutterActivity() {
     private fun createDataWedgeProfile(profileName: String)
     {
         //  create and configure the DataWedge profile associated with this application
-        dwInterface.sendCommandString(this, DWInterface.DATAWEDGE_SEND_CREATE_PROFILE, profileName)
+        zebraInterface.sendCommandString(this, ZebraInterface.DATAWEDGE_SEND_CREATE_PROFILE, profileName)
 
         // configure the DataWedge profile
         val dwProfile = Bundle()
@@ -170,10 +171,10 @@ class MainActivity: FlutterActivity() {
         dwProfile.putParcelableArrayList("PLUGIN_CONFIG", plugins);
 
         // update the profile
-        dwInterface.sendCommandBundle(this, DWInterface.DATAWEDGE_SEND_SET_CONFIG, dwProfile)
+        zebraInterface.sendCommandBundle(this, ZebraInterface.DATAWEDGE_SEND_SET_CONFIG, dwProfile)
 
         // this enables the scanner
         // hack to fix scanner not enabled
-        dwInterface.sendCommandString(this, DWInterface.DATAWEDGE_SEND_SCANNER_COMMAND, "ENABLE_PLUGIN")
+        zebraInterface.sendCommandString(this, ZebraInterface.DATAWEDGE_SEND_SCANNER_COMMAND, "ENABLE_PLUGIN")
     }
 }

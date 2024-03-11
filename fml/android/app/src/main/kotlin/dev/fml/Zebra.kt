@@ -1,10 +1,11 @@
-package co.appdaddy.fml
+package dev.fml.zebra
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import org.json.JSONObject;
 
-class DWInterface() {
+class ZebraInterface() {
     companion object {
         const val DATAWEDGE_SEND_ACTION = "com.symbol.datawedge.api.ACTION"
         const val DATAWEDGE_RETURN_ACTION = "com.symbol.datawedge.api.RESULT_ACTION"
@@ -32,5 +33,17 @@ class DWInterface() {
         dwIntent.action = DATAWEDGE_SEND_ACTION
         dwIntent.putExtra(command, parameter)
         context.sendBroadcast(dwIntent)
+    }
+}
+
+class ZebraScan(val source: String, val barcode: String, val format: String, val date: String)
+{
+    fun toJson(): String{
+        return JSONObject(mapOf(
+            "source"  to this.source,
+            "barcode" to this.barcode,
+            "format"  to this.format,
+            "date"    to this.date
+        )).toString();
     }
 }

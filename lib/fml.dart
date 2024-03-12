@@ -6,7 +6,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/splash/splash.dart';
 import 'package:fml/system.dart';
-import 'package:fml/theme/themenotifier.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/theme/theme.dart';
 import 'dart:io' as io;
@@ -138,13 +137,12 @@ class FmlEngine
   {
     try
     {
-      var font = System.theme.font;
-      return ThemeNotifier(MyTheme().deriveTheme(System.theme.colorScheme, googleFont: font));
+      return ThemeNotifier(ThemeNotifier.from(System.theme.colorScheme, googleFont: System.theme.font));
     }
     catch(e)
     {
       Log().debug('Init Theme Error: $e \n(Configured fonts from https://fonts.google.com/ are case sensitive)');
-      return ThemeNotifier(MyTheme().deriveTheme(System.theme.colorScheme));
+      return ThemeNotifier(ThemeNotifier.from(System.theme.colorScheme));
     }
   }
 

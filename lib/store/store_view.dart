@@ -1,9 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:flutter/cupertino.dart';
 import 'package:fml/application/application_model.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/observable/observables/boolean.dart';
-import 'package:fml/theme/themenotifier.dart';
+import 'package:fml/theme/theme.dart';
 import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
@@ -36,7 +35,6 @@ class StoreView extends StatefulWidget
 
 class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin implements IModelListener, INavigatorObserver
 {
-  final bool _visible = false;
   late InputModel appURLInput;
 
   RoundedRectangleBorder rrbShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(8));
@@ -100,21 +98,21 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
   {
     // build menu items
     widget.model.items = [];
-    var apps = Store().getApps();
-    for (var app in apps)
+    for (var app in Store().getApps())
     {
-      var item = MenuItemModel(widget.model, app.id, url: app.url, title: app.title, subtitle: '', icon: app.icon == null ? 'appdaddy' : null, image: app.icon, onTap: () => _launchApp(app), onLongPress: () => removeApp(app));
+      var item = MenuItemModel(widget.model, app.id,
+          url: app.url,
+          title: app.title,
+          icon: app.icon == null ? 'appdaddy' : null,
+          image: app.icon,
+          onTap: () => Store().launch(app, context),
+          onLongPress: () => removeApp(app));
+
       widget.model.items.add(item);
     }
 
     // store menu
     Widget store = MenuView(widget.model);
-
-    Widget noapps = Center(
-        child: AnimatedOpacity(
-            opacity: _visible ? 1.0 : 0.0,
-            duration: Duration(milliseconds: 200),
-            child: Text(phrase.clickToConnect, style: TextStyle(color: Theme.of(context).colorScheme.outline))));
 
     var addButton = FloatingActionButton.extended(
         label: Text(phrase.addApp),
@@ -140,16 +138,15 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     var busy = Center(child: BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true).getView());
 
     var privacyUri    = Uri(scheme: 'https', host: 'fml.dev' , path: '/privacy.html');
-    var privacyText   = Text(phrase.privacyPolicy, style: TextStyle(color: Colors.blueAccent, decoration: TextDecoration.underline));
+    var privacyText   = Text(phrase.privacyPolicy);
     var privacyButton = InkWell(child: privacyText, onTap: () => launchUrl(privacyUri));
 
-    var version = Text('${phrase.version} ${FmlEngine.version}', style: TextStyle(color: Colors.black26));
+    var version = Text('${phrase.version} ${FmlEngine.version}');
 
     var text = Column(mainAxisSize: MainAxisSize.min, children: [privacyButton,version]);
-    var view = Center(child: apps.isEmpty ? noapps : store);
     var button = Store().busy ? busyButton : addButton;
 
-    var scaffold = Scaffold(floatingActionButton: button, body: SafeArea(child: Stack(children: [view, Positioned(child: text, left: 10, bottom: 10), busy])));
+    var scaffold = Scaffold(floatingActionButton: button, body: SafeArea(child: Stack(children: [Center(child: store), Positioned(child: text, left: 10, bottom: 10), busy])));
 
     return WillPopScope(onWillPop: () => quitDialog().then((value) => value as bool), child: scaffold);
   }
@@ -164,7 +161,9 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
         return StatefulBuilder(builder: (context, setState)
         {
           return AlertDialog(
-            title: Row(children: [Text(phrase.connectAnApplication, style: TextStyle(color: Theme.of(context).colorScheme.primary)), Padding(padding: EdgeInsets.only(left: 20)), BusyView(BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, size: 14))]),
+            title: Row(children: [Text(phrase.connectAnApplication, style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+              Padding(padding: EdgeInsets.only(left: 20)),
+              BusyView(BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, size: 14))]),
             content: Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: AppForm()),
             contentPadding: EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 2.0),
             insetPadding: EdgeInsets.zero,
@@ -243,11 +242,6 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
         );
       },
     );
-  }
-
-  _launchApp(ApplicationModel app) async
-  {
-    Store().launch(app, context);
   }
 }
 
@@ -375,11 +369,18 @@ class AppFormState extends State<AppForm>
   @override
   Widget build(BuildContext context)
   {
-    var name =  TextFormField(validator: _validateTitle, decoration: InputDecoration(labelText: "Application Name", labelStyle: TextStyle(color: Colors.grey, fontSize: 12), fillColor: Colors.white,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide())));
+    var nameDecoration = InputDecoration(labelText: "Application Name",
+        labelStyle: TextStyle(fontSize: 12),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide()));
 
-    var url = TextFormField(controller: urlController, validator: _validateUrl, keyboardType: TextInputType.url, decoration: InputDecoration(labelText: "Application Address (https://mysite.com)", labelStyle: TextStyle(color: Colors.grey, fontSize: 12),
-        fillColor: Colors.white, border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide())));
+    var name = TextFormField(validator: _validateTitle, decoration: nameDecoration);
+
+    var addressDecoration = InputDecoration(
+        labelText: "Application Address (https://mysite.com)",
+        labelStyle: TextStyle(fontSize: 12),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide()));
+
+    var url = TextFormField(controller: urlController, validator: _validateUrl, keyboardType: TextInputType.url, decoration: addressDecoration);
 
     var cancel = TextButton(child: Text(phrase.cancel),  onPressed: () => Navigator.of(context).pop());
 

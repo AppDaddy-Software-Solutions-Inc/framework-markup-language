@@ -11,8 +11,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
     //String domain = 'https://test.appdaddy.co';
     String domain = 'file://fmlpad';
+    //String domain = 'file://example'
+
     // String domain = 'http://10.69.4.245:81';
     // String domain = 'http://10.67.130.75:8081';
     // String domain = 'http://10.69.4.149:81';
@@ -29,7 +32,7 @@ class MyApp extends StatelessWidget {
         version: version,
         multiApp: true,
         color: Colors.lightBlue,
-        brightness: Brightness.light,
-        splashBackgroundColor: Colors.yellow).launch();
+        brightness: Brightness.dark,
+        splashBackgroundColor: Colors.black).launch();
   }
 }

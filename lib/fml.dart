@@ -10,6 +10,7 @@ import 'package:fml/theme/themenotifier.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/theme/theme.dart';
 import 'dart:io' as io;
+import 'helpers/string.dart';
 
 enum _ApplicationTypes { singleApp, multiApp }
 
@@ -53,12 +54,17 @@ class FmlEngine
   static bool get isMultiApp  => _type == _ApplicationTypes.multiApp;
   static bool get isSingleApp => _type == _ApplicationTypes.singleApp;
 
-  // splash screen background color
-  static late Color _splashScreenColor;
-  static Color get splashScreenColor => _splashScreenColor;
-
   // if the engine has been initialized
   static bool _initialized = false;
+
+  static late Brightness _brightness;
+  static String get defaultBrightness => _brightness == Brightness.light ? 'light' : 'dark';
+
+  static late Color _color;
+  static String get defaultColor => toStr(_color)!;
+
+  static late Color? _splashBackgroundColor;
+  static Color? get splashBackgroundColor => _splashBackgroundColor;
 
   static final FmlEngine _singleton =  FmlEngine._init();
   factory FmlEngine({
@@ -74,11 +80,19 @@ class FmlEngine
     // application title
     String title = "My Application Title",
 
-    // app store - ignored on web. on desktop and mobile, store is launch if true
-    bool store = true,
+    // multi app - ignored on web. on desktop and mobile
+    // launches the front page store app on start for multiApp.
+    bool multiApp = true,
 
-    // splash screen color
-    Color splashScreenColor = Colors.black})
+    // default theme color on startup
+    Color color = Colors.lightBlue,
+
+    // default theme brightness on startup
+    Brightness brightness = Brightness.light,
+
+    // splash screen background color
+    Color? splashBackgroundColor,
+  })
   {
     if (FmlEngine._initialized) return _singleton;
 
@@ -86,8 +100,10 @@ class FmlEngine
     FmlEngine._domain = domain;
     FmlEngine._title = title;
     FmlEngine._version = version;
-    FmlEngine._type = (store && !isWeb) ? _ApplicationTypes.multiApp : _ApplicationTypes.singleApp;
-    FmlEngine._splashScreenColor = splashScreenColor;
+    FmlEngine._type = (multiApp && !isWeb) ? _ApplicationTypes.multiApp : _ApplicationTypes.singleApp;
+    FmlEngine._color = color;
+    FmlEngine._brightness = brightness;
+    FmlEngine._splashBackgroundColor = splashBackgroundColor;
 
     // mark initialized
     FmlEngine._initialized = true;
@@ -110,7 +126,7 @@ class FmlEngine
     var engine = ChangeNotifierProvider<ThemeNotifier>(child: Application(key: FmlEngine.key), create: (_) => _setTheme());
 
     // splash screen
-    var splash = Container(color: splashScreenColor, child: Splash(key: UniqueKey(), onInitializationComplete: () => runApp(engine)));
+    var splash = Splash(key: UniqueKey(), onInitializationComplete: () => runApp(engine));
 
     // launch the splash screen
     runApp(splash);

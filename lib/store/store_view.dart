@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter/cupertino.dart';
 import 'package:fml/application/application_model.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/observable/observables/boolean.dart';
@@ -14,7 +15,6 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/store/store_model.dart';
-import 'package:fml/widgets/button/button_model.dart';
 import 'package:fml/widgets/input/input_model.dart';
 import 'package:fml/widgets/menu/menu_view.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
@@ -27,6 +27,7 @@ final bool enableTestPlayground = false;
 
 class StoreView extends StatefulWidget
 {
+  final MenuModel model = MenuModel(null, 'Applications');
   StoreView();
 
   @override
@@ -37,9 +38,6 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
 {
   final bool _visible = false;
   late InputModel appURLInput;
-  ButtonModel? storeButton;
-  MenuModel menuModel = MenuModel(null, 'Application Menu');
-  Widget? storeDisplay;
 
   RoundedRectangleBorder rrbShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(8));
 
@@ -100,48 +98,60 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
   @override
   Widget build(BuildContext context)
   {
-    var busy = Store().busy;
-
     // build menu items
-    menuModel.items = [];
+    widget.model.items = [];
     var apps = Store().getApps();
     for (var app in apps)
     {
-      var item = MenuItemModel(menuModel, app.id, url: app.url, title: app.title, subtitle: '', icon: app.icon == null ? 'appdaddy' : null, image: app.icon, onTap: () => _launchApp(app), onLongPress: () => removeApp(app));
-      menuModel.items.add(item);
+      var item = MenuItemModel(widget.model, app.id, url: app.url, title: app.title, subtitle: '', icon: app.icon == null ? 'appdaddy' : null, image: app.icon, onTap: () => _launchApp(app), onLongPress: () => removeApp(app));
+      widget.model.items.add(item);
     }
 
-    Widget storeDisplay = MenuView(menuModel);
+    // store menu
+    Widget store = MenuView(widget.model);
 
-    storeButton = ButtonModel(null, null, enabled: !isNullOrEmpty(appURLInput.value), label: phrase.loadApp, buttontype: "raised", color: Theme.of(context).colorScheme.secondary);
-
-    Widget noAppDisplay = Center(
+    Widget noapps = Center(
         child: AnimatedOpacity(
             opacity: _visible ? 1.0 : 0.0,
             duration: Duration(milliseconds: 200),
-            child: Text(phrase.clickToConnect, style: TextStyle(color: Theme.of(context).colorScheme.outline)))
-    );
+            child: Text(phrase.clickToConnect, style: TextStyle(color: Theme.of(context).colorScheme.outline))));
 
-    return WillPopScope(onWillPop: () => quitDialog().then((value) => value as bool),
-        child: Scaffold(
-            floatingActionButton: !busy
-                ? FloatingActionButton.extended(label: Text('Add App'), icon: Icon(Icons.add), onPressed: () => addAppDialog(), foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary, shape: rrbShape)
-                : FloatingActionButton.extended(onPressed: null, foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary, label: Text('Loading Apps'), shape: rrbShape),
-            body: SafeArea(child: Stack(children: [Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomRight, end: Alignment.topLeft, stops: [0.4, 1.0], colors: [/*Theme.of(context).colorScheme.inversePrimary*/Theme.of(context).colorScheme.surfaceVariant, Theme.of(context).colorScheme.surface])),),
-              Center(child: Opacity(opacity: 0.03, child: Image(image: AssetImage('assets/images/logo.png', package: FmlEngine.package)))),
-              Center(child: apps.isEmpty ? noAppDisplay : storeDisplay),
-              Align(alignment: Alignment.bottomLeft, child: Column(mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(padding: EdgeInsets.only(left: 5), child: InkWell(
-                      child: Text('Privacy Policy', style: TextStyle(color: Colors.blueAccent, decoration: TextDecoration.underline)),
-                      onTap: () => launchUrl(Uri(scheme: 'https', host: 'fml.dev' , path: '/privacy.html'))
-                  ),),
-                  Padding(padding: EdgeInsets.only(left: 5), child: Text('${phrase.version} ${FmlEngine.version}', style: TextStyle(color: Colors.black26)))
-                ],
-              ),),
-              Center(child: BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true).getView())]))
-        )
-    );
+    var addButton = FloatingActionButton.extended(
+        label: Text(phrase.addApp),
+        icon: Icon(Icons.add),
+        onPressed: () => addAppDialog(),
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+        splashColor: Theme.of(context).colorScheme.inversePrimary,
+        hoverColor: Theme.of(context).colorScheme.surface,
+        focusColor: Theme.of(context).colorScheme.inversePrimary,
+        shape: rrbShape);
+
+    var busyButton = FloatingActionButton.extended(
+        label: Text(phrase.loadApp),
+        onPressed: null,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+        splashColor: Theme.of(context).colorScheme.inversePrimary,
+        hoverColor: Theme.of(context).colorScheme.surface,
+        focusColor: Theme.of(context).colorScheme.inversePrimary,
+        shape: rrbShape);
+
+    var busy = Center(child: BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true).getView());
+
+    var privacyUri    = Uri(scheme: 'https', host: 'fml.dev' , path: '/privacy.html');
+    var privacyText   = Text(phrase.privacyPolicy, style: TextStyle(color: Colors.blueAccent, decoration: TextDecoration.underline));
+    var privacyButton = InkWell(child: privacyText, onTap: () => launchUrl(privacyUri));
+
+    var version = Text('${phrase.version} ${FmlEngine.version}', style: TextStyle(color: Colors.black26));
+
+    var text = Column(mainAxisSize: MainAxisSize.min, children: [privacyButton,version]);
+    var view = Center(child: apps.isEmpty ? noapps : store);
+    var button = Store().busy ? busyButton : addButton;
+
+    var scaffold = Scaffold(floatingActionButton: button, body: SafeArea(child: Stack(children: [view, Positioned(child: text, left: 10, bottom: 10), busy])));
+
+    return WillPopScope(onWillPop: () => quitDialog().then((value) => value as bool), child: scaffold);
   }
 
   Future<void> addAppDialog() async {

@@ -20,7 +20,16 @@ class MyApp extends StatelessWidget {
     // String domain = 'http://ludapsweb.ec.goodyear.com:8081';
     // String domain = 'http://tpkapsweb.tpk.goodyear.com:8081';
 
+    var version = "3.0.0";
+
     // launch the FML engine
-    return FmlEngine(domain: domain, store: true, title: "Flutter Markup Language V3.0.0", version: "3.0.0").launch();
+    return FmlEngine(
+        domain: domain,
+        title: "Flutter Markup Language V$version",
+        version: version,
+        multiApp: true,
+        color: Colors.lightBlue,
+        brightness: Brightness.light,
+        splashBackgroundColor: Colors.yellow).launch();
   }
 }

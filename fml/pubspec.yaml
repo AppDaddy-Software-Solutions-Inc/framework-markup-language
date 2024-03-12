@@ -25,6 +25,7 @@ flutter:
 
   assets:
     - assets/
+    - assets/images/
     - assets/applications/
 
     # counter app

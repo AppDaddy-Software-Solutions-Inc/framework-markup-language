@@ -4,6 +4,7 @@ import 'package:fml/fml.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 
+
 class Splash extends StatefulWidget
 {
   final VoidCallback? onInitializationComplete;
@@ -43,52 +44,25 @@ class _SplashState extends State<Splash>
     return MaterialApp(debugShowCheckedModeBanner: false, title: '', home: _buildBody(constraints));
   }
 
-  Widget? _getSplashImage({required double width})
+  Widget? _getSplashImage(BoxConstraints constraints)
   {
-    Widget? image;
-    try {
-      image = SvgPicture.asset("assets/images/splash.svg", width: width);
-    }
-    catch(e) {
-      image = null;
-    }
-    try {
-      if (image == null) image = Image.asset("assets/images/splash.gif", width: width);
-    }
-    catch(e) {
-      image = null;
-    }
+    // splash image - splash.gif, if not found, then splash.svg
+    Widget image = Image.asset("images/splash.gif", errorBuilder: (a,b,c) => SvgPicture.asset("images/splash.svg"));
 
-    // logo from package
-    try {
-      if (image == null) image = SvgPicture.asset("assets/images/splash.svg", package: FmlEngine.package, width: width);
-    }
-    catch(e) {
-      image = null;
-    }
-    try {
-      if (image == null) image = Image.asset("assets/images/splash.gif", package: FmlEngine.package, width: width);
-    }
-    catch(e) {
-      image = null;
-    }
+    // constrain the image
+    var portrait = (constraints.maxWidth < constraints.maxHeight);
+    double? width = constraints.maxWidth - (constraints.maxWidth/(portrait ? 3 : 1.5));
+    if (width > 400) image = Container(child: image, constraints: BoxConstraints(maxWidth: width, maxHeight: constraints.maxHeight));
 
     return image;
   }
 
   Widget _buildBody(BoxConstraints constraints)
   {
-    // this set the initial splash image
-    // on web, it uses the loading.gif image
-    var portrait = (constraints.maxWidth < constraints.maxHeight);
-
-    var width = constraints.maxWidth - (constraints.maxWidth/(portrait ? 3 : 1.5));
-    if (width > 500) width = 500;
-
     // get splash image
-    var image = _getSplashImage(width: width);
+    var image = _getSplashImage(constraints);
 
     // return page
-    return Container(color: Colors.black, child: Center(child: image));
+    return Container(color: FmlEngine.splashBackgroundColor, child: Center(child: image));
   }
 }

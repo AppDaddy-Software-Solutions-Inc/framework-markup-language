@@ -3,7 +3,7 @@ import 'package:fml/application/application_manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/navigation/parser.dart';
 import 'package:fml/system.dart';
-import 'package:fml/theme/themenotifier.dart';
+import 'package:fml/theme/theme.dart';
 import 'package:provider/provider.dart';
 
 class Application extends StatelessWidget

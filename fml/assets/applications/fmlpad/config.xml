@@ -3,9 +3,9 @@
 
         <!-- Settings -->
         <APP_NAME 		        value="FmlPad" />
-        <APP_ICON	 			value="fmlpad.png" />
+        <APP_ICON	 			value="images/fmlpad.png" />
 
-        <HOME_PAGE       		value="fmlpad.xml" />
+        <HOME_PAGE       		value="templates/fmlpad.xml" />
         <LOGIN_PAGE             value=""/>
         <UNAUTHORIZED_PAGE      value=""/>
         <MIRROR_API 	        value="" />

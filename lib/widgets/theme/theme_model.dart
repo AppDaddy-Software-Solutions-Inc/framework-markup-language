@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
@@ -10,8 +11,8 @@ import 'package:fml/helpers/helpers.dart';
 
 class ThemeModel extends DecoratedWidgetModel 
 {
-  static String defaultBrightness = "light";
-  static String defaultColor = "lightblue";
+  static String defaultBrightness = FmlEngine.defaultBrightness;
+  static String defaultColor = FmlEngine.defaultColor;
 
   static String myId = 'THEME';
 

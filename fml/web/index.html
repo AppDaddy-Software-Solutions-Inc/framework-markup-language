@@ -26,11 +26,11 @@
     <!-- iOS meta tags & icons -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <link rel="apple-touch-icon" href="assets/assets/images/Icon-192.png">
+    <link href="assets/assets/images/icon-192.png" rel="apple-touch-icon">
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/packages/fml/assets/images/favicon.png"/>
-    <link rel="shortcut icon" type="image/png" href="assets/packages/fml/assets/images/favicon.png"/>
+    <!-- icon -->
+    <link href="assets/assets/images/icon.png" rel="icon" />
+    <link href="assets/assets/images/icon.png" rel="shortcut icon" />
 
     <link rel="manifest" href="manifest.json">
 
@@ -76,7 +76,7 @@
         iosmeta.content = title;
         document.head.appendChild(iosmeta);
 
-        // add google maps
+        // uncomment to add google maps and supply your api key in place of <your api key here>
         // var script   = document.createElement("script");
         // script.type  = "text/javascript";
         // script.src   = "https://maps.googleapis.com/maps/api/js?key=<your api key here>";
@@ -97,11 +97,8 @@
     <!-- Local Scripts -->
     <script src="local.js"></script>
 
-</head>
-
-<body bgcolor="black">
-
-    <style type="text/css">
+    <!-- Loading image and text (see body) styles -->
+    <style>
         .centered
         {
             position: fixed;
@@ -118,12 +115,18 @@
             color:white;
         }
     </style>
+</head>
 
-    <!-- modify loadingImage here. Also, make sure you change <body bgcolor="black"> to the correct background color -->
-    <img id="loadingImage" class="centered" alt="Flutter Markup Language" src="assets/packages/fml/assets/images/loading.gif"/>
+<body style="background-color:black;">
 
-    <!-- uncomment the loadingText.textContent lines if you wish to display text overlaid on the loading image -->
-    <p id="loadingText" class="centered text"/>
+    <!-- Loading Image. Make sure you change <body style="background-color:black;"> to the correct background color to fit the loading image -->
+    <img id="loadingImage" class="centered" alt="Flutter Markup Language" src="assets/assets/images/loading.gif"/>
+
+    <!-- Loading Text -->
+    <p id="loadingText" class="centered text">
+        <!-- uncomment below if you want to show loading text -->
+        <!-- Loading FML Engine ... -->
+    </p>
 
     <script>
         // Set Flutter Renderer

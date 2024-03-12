@@ -6,12 +6,12 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/splash/splash.dart';
 import 'package:fml/system.dart';
-import 'package:fml/theme/themenotifier.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/theme/theme.dart';
 import 'dart:io' as io;
+import 'helpers/string.dart';
 
-enum ApplicationTypes { singleApp, multiApp }
+enum _ApplicationTypes { singleApp, multiApp }
 
 /// The FML Engine
 class FmlEngine
@@ -49,15 +49,21 @@ class FmlEngine
   static String get title => _title;
 
   // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-  static late ApplicationTypes _type;
-  static ApplicationTypes get type => _type;
-
-  // splash screen background color
-  static late Color _splashScreenColor;
-  static Color get splashScreenColor => _splashScreenColor;
+  static late _ApplicationTypes _type;
+  static bool get isMultiApp  => _type == _ApplicationTypes.multiApp;
+  static bool get isSingleApp => _type == _ApplicationTypes.singleApp;
 
   // if the engine has been initialized
   static bool _initialized = false;
+
+  static late Brightness _brightness;
+  static String get defaultBrightness => _brightness == Brightness.light ? 'light' : 'dark';
+
+  static late Color _color;
+  static String get defaultColor => toStr(_color)!;
+
+  static late Color? _splashBackgroundColor;
+  static Color? get splashBackgroundColor => _splashBackgroundColor;
 
   static final FmlEngine _singleton =  FmlEngine._init();
   factory FmlEngine({
@@ -73,11 +79,19 @@ class FmlEngine
     // application title
     String title = "My Application Title",
 
-    // application type = multiApp types launch the store on startup for desktop and mobile
-    ApplicationTypes type = ApplicationTypes.multiApp,
+    // multi app - ignored on web. on desktop and mobile
+    // launches the front page store app on start for multiApp.
+    bool multiApp = true,
 
-    // splash screen color
-    Color splashScreenColor = Colors.black})
+    // default theme color on startup
+    Color color = Colors.lightBlue,
+
+    // default theme brightness on startup
+    Brightness brightness = Brightness.light,
+
+    // splash screen background color
+    Color? splashBackgroundColor,
+  })
   {
     if (FmlEngine._initialized) return _singleton;
 
@@ -85,8 +99,10 @@ class FmlEngine
     FmlEngine._domain = domain;
     FmlEngine._title = title;
     FmlEngine._version = version;
-    FmlEngine._type = type;
-    FmlEngine._splashScreenColor = splashScreenColor;
+    FmlEngine._type = (multiApp && !isWeb) ? _ApplicationTypes.multiApp : _ApplicationTypes.singleApp;
+    FmlEngine._color = color;
+    FmlEngine._brightness = brightness;
+    FmlEngine._splashBackgroundColor = splashBackgroundColor;
 
     // mark initialized
     FmlEngine._initialized = true;
@@ -109,7 +125,7 @@ class FmlEngine
     var engine = ChangeNotifierProvider<ThemeNotifier>(child: Application(key: FmlEngine.key), create: (_) => _setTheme());
 
     // splash screen
-    var splash = Container(color: splashScreenColor, child: Splash(key: UniqueKey(), onInitializationComplete: () => runApp(engine)));
+    var splash = Splash(key: UniqueKey(), onInitializationComplete: () => runApp(engine));
 
     // launch the splash screen
     runApp(splash);
@@ -121,13 +137,12 @@ class FmlEngine
   {
     try
     {
-      var font = System.theme.font;
-      return ThemeNotifier(MyTheme().deriveTheme(System.theme.colorScheme, googleFont: font));
+      return ThemeNotifier(ThemeNotifier.from(System.theme.colorScheme, googleFont: System.theme.font));
     }
     catch(e)
     {
       Log().debug('Init Theme Error: $e \n(Configured fonts from https://fonts.google.com/ are case sensitive)');
-      return ThemeNotifier(MyTheme().deriveTheme(System.theme.colorScheme));
+      return ThemeNotifier(ThemeNotifier.from(System.theme.colorScheme));
     }
   }
 

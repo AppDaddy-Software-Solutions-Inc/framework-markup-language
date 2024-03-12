@@ -54,6 +54,12 @@ class Phrases
     return 'Version';
   }
 
+  String get privacyPolicy
+  {
+    if (language == french) return '(FR) Privacy Policy';
+    return 'Privacy Policy';
+  }
+
   String get application
   {
     if (language == french) return '(FR) Application';
@@ -179,6 +185,12 @@ class Phrases
   {
     if (language == french) return '(FR) Complete the form?';
     return 'Complete the form?';
+  }
+
+  String get addApp
+  {
+    if (language == french) return '(FR) Add App';
+    return 'Add App';
   }
 
   String get loadApp

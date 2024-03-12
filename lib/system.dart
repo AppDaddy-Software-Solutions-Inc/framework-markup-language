@@ -292,7 +292,7 @@ class System extends WidgetModel implements IEventManager {
 
   Future _initRoute() async {
     // set default app
-    if (FmlEngine.isWeb || FmlEngine.type == ApplicationTypes.singleApp) {
+    if (FmlEngine.isWeb || FmlEngine.isSingleApp) {
       var domain = FmlEngine.domain;
 
       // replace default for testing

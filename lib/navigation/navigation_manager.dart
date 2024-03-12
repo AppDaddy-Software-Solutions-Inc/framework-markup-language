@@ -57,7 +57,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
     // get home page
     String? homePage = System.app?.homePage ?? "store";
-    if (!FmlEngine.isWeb && FmlEngine.type == ApplicationTypes.multiApp) homePage = "store";
+    if (!FmlEngine.isWeb && FmlEngine.isMultiApp) homePage = "store";
 
     // get start page
     String startPage = System.app?.startPage ?? homePage;

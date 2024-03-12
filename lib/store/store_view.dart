@@ -2,7 +2,7 @@
 import 'package:fml/application/application_model.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/observable/observables/boolean.dart';
-import 'package:fml/theme/themenotifier.dart';
+import 'package:fml/theme/theme.dart';
 import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
@@ -14,7 +14,6 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/store/store_model.dart';
-import 'package:fml/widgets/button/button_model.dart';
 import 'package:fml/widgets/input/input_model.dart';
 import 'package:fml/widgets/menu/menu_view.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
@@ -27,6 +26,7 @@ final bool enableTestPlayground = false;
 
 class StoreView extends StatefulWidget
 {
+  final MenuModel model = MenuModel(null, 'Applications');
   StoreView();
 
   @override
@@ -35,11 +35,7 @@ class StoreView extends StatefulWidget
 
 class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin implements IModelListener, INavigatorObserver
 {
-  final bool _visible = false;
   late InputModel appURLInput;
-  ButtonModel? storeButton;
-  MenuModel menuModel = MenuModel(null, 'Application Menu');
-  Widget? storeDisplay;
 
   RoundedRectangleBorder rrbShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(8));
 
@@ -100,48 +96,59 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
   @override
   Widget build(BuildContext context)
   {
-    var busy = Store().busy;
-
     // build menu items
-    menuModel.items = [];
-    var apps = Store().getApps();
-    for (var app in apps)
+    widget.model.items = [];
+    for (var app in Store().getApps())
     {
-      var item = MenuItemModel(menuModel, app.id, url: app.url, title: app.title, subtitle: '', icon: app.icon == null ? 'appdaddy' : null, image: app.icon, onTap: () => _launchApp(app), onLongPress: () => removeApp(app));
-      menuModel.items.add(item);
+      var item = MenuItemModel(widget.model, app.id,
+          url: app.url,
+          title: app.title,
+          icon: app.icon == null ? 'appdaddy' : null,
+          image: app.icon,
+          onTap: () => Store().launch(app, context),
+          onLongPress: () => removeApp(app));
+
+      widget.model.items.add(item);
     }
 
-    Widget storeDisplay = MenuView(menuModel);
+    // store menu
+    Widget store = MenuView(widget.model);
 
-    storeButton = ButtonModel(null, null, enabled: !isNullOrEmpty(appURLInput.value), label: phrase.loadApp, buttontype: "raised", color: Theme.of(context).colorScheme.secondary);
+    var addButton = FloatingActionButton.extended(
+        label: Text(phrase.addApp),
+        icon: Icon(Icons.add),
+        onPressed: () => addAppDialog(),
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+        splashColor: Theme.of(context).colorScheme.inversePrimary,
+        hoverColor: Theme.of(context).colorScheme.surface,
+        focusColor: Theme.of(context).colorScheme.inversePrimary,
+        shape: rrbShape);
 
-    Widget noAppDisplay = Center(
-        child: AnimatedOpacity(
-            opacity: _visible ? 1.0 : 0.0,
-            duration: Duration(milliseconds: 200),
-            child: Text(phrase.clickToConnect, style: TextStyle(color: Theme.of(context).colorScheme.outline)))
-    );
+    var busyButton = FloatingActionButton.extended(
+        label: Text(phrase.loadApp),
+        onPressed: null,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+        splashColor: Theme.of(context).colorScheme.inversePrimary,
+        hoverColor: Theme.of(context).colorScheme.surface,
+        focusColor: Theme.of(context).colorScheme.inversePrimary,
+        shape: rrbShape);
 
-    return WillPopScope(onWillPop: () => quitDialog().then((value) => value as bool),
-        child: Scaffold(
-            floatingActionButton: !busy
-                ? FloatingActionButton.extended(label: Text('Add App'), icon: Icon(Icons.add), onPressed: () => addAppDialog(), foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary, shape: rrbShape)
-                : FloatingActionButton.extended(onPressed: null, foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary, label: Text('Loading Apps'), shape: rrbShape),
-            body: SafeArea(child: Stack(children: [Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomRight, end: Alignment.topLeft, stops: [0.4, 1.0], colors: [/*Theme.of(context).colorScheme.inversePrimary*/Theme.of(context).colorScheme.surfaceVariant, Theme.of(context).colorScheme.surface])),),
-              Center(child: Opacity(opacity: 0.03, child: Image(image: AssetImage('assets/images/logo.png', package: FmlEngine.package)))),
-              Center(child: apps.isEmpty ? noAppDisplay : storeDisplay),
-              Align(alignment: Alignment.bottomLeft, child: Column(mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(padding: EdgeInsets.only(left: 5), child: InkWell(
-                      child: Text('Privacy Policy', style: TextStyle(color: Colors.blueAccent, decoration: TextDecoration.underline)),
-                      onTap: () => launchUrl(Uri(scheme: 'https', host: 'fml.dev' , path: '/privacy.html'))
-                  ),),
-                  Padding(padding: EdgeInsets.only(left: 5), child: Text('${phrase.version} ${FmlEngine.version}', style: TextStyle(color: Colors.black26)))
-                ],
-              ),),
-              Center(child: BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true).getView())]))
-        )
-    );
+    var busy = Center(child: BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true).getView());
+
+    var privacyUri    = Uri(scheme: 'https', host: 'fml.dev' , path: '/privacy.html');
+    var privacyText   = Text(phrase.privacyPolicy);
+    var privacyButton = InkWell(child: privacyText, onTap: () => launchUrl(privacyUri));
+
+    var version = Text('${phrase.version} ${FmlEngine.version}');
+
+    var text = Column(mainAxisSize: MainAxisSize.min, children: [privacyButton,version]);
+    var button = Store().busy ? busyButton : addButton;
+
+    var scaffold = Scaffold(floatingActionButton: button, body: SafeArea(child: Stack(children: [Center(child: store), Positioned(child: text, left: 10, bottom: 10), busy])));
+
+    return WillPopScope(onWillPop: () => quitDialog().then((value) => value as bool), child: scaffold);
   }
 
   Future<void> addAppDialog() async {
@@ -154,7 +161,9 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
         return StatefulBuilder(builder: (context, setState)
         {
           return AlertDialog(
-            title: Row(children: [Text(phrase.connectAnApplication, style: TextStyle(color: Theme.of(context).colorScheme.primary)), Padding(padding: EdgeInsets.only(left: 20)), BusyView(BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, size: 14))]),
+            title: Row(children: [Text(phrase.connectAnApplication, style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+              Padding(padding: EdgeInsets.only(left: 20)),
+              BusyView(BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, size: 14))]),
             content: Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: AppForm()),
             contentPadding: EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 2.0),
             insetPadding: EdgeInsets.zero,
@@ -233,11 +242,6 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
         );
       },
     );
-  }
-
-  _launchApp(ApplicationModel app) async
-  {
-    Store().launch(app, context);
   }
 }
 
@@ -365,11 +369,18 @@ class AppFormState extends State<AppForm>
   @override
   Widget build(BuildContext context)
   {
-    var name =  TextFormField(validator: _validateTitle, decoration: InputDecoration(labelText: "Application Name", labelStyle: TextStyle(color: Colors.grey, fontSize: 12), fillColor: Colors.white,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide())));
+    var nameDecoration = InputDecoration(labelText: "Application Name",
+        labelStyle: TextStyle(fontSize: 12),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide()));
 
-    var url = TextFormField(controller: urlController, validator: _validateUrl, keyboardType: TextInputType.url, decoration: InputDecoration(labelText: "Application Address (https://mysite.com)", labelStyle: TextStyle(color: Colors.grey, fontSize: 12),
-        fillColor: Colors.white, border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide())));
+    var name = TextFormField(validator: _validateTitle, decoration: nameDecoration);
+
+    var addressDecoration = InputDecoration(
+        labelText: "Application Address (https://mysite.com)",
+        labelStyle: TextStyle(fontSize: 12),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide()));
+
+    var url = TextFormField(controller: urlController, validator: _validateUrl, keyboardType: TextInputType.url, decoration: addressDecoration);
 
     var cancel = TextButton(child: Text(phrase.cancel),  onPressed: () => Navigator.of(context).pop());
 

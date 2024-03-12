@@ -237,17 +237,6 @@ flutter:
     - assets/fonts/
     - assets/images/
 
-    # the applications folder is used for
-    # local (standalone) apps.
-    - assets/applications/
-    - assets/applications/sample/
-    - assets/applications/sample/images/
-    - assets/applications/sample/templates/
-
-    # fmlpad
-    - assets/applications/
-    - assets/applications/fmlpad/
-
   fonts:
     - family: icons
       fonts:

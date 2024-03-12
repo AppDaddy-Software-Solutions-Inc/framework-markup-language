@@ -31,11 +31,9 @@ class _ThemeViewState extends WidgetState<ThemeView>
     if (widget.children.isEmpty) widget.children.add(Container());
 
     var m = widget.model;
-    ThemeData themeData = applyCustomizations(Theme.of(context).colorScheme, m);
+    ThemeData themeData = ThemeNotifier.fromTheme(Theme.of(context).colorScheme, m);
 
-    ///////////
-    /* Theme */
-    ///////////
+    // theme
     return Theme(data: themeData, child: widget.children.length == 1 ? widget.children[0] : Stack(children: widget.children));
   }
 }

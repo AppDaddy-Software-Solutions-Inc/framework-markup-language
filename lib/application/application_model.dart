@@ -15,7 +15,6 @@ import 'package:fml/system.dart';
 import 'package:fml/template/template_manager.dart';
 import 'package:fml/token/token.dart';
 import 'package:fml/user/user_model.dart';
-import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/theme/theme.dart';
@@ -59,6 +58,8 @@ class ApplicationModel extends WidgetModel {
 
   // application icon
   String? icon;
+  String? icon_light;
+  String? icon_dark;
 
   // application icons position
   // on the store display (future use for multi-page and ordering)
@@ -101,15 +102,17 @@ class ApplicationModel extends WidgetModel {
 
   Map<String, String?>? get configParameters => _config?.parameters;
 
-  ApplicationModel(WidgetModel parent,
-      {String? key,
-      required this.url,
-      this.title,
-      this.icon,
-      this.page,
-      this.order,
-      String? jwt})
-      : super(parent, myId, scope: Scope(id: myId)) {
+  ApplicationModel(WidgetModel parent, {
+    String? key,
+    required this.url,
+    this.title,
+    this.icon,
+    this.icon_light,
+    this.icon_dark,
+    this.page,
+    this.order,
+    String? jwt}) : super(parent, myId, scope: Scope(id: myId))
+  {
     // parse to url into its parts
     Uri? uri = Uri.tryParse(url);
     if (uri == null) return;
@@ -246,18 +249,9 @@ class ApplicationModel extends WidgetModel {
       fmlVersion = toVersionNumber(model.settings["FML_VERSION"]);
 
       // get the icon
-      var icon = model.settings["APP_ICON"];
-      if (icon != null) {
-        Uri? uri = URI.parse(icon, domain: domain);
-        if (uri != null) {
-          var data = await URI.toUriData(uri.url);
-          if (data != null) {
-            this.icon = data.toString();
-          } else {
-            this.icon = null;
-          }
-        }
-      }
+      icon = await _getIcon(model.settings["APP_ICON"] ?? model.settings["ICON"]);
+      icon_light = await _getIcon(model.settings["APP_ICON_LIGHT"] ?? model.settings["ICON_LIGHT"]);
+      icon_dark  = await _getIcon(model.settings["APP_ICON_DARK"]  ?? model.settings["ICON_DARK"]);
 
       // mirror?
       var mirrorApi = model.settings["MIRROR_API"];
@@ -280,43 +274,15 @@ class ApplicationModel extends WidgetModel {
     return model;
   }
 
-  void setTheme(ThemeModel theme, bool notify) {
-    /// Initial Theme Setting
-    String def = 'light';
-    String cBrightness = settings('BRIGHTNESS')?.toLowerCase() ?? def;
-    if (cBrightness == 'system' || cBrightness == 'platform') {
-      try {
-        cBrightness = PlatformDispatcher.instance.platformBrightness
-            .toString()
-            .toLowerCase()
-            .split('.')[1];
-      } catch (e) {
-        cBrightness = def;
-      }
-    }
+  Future<String?> _getIcon(String? icon) async
+  {
+    if (icon == null) return null;
 
-    var brightness = theme.brightness;
-    var colorscheme = theme.colorScheme;
-    var font = theme.font;
+    Uri? uri = URI.parse(icon, domain: domain);
+    if (uri == null) return null;
 
-    // theme values from the app
-    theme.brightness = cBrightness;
-    theme.colorScheme = settings('PRIMARY_COLOR') ?? ThemeModel.defaultColor; // backwards compatibility
-    theme.colorScheme = settings('COLOR_SCHEME')  ?? theme.colorScheme;
-    theme.font = settings('FONT');
-
-    // has the theme changed?
-    bool modified = (theme.brightness != brightness ||
-        theme.colorScheme != colorscheme ||
-        theme.font != font);
-    if (modified && notify && context != null) {
-      // call the theme notifier
-      final themeNotifier = Provider.of<ThemeNotifier>(context!, listen: false);
-      String brightness = settings('BRIGHTNESS') ?? ThemeModel.defaultBrightness;
-      String color = settings('COLOR_SCHEME') ?? ThemeModel.defaultColor;
-      themeNotifier.setTheme(brightness: brightness, color: color);
-      themeNotifier.mapSystemThemeBindables();
-    }
+    var data = await URI.toUriData(uri.url);
+    return data?.toString();
   }
 
   Future<bool> stashValue(String key, dynamic value) async {
@@ -364,7 +330,8 @@ class ApplicationModel extends WidgetModel {
     return ok;
   }
 
-  void launch(ThemeModel theme, bool notifyOnThemeChange) {
+  void launch(bool notifyOnThemeChange)
+  {
     // set stash values
     for (var entry in _stash.map.entries) {
       stash.setObservable(entry.key, entry.value);
@@ -380,8 +347,19 @@ class ApplicationModel extends WidgetModel {
       }
     }
 
-    // set the theme if supplied
-    setTheme(theme, notifyOnThemeChange);
+    // theme brightness
+    var brightness = FmlEngine.defaultBrightness;
+    if (settings('BRIGHTNESS')?.toLowerCase().trim() == 'light') brightness = Brightness.light;
+    if (settings('BRIGHTNESS')?.toLowerCase().trim() == 'dark')  brightness = Brightness.dark;
+
+    // theme color
+    var color = toColor(settings('PRIMARY_COLOR') ?? settings('COLOR_SCHEME')) ?? FmlEngine.defaultColor;
+
+    // theme font
+    var font = settings('FONT') ?? FmlEngine.defaultFont;
+
+    // set the theme
+    Provider.of<ThemeNotifier>(context!, listen: false).setTheme(brightness: brightness, color: color, font: font, notify: notifyOnThemeChange);
   }
 
   void close() {
@@ -408,6 +386,8 @@ class ApplicationModel extends WidgetModel {
     map["url"] = url;
     map["title"] = title;
     map["icon"] = icon;
+    map["icon_light"] = icon_light;
+    map["icon_dark"] = icon_dark;
     map["page"] = page;
     map["order"] = order;
     map["config"] = _config?.xml;
@@ -423,6 +403,8 @@ class ApplicationModel extends WidgetModel {
           url: fromMap(map, "url"),
           title: fromMap(map, "title"),
           icon: fromMap(map, "icon"),
+          icon_light: fromMap(map, "icon_light"),
+          icon_dark: fromMap(map, "icon_dark"),
           page: fromMap(map, "page"),
           order: fromMapAsInt(map, "order"),
           jwt: fromMap(map, "jwt"));

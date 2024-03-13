@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/datasources/datasource_interface.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/system.dart';
@@ -98,10 +99,10 @@ class _ApplicationManagerState extends State<ApplicationManager>
 
   void onTheme(Event event) async
   {
-    final themeNotifier     = Provider.of<ThemeNotifier>(context, listen: false);
-    var color = event.parameters?['color'];
-    var brightness = event.parameters?['brightness'] ?? System.theme.brightness;
-    themeNotifier.setTheme(brightness: brightness, color: color);
+    var brightness = event.parameters?['brightness']?.trim().toLowerCase() == 'dark' ? Brightness.dark : Brightness.light;
+    var color = toColor(event.parameters?['color']) ?? System.theme.colorScheme ?? FmlEngine.defaultColor;
+    var font = event.parameters?['font'] ?? System.theme.font ?? FmlEngine.defaultFont;
+    Provider.of<ThemeNotifier>(context, listen: false).setTheme(brightness: brightness, color: color, font: font);
   }
 
   @override

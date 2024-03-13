@@ -2,9 +2,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
@@ -86,9 +86,13 @@ class ImageView extends StatefulWidget implements IWidgetView
           if (file == null) break;
 
           // svg image?
-          if (uri.pageExtension == "svg") {
+          if (uri.pageExtension == "svg")
+          {
+
             image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height, colorFilter: color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null);
-          } else {
+          }
+          else
+          {
             image = Image.file(file, fit: getFit(fit));
           }
           break;
@@ -98,22 +102,30 @@ class ImageView extends StatefulWidget implements IWidgetView
           var assetpath = "${uri.scheme}/${uri.host}${uri.path}";
 
           // svg image?
-          if (uri.pageExtension == "svg") {
+          if (uri.pageExtension == "svg")
+          {
             image = SvgPicture.asset(assetpath, fit: getFit(fit), width: width, height: height, colorFilter: color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null);
-          } else {
+          }
+          else
+          {
             image = Image.asset(assetpath, fit: getFit(fit), width: width, height: height, errorBuilder: errorHandler);
           }
           break;
 
         /// web image
         default:
-          if (uri.pageExtension == "svg") {
-            image = SvgPicture.network(uri.url, fit: getFit(fit), width: width, height: height, colorFilter: color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null);
-          } else
+          if (uri.pageExtension == "svg")
           {
-            if (animate) {
+            image = SvgPicture.network(uri.url, fit: getFit(fit), width: width, height: height, colorFilter: color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null);
+          }
+          else
+          {
+            if (animate)
+            {
               image = FadeInImage.memoryNetwork(placeholder: placeholder, image: uri.url, fit: getFit(fit), width: width, height: height, fadeInDuration: Duration(milliseconds: fadeDuration ?? 300), imageErrorBuilder: errorHandler, );
-            } else {
+            }
+            else
+            {
               image = Image.network(uri.url, fit: getFit(fit), width: width, height: height);
             }
           }
@@ -218,4 +230,3 @@ class _ImageViewState extends WidgetState<ImageView>
     return view;
   }
 }
-

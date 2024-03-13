@@ -329,7 +329,8 @@ class System extends WidgetModel implements IEventManager {
   static String get title => Platform.title;
 
   // launches the application
-  launchApplication(ApplicationModel app, bool notifyOnThemeChange) {
+  launchApplication(ApplicationModel app, bool notifyOnThemeChange)
+  {
     // Close the old application if one
     // is running
     if (_app != null) {
@@ -359,7 +360,7 @@ class System extends WidgetModel implements IEventManager {
     _app = app;
 
     // launch the application
-    app.launch(theme, notifyOnThemeChange);
+    app.launch(notifyOnThemeChange);
 
     // set credentials
     if (app.jwt != null) _app?.logon(app.jwt);

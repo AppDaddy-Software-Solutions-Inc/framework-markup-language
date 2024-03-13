@@ -12,8 +12,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    //String domain = 'https://test.appdaddy.co';
-    String domain = 'file://fmlpad';
+    String domain = 'https://test.appdaddy.co';
+    //String domain = 'file://fmlpad';
     //String domain = 'file://example'
 
     // String domain = 'http://10.69.4.245:81';
@@ -32,7 +32,8 @@ class MyApp extends StatelessWidget {
         version: version,
         multiApp: true,
         color: Colors.lightBlue,
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
+        font: 'Roboto',
         splashBackgroundColor: Colors.black).launch();
   }
 }

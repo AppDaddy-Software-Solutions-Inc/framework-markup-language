@@ -4,7 +4,6 @@ import 'package:fml/fml.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 
-
 class Splash extends StatefulWidget
 {
   final VoidCallback? onInitializationComplete;
@@ -47,7 +46,7 @@ class _SplashState extends State<Splash>
   Widget? _getSplashImage(BoxConstraints constraints)
   {
     // splash image - splash.gif, if not found, then splash.svg
-    Widget image = Image.asset("images/splash.gif", errorBuilder: (a,b,c) => SvgPicture.asset("images/splash.svg"));
+    Widget image = Image.asset("assets/images/splash.gif", errorBuilder: (a,b,c) => SvgPicture.asset("assets/images/splash.svg"));
 
     // constrain the image
     var portrait = (constraints.maxWidth < constraints.maxHeight);

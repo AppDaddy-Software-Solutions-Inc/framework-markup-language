@@ -4,7 +4,6 @@ import 'package:fml/fml.dart';
 import 'package:fml/store/store_app_view.dart';
 import 'package:fml/theme/theme.dart';
 import 'package:fml/navigation/navigation_observer.dart';
-import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';

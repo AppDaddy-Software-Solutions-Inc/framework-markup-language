@@ -818,7 +818,10 @@ class EventHandler extends Eval
     WidgetModel? model = Scope.findWidgetModel(id, this.model.scope);
 
     // execute the function
-    if (model != null) return await model.execute(id, function, arguments);
+    if (model != null)
+    {
+      return await model.execute(id, function, arguments);
+    }
 
     // stash clear?
     // this hack is necessary since stash isn't a model

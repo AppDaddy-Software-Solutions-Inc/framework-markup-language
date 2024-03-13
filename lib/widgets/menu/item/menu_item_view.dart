@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/helpers/color.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
@@ -87,9 +87,12 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
       if (widget.model.image != null)
       {
         // svg image?
-        if (widget.model.image!.mimeType == "image/svg+xml") {
+        if (widget.model.image!.mimeType == "image/svg+xml")
+        {
           image = SvgPicture.memory(widget.model.image!.contentAsBytes(), width: 48, height: 48);
-        } else {
+        }
+        else
+        {
           image = Image.memory(widget.model.image!.contentAsBytes(), width: 48, height: 48, fit: null);
         }
       }

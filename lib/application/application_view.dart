@@ -14,8 +14,8 @@ class Application extends StatelessWidget
   Widget build(BuildContext context)
   {
     // initializes the theme bindables and updates on theme change
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
-    themeNotifier.mapSystemThemeBindables();
+    final theme = Provider.of<ThemeNotifier>(context);
+    //theme.setTheme(notify: false);
 
     return MaterialApp.router(
         title: System.title,
@@ -23,7 +23,7 @@ class Application extends StatelessWidget
         routerDelegate: NavigationManager(key: GlobalKey<NavigatorState>()),
         routeInformationParser: const RouteParser(),
         backButtonDispatcher: RootBackButtonDispatcher(),
-        theme: themeNotifier.getTheme(),
+        theme: theme.getTheme(),
         builder: (context, widget) => ApplicationManager(child: widget));
   }
 }

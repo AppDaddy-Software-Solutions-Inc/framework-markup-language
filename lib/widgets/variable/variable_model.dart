@@ -23,9 +23,8 @@ class VariableModel extends WidgetModel
     {
       if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value'))))
       {
-        dynamic setter;
-        if (constant) setter = (_) => v;
-        var formatter = type != null ? _encodeBody : null;
+        Formatter? formatter = type != null ? _encodeBody : null;
+        Setter? setter = constant ? (dynamic value, {Observable? setter}) => v : null;
         _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange, setter: setter, formatter: formatter);
       }
     }

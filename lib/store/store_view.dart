@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/application/application_model.dart';
 import 'package:fml/fml.dart';
-import 'package:fml/observable/observables/boolean.dart';
+import 'package:fml/store/store_app_view.dart';
 import 'package:fml/theme/theme.dart';
 import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
@@ -10,7 +10,6 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/phrase.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/store/store_model.dart';
@@ -19,7 +18,6 @@ import 'package:fml/widgets/menu/menu_view.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:provider/provider.dart';
-import 'package:fml/helpers/helpers.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 final bool enableTestPlayground = false;
@@ -75,6 +73,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
 
   @override
   Map<String,String>? onNavigatorPop() => null;
+
   @override
   onNavigatorChange() {}
 
@@ -82,8 +81,12 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
   void onNavigatorPush({Map<String?, String>? parameters})
   {
     // reset the theme
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    themeNotifier.setTheme(brightness: ThemeModel.defaultBrightness, color: ThemeModel.defaultColor);
+    // show tooltip in post frame callback
+    WidgetsBinding.instance.addPostFrameCallback((_)
+    {
+      final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+      themeNotifier.setTheme(brightness: FmlEngine.defaultBrightness, color: FmlEngine.defaultColor, font: FmlEngine.defaultFont);
+    });
   }
 
   /// Callback to fire the [_ViewState.build] when the [StoreModel] changes
@@ -91,64 +94,6 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
     if (mounted) setState((){});
-  }
-
-  @override
-  Widget build(BuildContext context)
-  {
-    // build menu items
-    widget.model.items = [];
-    for (var app in Store().getApps())
-    {
-      var item = MenuItemModel(widget.model, app.id,
-          url: app.url,
-          title: app.title,
-          icon: app.icon == null ? 'appdaddy' : null,
-          image: app.icon,
-          onTap: () => Store().launch(app, context),
-          onLongPress: () => removeApp(app));
-
-      widget.model.items.add(item);
-    }
-
-    // store menu
-    Widget store = MenuView(widget.model);
-
-    var addButton = FloatingActionButton.extended(
-        label: Text(phrase.addApp),
-        icon: Icon(Icons.add),
-        onPressed: () => addAppDialog(),
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
-        backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
-        splashColor: Theme.of(context).colorScheme.inversePrimary,
-        hoverColor: Theme.of(context).colorScheme.surface,
-        focusColor: Theme.of(context).colorScheme.inversePrimary,
-        shape: rrbShape);
-
-    var busyButton = FloatingActionButton.extended(
-        label: Text(phrase.loadApp),
-        onPressed: null,
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
-        backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
-        splashColor: Theme.of(context).colorScheme.inversePrimary,
-        hoverColor: Theme.of(context).colorScheme.surface,
-        focusColor: Theme.of(context).colorScheme.inversePrimary,
-        shape: rrbShape);
-
-    var busy = Center(child: BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true).getView());
-
-    var privacyUri    = Uri(scheme: 'https', host: 'fml.dev' , path: '/privacy.html');
-    var privacyText   = Text(phrase.privacyPolicy);
-    var privacyButton = InkWell(child: privacyText, onTap: () => launchUrl(privacyUri));
-
-    var version = Text('${phrase.version} ${FmlEngine.version}');
-
-    var text = Column(mainAxisSize: MainAxisSize.min, children: [privacyButton,version]);
-    var button = Store().busy ? busyButton : addButton;
-
-    var scaffold = Scaffold(floatingActionButton: button, body: SafeArea(child: Stack(children: [Center(child: store), Positioned(child: text, left: 10, bottom: 10), busy])));
-
-    return WillPopScope(onWillPop: () => quitDialog().then((value) => value as bool), child: scaffold);
   }
 
   Future<void> addAppDialog() async {
@@ -243,164 +188,66 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
       },
     );
   }
-}
-
-class AppForm extends StatefulWidget
-{
-  AppForm();
-
-  @override
-  AppFormState createState()
-  {
-    return AppFormState();
-  }
-}
-
-class AppFormState extends State<AppForm>
-{
-  final   _formKey  = GlobalKey<FormState>();
-  String  errorText = '';
-  String? title;
-  String? url;
-  bool unreachable = false;
-
-  var urlController = TextEditingController();
-
-  // busy
-  BooleanObservable busy = BooleanObservable(null, false);
-
-  String? _validateTitle(title)
-  {
-    this.title = null;
-    errorText = '';
-
-    // missing title
-    if (isNullOrEmpty(title))
-    {
-      errorText = "Title must be supplied";
-      return errorText;
-    }
-
-    // assign url
-    this.title = title;
-
-    return null;
-  }
-
-  String? _validateUrl(url)
-  {
-    this.url = null;
-    errorText = '';
-
-    // missing url
-    if (unreachable)
-    {
-      errorText = "Site unreachable or is missing config.xml";
-      return errorText;
-    }
-
-    // missing url
-    if (isNullOrEmpty(url))
-    {
-      errorText = phrase.missingURL;
-      return errorText;
-    }
-
-    var uri = Uri.tryParse(url);
-
-    // invalid url
-    if (uri == null)
-    {
-      errorText = 'The address in not a valid web address';
-      return errorText;
-    }
-
-    // missing scheme
-    if (!uri.hasScheme)
-    {
-      uri = Uri.parse('https://${uri.url}');
-      urlController.text = uri.toString();
-    }
-
-    // missing host
-    if (isNullOrEmpty(uri.authority))
-    {
-      errorText = 'Missing host in address';
-      return errorText;
-    }
-
-    // already defined
-    if (Store().find(url: uri.toString()) != null)
-    {
-      errorText = 'You are already connected to this application';
-      return errorText;
-    }
-
-    // assign url
-    this.url = url;
-
-    return null;
-  }
-
-  Future _addApp() async
-  {
-    // validate the form
-    unreachable = false;
-    busy.set(true);
-    bool ok = _formKey.currentState!.validate();
-    if (ok)
-    {
-      ApplicationModel app = ApplicationModel(System(),url: url!, title: title);
-      await app.initialized;
-      if (app.hasConfig)
-      {
-        Store().add(app);
-        Navigator.of(context).pop();
-      }
-      else
-      {
-        unreachable = true;
-        _formKey.currentState!.validate();
-      }
-    }
-    busy.set(false);
-  }
 
   @override
   Widget build(BuildContext context)
   {
-    var nameDecoration = InputDecoration(labelText: "Application Name",
-        labelStyle: TextStyle(fontSize: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide()));
+    // build menu items
+    widget.model.items = [];
+    for (var app in Store().getApps())
+    {
+      var icon = app.icon;
+      if (Theme.of(context).brightness == Brightness.light) icon = app.icon_light ?? icon;
+      if (Theme.of(context).brightness == Brightness.dark)  icon = app.icon_dark ?? icon;
 
-    var name = TextFormField(validator: _validateTitle, decoration: nameDecoration);
+      var item = MenuItemModel(widget.model, app.id,
+          url: app.url,
+          title: app.title,
+          icon:  icon == null ? 'appdaddy' : null,
+          image: icon,
+          onTap: () => Store().launch(app, context),
+          onLongPress: () => removeApp(app));
 
-    var addressDecoration = InputDecoration(
-        labelText: "Application Address (https://mysite.com)",
-        labelStyle: TextStyle(fontSize: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide()));
+      widget.model.items.add(item);
+    }
 
-    var url = TextFormField(controller: urlController, validator: _validateUrl, keyboardType: TextInputType.url, decoration: addressDecoration);
+    // store menu
+    Widget store = MenuView(widget.model);
 
-    var cancel = TextButton(child: Text(phrase.cancel),  onPressed: () => Navigator.of(context).pop());
+    var addButton = FloatingActionButton.extended(
+        label: Text(phrase.addApp),
+        icon: Icon(Icons.add),
+        onPressed: () => addAppDialog(),
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+        splashColor: Theme.of(context).colorScheme.inversePrimary,
+        hoverColor: Theme.of(context).colorScheme.surface,
+        focusColor: Theme.of(context).colorScheme.inversePrimary,
+        shape: rrbShape);
 
-    var connect =  TextButton(child: Text(phrase.connect), onPressed: _addApp);
+    var busyButton = FloatingActionButton.extended(
+        label: Text(phrase.loadApp),
+        onPressed: null,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+        splashColor: Theme.of(context).colorScheme.inversePrimary,
+        hoverColor: Theme.of(context).colorScheme.surface,
+        focusColor: Theme.of(context).colorScheme.inversePrimary,
+        shape: rrbShape);
 
-    List<Widget> layout = [];
+    var busy = Center(child: BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true).getView());
 
-    // form fields
-    layout.add(Padding(padding: EdgeInsets.only(top: 10)));
-    layout.add(url);
-    layout.add(Padding(padding: EdgeInsets.only(top: 10)));
-    layout.add(name);
+    var privacyUri    = Uri(scheme: 'https', host: 'fml.dev' , path: '/privacy.html');
+    var privacyText   = Text(phrase.privacyPolicy);
+    var privacyButton = InkWell(child: privacyText, onTap: () => launchUrl(privacyUri));
 
-    // buttons
-    var buttons = Padding(padding: const EdgeInsets.only(top: 10.0, bottom: 10),child: Align(alignment: Alignment.bottomCenter, child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [cancel,connect])));
-    layout.add(buttons);
+    var version = Text('${phrase.version} ${FmlEngine.version}');
 
-    var b = BusyModel(Store(), visible: (busy.get() ?? false), observable: busy, modal: false).getView();
-    var form = Form(key: _formKey, child: Column(children: layout, mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.start));
+    var text = Column(mainAxisSize: MainAxisSize.min, children: [privacyButton,version]);
+    var button = Store().busy ? busyButton : addButton;
 
-    return Stack(fit: StackFit.passthrough, children: [form,b]);
+    var scaffold = Scaffold(floatingActionButton: button, body: SafeArea(child: Stack(children: [Center(child: store), Positioned(child: text, left: 10, bottom: 10), busy])));
+
+    return WillPopScope(onWillPop: () => quitDialog().then((value) => value as bool), child: scaffold);
   }
 }

@@ -11,9 +11,6 @@ import 'package:fml/helpers/helpers.dart';
 
 class ThemeModel extends DecoratedWidgetModel 
 {
-  static String defaultBrightness = FmlEngine.defaultBrightness;
-  static String defaultColor = FmlEngine.defaultColor;
-
   static String myId = 'THEME';
 
   StringObservable? _brightness;
@@ -28,9 +25,12 @@ class ThemeModel extends DecoratedWidgetModel
 
   ColorObservable? _colorScheme;
   set colorScheme(dynamic v) {
-    if (_colorScheme != null) {
+    if (_colorScheme != null)
+    {
       _colorScheme!.set(v);
-    } else if (v != null) {
+    }
+    else if (v != null)
+    {
       _colorScheme = ColorObservable(Binding.toKey('colorscheme'), v, scope: scope, listener: onPropertyChange);
     }
   }
@@ -44,7 +44,7 @@ class ThemeModel extends DecoratedWidgetModel
       _font = StringObservable(Binding.toKey('font'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String get font => _font?.get() ?? 'Roboto';
+  String? get font => _font?.get();
 
   ColorObservable? _background;
   set background(dynamic v) {

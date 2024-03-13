@@ -9,7 +9,6 @@ import 'package:fml/system.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/theme/theme.dart';
 import 'dart:io' as io;
-import 'helpers/string.dart';
 
 enum _ApplicationTypes { singleApp, multiApp }
 
@@ -56,11 +55,14 @@ class FmlEngine
   // if the engine has been initialized
   static bool _initialized = false;
 
+  static late String _font;
+  static String get defaultFont => _font;
+
   static late Brightness _brightness;
-  static String get defaultBrightness => _brightness == Brightness.light ? 'light' : 'dark';
+  static Brightness get defaultBrightness => _brightness;
 
   static late Color _color;
-  static String get defaultColor => toStr(_color)!;
+  static Color get defaultColor => _color;
 
   static late Color? _splashBackgroundColor;
   static Color? get splashBackgroundColor => _splashBackgroundColor;
@@ -89,6 +91,9 @@ class FmlEngine
     // default theme brightness on startup
     Brightness brightness = Brightness.light,
 
+    // default theme brightness on startup
+    String font = 'Roboto',
+
     // splash screen background color
     Color? splashBackgroundColor,
   })
@@ -100,6 +105,7 @@ class FmlEngine
     FmlEngine._title = title;
     FmlEngine._version = version;
     FmlEngine._type = (multiApp && !isWeb) ? _ApplicationTypes.multiApp : _ApplicationTypes.singleApp;
+    FmlEngine._font = font;
     FmlEngine._color = color;
     FmlEngine._brightness = brightness;
     FmlEngine._splashBackgroundColor = splashBackgroundColor;
@@ -137,7 +143,8 @@ class FmlEngine
   {
     try
     {
-      return ThemeNotifier(ThemeNotifier.from(System.theme.colorScheme, googleFont: System.theme.font));
+      var theme = ThemeNotifier.from(System.theme.colorScheme, googleFont: System.theme.font);
+      return ThemeNotifier(theme);
     }
     catch(e)
     {

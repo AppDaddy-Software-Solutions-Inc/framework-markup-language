@@ -89,7 +89,8 @@ class ColorpickerModel extends DecoratedInputModel implements IFormField
     {
       case "show":
       case "start":
-        return ColorPickerView.launchPicker(this, context);
+        ColorPickerView.launchPicker(this, context);
+        return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }

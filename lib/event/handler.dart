@@ -753,12 +753,13 @@ class EventHandler extends Eval
   }
 
   /// Changes the theme
-  Future<bool> _handleEventTheme([dynamic brightness, dynamic color]) async
+  Future<bool> _handleEventTheme([dynamic brightness, dynamic color, dynamic font]) async
   {
     try {
       Map<String,String?> parameters = <String,String?>{};
       parameters['brightness']  = toStr(brightness);
       parameters['color']  = toStr(color);
+      parameters['font']  = toStr(font);
       EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.theme, parameters: parameters));
     } catch(e) {
       Log().debug('$e');

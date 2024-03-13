@@ -102,7 +102,9 @@ class _ApplicationManagerState extends State<ApplicationManager>
     var brightness = event.parameters?['brightness']?.trim().toLowerCase() == 'dark' ? Brightness.dark : Brightness.light;
     var color = toColor(event.parameters?['color']) ?? System.theme.colorScheme ?? FmlEngine.defaultColor;
     var font = event.parameters?['font'] ?? System.theme.font ?? FmlEngine.defaultFont;
-    Provider.of<ThemeNotifier>(context, listen: false).setTheme(brightness: brightness, color: color, font: font);
+
+    var notifier = Provider.of<ThemeNotifier>(context, listen: false);
+    notifier.setTheme(brightness: brightness, color: color, font: font);
   }
 
   @override

@@ -347,6 +347,14 @@ class ApplicationModel extends WidgetModel {
       }
     }
 
+    // set the theme
+    setTheme(notify: notifyOnThemeChange);
+  }
+
+  void setTheme({required bool notify})
+  {
+    if (context == null) return;
+
     // theme brightness
     var brightness = FmlEngine.defaultBrightness;
     if (settings('BRIGHTNESS')?.toLowerCase().trim() == 'light') brightness = Brightness.light;
@@ -359,7 +367,8 @@ class ApplicationModel extends WidgetModel {
     var font = settings('FONT') ?? FmlEngine.defaultFont;
 
     // set the theme
-    Provider.of<ThemeNotifier>(context!, listen: false).setTheme(brightness: brightness, color: color, font: font, notify: notifyOnThemeChange);
+    var notifier = Provider.of<ThemeNotifier>(context!, listen: false);
+    notifier.setTheme(brightness: brightness, color: color, font: font, notify: notify);
   }
 
   void close() {

@@ -13,17 +13,13 @@ class Application extends StatelessWidget
   @override
   Widget build(BuildContext context)
   {
-    // initializes the theme bindables and updates on theme change
-    final theme = Provider.of<ThemeNotifier>(context);
-    //theme.setTheme(notify: false);
-
     return MaterialApp.router(
         title: System.title,
         debugShowCheckedModeBanner: false,
         routerDelegate: NavigationManager(key: GlobalKey<NavigatorState>()),
         routeInformationParser: const RouteParser(),
         backButtonDispatcher: RootBackButtonDispatcher(),
-        theme: theme.getTheme(),
+        theme: Provider.of<ThemeNotifier>(context).getTheme(),
         builder: (context, widget) => ApplicationManager(child: widget));
   }
 }

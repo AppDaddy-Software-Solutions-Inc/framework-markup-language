@@ -1,6 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fml/application/application_model.dart';
 import 'package:fml/fml.dart';
+import 'package:fml/helpers/string.dart';
 import 'package:fml/store/store_app_view.dart';
 import 'package:fml/theme/theme.dart';
 import 'package:fml/navigation/navigation_observer.dart';
@@ -16,6 +18,7 @@ import 'package:fml/widgets/input/input_model.dart';
 import 'package:fml/widgets/menu/menu_view.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -95,97 +98,97 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     if (mounted) setState((){});
   }
 
-  Future<void> addAppDialog() async {
+  Widget addAppDialog(BuildContext context)
+  {
+      var view = StatefulBuilder(builder: (context, setState)
+      {
+        var style = TextStyle(color: Theme.of(context).colorScheme.primary);
+
+        var ttl  = Text(phrase.connectAnApplication, style: style);
+        var busy = BusyView(BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, size: 14));
+        var pad  = Padding(padding: EdgeInsets.only(left: 20));
+        var title = Row(children: [ttl, pad, busy]);
+
+        return AlertDialog(title: title,
+          content: Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: AppForm()),
+          contentPadding: EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 2.0),
+          insetPadding: EdgeInsets.zero,
+        );
+      });
+
+      return view;
+
+  }
+
+  Future<void> showAddAppDialog() async {
     return showDialog<void>(
       context: context,
       barrierDismissible: true,
       useRootNavigator: false,
-      builder: (BuildContext context)
-      {
-        return StatefulBuilder(builder: (context, setState)
-        {
-          return AlertDialog(
-            title: Row(children: [Text(phrase.connectAnApplication, style: TextStyle(color: Theme.of(context).colorScheme.primary)),
-              Padding(padding: EdgeInsets.only(left: 20)),
-              BusyView(BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, size: 14))]),
-            content: Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: AppForm()),
-            contentPadding: EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 2.0),
-            insetPadding: EdgeInsets.zero,
-          );
-        });
-      },
-    );
+      builder: (BuildContext context) => addAppDialog(context));
   }
 
-  Future<void> removeApp(ApplicationModel app) async
+  void removeApp(ApplicationModel app) async
+  {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Removing ${app.title}'), duration: Duration(milliseconds: 1000)));
+      await Store().delete(app);
+      Navigator.of(context).pop();
+  }
+
+  Widget removeAppDialog(BuildContext context, ApplicationModel app)
+  {
+    var style = TextStyle(color: Theme.of(context).colorScheme.primary);
+    var title = Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.center,children: [Text(phrase.removeApp, style: style)]);
+
+    style = TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 18);
+    var appTitle = Text(app.title ?? "", style: style);
+
+    Widget? appIcon;
+    var icon = app.icon;
+    if (Theme.of(context).brightness == Brightness.light) icon = app.icon_light ?? icon;
+    if (Theme.of(context).brightness == Brightness.dark)  icon = app.icon_dark ?? icon;
+    if (icon != null)
+    {
+      var image = toDataUri(icon);
+      if (image != null)
+      {
+        // svg image?
+        if (image.mimeType == "image/svg+xml")
+        {
+          appIcon = SvgPicture.memory(image.contentAsBytes(), width: 48, height: 48);
+        }
+        else
+        {
+          appIcon = Image.memory(image.contentAsBytes(), width: 48, height: 48, fit: null);
+        }
+        appIcon = Padding(padding: EdgeInsets.all(10), child: appIcon);
+      }
+    }
+
+    style = TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 14);
+    var appUrl = Padding(padding: EdgeInsets.only(bottom: 20), child: Text('${app.url}', style: style));
+
+    style = TextStyle(color: Theme.of(context).colorScheme.primary);
+    var cancel = TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(phrase.cancel, style: style));
+    var remove = TextButton(onPressed: () => removeApp(app), child: Text(phrase.remove, style: style));
+    var buttons = Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.center, children: [cancel,Padding(padding: EdgeInsets.only(right: 20)),remove]);
+
+    var view = Padding(padding: EdgeInsets.all(10), child: Column(children: [appIcon ?? Offstage(), appTitle, appUrl]));
+
+    var box = DecoratedBox(decoration: BoxDecoration(border: Border.all(color: Theme.of(context).colorScheme.onBackground), borderRadius: BorderRadius.all(Radius.circular(10))), child: view);
+
+    var content = Container(child: Column(mainAxisSize: MainAxisSize.min, children: [Padding(padding: EdgeInsets.only(bottom:10)), box, Padding(padding: EdgeInsets.only(bottom:15)), buttons]));
+
+    return AlertDialog(title: title, content: content, contentPadding: EdgeInsets.fromLTRB(4.0, 16.0, 4.0, 2.0), insetPadding: EdgeInsets.zero);
+  }
+
+  Future<void> showRemoveAppDialog(ApplicationModel app) async
   {
     return showDialog<void>(
       context: context,
       barrierDismissible: true,
       useRootNavigator: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Remove Application?'),
-          content: Container(
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Padding(padding: EdgeInsets.only(top: 20), child: Text(app.title ?? "", style: TextStyle(fontSize: 18),),),
-              Padding(padding: EdgeInsets.only(bottom: 10), child: Text('(${app.url})', style: TextStyle(fontSize: 14))),
-              Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.end, children: [
-                TextButton(onPressed: () => Navigator.of(context).pop(), child: Text('Cancel')),
-                TextButton(
-                    onPressed: () async
-                    {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Removing ${app.title}'), duration: Duration(milliseconds: 1000)));
-                      await Store().delete(app);
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Remove')
-                ),
-                Padding(padding: EdgeInsets.only(right: 10),),
-              ],),
-              // BUTTON.View(storeButton, onPressCallback: () => link(),
-              //     child: Padding(padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10), child: Text(phrase.loadApp, style: TextStyle(fontSize: 17)))
-              // ),
-            ]),
-          ),
-          contentPadding: EdgeInsets.fromLTRB(4.0, 16.0, 4.0, 2.0),
-          insetPadding: EdgeInsets.zero,
-        );
-      },
-    );
-  }
-
-  Future<void> quitDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      useRootNavigator: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('${phrase.close} ${phrase.application}?'),
-          content: SizedBox(width: MediaQuery.of(context).size.width - 60, height: 80,
-            child: Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.end, children: [
-              Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.end, children: [
-                TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(phrase.no)),
-                TextButton(
-                    onPressed: () async {
-                      Navigator.of(context).pop();
-                      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-                      // SystemNavigator.pop()
-                    },
-                    child: Text(phrase.yes)
-                ),
-              ],),
-              // BUTTON.View(storeButton, onPressCallback: () => link(),
-              //     child: Padding(padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10), child: Text(phrase.loadApp, style: TextStyle(fontSize: 17)))
-              // ),
-            ]),
-          ),
-          contentPadding: EdgeInsets.fromLTRB(4.0, 20.0, 4.0, 10.0),
-          insetPadding: EdgeInsets.zero,
-        );
-      },
-    );
+      builder: (BuildContext context) => removeAppDialog(context, app));
   }
 
   @override
@@ -205,7 +208,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
           icon:  icon == null ? 'appdaddy' : null,
           image: icon,
           onTap: () => Store().launch(app, context),
-          onLongPress: () => removeApp(app));
+          onLongPress: () => showRemoveAppDialog(app));
 
       widget.model.items.add(item);
     }
@@ -216,7 +219,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     var addButton = FloatingActionButton.extended(
         label: Text(phrase.addApp),
         icon: Icon(Icons.add),
-        onPressed: () => addAppDialog(),
+        onPressed: () => showAddAppDialog(),
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
         splashColor: Theme.of(context).colorScheme.inversePrimary,
@@ -245,8 +248,6 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     var text = Column(mainAxisSize: MainAxisSize.min, children: [privacyButton,version]);
     var button = Store().busy ? busyButton : addButton;
 
-    var scaffold = Scaffold(floatingActionButton: button, body: SafeArea(child: Stack(children: [Center(child: store), Positioned(child: text, left: 10, bottom: 10), busy])));
-
-    return WillPopScope(onWillPop: () => quitDialog().then((value) => value as bool), child: scaffold);
+    return Scaffold(floatingActionButton: button, body: SafeArea(child: Stack(children: [Center(child: store), Positioned(child: text, left: 10, bottom: 10), busy])));
   }
 }

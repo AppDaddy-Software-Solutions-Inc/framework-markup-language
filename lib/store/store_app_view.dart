@@ -131,7 +131,7 @@ class AppFormState extends State<AppForm>
   @override
   Widget build(BuildContext context)
   {
-    var nameDecoration = InputDecoration(labelText: "Application Name",
+    var nameDecoration = InputDecoration(labelText: phrase.appName,
         labelStyle: TextStyle(fontSize: 12),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide()));
 
@@ -140,7 +140,7 @@ class AppFormState extends State<AppForm>
     var name = TextFormField(validator: _validateTitle, decoration: nameDecoration, style: style);
 
     var addressDecoration = InputDecoration(
-        labelText: "Application Address (https://mysite.com)",
+        labelText: phrase.appUrl,
         labelStyle: TextStyle(fontSize: 12),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide()));
 

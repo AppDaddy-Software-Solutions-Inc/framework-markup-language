@@ -187,6 +187,12 @@ class Phrases
     return 'Complete the form?';
   }
 
+  String get confirmExit
+  {
+    if (language == french) return '(FR) Are you sure you want to exit the app?';
+    return 'Are you sure you want to exit the app?';
+  }
+
   String get addApp
   {
     if (language == french) return '(FR) Add App';
@@ -197,6 +203,30 @@ class Phrases
   {
     if (language == french) return '(FR) Load App';
     return 'Load App';
+  }
+
+  String get removeApp
+  {
+    if (language == french) return '(FR) Remove App?';
+    return 'Remove App?';
+  }
+
+  String get appName
+  {
+    if (language == french) return '(FR) Application Name';
+    return 'Application Name';
+  }
+
+  String get appUrl
+  {
+    if (language == french) return '(FR) Application URL (https://yoursite.com)';
+    return 'Application URL (https://yoursite.com)';
+  }
+
+  String get remove
+  {
+    if (language == french) return '(FR) Remove';
+    return 'Remove';
   }
 
   String get fieldMandatory

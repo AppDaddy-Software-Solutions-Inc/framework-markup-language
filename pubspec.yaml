@@ -237,6 +237,6 @@ flutter:
     - assets/fonts/
 
   fonts:
-    - family: icons
+    - family: custom_icons
       fonts:
-        - asset: assets/fonts/icons.ttf
+        - asset: assets/fonts/custom_icons.ttf

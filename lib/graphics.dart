@@ -2110,7 +2110,8 @@ class Graphics
     //////////////////
     /* Custom Icons */
     //////////////////
-    'wingfoot'  : IconData(0xe800, fontFamily: 'icons', fontPackage: null),
-    'appdaddy'  : IconData(0xe801, fontFamily: 'icons', fontPackage: null),
+    'goodyear'  : IconData(0xe800, fontFamily: 'custom_icons', fontPackage: "fml"),
+    'wingfoot'  : IconData(0xe800, fontFamily: 'custom_icons', fontPackage: "fml"),
+    'appdaddy'  : IconData(0xe801, fontFamily: 'custom_icons', fontPackage: "fml"),
   };
 }

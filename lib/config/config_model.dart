@@ -51,14 +51,13 @@ class ConfigModel
 
     // settings
     for (dynamic node in e.children) {
-      if (node is XmlElement)
-    {
-      String key   = node.localName;
-      String? value = Xml.get(node: node, tag: 'value');
+      if (node is XmlElement) {
+        String key   = node.localName;
+        String? value = Xml.get(node: node, tag: 'value');
 
-      if (isNullOrEmpty(value)) value = Xml.getText(node);
-      if (!isNullOrEmpty(key) && (key.toLowerCase() != 'parameter')) settings[key] = value;
-    }
+        if (isNullOrEmpty(value)) value = Xml.getText(node);
+        if (!isNullOrEmpty(key) && (key.toLowerCase() != 'parameter')) settings[key] = value;
+      }
     }
 
     // parameters

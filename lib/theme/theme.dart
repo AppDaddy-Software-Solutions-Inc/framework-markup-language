@@ -30,12 +30,31 @@ class ThemeNotifier with ChangeNotifier
       // set the theme
       libraryLoader!.future.whenComplete(()
       {
-        setTheme(brightness: FmlEngine.defaultBrightness, color: FmlEngine.defaultColor, font: FmlEngine.defaultFont);
+        var brightness = System.app?.brightness ?? FmlEngine.defaultBrightness;
+        var color = System.app?.color ?? FmlEngine.defaultColor;
+        var font = System.app?.font ?? FmlEngine.defaultFont;
+        setTheme(brightness: brightness, color: color, font: font);
       });
     }
   }
   getTheme() => _themeData;
 
+  TextTheme? _getTextTheme(String font)
+  {
+    TextTheme? theme;
+    if (libraryLoader?.isCompleted ?? false)
+    {
+      try
+      {
+        theme = fonts.GoogleFonts.getTextTheme(font);
+      }
+      catch(e)
+      {
+        Log().exception(e);
+      }
+    }
+    return theme;
+  }
   void setTheme({required Brightness brightness, required Color color, required String font, bool notify = true}) async
   {
     // set brightness
@@ -44,17 +63,18 @@ class ThemeNotifier with ChangeNotifier
     // set color
     var sameColor = toStr(color) == toStr(System.theme.colorScheme);
 
-    // set font && text theme
-    var sameFont = toStr(font) == System.theme.font;
+    // get text theme
+    var textTheme = _getTextTheme(font);
+    if (textTheme == null) font = System.theme.font ?? FmlEngine.defaultFont;
 
-    // set text theme
-    var text = (libraryLoader?.isCompleted ?? false) ? fonts.GoogleFonts.getTextTheme(font) : null;
+    // set font
+    var sameFont = toStr(font) == System.theme.font;
 
     // set the theme
     if (!sameBrightness || !sameColor || !sameFont)
     {
       // set the theme
-      _themeData = ThemeData(useMaterial3: true, brightness: brightness, colorSchemeSeed: color, fontFamily: font, textTheme: text);
+      _themeData = ThemeData(useMaterial3: true, brightness: brightness, colorSchemeSeed: color, fontFamily: font, textTheme: textTheme);
 
       // set system theme bindables
       _setSystemBindables(brightness: brightness, color: color, font: font);

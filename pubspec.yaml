@@ -235,13 +235,8 @@ flutter:
     - assets/
     - assets/audio/
     - assets/fonts/
-    - assets/images/
 
   fonts:
-    - family: icons
+    - family: custom_icons
       fonts:
-        - asset: assets/fonts/icons.ttf
-    - family: Roboto
-      fonts:
-        - asset: assets/fonts/Roboto-Regular.ttf
-        - asset: assets/fonts/Roboto-Medium.ttf
+        - asset: assets/fonts/custom_icons.ttf

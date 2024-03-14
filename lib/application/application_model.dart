@@ -61,6 +61,11 @@ class ApplicationModel extends WidgetModel {
   String? icon_light;
   String? icon_dark;
 
+  // theme settings
+  Brightness get brightness => toEnum(settings('BRIGHTNESS')?.toLowerCase().trim(), Brightness.values) ?? FmlEngine.defaultBrightness;
+  Color get color => toColor(settings('COLOR') ?? settings('PRIMARY_COLOR') ?? settings('COLOR_SCHEME')) ?? FmlEngine.defaultColor;
+  String  get font => settings('BRIGHTNESS')?.toLowerCase().trim() ?? FmlEngine.defaultFont;
+
   // default page transition
   PageTransitions? transition;
 
@@ -233,7 +238,8 @@ class ApplicationModel extends WidgetModel {
   }
 
   // loads the config
-  Future<ConfigModel?> _getConfig(bool refresh) async {
+  Future<ConfigModel?> _getConfig(bool refresh) async
+  {
     ConfigModel? model;
 
     /// parse the config
@@ -248,7 +254,8 @@ class ApplicationModel extends WidgetModel {
     }
 
     // model created?
-    if (model != null) {
+    if (model != null)
+    {
       // set fml version support level
       fmlVersion = toVersionNumber(model.settings["FML_VERSION"]);
 
@@ -355,28 +362,12 @@ class ApplicationModel extends WidgetModel {
     }
 
     // set the theme
-    setTheme(notify: notifyOnThemeChange);
+    if (context != null) {
+      var notifier = Provider.of<ThemeNotifier>(context!, listen: false);
+      notifier.setTheme(brightness: brightness, color: color, font: font, notify: notifyOnThemeChange);
+    }
   }
 
-  void setTheme({required bool notify})
-  {
-    if (context == null) return;
-
-    // theme brightness
-    var brightness = FmlEngine.defaultBrightness;
-    if (settings('BRIGHTNESS')?.toLowerCase().trim() == 'light') brightness = Brightness.light;
-    if (settings('BRIGHTNESS')?.toLowerCase().trim() == 'dark')  brightness = Brightness.dark;
-
-    // theme color
-    var color = toColor(settings('PRIMARY_COLOR') ?? settings('COLOR_SCHEME')) ?? FmlEngine.defaultColor;
-
-    // theme font
-    var font = settings('FONT') ?? FmlEngine.defaultFont;
-
-    // set the theme
-    var notifier = Provider.of<ThemeNotifier>(context!, listen: false);
-    notifier.setTheme(brightness: brightness, color: color, font: font, notify: notify);
-  }
 
   void close() {
     // start all datasources

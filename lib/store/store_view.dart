@@ -18,7 +18,6 @@ import 'package:fml/widgets/input/input_model.dart';
 import 'package:fml/widgets/menu/menu_view.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
-import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 

@@ -30,7 +30,10 @@ class ThemeNotifier with ChangeNotifier
       // set the theme
       libraryLoader!.future.whenComplete(()
       {
-        setTheme(brightness: FmlEngine.defaultBrightness, color: FmlEngine.defaultColor, font: FmlEngine.defaultFont);
+        var brightness = System.app?.brightness ?? FmlEngine.defaultBrightness;
+        var color = System.app?.color ?? FmlEngine.defaultColor;
+        var font = System.app?.font ?? FmlEngine.defaultFont;
+        setTheme(brightness: brightness, color: color, font: font);
       });
     }
   }

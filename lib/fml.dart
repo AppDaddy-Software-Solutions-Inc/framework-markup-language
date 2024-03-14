@@ -136,7 +136,7 @@ class FmlEngine
   Widget launch()
   {
     // fml engine
-    var engine = ChangeNotifierProvider<ThemeNotifier>(child: Application(key: FmlEngine.key), create: (_) => _setTheme());
+    var engine = ChangeNotifierProvider<ThemeNotifier>(child: Application(key: FmlEngine.key), create: (_) => onThemeNotifierCreated());
 
     // splash screen
     var splash = Splash(key: UniqueKey(), onInitializationComplete: () => runApp(engine));
@@ -147,7 +147,7 @@ class FmlEngine
     return splash;
   }
 
-  _setTheme()
+  onThemeNotifierCreated()
   {
     try
     {

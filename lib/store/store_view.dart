@@ -135,6 +135,27 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
       Navigator.of(context).pop();
   }
 
+  Widget? _getIcon(ApplicationModel app)
+  {
+    var icon = app.icon;
+    if (icon == null) return null;
+    if (Theme.of(context).brightness == Brightness.light) icon = app.icon_light ?? icon;
+    if (Theme.of(context).brightness == Brightness.dark)  icon = app.icon_dark  ?? icon;
+
+    var image = toDataUri(icon);
+    if (image == null) return null;
+
+    // svg image?
+    if (image.mimeType == "image/svg+xml")
+    {
+      return Padding(padding: EdgeInsets.all(10), child: SvgPicture.memory(image.contentAsBytes(), width: 48, height: 48));
+    }
+    else
+    {
+      return Padding(padding: EdgeInsets.all(10), child: Image.memory(image.contentAsBytes(), width: 48, height: 48, fit: null));
+    }
+  }
+
   Widget removeAppDialog(BuildContext context, ApplicationModel app)
   {
     var style = TextStyle(color: Theme.of(context).colorScheme.primary);
@@ -143,29 +164,9 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     style = TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 18);
     var appTitle = Text(app.title ?? "", style: style);
 
-    Widget? appIcon;
-    var icon = app.icon;
-    if (Theme.of(context).brightness == Brightness.light) icon = app.icon_light ?? icon;
-    if (Theme.of(context).brightness == Brightness.dark)  icon = app.icon_dark ?? icon;
-    if (icon != null)
-    {
-      var image = toDataUri(icon);
-      if (image != null)
-      {
-        // svg image?
-        if (image.mimeType == "image/svg+xml")
-        {
-          appIcon = SvgPicture.memory(image.contentAsBytes(), width: 48, height: 48);
-        }
-        else
-        {
-          appIcon = Image.memory(image.contentAsBytes(), width: 48, height: 48, fit: null);
-        }
-        appIcon = Padding(padding: EdgeInsets.all(10), child: appIcon);
-      }
-    }
+    Widget? appIcon = _getIcon(app);
 
-    style = TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 14);
+    style = TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 10);
     var appUrl = Padding(padding: EdgeInsets.only(bottom: 20), child: Text('${app.url}', style: style));
 
     style = TextStyle(color: Theme.of(context).colorScheme.primary);
@@ -177,7 +178,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
 
     var box = DecoratedBox(decoration: BoxDecoration(border: Border.all(color: Theme.of(context).colorScheme.onBackground), borderRadius: BorderRadius.all(Radius.circular(10))), child: view);
 
-    var content = Container(child: Column(mainAxisSize: MainAxisSize.min, children: [Padding(padding: EdgeInsets.only(bottom:10)), box, Padding(padding: EdgeInsets.only(bottom:15)), buttons]));
+    var content = Container(child: Column(mainAxisSize: MainAxisSize.min, children: [Padding(padding: EdgeInsets.only(bottom:10)), box, Padding(padding: EdgeInsets.only(bottom:25)), buttons, Padding(padding: EdgeInsets.only(bottom:15))]));
 
     return AlertDialog(title: title, content: content, contentPadding: EdgeInsets.fromLTRB(4.0, 16.0, 4.0, 2.0), insetPadding: EdgeInsets.zero);
   }

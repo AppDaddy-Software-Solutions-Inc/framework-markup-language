@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
         color: Colors.lightBlue,
         brightness: Brightness.dark,
         font: 'Roboto',
+        transition: PageTransitions.platform,
         splashBackgroundColor: Colors.black).launch();
   }
 }

@@ -61,6 +61,9 @@ class ApplicationModel extends WidgetModel {
   String? icon_light;
   String? icon_dark;
 
+  // default page transition
+  PageTransitions? transition;
+
   // application icons position
   // on the store display (future use for multi-page and ordering)
   String? page;
@@ -109,6 +112,7 @@ class ApplicationModel extends WidgetModel {
     this.icon,
     this.icon_light,
     this.icon_dark,
+    this.transition,
     this.page,
     this.order,
     String? jwt}) : super(parent, myId, scope: Scope(id: myId))
@@ -253,6 +257,9 @@ class ApplicationModel extends WidgetModel {
       icon_light = await _getIcon(model.settings["APP_ICON_LIGHT"] ?? model.settings["ICON_LIGHT"]);
       icon_dark  = await _getIcon(model.settings["APP_ICON_DARK"]  ?? model.settings["ICON_DARK"]);
 
+      // default transition
+      transition = toEnum(model.settings["TRANSITION"], PageTransitions.values);
+
       // mirror?
       var mirrorApi = model.settings["MIRROR_API"];
       if (mirrorApi != null && !FmlEngine.isWeb && scheme != "file") {
@@ -347,6 +354,14 @@ class ApplicationModel extends WidgetModel {
       }
     }
 
+    // set the theme
+    setTheme(notify: notifyOnThemeChange);
+  }
+
+  void setTheme({required bool notify})
+  {
+    if (context == null) return;
+
     // theme brightness
     var brightness = FmlEngine.defaultBrightness;
     if (settings('BRIGHTNESS')?.toLowerCase().trim() == 'light') brightness = Brightness.light;
@@ -359,7 +374,8 @@ class ApplicationModel extends WidgetModel {
     var font = settings('FONT') ?? FmlEngine.defaultFont;
 
     // set the theme
-    Provider.of<ThemeNotifier>(context!, listen: false).setTheme(brightness: brightness, color: color, font: font, notify: notifyOnThemeChange);
+    var notifier = Provider.of<ThemeNotifier>(context!, listen: false);
+    notifier.setTheme(brightness: brightness, color: color, font: font, notify: notify);
   }
 
   void close() {
@@ -388,6 +404,7 @@ class ApplicationModel extends WidgetModel {
     map["icon"] = icon;
     map["icon_light"] = icon_light;
     map["icon_dark"] = icon_dark;
+    map["transition"] = fromEnum(transition);
     map["page"] = page;
     map["order"] = order;
     map["config"] = _config?.xml;
@@ -398,13 +415,15 @@ class ApplicationModel extends WidgetModel {
   static Future<ApplicationModel?> _fromMap(dynamic map) async {
     ApplicationModel? app;
     if (map is Map<String, dynamic>) {
-      app = ApplicationModel(System(),
+      app = ApplicationModel(
+          System(),
           key: fromMap(map, "key"),
           url: fromMap(map, "url"),
           title: fromMap(map, "title"),
           icon: fromMap(map, "icon"),
           icon_light: fromMap(map, "icon_light"),
           icon_dark: fromMap(map, "icon_dark"),
+          transition: toEnum(fromMap(map, "transition"),PageTransitions.values),
           page: fromMap(map, "page"),
           order: fromMapAsInt(map, "order"),
           jwt: fromMap(map, "jwt"));

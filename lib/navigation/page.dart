@@ -1,6 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/helpers/helpers.dart';
+import 'package:fml/system.dart';
 
 class PageConfiguration
 {
@@ -61,14 +63,15 @@ class CustomPageBasedMaterialPageRoute<T> extends PageRoute<T> with MaterialRout
   @override
   Duration get reverseTransitionDuration => durationBack != null ? Duration(milliseconds: durationBack!) : super.reverseTransitionDuration;
 
-  String? get transition
+  PageTransitions get transition
   {
+    PageTransitions? transition;
     if (settings.arguments is PageConfiguration)
     {
       PageConfiguration? args = settings.arguments as PageConfiguration;
-      return args.transition?.split(",")[0].toLowerCase().trim();
+      transition = toEnum(args.transition?.split(",")[0].toLowerCase().trim(), PageTransitions.values);
     }
-    return null;
+    return transition ?? System.app?.transition ?? FmlEngine.defaultTransition;
   }
 
   int? get duration
@@ -96,28 +99,38 @@ class CustomPageBasedMaterialPageRoute<T> extends PageRoute<T> with MaterialRout
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child)
   {
-    switch(transition) {
-      case 'fade':
+    switch(transition)
+    {
+      // no transition
+      case PageTransitions.none:
+      return child;
+
+      case PageTransitions.fade:
         return FadeUpwardsPageTransitionsBuilder().buildTransitions(this, context, animation, secondaryAnimation, child);
 
-      case 'slide':
-      case 'slideright':
+      case PageTransitions.slide:
+      case PageTransitions.slideright:
         return SlideTransition(position: Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero,).animate(animation), child: child);
 
-      case 'slideleft':
+      case PageTransitions.slideleft:
         return SlideTransition(position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero,).animate(animation), child: child);
 
-      case 'zoom':
+      case PageTransitions.zoom:
         return ScaleTransition(scale: Tween<double>(begin: 0.0, end: 1.0,)
             .animate(CurvedAnimation(parent: animation, curve: Curves.fastOutSlowIn)), child: child,);
 
-      case 'rotate':
+      case PageTransitions.rotate:
         return RotationTransition(turns: Tween<double>(begin: 0.0, end: 1.0,)
             .animate(CurvedAnimation(parent: animation, curve: Curves.linear,),), child: child,);
 
-      // default flutter transition
+      // platform specific
+      case PageTransitions.platform:
       default:
-        return FadeUpwardsPageTransitionsBuilder().buildTransitions(this, context, animation, secondaryAnimation, child);
+          PageTransitionsBuilder builder = ZoomPageTransitionsBuilder();
+          if (TargetPlatform == TargetPlatform.iOS)     builder = CupertinoPageTransitionsBuilder();
+          if (TargetPlatform == TargetPlatform.linux)   builder = OpenUpwardsPageTransitionsBuilder();
+          if (TargetPlatform == TargetPlatform.macOS)   builder = FadeUpwardsPageTransitionsBuilder();
+          return builder.buildTransitions(this, context, animation, secondaryAnimation, child);
     }
   }
 }

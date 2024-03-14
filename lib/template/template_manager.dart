@@ -155,7 +155,6 @@ class TemplateManager
     if (uri != null)
     {
       var filepath = uri.asFilePath();
-      Log().debug ("Writing $url to $filepath");
       return await Platform.writeFile(filepath, xml);
     }
     return false;

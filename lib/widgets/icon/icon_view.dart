@@ -27,9 +27,7 @@ class _IconViewState extends WidgetState<IconView> {
     double? size = 32;
     if (widget.model.size != null) size = widget.model.size;
 
-    ///////////
-    /* Color */
-    ///////////
+    // icon color
     Color? color = Theme.of(context).colorScheme.inverseSurface;
     if (widget.model.color != null) color = widget.model.color;
     if (widget.model.opacity != null) {

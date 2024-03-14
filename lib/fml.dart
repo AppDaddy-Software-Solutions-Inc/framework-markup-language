@@ -11,6 +11,7 @@ import 'package:fml/theme/theme.dart';
 import 'dart:io' as io;
 
 enum _ApplicationTypes { singleApp, multiApp }
+enum PageTransitions {platform, none, fade, slide, slideright, slideleft, zoom, rotate}
 
 /// The FML Engine
 class FmlEngine
@@ -58,6 +59,9 @@ class FmlEngine
   static late String _font;
   static String get defaultFont => _font;
 
+  static late PageTransitions _transition;
+  static PageTransitions get defaultTransition => _transition;
+
   static late Brightness _brightness;
   static Brightness get defaultBrightness => _brightness;
 
@@ -94,6 +98,9 @@ class FmlEngine
     // default theme brightness on startup
     String font = 'Roboto',
 
+    // default page transition
+    PageTransitions transition = PageTransitions.platform,
+
     // splash screen background color
     Color? splashBackgroundColor,
   })
@@ -106,6 +113,7 @@ class FmlEngine
     FmlEngine._version = version;
     FmlEngine._type = (multiApp && !isWeb) ? _ApplicationTypes.multiApp : _ApplicationTypes.singleApp;
     FmlEngine._font = font;
+    FmlEngine._transition = transition;
     FmlEngine._color = color;
     FmlEngine._brightness = brightness;
     FmlEngine._splashBackgroundColor = splashBackgroundColor;

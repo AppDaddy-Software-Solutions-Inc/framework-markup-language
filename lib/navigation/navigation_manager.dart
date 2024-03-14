@@ -203,7 +203,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     }
     else
     {
-      return _confirmAppExit();
+      return showQuitDialog();
     }
   }
 
@@ -523,32 +523,40 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     return ok;
   }
 
-  Future<bool> _confirmAppExit() async
+  Widget quitAppDialog(BuildContext context)
   {
-    final bool result;
-    if (navigatorKey.currentContext != null) {
-      result = await showDialog<bool>(
-          context: navigatorKey.currentContext!,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('Exit App'),
-              content: const Text('Are you sure you want to exit the app?'),
-              actions: [
-                TextButton(
-                  child: const Text('Cancel'),
-                  onPressed: () => Navigator.pop(context, true),
-                ),
-                TextButton(
-                  child: const Text('Confirm'),
-                  onPressed: () => Navigator.pop(context, false),
-                ),
-              ],
-            );
-          }) ?? false;}
-    else {
-      result = true;
-    }
-    return result;
+    var style = TextStyle(color: Theme.of(context).colorScheme.primary);
+    var title = Text('${phrase.close} ${phrase.application}?', style: style);
+
+    style = TextStyle(color: Theme.of(context).colorScheme.onBackground);
+    var msg = Padding(padding: EdgeInsets.only(top: 0, bottom: 10), child: Text(phrase.confirmExit, style: style));
+
+    style = TextStyle(color: Theme.of(context).colorScheme.primary);
+    var no  = TextButton(onPressed: () => Navigator.pop(context, true),  child: Text(phrase.no, style: style));
+    var yes = TextButton(onPressed: () => Navigator.pop(context, false), child: Text(phrase.yes, style: style));
+    var buttons = Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.end, children: [no, yes]);
+
+    var width = MediaQuery.of(context).size.width - 60;
+    var content = SizedBox(width: width, height: 100, child: Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.center, children: [msg,buttons]));
+
+    return AlertDialog(
+        title: title,
+        content: content,
+        contentPadding: EdgeInsets.fromLTRB(4.0, 10.0, 4.0, 10.0),
+        insetPadding: EdgeInsets.zero);
+  }
+
+  Future<bool> showQuitDialog() async
+  {
+    if (navigatorKey.currentContext == null) return true;
+
+    bool? result = await showDialog<bool>(
+        context: navigatorKey.currentContext!,
+        barrierDismissible: true,
+        useRootNavigator: false,
+        builder: (context) => quitAppDialog(context));
+
+    return result ?? false;
   }
 
   Future<bool> _openBrowser(String url) async

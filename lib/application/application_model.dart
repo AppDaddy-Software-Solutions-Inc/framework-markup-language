@@ -64,7 +64,7 @@ class ApplicationModel extends WidgetModel {
   // theme settings
   Brightness get brightness => toEnum(settings('BRIGHTNESS')?.toLowerCase().trim(), Brightness.values) ?? FmlEngine.defaultBrightness;
   Color get color => toColor(settings('COLOR') ?? settings('PRIMARY_COLOR') ?? settings('COLOR_SCHEME')) ?? FmlEngine.defaultColor;
-  String  get font => settings('BRIGHTNESS')?.toLowerCase().trim() ?? FmlEngine.defaultFont;
+  String  get font => settings('FONT') ?? FmlEngine.defaultFont;
 
   // default page transition
   PageTransitions? transition;
@@ -260,7 +260,7 @@ class ApplicationModel extends WidgetModel {
       fmlVersion = toVersionNumber(model.settings["FML_VERSION"]);
 
       // get the icon
-      icon = await _getIcon(model.settings["APP_ICON"] ?? model.settings["ICON"]);
+      icon       = await _getIcon(model.settings["APP_ICON"] ?? model.settings["ICON"]);
       icon_light = await _getIcon(model.settings["APP_ICON_LIGHT"] ?? model.settings["ICON_LIGHT"]);
       icon_dark  = await _getIcon(model.settings["APP_ICON_DARK"]  ?? model.settings["ICON_DARK"]);
 
@@ -269,9 +269,11 @@ class ApplicationModel extends WidgetModel {
 
       // mirror?
       var mirrorApi = model.settings["MIRROR_API"];
-      if (mirrorApi != null && !FmlEngine.isWeb && scheme != "file") {
+      if (mirrorApi != null && !FmlEngine.isWeb && scheme != "file")
+      {
         Uri? uri = URI.parse(mirrorApi, domain: domain);
-        if (uri != null) {
+        if (uri != null)
+        {
           mirror = Mirror(uri.url);
           mirror!.execute();
         }

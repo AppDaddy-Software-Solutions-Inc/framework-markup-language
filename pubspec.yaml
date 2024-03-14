@@ -240,7 +240,3 @@ flutter:
     - family: icons
       fonts:
         - asset: assets/fonts/icons.ttf
-    - family: Roboto
-      fonts:
-        - asset: assets/fonts/Roboto-Regular.ttf
-        - asset: assets/fonts/Roboto-Medium.ttf

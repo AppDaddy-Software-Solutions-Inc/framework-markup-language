@@ -192,10 +192,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
 
     // announce data for late binding
     var datasource = scope?.getDataSource(this.datasource);
-    if (datasource?.data?.isNotEmpty ?? false)
-    {
-      onDataSourceSuccess(datasource!, datasource.data);
-    }
+    if (datasource != null) onDataSourceSuccess(datasource, datasource.data);
   }
 
   @override
@@ -203,17 +200,18 @@ class SelectModel extends DecoratedInputModel implements IFormField
   {
     try
     {
-      if (prototype == null) return true;
-
       // clear options
       _clearOptions();
 
       // build options
-      list?.forEach((row)
+      if (prototype != null)
       {
-        OptionModel? model = OptionModel.fromXml(this, prototype, data: row);
-        if (model != null) options.add(model);
-      });
+        list?.forEach((row)
+        {
+          OptionModel? model = OptionModel.fromXml(this, prototype, data: row);
+          if (model != null) options.add(model);
+        });
+      }
 
       // add empty option to list only if nodata isn't displayed
       if (addempty && (noDataOption == null || options.length > 0))

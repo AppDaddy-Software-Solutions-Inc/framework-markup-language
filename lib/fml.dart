@@ -43,8 +43,8 @@ class FmlEngine
   static late String _version;
   static String get version => _version;
 
-  // application title
-  // only used in Android when viewing open applications
+  /// application title
+  /// only used in Android when viewing open applications
   static late String _title;
   static String get title => _title;
 
@@ -72,36 +72,39 @@ class FmlEngine
   static Color? get splashBackgroundColor => _splashBackgroundColor;
 
   static final FmlEngine _singleton =  FmlEngine._init();
+
+  /// This is the main entry point for the FML
+  /// language parser.
   factory FmlEngine({
 
-    // this domain (url) is used to locate config.xml on startup
-    // Used in Single Application mode only and on Web when developing on localhost
-    // Set this to file://app
+    /// this domain (url) is used to locate config.xml on startup
+    /// Used in Single Application mode only and on Web when developing on localhost
+    /// Set this to file://app
     String domain = "https://test.appdaddy.co",
 
-    // application version
+    /// application version
     String version = "1.0.0",
 
-    // application title
+    /// application title
     String title = "My Application Title",
 
-    // multi app - ignored on web. on desktop and mobile
-    // launches the front page store app on start for multiApp.
+    /// multi app - ignored on web. on desktop and mobile
+    /// launches the front page store app on start for multiApp.
     bool multiApp = true,
 
-    // default theme color on startup
+    /// default theme color on startup
     Color color = Colors.lightBlue,
 
-    // default theme brightness on startup
+    /// default theme brightness on startup
     Brightness brightness = Brightness.light,
 
-    // default theme brightness on startup
+    /// default theme brightness on startup
     String font = 'Roboto',
 
-    // default page transition
+    /// default page transition
     PageTransitions transition = PageTransitions.platform,
 
-    // splash screen background color
+    /// splash screen background color
     Color? splashBackgroundColor,
   })
   {

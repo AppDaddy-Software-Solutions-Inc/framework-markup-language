@@ -5,7 +5,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/nodata/nodata_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -15,17 +14,23 @@ import 'package:fml/helpers/helpers.dart';
 
 class SelectModel extends DecoratedInputModel implements IFormField
 {
-  // holds no data model
-  NoDataModel? noData;
-
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
+
+  // options
+  final List<OptionModel> options = [];
 
   // add empty value
   bool addempty = true;
 
-  // options
-  final List<OptionModel> options = [];
+  // holds no data option model
+  OptionModel? noDataOption;
+
+  // holds no match option model
+  OptionModel? noMatchOption;
+
+  // holds the empty option model
+  OptionModel? emptyOption;
 
   // selected option
   OptionModel? selectedOption;
@@ -93,9 +98,6 @@ class SelectModel extends DecoratedInputModel implements IFormField
     value     = Xml.get(node: xml, tag: 'value');
     addempty  = toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
 
-    // holds no data model
-    noData = findChildOfExactType(NoDataModel);
-
     // build select options
     _buildOptions();
 
@@ -144,12 +146,45 @@ class SelectModel extends DecoratedInputModel implements IFormField
     // build options
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
+    // strip out special options
+    for (var option in options.toList())
+    {
+      var type = option.type?.toLowerCase().trim();
+      switch (type)
+      {
+        case "nodata":
+          noDataOption = option;
+          children?.remove(option);
+          options.remove(option);
+          break;
+
+        case "empty":
+          emptyOption = option;
+          children?.remove(option);
+          options.remove(option);
+          break;
+
+        case "nomatch":
+          noMatchOption = option;
+          children?.remove(option);
+          options.remove(option);
+          break;
+      }
+    }
+
     // set prototype
     if (!isNullOrEmpty(this.datasource) && options.isNotEmpty)
     {
       prototype = prototypeOf(options.first.element);
       options.first.dispose();
       options.removeAt(0);
+    }
+
+    // add empty option to list
+    if (addempty)
+    {
+      OptionModel model = emptyOption ?? OptionModel(this, "$id-0", value: '');
+      options.insert(0,model);
     }
 
     // build options
@@ -174,7 +209,11 @@ class SelectModel extends DecoratedInputModel implements IFormField
       _clearOptions();
 
       // add empty option to list
-      if (addempty) options.add(OptionModel(this, "$id-0", value: ''));
+      if (addempty)
+      {
+        OptionModel model = emptyOption ?? OptionModel(this, "$id-0", value: '');
+        options.add(model);
+      }
 
       // build options
       list?.forEach((row)
@@ -202,6 +241,16 @@ class SelectModel extends DecoratedInputModel implements IFormField
     selectedOption = null;
     data = null;
   }
+
+  @override
+  dispose()
+  {
+    noDataOption?.dispose();
+    noMatchOption?.dispose();
+    emptyOption?.dispose();
+    super.dispose();
+  }
+
 
   Future<bool> setSelectedOption(OptionModel? option) async
   {

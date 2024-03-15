@@ -17,6 +17,21 @@ class OptionModel extends RowModel
   @override
   String? get valign => super.valign ?? "center";
 
+  // type
+  StringObservable? _type;
+  set type(dynamic v)
+  {
+    if (_type != null)
+    {
+      _type!.set(v);
+    }
+    else if (v != null)
+    {
+      _type = StringObservable(null, v, scope: scope);
+    }
+  }
+  String? get type => _type?.get();
+  
   // label
   StringObservable? _label;
   set label(dynamic v)
@@ -140,6 +155,7 @@ class OptionModel extends RowModel
     // label specified but not value
     if (value == null && label != null) value = label;
 
+    type = Xml.get(node: xml, tag: 'type');
     this.label = label;
     this.value = value;
   }

@@ -1,11 +1,20 @@
 name: fml_example
+version: 3.0.0
 description: Flutter Markup Language
 homepage: https://fml.dev
 repository: https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language.git
-version: 1.0.0
 
 environment:
   sdk: '>=3.3.1 <4.0.0'
+  flutter: '>=3.19.0'
+
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
 
 dependencies:
   flutter:
@@ -28,12 +37,10 @@ flutter:
     - assets/images/
     - assets/applications/
 
-    # counter app
     - assets/applications/example/
     - assets/applications/example/images/
     - assets/applications/example/templates/
 
-    # fmlpad app
     - assets/applications/fmlpad/
     - assets/applications/fmlpad/images/
     - assets/applications/fmlpad/templates/

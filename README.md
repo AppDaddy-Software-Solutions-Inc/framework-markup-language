@@ -1,4 +1,4 @@
-# Flutter Markup Language
+# ![logo](https://fml.dev/images/logo-25x25.png) Flutter Markup Language
 
 [![GitHub Release](https://img.shields.io/github/v/release/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language.svg?label=release%20version&style=plastic&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAACQElEQVQokZ2STUhUYRSG3+/77p07M/5MqVM0piXOJkpIMiENwomsdgnSIvtZhIHYPshdVLZrEUSCC2nnQtsULRKTyjJuf4JM9jOkWKN1jZzRmTtz7/2+E6NCP0vP4iwO533fA8/BRou1jjvg4ABbc1BKaSAaYBC7SspFac6HU3NTlhkfHoE7Ow90tsNXWw3t/0DO2Dml0KEZgOdhOTn1NTFjxiHzDqD/Wf9HSETnGVi/pgmIIBuduPvw7MKzyX0oK00hGJAQ2mvQesBqXzvzAgj9RFSwm8g76vDPzwuLsN2bCPpfQvBXSC/dAqlVFV8P6yKiPhRmgj/3pDzAiaGpsy0fbWtuQjoziQ8zwO6tF7EjfBvLEhpj7Cop6ikYBQz22FEUg8eOK0lVFTs31ZTtifXlHLn3l+0+zbQdPQhPdMHOlWuk4GcEFBtsYsZBrIzoUrHADVsqLFnSTH1nPQ1njjQKDVUjCUIqa8NXpI+zltE8QsWie17y++YPp6NcsGsttT5PD2AwaeG07soTXOFeAAQPwBMb7TliQ6x1LA9hcJgpdWgxT2MIGwi//5SsTKcqt8UaIkV+mJlFlZNKrYT8/MqLFRqadwiaxhlSOQXheKYeDl52J83r1sCDiOUrGfw2Pde9vbEuGqmPugbnynGU8mgNglbAIjgDN/Qsl24vHr0hlG7uRUXopBVP7LfiX+oTZo1dd6wZldEtwIr8i+MqSwZyPEAP3oHfGAbRW4RDWQR91el301j4OAvd2PBrrxeA3wx//v4Gwt9jAAAAAElFTkSuQmCC&logoWidth=14)](https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language/releases)
 [![GitHub Stars](https://img.shields.io/github/stars/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language.svg?label=github%20stars&style=plastic&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAACQElEQVQokZ2STUhUYRSG3+/77p07M/5MqVM0piXOJkpIMiENwomsdgnSIvtZhIHYPshdVLZrEUSCC2nnQtsULRKTyjJuf4JM9jOkWKN1jZzRmTtz7/2+E6NCP0vP4iwO533fA8/BRou1jjvg4ABbc1BKaSAaYBC7SspFac6HU3NTlhkfHoE7Ow90tsNXWw3t/0DO2Dml0KEZgOdhOTn1NTFjxiHzDqD/Wf9HSETnGVi/pgmIIBuduPvw7MKzyX0oK00hGJAQ2mvQesBqXzvzAgj9RFSwm8g76vDPzwuLsN2bCPpfQvBXSC/dAqlVFV8P6yKiPhRmgj/3pDzAiaGpsy0fbWtuQjoziQ8zwO6tF7EjfBvLEhpj7Cop6ikYBQz22FEUg8eOK0lVFTs31ZTtifXlHLn3l+0+zbQdPQhPdMHOlWuk4GcEFBtsYsZBrIzoUrHADVsqLFnSTH1nPQ1njjQKDVUjCUIqa8NXpI+zltE8QsWie17y++YPp6NcsGsttT5PD2AwaeG07soTXOFeAAQPwBMb7TliQ6x1LA9hcJgpdWgxT2MIGwi//5SsTKcqt8UaIkV+mJlFlZNKrYT8/MqLFRqadwiaxhlSOQXheKYeDl52J83r1sCDiOUrGfw2Pde9vbEuGqmPugbnynGU8mgNglbAIjgDN/Qsl24vHr0hlG7uRUXopBVP7LfiX+oTZo1dd6wZldEtwIr8i+MqSwZyPEAP3oHfGAbRW4RDWQR91el301j4OAvd2PBrrxeA3wx//v4Gwt9jAAAAAElFTkSuQmCC&logoWidth=14)](https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language)
@@ -7,6 +7,7 @@
 <!-- [![GitHub Downloads](https://img.shields.io/github/downloads/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language/total.svg?label=github%20downloads&style=plastic&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAACQElEQVQokZ2STUhUYRSG3+/77p07M/5MqVM0piXOJkpIMiENwomsdgnSIvtZhIHYPshdVLZrEUSCC2nnQtsULRKTyjJuf4JM9jOkWKN1jZzRmTtz7/2+E6NCP0vP4iwO533fA8/BRou1jjvg4ABbc1BKaSAaYBC7SspFac6HU3NTlhkfHoE7Ow90tsNXWw3t/0DO2Dml0KEZgOdhOTn1NTFjxiHzDqD/Wf9HSETnGVi/pgmIIBuduPvw7MKzyX0oK00hGJAQ2mvQesBqXzvzAgj9RFSwm8g76vDPzwuLsN2bCPpfQvBXSC/dAqlVFV8P6yKiPhRmgj/3pDzAiaGpsy0fbWtuQjoziQ8zwO6tF7EjfBvLEhpj7Cop6ikYBQz22FEUg8eOK0lVFTs31ZTtifXlHLn3l+0+zbQdPQhPdMHOlWuk4GcEFBtsYsZBrIzoUrHADVsqLFnSTH1nPQ1njjQKDVUjCUIqa8NXpI+zltE8QsWie17y++YPp6NcsGsttT5PD2AwaeG07soTXOFeAAQPwBMb7TliQ6x1LA9hcJgpdWgxT2MIGwi//5SsTKcqt8UaIkV+mJlFlZNKrYT8/MqLFRqadwiaxhlSOQXheKYeDl52J83r1sCDiOUrGfw2Pde9vbEuGqmPugbnynGU8mgNglbAIjgDN/Qsl24vHr0hlG7uRUXopBVP7LfiX+oTZo1dd6wZldEtwIr8i+MqSwZyPEAP3oHfGAbRW4RDWQR91el301j4OAvd2PBrrxeA3wx//v4Gwt9jAAAAAElFTkSuQmCC&logoWidth=14)](https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language) -->
 
 ## Disclaimer
+
 This is a commercial package. To use this package, you need comply with the FML fair source [**License**](https://fml.dev/license.pdf)
 
 ## Why FML?
@@ -22,23 +23,35 @@ The syntactic sugar FML provides for designing user interfaces with the function
 
 ## Resources
 
-##### 1. **FML Online**
-To learn more about what FML can do for you or your company and get started building applications, visit [**fml.dev**](https://fml.dev/).
+##### 1. **Online**
+
+&rarr; Visit [**fml.dev**](https://fml.dev/)
+
+&rarr; Join the conversation on <img src='https://fml.dev/images/discord.svg' height="16"/> [**discord**](https://discord.gg/NEXAXmNXTZ)
+
+&rarr; Download and install the app
+
+<a href="https://apps.apple.com/us/app/flutter-markup-language/id1629916140" rel="apple"><img src='https://fml.dev/images/appstoreblk.svg' height="36"/></a> &nbsp;&nbsp;&nbsp;<a href="https://play.google.com/store/apps/details?id=co.appdaddy.fml" rel="android"><img src='https://fml.dev/images/playstoreblk.svg' height="36"/></a>
 
 ##### 2. **Documentation**
+
 For a full language overview of FML, check out our [**wiki**](https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language/wiki/Home).
 
 ##### 3. **Quick Start Guide**
+
 If you want to dive right in, have a look at our [**quick start guide**](https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language/wiki/Quick-Start-Guide).
 
 ##### 4. **Technical Briefs**
+
 Read published [**articles**](https://medium.com/@TheOlajos)
 
 ##### 5. **Videos**
+
 Watch our [**videos**](https://www.youtube.com/channel/UC96zHGCBQT_yklB1cKgR0qQ?sub_confirmation=1)
 
 ##### 6. **FML Pad (New!)**
-Try out [**FmlPad**](https://pad.fml.dev)
+
+Try out FML for yourself by going to [**FmlPad**](https://pad.fml.dev)
 
 ## Installation
 ##### 1. **Create a new project with support for all platforms**
@@ -99,8 +112,8 @@ assets:
 ##### 7. **Try running your new app in the web browser**
 
 Ensure **domain: example1** is set in the FmlEngine() constructor of your new main.dart file.
-Choose the web browser from the build options and compile and run. If all goes well, you should see the [**test.appdaddy.co**](https://fml.dev/downloads/main.zip) web site running on your local host. 
-In this scneario, FMNL templates rae being server from that web site.  
+Choose the web browser from the build options and compile and run. If all goes well, you should see the [**fml.dev**](https://fml.dev) web site running on your local host. 
+In this example, the FML templates rendering on your local application are being servered from the [**fml.dev**](https://fml.dev) web server.  
 
 ##### 8. **Try running your new app on the windows desktop (Single App Mode)**
 

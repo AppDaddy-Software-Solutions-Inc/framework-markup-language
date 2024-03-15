@@ -15,3 +15,27 @@
 - Added expanding and multiline features to INPUT
 - Improved behaviour of TEXT and BOX in scrollers.
 - Added alternating color and default sort to TABLE
+
+3.0.0
+- Packaged FML Engine
+- Significant modifications to base engine
+
+3.0.0+1
+- Readme file updates
+
+3.0.0+2
+- Readme file updates
+- Changes to pubspec.yaml (platform directive)
+
+3.0.0+3
+- Changes to README.md
+
+3.0.0+4
+- Changes to README.md
+  
+3.0.0+5
+- Changes to README.md
+- Attempt to resolve anaysis issue for "unknown platforms"
+
+3.0.0+6
+- renamed example folder

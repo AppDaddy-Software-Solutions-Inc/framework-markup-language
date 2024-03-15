@@ -1,11 +1,30 @@
 name: fml
+
+version: 3.0.0+6
+
 description: Flutter Markup Language
+
 homepage: https://fml.dev
+
 repository: https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language.git
-version: 3.0.0
+
+issue_tracker: https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language/issues
+
+documentation: https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language/wiki
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.3.1 <4.0.0'
+  flutter: '>=3.19.0'
+
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+screenshots:
 
 dependencies:
 

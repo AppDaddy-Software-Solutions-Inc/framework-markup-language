@@ -12,22 +12,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    String domain = 'https://test.appdaddy.co';
-    //String domain = 'file://fmlpad';
-    //String domain = 'file://example'
-
-    // String domain = 'http://10.69.4.245:81';
-    // String domain = 'http://10.67.130.75:8081';
-    // String domain = 'http://10.69.4.149:81';
-    // String domain = 'http://hbrapsweb.goodyear.com:8081';
-    // String domain = 'http://ludapsweb.ec.goodyear.com:8081';
-    // String domain = 'http://tpkapsweb.tpk.goodyear.com:8081';
+    String example1 = 'https://test.appdaddy.co';
+    String example2 = 'file://fmlpad';
+    String example3 = 'file://example';
 
     var version = "3.0.0";
 
     // launch the FML engine
     return FmlEngine(
-        domain: domain,
+        domain: example1,
         title: "Flutter Markup Language V$version",
         version: version,
         multiApp: true,

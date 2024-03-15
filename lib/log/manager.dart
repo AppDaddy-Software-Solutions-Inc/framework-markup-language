@@ -226,7 +226,7 @@ class Log
       buffer.write("<td>Date</td>");
       buffer.write("<td>Type</td>");
       buffer.write("<td>Message</td>");
-      buffer.write("<td>Caller</td>");
+      //buffer.write("<td>Caller</td>");
       buffer.write("</tr>");
 
       for (var log in logs) {
@@ -236,13 +236,13 @@ class Log
         if (log.type == "debug") color = '#006400';
 
         String message = log.message.replaceAll("<", " &lt;").replaceAll(">", " &gt;");
-        String caller  = log.caller != null ? log.caller!.replaceAll("<", " &lt;").replaceAll(">", " &gt;") : "";
+        //String caller  = log.caller != null ? log.caller!.replaceAll("<", " &lt;").replaceAll(">", " &gt;") : "";
 
         buffer.write('<tr style="color:$color">');
         buffer.write('<td>${log.date}</td>');
-        buffer.write('<td>${log.type}type</td>');
+        buffer.write('<td>${fromEnum(log.type)}type</td>');
         buffer.write('<td>$message</td>');
-        buffer.write('<td>$caller</td>');
+        //buffer.write('<td>$caller</td>');
         buffer.write("</tr>");
       }
 

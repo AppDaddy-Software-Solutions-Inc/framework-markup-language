@@ -1,4 +1,36 @@
-1.3.0
+3.0.0+9
+- mods to README file
+- 
+3.0.0+8
+- mods to README file
+- 
+3.0.0+7
+- mods to README file
+
+3.0.0+6
+- renamed example folder
+- 
+3.0.0+5
+- Changes to README.md
+- Attempt to resolve anaysis issue for "unknown platforms"
+
+3.0.0+4
+- Changes to README.md
+
+3.0.0+3
+- Changes to README.md
+
+3.0.0+2
+- Readme file updates
+- Changes to pubspec.yaml (platform directive)
+
+3.0.0+1
+- Readme file updates
+- 
+3.0.0
+- Packaged FML Engine
+- Significant modifications to base engine
+  1.3.0
 - To-Do
 
 1.2.3
@@ -16,26 +48,3 @@
 - Improved behaviour of TEXT and BOX in scrollers.
 - Added alternating color and default sort to TABLE
 
-3.0.0
-- Packaged FML Engine
-- Significant modifications to base engine
-
-3.0.0+1
-- Readme file updates
-
-3.0.0+2
-- Readme file updates
-- Changes to pubspec.yaml (platform directive)
-
-3.0.0+3
-- Changes to README.md
-
-3.0.0+4
-- Changes to README.md
-  
-3.0.0+5
-- Changes to README.md
-- Attempt to resolve anaysis issue for "unknown platforms"
-
-3.0.0+6
-- renamed example folder

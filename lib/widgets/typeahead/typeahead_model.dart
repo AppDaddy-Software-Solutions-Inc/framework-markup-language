@@ -5,8 +5,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/nodata/nodata_model.dart';
-import 'package:fml/widgets/nodata/nomatch_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -19,19 +17,23 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
   // data sourced prototype
   XmlElement? prototype;
 
-  // holds no data model
-  NoDataModel? noData;
-
-  // holds no match model
-  NoMatchModel? noMatch;
-
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
-  bool addempty = true;
-
   // options
   final List<OptionModel> options = [];
+
+  // add an empty option if no data
+  bool addempty = true;
+
+  // holds no data option model
+  OptionModel? noDataOption;
+
+  // holds no match option model
+  OptionModel? noMatchOption;
+
+  // holds the empty option model
+  OptionModel? emptyOption;
 
   // selected option
   OptionModel? selectedOption;
@@ -175,12 +177,6 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     readonly = Xml.get(node: xml, tag: 'readonly');
     clear = Xml.get(node: xml, tag: 'clear');
 
-    // holds no data model
-    noData = findChildOfExactType(NoDataModel);
-
-    // holds no match model
-    noMatch = findChildOfExactType(NoMatchModel);
-
     // build select options
     _buildOptions();
 
@@ -229,11 +225,44 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     // Build options
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
+    // strip out special options
+    for (var option in options.toList())
+    {
+      var type = option.type?.toLowerCase().trim();
+      switch (type)
+      {
+        case "nodata":
+          noDataOption = option;
+          children?.remove(option);
+          options.remove(option);
+          break;
+
+        case "empty":
+          emptyOption = option;
+          children?.remove(option);
+          options.remove(option);
+          break;
+
+        case "nomatch":
+          noMatchOption = option;
+          children?.remove(option);
+          options.remove(option);
+          break;
+      }
+    }
+
     // set prototype
     if (!isNullOrEmpty(this.datasource) && options.isNotEmpty)
     {
       prototype = prototypeOf(options.first.element);
       options.removeAt(0);
+    }
+
+    // add empty option to list
+    if (addempty)
+    {
+      OptionModel model = emptyOption ?? OptionModel(this, "$id-0", value: '');
+      options.insert(0,model);
     }
 
     // build options
@@ -254,6 +283,17 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
       option.dispose();
     }
     options.clear();
+    selectedOption = null;
+    data = null;
+  }
+
+  @override
+  dispose()
+  {
+    noDataOption?.dispose();
+    noMatchOption?.dispose();
+    emptyOption?.dispose();
+    super.dispose();
   }
 
   Future<bool> setSelectedOption(OptionModel? option) async
@@ -282,8 +322,8 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     // case insensitive pattern
     if (!caseSensitive) pattern = pattern.toLowerCase();
 
-    // empty pattern returns all
-    if (isNullOrEmpty(pattern)) return options.toList();
+    // return visible options
+    if (isNullOrEmpty(pattern)) return options.where((option) => option.visible).toList();
 
     // matching options at top of list
     return options.where((option) => compare(option, pattern)).take(rows).toList();
@@ -330,15 +370,22 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
       // clear options
       _clearOptions();
 
-      // add empty option to list
-      if (addempty) options.add(OptionModel(this, "$id-0", value: ''));
-
       // build options
       list?.forEach((row)
       {
         OptionModel? model = OptionModel.fromXml(this, prototype, data: row);
         if (model != null) options.add(model);
       });
+
+      // add empty option to list only if nodata isn't displayed
+      if (addempty && (noDataOption == null || options.length > 0))
+      {
+        OptionModel model = emptyOption ?? OptionModel(this, "$id-0", value: '');
+        options.insert(0,model);
+      }
+
+      // add nodata option
+      if (noDataOption != null && options.length == 0) options.add(noDataOption!);
 
       // set selected option
       _setSelectedOption();

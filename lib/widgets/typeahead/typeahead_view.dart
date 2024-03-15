@@ -90,14 +90,14 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     // no data
     if (widget.model.options.isEmpty)
     {
-      view = widget.model.noData?.getView();
+      view = widget.model.noDataOption?.getView();
       view ??= Text(Phrases().noData, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleMedium);
       view = Padding(padding: const EdgeInsets.all(8),child: view);
       view = GestureDetector(onTap: () => focus.unfocus(), child: MouseRegion(cursor: SystemMouseCursors.click, child: view));
       return view;
     }
 
-    view = widget.model.noMatch?.getView();
+    view = widget.model.noMatchOption?.getView();
     view ??= Text(Phrases().noMatchFound, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleMedium);
     view = Padding(padding: const EdgeInsets.all(8),child: view);
     view = GestureDetector(onTap: () => focus.unfocus(), child: MouseRegion(cursor: SystemMouseCursors.click, child: view));
@@ -297,6 +297,12 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
 
   void onChangeOption(OptionModel? option) async
   {
+    // no data?
+    if (option != null && option == widget.model.noDataOption) return;
+
+    // no match?
+    if (option != null && option == widget.model.noMatchOption) return;
+
     // stop model change notifications
     widget.model.removeListener(this);
 

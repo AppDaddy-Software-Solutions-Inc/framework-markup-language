@@ -1,3 +1,9 @@
+3.0.0+11
+- Attempt to resolve anaysis issue for "unknown platforms"
+
+3.0.0+10
+- Attempt to resolve anaysis issue for "unknown platforms"
+
 3.0.0+9
 - mods to README file
 - 

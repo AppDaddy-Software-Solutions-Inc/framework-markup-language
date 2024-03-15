@@ -10,7 +10,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/table/table_footer_model.dart';
-import 'package:fml/widgets/nodata/nodata_model.dart';
+import 'package:fml/widgets/table/nodata_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/table/table_view.dart';
 import 'package:fml/widgets/table/table_header_model.dart';

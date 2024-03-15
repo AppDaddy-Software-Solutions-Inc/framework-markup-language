@@ -1,6 +1,6 @@
 name: fml
 
-version: 3.0.0+9
+version: 3.0.0+11
 
 description: Flutter Markup Language
 
@@ -15,14 +15,6 @@ documentation: https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup
 environment:
   sdk: '>=3.3.1 <4.0.0'
   flutter: '>=3.19.0'
-
-platforms:
-  android:
-  ios:
-  linux:
-  macos:
-  web:
-  windows:
 
 screenshots:
 

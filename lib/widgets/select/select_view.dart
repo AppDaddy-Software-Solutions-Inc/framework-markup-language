@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fml/widgets/nodata/nodata_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/select/select_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
@@ -26,7 +25,10 @@ class _SelectViewState extends WidgetState<SelectView>
   void onChangeOption(OptionModel? option) async
   {
     // no data?
-    if (option?.parent is NoDataModel) return;
+    if (option != null && option == widget.model.noDataOption) return;
+
+    // no match?
+    if (option != null && option == widget.model.noMatchOption) return;
 
     // stop model change notifications
     widget.model.removeListener(this);
@@ -146,16 +148,11 @@ class _SelectViewState extends WidgetState<SelectView>
     List<DropdownMenuItem<OptionModel>> options = [];
     for (OptionModel option in widget.model.options)
     {
-      Widget view = option.getView();
-
-      options.add(DropdownMenuItem(value: option, child: view));
-    }
-
-    // no data widget defined?
-    if (widget.model.noData != null)
-    {
-      Widget view = widget.model.noData!.getView();
-      options.add(DropdownMenuItem(value: OptionModel(widget.model.noData!,null), child: view));
+      if (option.visible)
+      {
+        Widget view = option.getView();
+        options.add(DropdownMenuItem(value: option, child: view));
+      }
     }
 
     // select

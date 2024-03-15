@@ -208,19 +208,22 @@ class SelectModel extends DecoratedInputModel implements IFormField
       // clear options
       _clearOptions();
 
-      // add empty option to list
-      if (addempty)
-      {
-        OptionModel model = emptyOption ?? OptionModel(this, "$id-0", value: '');
-        options.add(model);
-      }
-
       // build options
       list?.forEach((row)
       {
         OptionModel? model = OptionModel.fromXml(this, prototype, data: row);
         if (model != null) options.add(model);
       });
+
+      // add empty option to list only if nodata isn't displayed
+      if (addempty && (noDataOption == null || options.length > 0))
+      {
+        OptionModel model = emptyOption ?? OptionModel(this, "$id-0", value: '');
+        options.insert(0,model);
+      }
+
+      // add nodata option
+      if (noDataOption != null && options.length == 0) options.add(noDataOption!);
 
       // set selected option
       _setSelectedOption();

@@ -297,6 +297,12 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
 
   void onChangeOption(OptionModel? option) async
   {
+    // no data?
+    if (option != null && option == widget.model.noDataOption) return;
+
+    // no match?
+    if (option != null && option == widget.model.noMatchOption) return;
+
     // stop model change notifications
     widget.model.removeListener(this);
 

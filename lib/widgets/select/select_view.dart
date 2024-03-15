@@ -27,6 +27,9 @@ class _SelectViewState extends WidgetState<SelectView>
     // no data?
     if (option != null && option == widget.model.noDataOption) return;
 
+    // no match?
+    if (option != null && option == widget.model.noMatchOption) return;
+
     // stop model change notifications
     widget.model.removeListener(this);
 
@@ -145,15 +148,11 @@ class _SelectViewState extends WidgetState<SelectView>
     List<DropdownMenuItem<OptionModel>> options = [];
     for (OptionModel option in widget.model.options)
     {
-      Widget view = option.getView();
-      options.add(DropdownMenuItem(value: option, child: view));
-    }
-
-    // no data widget defined?
-    if (widget.model.options.isEmpty && widget.model.noDataOption != null)
-    {
-      var model = widget.model.noDataOption!;
-      options.add(DropdownMenuItem(value: model, child: model.getView()));
+      if (option.visible)
+      {
+        Widget view = option.getView();
+        options.add(DropdownMenuItem(value: option, child: view));
+      }
     }
 
     // select

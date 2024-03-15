@@ -270,10 +270,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
 
     // announce data for late binding
     var datasource = scope?.getDataSource(this.datasource);
-    if (datasource?.data?.isNotEmpty ?? false)
-    {
-      onDataSourceSuccess(datasource!, datasource.data);
-    }
+    if (datasource != null) onDataSourceSuccess(datasource, datasource.data);
   }
 
   void _clearOptions()

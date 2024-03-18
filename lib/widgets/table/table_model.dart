@@ -23,6 +23,11 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/helpers/mime.dart';
 
+// platform
+import 'package:fml/platform/platform.web.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 class TableModel extends BoxModel implements IForm
 {
   static String dynamicTableValue1 = "{field}";

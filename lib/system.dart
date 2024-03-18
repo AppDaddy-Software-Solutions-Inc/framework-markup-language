@@ -26,6 +26,10 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'fml.dart';
 import 'widgets/framework/framework_model.dart';
+// platform
+import 'package:fml/platform/platform.web.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class System extends WidgetModel implements IEventManager {
   static final String myId = "SYSTEM";

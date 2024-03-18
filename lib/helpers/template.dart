@@ -11,7 +11,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector_model.dart';
 import 'package:fml/datasources/detectors/text/text_detector_model.dart';
 import 'package:fml/datasources/data/model.dart';
-import 'package:fml/datasources/gps/model.dart';
+import 'package:fml/datasources/gps/gps_model.dart';
 import 'package:fml/datasources/http/model.dart';
 import 'package:fml/datasources/mqtt/mqtt_model.dart';
 import 'package:fml/datasources/nfc/nfc_model.dart';

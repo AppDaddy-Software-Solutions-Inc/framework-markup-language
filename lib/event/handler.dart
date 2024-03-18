@@ -28,6 +28,11 @@ import 'package:fml/event/event.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
+// platform
+import 'package:fml/platform/platform.web.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 /// EventHandler performs the executions of events and contains the functions for each event [Type]
 ///
 /// Some events are handled internally while others are broadcasted and handled

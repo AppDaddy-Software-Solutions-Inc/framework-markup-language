@@ -137,8 +137,8 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
   {
     var icon = app.icon;
     if (icon == null) return null;
-    if (Theme.of(context).brightness == Brightness.light) icon = app.icon_light ?? icon;
-    if (Theme.of(context).brightness == Brightness.dark)  icon = app.icon_dark  ?? icon;
+    if (Theme.of(context).brightness == Brightness.light) icon = app.iconLight ?? icon;
+    if (Theme.of(context).brightness == Brightness.dark)  icon = app.iconDark  ?? icon;
 
     var image = toDataUri(icon);
     if (image == null) return null;
@@ -198,8 +198,8 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     for (var app in Store().getApps())
     {
       var icon = app.icon;
-      if (Theme.of(context).brightness == Brightness.light) icon = app.icon_light ?? icon;
-      if (Theme.of(context).brightness == Brightness.dark)  icon = app.icon_dark ?? icon;
+      if (Theme.of(context).brightness == Brightness.light) icon = app.iconLight ?? icon;
+      if (Theme.of(context).brightness == Brightness.dark)  icon = app.iconDark ?? icon;
 
       var item = MenuItemModel(widget.model, app.id,
           url: app.url,

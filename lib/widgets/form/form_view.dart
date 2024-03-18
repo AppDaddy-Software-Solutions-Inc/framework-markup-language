@@ -5,6 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
+import 'package:fml/widgets/goback/goback.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -12,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/datasources/gps/payload.dart';
-import 'package:fml/datasources/gps/gps_litener_interface.dart';
+import 'package:fml/datasources/gps/gps_listener_interface.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -135,7 +136,7 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener
     busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
 
     // stack gets the same size as the view when busy is positioned rather than center
-    view = WillPopScope(onWillPop: quit, child: Stack(children: [view, Positioned(child: busy!, left: 0, right: 0, top:0, bottom: 0)]));
+    view = GoBack(canGoBack: quit, child: Stack(children: [view, Positioned(child: busy!, left: 0, right: 0, top:0, bottom: 0)]));
 
     // apply user defined constraints
     return view;

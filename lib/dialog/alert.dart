@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fml/helpers/helpers.dart';
+import 'package:fml/widgets/goback/goback.dart';
 
 enum Types { error, success, info, warning, none }
 enum Animations {fromRight, fromLeft, fromTop, fromBottom, grow, shrink }
@@ -183,9 +184,7 @@ class Alert {
       constraints: style.constraints ?? BoxConstraints.expand(width: double.infinity, height: double.infinity), child: Align(alignment: style.alertAlignment,
       child: dialog));
 
-    return onWillPopActive
-        ? WillPopScope(onWillPop: () async => false, child: myChild)
-        : myChild;
+    return onWillPopActive ? GoBack(canGoBack: () async => false, child: myChild) : myChild;
   }
 
 // Returns the close button on the top right

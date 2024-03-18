@@ -2,12 +2,11 @@
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/datasources/base/model.dart';
 import 'package:xml/xml.dart';
-import 'gps_litener_interface.dart';
+import 'gps_listener_interface.dart';
 import 'payload.dart';
 import 'package:fml/helpers/helpers.dart';
 

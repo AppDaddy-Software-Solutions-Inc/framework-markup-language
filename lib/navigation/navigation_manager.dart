@@ -18,6 +18,10 @@ import 'package:fml/widgets/framework/framework_view.dart' ;
 import 'package:fml/store/store_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/helpers/helpers.dart';
+// platform
+import 'package:fml/platform/platform.web.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNotifier, PopNavigatorRouterDelegateMixin<PageConfiguration>
 {
@@ -179,14 +183,16 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   {
     bool canPop = true;
 
-    // check if page WillPopScope()
+    // check if page can be popped
     if (_pages.last.arguments is PageConfiguration && navigatorKey.currentState?.mounted == true)
     {
       var configuration = _pages.last.arguments as PageConfiguration;
       if (configuration.route != null)
       {
-        RoutePopDisposition disposition = await configuration.route!.willPop();
+        var route = configuration.route!;
+        var disposition = await route.popDisposition;
         if (disposition == RoutePopDisposition.doNotPop) canPop = false;
+        if (!canPop) route.onPopInvoked(canPop);
       }
     }
 
@@ -279,7 +285,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     notifyListeners();
   }
 
-  Future<bool> _goback(int pages) async
+  Future<bool> _goback(int pages, {bool force = false}) async
   {
     // set absolute
     pages = pages.abs();
@@ -290,7 +296,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     // cannot go past the end of the nav stack
     if (pages == 0) return false;
 
-    // on web, goBackPages returnds true. on VM (mobiler and desktop) its important
+    // on web, goBackPages returns true. on VM (mobiler and desktop) its important
     // that this returns false indicating we need to do a page naviagtion manually
     // by removing page(s) from _pages
     bool ok = await Platform.goBackPages(pages);
@@ -300,7 +306,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     bool notify = false;
     for (int i = 0; i < pages; i++)
     {
-      bool canPop = await _canPop(_pages.last);
+      bool canPop = force ? true : await _canPop(_pages.last);
       if (!canPop) break;
 
       notify = true;
@@ -456,7 +462,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     return ok;
   }
 
-  Future<bool> back(dynamic until) async
+  Future<bool> back(dynamic until, {bool force = false}) async
   {
     bool ok = true;
 
@@ -488,7 +494,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     // go back
     if (pages != null)
     {
-      ok = await _goback(pages);
+      ok = await _goback(pages, force: force);
     }
 
     return ok;

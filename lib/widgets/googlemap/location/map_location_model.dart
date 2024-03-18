@@ -128,7 +128,7 @@ class MapLocationModel extends DecoratedWidgetModel
     latitude    = Xml.get(node: xml, tag: 'latitude');
     longitude   = Xml.get(node: xml, tag: 'longitude');
     title        = Xml.get(node: xml, tag: 'info');
-    description = Xml.get(node: xml, tag: 'infoSnippet');
+    description = Xml.get(node: xml, tag: 'infosnippet');
     label       = Xml.get(node: xml, tag: 'label');
     marker      = Xml.get(node: xml, tag: 'marker');
 

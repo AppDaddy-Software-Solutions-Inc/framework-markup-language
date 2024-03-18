@@ -10,6 +10,7 @@ import 'package:fml/platform/platform.web.dart'
 if (dart.library.io)   'package:fml/platform/platform.vm.dart'
 if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
+/// Reading and writing to the log (hive)
 class Log
 {
   List<hive_log.Log> queue = [];

@@ -85,21 +85,7 @@ class Eval
 
   static Expression? replaceInLiterals(dynamic expression, Map<String, dynamic> variables)
   {
-    Type? expressionType;
-
-    if (expression is ConditionalExpression) {
-      expressionType = ConditionalExpression;
-    } else if (expression is BinaryExpression) {
-      expressionType = BinaryExpression;
-    } else if (expression is CallExpression) {
-      expressionType = CallExpression;
-    } else if (expression is Literal) {
-      expressionType = Literal;
-    } else if (expression is Variable) {
-      expressionType = Variable;
-    }
-
-    switch(expressionType)
+    switch(expression)
     {
       case ConditionalExpression:
 
@@ -146,6 +132,7 @@ class Eval
       default:
         break;
     }
+
     return expression;
   }
 

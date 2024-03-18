@@ -5,6 +5,7 @@ import 'package:fml/hive/form.dart';
 import 'package:fml/hive/post.dart';
 import 'package:fml/log/manager.dart' as log_manager;
 
+/// The janitor service is used to cleanup old files
 class Janitor
 {
   static final Janitor _singleton = Janitor._init();

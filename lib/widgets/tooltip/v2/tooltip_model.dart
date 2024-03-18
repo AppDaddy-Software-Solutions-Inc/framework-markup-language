@@ -155,7 +155,7 @@ class TooltipModel extends ViewableWidgetModel
     timeout  = Xml.get(node: xml, tag: 'timeout');
     distance = Xml.get(node: xml, tag: 'distance');
     arrow    = Xml.get(node: xml, tag: 'arrow');
-    openMethod = toEnum(Xml.get(node: xml, tag: 'openMethod'), OpenMethods.values);
+    openMethod = toEnum(Xml.get(node: xml, tag: 'openmethod'), OpenMethods.values);
   }
 
   @override

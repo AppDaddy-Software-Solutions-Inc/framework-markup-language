@@ -1,3 +1,9 @@
+3.0.0+15
+- Attempt to resolve anaysis issue for "unknown platforms"
+
+- 3.0.0+14
+- Attempt to resolve anaysis issue for "unknown platforms"
+- 
 3.0.0+13
 - Attempt to resolve anaysis issue for "unknown platforms"
 

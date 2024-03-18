@@ -325,7 +325,7 @@ class InputModel extends DecoratedInputModel implements IFormField {
     }
 
     // set validator
-    setValidator(Xml.get(node: xml, tag: 'errorText'));
+    setValidator(Xml.get(node: xml, tag: 'errortext'));
 
     hint = Xml.get(node: xml, tag: 'hint') ?? "";
     size = Xml.get(node: xml, tag: 'size');

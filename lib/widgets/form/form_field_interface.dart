@@ -59,7 +59,7 @@ abstract class IFormField
   bool get alarming;
 
   // returns the current active alarm
-  AlarmModel? get alarm;
+  AlarmModel? getActiveAlarm();
 
   /// GeoCode for each [IFormField] which is set on answer
   Payload? geocode;

@@ -1,6 +1,6 @@
 name: fml
 
-version: 3.0.0+14
+version: 3.0.0+15
 
 description:
   Flutter Markup Language (FML) is a cross platform markup language. This package retrieves, parses, interprets and renders fml pages to native Flutter without the need to compile.
@@ -23,6 +23,7 @@ documentation: https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup
 
 environment:
   sdk: '>=3.3.1 <4.0.0'
+  flutter: '>=3.0.0'
 
 screenshots:
 
@@ -151,9 +152,6 @@ dependencies:
 
   jiffy: ^6.2.1
   # MIT
-
-  js: ^0.6.5
-  # BSD-3-Clause
 
   latlong2: ^0.9.0
   # BSD-3-Clause

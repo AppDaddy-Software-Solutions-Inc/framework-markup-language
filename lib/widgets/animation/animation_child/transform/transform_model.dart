@@ -119,10 +119,10 @@ class TransformModel extends AnimationChildModel
     // deserialize
     super.deserialize(xml);
 
-    rotateFrom = Xml.get(node: xml, tag: 'rotateFrom');
-    rotateTo = Xml.get(node: xml, tag: 'rotateTo');
-    translateFrom = Xml.get(node: xml, tag: 'translateFrom');
-    translateTo = Xml.get(node: xml, tag: 'translateTo');
+    rotateFrom = Xml.get(node: xml, tag: 'rotatefrom');
+    rotateTo = Xml.get(node: xml, tag: 'rotateto');
+    translateFrom = Xml.get(node: xml, tag: 'translatefrom');
+    translateTo = Xml.get(node: xml, tag: 'translateto');
     align = Xml.get(node: xml, tag: 'align');
   }
 

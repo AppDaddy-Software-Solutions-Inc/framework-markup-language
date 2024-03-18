@@ -85,67 +85,67 @@ class Eval
 
   static Expression? replaceInLiterals(dynamic expression, Map<String, dynamic> variables)
   {
-    Type? expressionType;
-
-    if (expression is ConditionalExpression) {
-      expressionType = ConditionalExpression;
-    } else if (expression is BinaryExpression) {
-      expressionType = BinaryExpression;
-    } else if (expression is CallExpression) {
-      expressionType = CallExpression;
-    } else if (expression is Literal) {
-      expressionType = Literal;
-    } else if (expression is Variable) {
-      expressionType = Variable;
-    }
-
-    switch(expressionType)
+    // conditional expression
+    if (expression is ConditionalExpression)
     {
-      case ConditionalExpression:
-
-        expression = ConditionalExpression(expression.test, replaceInLiterals(expression.consequent, variables), replaceInLiterals(expression.alternate, variables));
-        break;
-
-      case BinaryExpression:
-        expression = BinaryExpression(expression.operator, replaceInLiterals(expression.left, variables), replaceInLiterals(expression.right, variables));
-        break;
-
-      case CallExpression:
-        List? args = expression.arguments;
-        for (int i = 0; i < expression.arguments.length; i++) {
-          args![i] = replaceInLiterals(expression.arguments[i], variables);
-        }
-        expression = CallExpression(expression.callee, args as List<Expression?>?);
-        break;
-
-      case Variable:
-        String? name = expression.identifier?.name;
-        bool exists = variables.containsKey(name);
-        if (!exists)
-        {
-          String? value = _toString(name);
-          expression = Literal(value,value);
-        }
-        break;
-
-      case Literal:
-        if (expression.value is String)
-        {
-          String v = expression.value ?? "";
-
-          // loop backwards in the string so v1 does not replace the start of v10
-          for (String key in variables.keys.toList().reversed) {
-            // replace the keys in the string with the value of the variables map
-            // replace missing variables with a blank string (formerly the key name)
-            v = v.replaceAll(key, _toString(variables[key]) ?? "");
-          }
-          expression = Literal(v,v);
-        }
-        break;
-
-      default:
-        break;
+      expression = ConditionalExpression(expression.test, replaceInLiterals(expression.consequent, variables), replaceInLiterals(expression.alternate, variables));
+      return expression;
     }
+
+    // binary expression
+    if (expression is BinaryExpression)
+    {
+      expression = BinaryExpression(expression.operator, replaceInLiterals(expression.left, variables), replaceInLiterals(expression.right, variables));
+      return expression;
+    }
+
+    // call expression
+    if (expression is CallExpression)
+    {
+      var args = expression.arguments;
+      if (args != null)
+      {
+        for (int i = 0; i < args.length; i++)
+        {
+          args[i] = replaceInLiterals(args[i], variables);
+        }
+      }
+      expression = CallExpression(expression.callee, args);
+      return expression;
+    }
+
+    // literal expression
+    if (expression is Literal)
+    {
+      if (expression.value is String)
+      {
+        var v = expression.value ?? "";
+
+        // loop backwards in the string so v1 does not replace the start of v10
+        for (String key in variables.keys.toList().reversed) {
+          // replace the keys in the string with the value of the variables map
+          // replace missing variables with a blank string (formerly the key name)
+          v = v.replaceAll(key, _toString(variables[key]) ?? "");
+        }
+        expression = Literal(v,v);
+      }
+      return expression;
+    }
+
+    // variable expression
+    if (expression is Variable)
+    {
+      var name = expression.identifier.name;
+      var exists = variables.containsKey(name);
+      if (!exists)
+      {
+        String? value = _toString(name);
+        expression = Literal(value,value);
+      }
+      return expression;
+    }
+
+    // unknown expression
     return expression;
   }
 

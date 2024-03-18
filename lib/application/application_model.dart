@@ -58,8 +58,8 @@ class ApplicationModel extends WidgetModel {
 
   // application icon
   String? icon;
-  String? icon_light;
-  String? icon_dark;
+  String? iconLight;
+  String? iconDark;
 
   // theme settings
   Brightness get brightness => toEnum(settings('BRIGHTNESS')?.toLowerCase().trim(), Brightness.values) ?? FmlEngine.defaultBrightness;
@@ -115,8 +115,8 @@ class ApplicationModel extends WidgetModel {
     required this.url,
     this.title,
     this.icon,
-    this.icon_light,
-    this.icon_dark,
+    this.iconLight,
+    this.iconDark,
     this.transition,
     this.page,
     this.order,
@@ -261,8 +261,8 @@ class ApplicationModel extends WidgetModel {
 
       // get the icon
       icon       = await _getIcon(model.settings["APP_ICON"] ?? model.settings["ICON"]);
-      icon_light = await _getIcon(model.settings["APP_ICON_LIGHT"] ?? model.settings["ICON_LIGHT"]);
-      icon_dark  = await _getIcon(model.settings["APP_ICON_DARK"]  ?? model.settings["ICON_DARK"]);
+      iconLight = await _getIcon(model.settings["APP_ICON_LIGHT"] ?? model.settings["ICON_LIGHT"]);
+      iconDark  = await _getIcon(model.settings["APP_ICON_DARK"]  ?? model.settings["ICON_DARK"]);
 
       // default transition
       transition = toEnum(model.settings["TRANSITION"], PageTransitions.values);
@@ -395,8 +395,8 @@ class ApplicationModel extends WidgetModel {
     map["url"] = url;
     map["title"] = title;
     map["icon"] = icon;
-    map["icon_light"] = icon_light;
-    map["icon_dark"] = icon_dark;
+    map["icon_light"] = iconLight;
+    map["icon_dark"] = iconDark;
     map["transition"] = fromEnum(transition);
     map["page"] = page;
     map["order"] = order;
@@ -414,8 +414,8 @@ class ApplicationModel extends WidgetModel {
           url: fromMap(map, "url"),
           title: fromMap(map, "title"),
           icon: fromMap(map, "icon"),
-          icon_light: fromMap(map, "icon_light"),
-          icon_dark: fromMap(map, "icon_dark"),
+          iconLight: fromMap(map, "icon_light"),
+          iconDark: fromMap(map, "icon_dark"),
           transition: toEnum(fromMap(map, "transition"),PageTransitions.values),
           page: fromMap(map, "page"),
           order: fromMapAsInt(map, "order"),

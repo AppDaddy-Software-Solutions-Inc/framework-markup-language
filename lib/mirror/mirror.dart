@@ -4,6 +4,11 @@ import 'package:fml/log/manager.dart';
 import 'asset.dart';
 import 'package:fml/helpers/helpers.dart';
 
+// platform
+import 'package:fml/platform/platform.web.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 class Mirror
 {
   final String url;

@@ -13,6 +13,11 @@ import 'package:fml/widgets/image/image_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/helpers/helpers.dart';
 
+// platform
+import 'package:fml/platform/platform.web.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 /// [IMAGE] view
 class ImageView extends StatefulWidget implements IWidgetView
 {

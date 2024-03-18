@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/widgets/goback/goback.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/event/event.dart'             ;
 import 'package:fml/widgets/framework/framework_model.dart' ;
@@ -174,13 +175,14 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
     }
   }
 
-  preventPop() {
-    if (openSheet != null) {
+  preventPop()
+  {
+    if (openSheet != null)
+    {
       closeDrawer(openSheet);
-    return false;
-    } else {
-      return true;
+      return false;
     }
+    return true;
   }
 
   finishedAnimation() {
@@ -966,7 +968,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
     // apply user defined constraints
     view = applyConstraints(view, widget.model.constraints);
 
-    view = WillPopScope(onWillPop: () async => preventPop(), child: view);
+    view = GoBack(canGoBack: () async => preventPop(), child: view);
 
     return view;
   }

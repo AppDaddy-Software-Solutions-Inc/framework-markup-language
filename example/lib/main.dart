@@ -12,9 +12,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    String example1 = 'https://test.appdaddy.co';
-    String example2 = 'file://fmlpad';
-    String example3 = 'file://example';
+    String example1 = 'https://fml.dev';
+    //String example2 = 'file://fmlpad';
+    //String example3 = 'file://example';
 
     var version = "3.0.0";
 

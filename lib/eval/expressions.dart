@@ -120,25 +120,24 @@ class UnaryExpression extends SimpleExpression {
 }
 
 class BinaryExpression extends CompoundExpression {
-  final String? operator;
+  final String operator;
   final Expression? left;
   final Expression? right;
 
   BinaryExpression(this.operator, this.left, this.right);
 
-  static int? precedenceForOperator(String? operator) =>
-      ExpressionParser.binaryOperations[operator!];
+  static int precedenceForOperator(String operator) => ExpressionParser.binaryOperations[operator]!;
 
-  int? get precedence => precedenceForOperator(operator);
+  int get precedence => precedenceForOperator(operator);
 
   @override
   String toString() {
     var l = (left is BinaryExpression &&
-        (left as BinaryExpression).precedence! < precedence!)
+        (left as BinaryExpression).precedence < precedence)
         ? '($left)'
         : '$left';
     var r = (right is BinaryExpression &&
-        (right as BinaryExpression).precedence! < precedence!)
+        (right as BinaryExpression).precedence < precedence)
         ? '($right)'
         : '$right';
     return '$l$operator$r';

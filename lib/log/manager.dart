@@ -5,6 +5,11 @@ import 'package:fml/fml.dart';
 import 'package:fml/hive/log.dart' as hive_log;
 import 'package:fml/helpers/helpers.dart';
 
+// platform
+import 'package:fml/platform/platform.web.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 class Log
 {
   List<hive_log.Log> queue = [];

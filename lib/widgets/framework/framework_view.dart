@@ -20,6 +20,11 @@ import 'package:fml/widgets/drawer/drawer_view.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/phrase.dart';
 
+// platform
+import 'package:fml/platform/platform.web.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 typedef TitleChangeCallback = void Function (String title);
 
 class FrameworkView extends StatefulWidget

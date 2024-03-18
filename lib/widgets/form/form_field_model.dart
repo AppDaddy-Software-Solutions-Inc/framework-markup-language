@@ -166,7 +166,7 @@ class FormFieldModel extends DecoratedWidgetModel
   bool get alarming => _alarming?.get() ?? false;
 
   /// returns active alarm
-  AlarmModel? get alarm
+  AlarmModel? getActiveAlarm()
   {
     for (var alarm in _alarms)
     {
@@ -179,7 +179,7 @@ class FormFieldModel extends DecoratedWidgetModel
   String? get alarmText
   {
     if (isNullOrEmpty(value) && !touched) return null;
-    return alarm?.text;
+    return getActiveAlarm()?.text;
   }
 
   /// The string of events that will be executed when focus is lost.
@@ -276,14 +276,19 @@ class FormFieldModel extends DecoratedWidgetModel
       // register a listener to the alarm
       alarm.alarmingObservable?.registerListener(_onAlarmChange);
 
+      // add alarm to children
       children ??= [];
       if (!children!.contains(alarm)) children!.add(alarm);
+
+      // set alarming value
+      // this seems to be necessary in release mode
+      alarming = (getActiveAlarm() != null);
     }
   }
 
   void _onAlarmChange(_)
   {
-    alarming = (alarm != null);
+    alarming = (getActiveAlarm() != null);
     notifyListeners("alarming", alarming);
   }
 

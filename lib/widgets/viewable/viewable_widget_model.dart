@@ -448,11 +448,13 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
   // enabled
   BooleanObservable? _enabled;
   set enabled(dynamic v) {
-    if (_enabled != null) {
+    if (_enabled != null)
+    {
       _enabled!.set(v);
-    } else if (v != null) {
-      _enabled = BooleanObservable(Binding.toKey(id, 'enabled'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _enabled = BooleanObservable(Binding.toKey(id, 'enabled'), v, scope: scope, listener: onPropertyChange);
     }
   }
   bool get enabled => _enabled?.get() ?? true;

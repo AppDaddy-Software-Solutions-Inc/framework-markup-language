@@ -273,6 +273,9 @@ class InputModel extends DecoratedInputModel implements IFormField {
     if (keyboardType != null) this.keyboardType = keyboardType;
     if (keyboardInput != null) this.keyboardInput = keyboardInput;
     if (format != null) this.format = format;
+
+    alarming = false;
+    dirty = false;
   }
 
   static InputModel? fromXml(WidgetModel parent, XmlElement xml, {String? type})

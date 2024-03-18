@@ -915,7 +915,7 @@ class FormModel extends BoxModel implements IForm
       // touch all fields
       field.touched = true;
 
-      var alarm = field.alarm;
+      var alarm = field.getActiveAlarm();
       if (alarm != null && field.enabled && field.visible && (field.editable ?? true))
       {
         list.add(field);

@@ -436,30 +436,56 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     value = Xml.get(node: xml, tag: 'value');
     template = Xml.get(node: xml, tag: 'template');
 
-    // custom body defined?
-    XmlElement? body = Xml.getChildElement(node: xml, tag: 'BODY');
+    // set the body
+    body = _getBody(xml);
     if (body != null)
     {
-      // set body type
+      // set body as custom
       _bodyIsCustom = true;
 
-      // body format
-      _bodyType = Xml.attribute(node: body, tag: 'type')?.trim().toLowerCase();
-
-      // body is all text (cdata or text only)?
-      bool isText = (body.children.firstWhereOrNull((child) => (child is XmlCDATA || child is XmlText || child is XmlComment) ? false : true) == null);
-      this.body = isText ? body.innerText.trim() : body.innerXml.trim();
+      // set the data
+      this.data = Data.from(body, root: root);
     }
-
     // ensure future bodies that contain bindables don't bind
     if (_body == null) this.body = "";
-    
+
     // register the datasource with the scope manager
     if (scope != null) scope!.registerDataSource(this);
 
     // disable in background
     enabledInBackground = toBool(Xml.get(node: xml, tag: 'background')) ?? enabledInBackground;
     if (!enabledInBackground) framework?.indexObservable?.registerListener(onIndexChange);
+  }
+
+  String? _getBody(XmlElement xml)
+  {
+    // custom body defined?
+    XmlElement? body = Xml.getChildElement(node: xml, tag: 'BODY');
+    if (body != null)
+    {
+      // set body type (format)
+      _bodyType = Xml.attribute(node: body, tag: 'type')?.trim().toLowerCase();
+
+      // body is all text (cdata or text only)?
+      bool isText = (body.children.firstWhereOrNull((child) => (child is XmlCDATA || child is XmlText || child is XmlComment) ? false : true) == null);
+      return isText ? body.innerText.trim() : body.innerXml.trim();
+    }
+
+    // no child nodes?
+    if (xml.children.isEmpty) return null;
+
+    // no model children?
+    if (children != null && children!.isNotEmpty) return null;
+
+    // more than 1 non-textual element?
+    if (xml.childElements.length > 1) return null;
+
+    // single non-textual element
+    if (xml.childElements.length == 1) return xml.childElements.first.toXmlString();
+
+    // find cdata node
+    var cdata = xml.children.firstWhereOrNull((child) => child is XmlCDATA);
+    return cdata?.value?.trim();
   }
 
   void onIndexChange(Observable index)

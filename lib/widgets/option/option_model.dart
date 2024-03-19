@@ -142,14 +142,10 @@ class OptionModel extends RowModel
     var value = Xml.get(node: xml, tag: 'value');
 
     // <OPTION>xxx</OPTION> style
-    if (label == null)
+    if (label == null && viewableChildren.isEmpty)
     {
       var text = Xml.getText(xml);
-      if (!isNullOrEmpty(Xml.getText(xml)))
-      {
-        label = text;
-        label = text;
-      }
+      if (!isNullOrEmpty(text)) label = text;
     }
 
     // label specified but not value

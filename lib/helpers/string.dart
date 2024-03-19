@@ -22,7 +22,7 @@ extension Ex on double {
   double toPrecision(int n) => double.parse(toStringAsFixed(n));
 }
 
-String newId({String prefix = "auto"}) => "$prefix${Uuid().v4().replaceAll("-", "").toLowerCase()}";
+String newId({String prefix = "auto"}) => "$prefix${const Uuid().v4().replaceAll("-", "").toLowerCase()}";
 
 /// Takes in a String/List and returns true if it is null, blank or empty
 bool isNull(value) => value == null;
@@ -281,7 +281,7 @@ String? fromBase64(dynamic s) {
       while (s.length % 4 != 0) {
         s = s + "=";
       }
-      var bytes = Base64Codec().decode(s);
+      var bytes = const Base64Codec().decode(s);
       return utf8.decode(bytes);
     }
     if (s is List<int>) {

@@ -116,7 +116,7 @@ class ImageHelper
       ///////////////////////
       /* Convert Uri Image */
       ///////////////////////
-      Uint8List bytesBase64 = uri.isBase64 ? uri.contentAsBytes() : Base64Codec().decode(uri.contentText);
+      Uint8List bytesBase64 = uri.isBase64 ? uri.contentAsBytes() : const Base64Codec().decode(uri.contentText);
 
       ui.Codec codec = await ui.instantiateImageCodec(bytesBase64);
       ui.FrameInfo frame = await codec.getNextFrame();

@@ -165,7 +165,7 @@ mixin BoxMixin
     // visible?
     if (!model.visible)
     {
-      constraints = BoxConstraints(minWidth: 0, maxWidth: 0, minHeight: 0, maxHeight: 0);
+      constraints = const BoxConstraints(minWidth: 0, maxWidth: 0, minHeight: 0, maxHeight: 0);
     }
 
     // normalize

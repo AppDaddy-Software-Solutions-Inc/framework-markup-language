@@ -43,7 +43,7 @@ class _EditorViewState extends WidgetState<EditorView> {
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     var language = xml;
     switch (widget.model.language) {
@@ -82,7 +82,7 @@ class _EditorViewState extends WidgetState<EditorView> {
           },
           background: Colors.transparent,
           maxLines: null,
-          textStyle: TextStyle(fontSize: 14),
-          gutterStyle: GutterStyle(width: 80, margin: 0),));
+          textStyle: const TextStyle(fontSize: 14),
+          gutterStyle: const GutterStyle(width: 80, margin: 0),));
   }
 }

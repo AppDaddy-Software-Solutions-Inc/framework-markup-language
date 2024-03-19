@@ -65,7 +65,7 @@ class ModalManagerViewState extends State<ModalManagerView>
         children.add(view);
       }
     }
-    return Stack(children: children, fit: StackFit.passthrough);
+    return Stack(fit: StackFit.passthrough, children: children);
   }
 
   void onDismiss(ModalView? modal)

@@ -11,7 +11,7 @@ class PopoverView extends StatefulWidget implements IWidgetView
   final PopoverModel model;
   final Widget? child;
 
-  PopoverView(this.model, {this.child});
+  const PopoverView(this.model, {super.key, this.child});
 
   @override
   State<PopoverView> createState() => _PopoverViewState();
@@ -53,7 +53,7 @@ class _PopoverViewState extends WidgetState<PopoverView>
           }
         }
 
-        var view = PopupMenuItem(child: child, value: item);
+        var view = PopupMenuItem(value: item, child: child);
         itemsList.add(view);
       }
     }
@@ -70,14 +70,14 @@ class _PopoverViewState extends WidgetState<PopoverView>
             fontSize: 10,
             fontWeight: FontWeight.w400,
             fontStyle: FontStyle.normal,
-          )) : Offstage(),
+          )) : const Offstage(),
         ]);
 
     Widget view = PopupMenuButton(
         enabled: widget.model.enabled,
         color: Theme.of(context).colorScheme.surfaceVariant,
         icon: icon,
-        padding: EdgeInsets.all(5),
+        padding: const EdgeInsets.all(5),
         onSelected: (dynamic item) => (item as PopoverItemModel).onTap(),
         itemBuilder: (BuildContext context) => <PopupMenuEntry>[...itemsList]);
 
@@ -99,7 +99,7 @@ class _PopoverViewState extends WidgetState<PopoverView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible || widget.model.items.isEmpty) return Offstage();
+    if (!widget.model.visible || widget.model.items.isEmpty) return const Offstage();
 
     // build the view
     Widget view = _buildPopover();

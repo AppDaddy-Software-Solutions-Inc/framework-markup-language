@@ -79,7 +79,7 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventS
 
       // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
       if ((child != null) && (child.context != null)) {
-        Scrollable.ensureVisible(child.context, duration: Duration(seconds: 1), alignment: 0.2);
+        Scrollable.ensureVisible(child.context, duration: const Duration(seconds: 1), alignment: 0.2);
       }
     }
   }
@@ -103,13 +103,13 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventS
           {
             double offset = sc!.offset;
             double moveToPosition = offset + (direction == 'left' ? -distance : distance);
-            sc.animateTo(moveToPosition, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+            sc.animateTo(moveToPosition, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
           }
           else if (direction == 'up' || direction == 'down')
           {
             double offset = sc!.offset;
             double moveToPosition = offset + (direction == 'up' ? -distance : distance);
-            sc.animateTo(moveToPosition, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+            sc.animateTo(moveToPosition, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
           }
         }
       }
@@ -141,7 +141,7 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventS
     }
 
     view = MouseRegion(cursor: SystemMouseCursors.click, child: view);
-    view = GestureDetector(onTap: () => model.onTap(), child: view, behavior: HitTestBehavior.translucent);
+    view = GestureDetector(onTap: () => model.onTap(), behavior: HitTestBehavior.translucent, child: view);
 
     return view;
   }
@@ -188,7 +188,7 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventS
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     /// Busy / Loading Indicator
     busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
@@ -209,7 +209,7 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventS
             dividerColor: Theme.of(context).colorScheme.onInverseSurface,
             initialOpenPanelValue: 0,
             elevation: 2,
-            expandedHeaderPadding: EdgeInsets.all(4),
+            expandedHeaderPadding: const EdgeInsets.all(4),
             children: expansionItems(context)));
     } else {
       view = ListView.builder(reverse: widget.model.reverse, physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: controller, itemBuilder: itemBuilder);

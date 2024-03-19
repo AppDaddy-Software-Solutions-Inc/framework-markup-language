@@ -17,8 +17,8 @@ import 'package:fml/helpers/helpers.dart';
 
 class MenuModel extends DecoratedWidgetModel implements IScrollable
 {
-  static final String typeList   = "list";
-  static final String typeButton = "button";
+  static const String typeList   = "list";
+  static const String typeButton = "button";
 
   // to be implemented
   @override

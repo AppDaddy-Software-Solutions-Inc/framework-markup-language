@@ -9,7 +9,7 @@ class Log
 {
   static String tableName = "LOG";
 
-  static final int daysToSave = 1;
+  static const int daysToSave = 1;
 
   final Map<String, dynamic> _map = <String, dynamic>{};
 

@@ -15,7 +15,7 @@ class MenuView extends StatefulWidget implements IWidgetView
 {
   @override
   final MenuModel model;
-  MenuView(this.model);
+  const MenuView(this.model,{super.key});
 
   @override
   State<MenuView> createState() => MenuViewState();
@@ -81,7 +81,7 @@ class MenuViewState extends WidgetState<MenuView> implements IEventScrolling
                   ? -distance
                   : distance);
           scroller.animateTo(moveToPosition,
-              duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+              duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
         }
       }
     } catch(e) {
@@ -117,8 +117,8 @@ class MenuViewState extends WidgetState<MenuView> implements IEventScrolling
       tileCountForRow++;
       if (tileCountForRow >= tilesPerRow) {
         rowsList.add(Row(
-          children: tileRows,
           mainAxisSize: MainAxisSize.min,
+          children: tileRows,
         ));
         tileRows = [];
         tileCountForRow = 0;
@@ -126,8 +126,8 @@ class MenuViewState extends WidgetState<MenuView> implements IEventScrolling
       if (i == tilesList.length - 1 && tileRows.isNotEmpty) {
         // add partially filled row
         rowsList.add(Row(
-          children: tileRows,
           mainAxisSize: MainAxisSize.min,
+          children: tileRows,
         ));
       }
     }
@@ -136,9 +136,9 @@ class MenuViewState extends WidgetState<MenuView> implements IEventScrolling
         child: Padding(
             padding: EdgeInsets.all(menuColPadding),
             child: Column(
-              children: rowsList,
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
+              children: rowsList,
             )
         )
     );
@@ -160,7 +160,7 @@ class MenuViewState extends WidgetState<MenuView> implements IEventScrolling
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     //var background = BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor);
 

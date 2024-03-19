@@ -16,7 +16,7 @@ enum PageTransitions {platform, none, fade, slide, slideright, slideleft, zoom, 
 /// The FML Engine
 class FmlEngine
 {
-  static final String package = "fml";
+  static const String package = "fml";
 
   // used in context lookup
   static var key = GlobalKey();
@@ -26,12 +26,6 @@ class FmlEngine
   static bool get isWeb => kIsWeb;
   static bool get isMobile => !isWeb && (io.Platform.isAndroid || io.Platform.isIOS);
   static bool get isDesktop => !isWeb && !isMobile;
-
-  // This variable is used throughout the code to determine if debug messages
-  // and their corresponding actions should be performed.
-  // Putting this inside the System() class is problematic at startup
-  // when log messages being written while System() is still be initialized.
-  static final bool kDebugMode = !kReleaseMode;
 
   /// This url is used to locate config.xml on startup
   /// Used in Single Application mode only and on Web when developing on localhost

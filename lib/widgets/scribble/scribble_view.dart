@@ -62,7 +62,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
       });
       Uint8List? bytes = await exportBytes();
       if (bytes != null) {
-        String value = Base64Codec().encode(bytes);
+        String value = const Base64Codec().encode(bytes);
         await widget.model.answer(value);
       }
     }
@@ -280,9 +280,9 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
             children: [
               Center(child: Container(decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.onInverseSurface,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(10.0),
-                  topRight: const Radius.circular(10.0),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(10.0),
+                  topRight: Radius.circular(10.0),
                 )),
                 child: Row(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -301,7 +301,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
             RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(10.0),
-                  topRight: saveVisible == true ? Radius.zero : Radius.circular(10.0),
+                  topRight: saveVisible == true ? Radius.zero : const Radius.circular(10.0),
                 )),
           )),
       onPressed: clear,
@@ -316,9 +316,9 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
     return TextButton(
       style: ButtonStyle(
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
+            const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                  topRight: const Radius.circular(10.0),
+                  topRight: Radius.circular(10.0),
                 )),
           )),
       onPressed: save,
@@ -333,7 +333,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     Widget icon = Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.gesture, size: 64, color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5)),
@@ -349,9 +349,9 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
     Widget view = Container(
       decoration: BoxDecoration(
       color: Theme.of(context).colorScheme.surface,
-      borderRadius: BorderRadius.all(Radius.circular(8)
+      borderRadius: const BorderRadius.all(Radius.circular(8)
       ),
-      boxShadow: [
+      boxShadow: const [
         BoxShadow(
           color: Colors.black,
           spreadRadius: -15,
@@ -423,7 +423,7 @@ class Sketcher extends CustomPainter {
   Future<Uint8List?> export(Size canvasSize) async
   {
     var recorder = PictureRecorder();
-    var origin = Offset(0.0, 0.0);
+    var origin = const Offset(0.0, 0.0);
     var paintBounds = Rect.fromPoints(
       canvasSize.topLeft(origin),
       canvasSize.bottomRight(origin),

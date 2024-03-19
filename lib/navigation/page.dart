@@ -106,7 +106,7 @@ class CustomPageBasedMaterialPageRoute<T> extends PageRoute<T> with MaterialRout
       return child;
 
       case PageTransitions.fade:
-        return FadeUpwardsPageTransitionsBuilder().buildTransitions(this, context, animation, secondaryAnimation, child);
+        return const FadeUpwardsPageTransitionsBuilder().buildTransitions(this, context, animation, secondaryAnimation, child);
 
       case PageTransitions.slide:
       case PageTransitions.slideright:
@@ -126,10 +126,13 @@ class CustomPageBasedMaterialPageRoute<T> extends PageRoute<T> with MaterialRout
       // platform specific
       case PageTransitions.platform:
       default:
-          PageTransitionsBuilder builder = ZoomPageTransitionsBuilder();
-          if (TargetPlatform == TargetPlatform.iOS)     builder = CupertinoPageTransitionsBuilder();
-          if (TargetPlatform == TargetPlatform.linux)   builder = OpenUpwardsPageTransitionsBuilder();
-          if (TargetPlatform == TargetPlatform.macOS)   builder = FadeUpwardsPageTransitionsBuilder();
+          PageTransitionsBuilder builder = const ZoomPageTransitionsBuilder();
+
+          var platform = Theme.of(context).platform;
+          if (platform == TargetPlatform.iOS)     builder = const CupertinoPageTransitionsBuilder();
+          if (platform == TargetPlatform.linux)   builder = const OpenUpwardsPageTransitionsBuilder();
+          if (platform == TargetPlatform.macOS)   builder = const FadeUpwardsPageTransitionsBuilder();
+
           return builder.buildTransitions(this, context, animation, secondaryAnimation, child);
     }
   }

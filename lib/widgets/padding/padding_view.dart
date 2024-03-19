@@ -23,7 +23,7 @@ class _PaddingViewState extends WidgetState<PaddingView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     double pTop    = max(widget.model.marginTop ?? 0, 0);
     double pBottom = max(widget.model.marginBottom ?? 0, 0);

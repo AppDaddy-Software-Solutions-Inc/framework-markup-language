@@ -51,7 +51,7 @@ class _SplashState extends State<Splash>
     // constrain the image
     var portrait = (constraints.maxWidth < constraints.maxHeight);
     double? width = constraints.maxWidth - (constraints.maxWidth/(portrait ? 3 : 1.5));
-    if (width > 400) image = Container(child: image, constraints: BoxConstraints(maxWidth: width, maxHeight: constraints.maxHeight));
+    if (width > 400) image = Container(constraints: BoxConstraints(maxWidth: width, maxHeight: constraints.maxHeight), child: image);
 
     return image;
   }

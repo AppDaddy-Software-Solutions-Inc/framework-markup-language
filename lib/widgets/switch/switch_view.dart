@@ -11,7 +11,7 @@ class SwitchView extends StatefulWidget implements IWidgetView
   @override
   final SwitchModel model;
   final dynamic onChangeCallback;
-  SwitchView(this.model, {this.onChangeCallback});
+  const SwitchView(this.model, {super.key, this.onChangeCallback});
 
   @override
   State<SwitchView> createState() => _SwitchViewState();
@@ -23,7 +23,7 @@ class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserv
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     bool value = widget.model.value;
     String? label = widget.model.label;
@@ -78,7 +78,7 @@ class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserv
     ////////////////////
     /* Constrain Size */
     ////////////////////
-    view = SizedBox(child: view, width: width);
+    view = SizedBox(width: width, child: view);
 
     return view;
   }
@@ -94,7 +94,7 @@ class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserv
       await widget.model.answer(value);
 
       // fire the onChange event
-      await widget.model.onChange(context);
+      await widget.model.onChange(mounted ? context : null);
     }
   }
 }

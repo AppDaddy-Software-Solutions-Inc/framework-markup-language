@@ -146,7 +146,7 @@ class CameraViewState extends WidgetState<CameraView>
       int tries = 0;
       while (cameras == null && tries < 5)
       {
-        if (tries > 0) await Future.delayed(Duration(seconds: 1));
+        if (tries > 0) await Future.delayed(const Duration(seconds: 1));
         tries++;
 
         try
@@ -176,7 +176,6 @@ class CameraViewState extends WidgetState<CameraView>
         }
       }
     }
-    print((cameras != null).toString());
     return true;
   }
 
@@ -346,7 +345,7 @@ class CameraViewState extends WidgetState<CameraView>
         }
 
         // notify initilizied
-        widget.model.onInitialized(context);
+        widget.model.onInitialized();
 
         // camera is busy
         widget.model.busy = false;
@@ -500,7 +499,7 @@ class CameraViewState extends WidgetState<CameraView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // wait for controller to initialize
     try {
@@ -543,7 +542,7 @@ class CameraViewState extends WidgetState<CameraView>
     double height = MediaQuery.of(context).size.height;
 
     // basic constraints
-    view = Container(child: view, width: width, height: height);
+    view = SizedBox(width: width, height: height, child: view);
 
     // apply user defined constraints
     view = applyConstraints(view, widget.model.constraints);
@@ -595,8 +594,8 @@ class CameraViewState extends WidgetState<CameraView>
                 child: GestureDetector(
                     onTap: toggleCamera,
                     child: Stack(alignment: Alignment.center, children: [
-                      Icon(Icons.circle, color: Colors.white38, size: 65),
-                      Icon(Icons.circle, color: Colors.white38, size: 50),
+                      const Icon(Icons.circle, color: Colors.white38, size: 65),
+                      const Icon(Icons.circle, color: Colors.white38, size: 50),
                       selectorbutton!
                     ]))));
         children.add(Positioned(bottom: 25, left: 10, child: selector));
@@ -611,7 +610,7 @@ class CameraViewState extends WidgetState<CameraView>
               child: GestureDetector(
                   onTap: snapshot,
                   child: Stack(alignment: Alignment.center, children: [
-                    Icon(Icons.circle, color: Colors.white38, size: 80),
+                    const Icon(Icons.circle, color: Colors.white38, size: 80),
                     shutterbutton!
                   ]))));
       children.add(Positioned(bottom: 25, left: 0, right: 0, child: shutter));

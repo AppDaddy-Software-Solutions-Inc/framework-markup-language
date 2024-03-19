@@ -11,7 +11,7 @@ typedef OnMessageCallback = void Function(Map<String, dynamic> data, [String? ty
 
 class Bridge
 {
-  final jsonEncoder = JsonEncoder();
+  final jsonEncoder = const JsonEncoder();
   final String script;
 
   universal_js.JsObject? _connector;

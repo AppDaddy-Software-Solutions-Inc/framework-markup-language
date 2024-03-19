@@ -27,7 +27,7 @@ class SplitViewState extends WidgetState<SplitView>
 {
   ThemeData? theme;
 
-  BoxConstraints constraints = BoxConstraints();
+  BoxConstraints constraints = const BoxConstraints();
 
   void onBack(Event event)
   {
@@ -78,9 +78,9 @@ class SplitViewState extends WidgetState<SplitView>
 
     Widget view = widget.model.vertical ?
     GestureDetector(behavior: HitTestBehavior.opaque, onVerticalDragUpdate:  (DragUpdateDetails details) => _onDrag(details, constraints), child: Container(color: myDividerColor, child: SizedBox(width: constraints.maxWidth, height: myDividerWidth, child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown,     child: Stack(children: [Positioned(top: -10, child: Icon(Icons.drag_handle, color: widget.model.dividerHandleColor))]))))) :
-    GestureDetector(behavior: HitTestBehavior.opaque, onHorizontalDragUpdate: (DragUpdateDetails details) => _onDrag(details, constraints), child: Container(color: myDividerColor, child: SizedBox(width: myDividerWidth, height: constraints.maxHeight, child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: RotationTransition(child: Icon(Icons.drag_handle, color: widget.model.dividerHandleColor), turns: AlwaysStoppedAnimation(.25))))));
+    GestureDetector(behavior: HitTestBehavior.opaque, onHorizontalDragUpdate: (DragUpdateDetails details) => _onDrag(details, constraints), child: Container(color: myDividerColor, child: SizedBox(width: myDividerWidth, height: constraints.maxHeight, child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: RotationTransition(turns: const AlwaysStoppedAnimation(.25), child: Icon(Icons.drag_handle, color: widget.model.dividerHandleColor))))));
 
-    return LayoutBoxChildData(child: view, model: BoxModel(null,null,expandDefault: false));
+    return LayoutBoxChildData(model: BoxModel(null,null,expandDefault: false), child: view);
   }
 
   Widget _constrainBox(BoxView box, int flex)
@@ -96,7 +96,7 @@ class SplitViewState extends WidgetState<SplitView>
         box.model.setFlex(flex);
         break;
     }
-    return LayoutBoxChildData(child: box, model: box.model);
+    return LayoutBoxChildData(model: box.model, child: box);
   }
 
   BoxView get _missingView => BoxView(BoxModel(widget.model,null));

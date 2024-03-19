@@ -11,7 +11,7 @@ class LabelledBorderContainer extends SlottedMultiChildRenderObjectWidget<Labell
   final Container container;
   final Widget label;
 
-  const LabelledBorderContainer(this.container, this.label, {required this.decoration});
+  const LabelledBorderContainer(this.container, this.label, {super.key, required this.decoration});
 
   @override
   Iterable<LabelledContainerSlot> get slots => LabelledContainerSlot.values;

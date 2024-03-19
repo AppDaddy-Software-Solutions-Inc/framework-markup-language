@@ -347,7 +347,7 @@ class CameraModel extends CameraImageModel
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
-  Future<bool> onInitialized(BuildContext context) async
+  Future<bool> onInitialized() async
   {
     if (oninitialized == null) return true;
     return await EventHandler(this).execute(_oninitialized);

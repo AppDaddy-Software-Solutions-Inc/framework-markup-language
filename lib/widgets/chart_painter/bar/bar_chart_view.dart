@@ -92,10 +92,10 @@ class _ChartViewState extends WidgetState<BarChartView>
         ),
 
         titlesData: FlTitlesData(
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false),  axisNameWidget: !isNullOrEmpty(widget.model.title) ? Text(widget.model.title!, style: TextStyle(fontSize: 12),): null,),
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: AxisTitles(sideTitles: const SideTitles(showTitles: false),  axisNameWidget: !isNullOrEmpty(widget.model.title) ? Text(widget.model.title!, style: const TextStyle(fontSize: 12),): null,),
+          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           leftTitles: AxisTitles(
-              axisNameWidget: !isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title!, style: TextStyle(fontSize: 12),): null,
+              axisNameWidget: !isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title!, style: const TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
                 reservedSize: widget.model.yaxis.padding ?? 22,
                 interval: toDouble(widget.model.yaxis.interval),
@@ -104,7 +104,7 @@ class _ChartViewState extends WidgetState<BarChartView>
               )
           ),
           bottomTitles: AxisTitles(
-              axisNameWidget: !isNullOrEmpty(widget.model.xaxis.title) ? Text(widget.model.xaxis.title!, style: TextStyle(fontSize: 12),): null,
+              axisNameWidget: !isNullOrEmpty(widget.model.xaxis.title) ? Text(widget.model.xaxis.title!, style: const TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
                 reservedSize: widget.model.xaxis.padding ?? 22,
                 interval: toDouble(widget.model.xaxis.interval),
@@ -125,7 +125,7 @@ class _ChartViewState extends WidgetState<BarChartView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // Busy / Loading Indicator
     busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
@@ -143,7 +143,7 @@ class _ChartViewState extends WidgetState<BarChartView>
     catch(e)
     {
       Log().exception(e, caller: 'bar_chart_view builder() ');
-      view = Center(child: Icon(Icons.add_chart));
+      view = const Center(child: Icon(Icons.add_chart));
     }
 
     // Prioritize chart ux interactions
@@ -171,7 +171,7 @@ BarTooltipItem getTooltipItems(BarChartGroupData group,
     BarChartRodData rod,
     int rodIndex)
   {
-    return BarTooltipItem("${rod.fromY}, ${rod.toY}", TextStyle());
+    return BarTooltipItem("${rod.fromY}, ${rod.toY}", const TextStyle());
   }
 
   void onBarTouch(FlTouchEvent event, BarTouchResponse? response)
@@ -231,7 +231,7 @@ BarTooltipItem getTooltipItems(BarChartGroupData group,
     // show new tooltip
     if (views.isNotEmpty)
     {
-      tooltip = OverlayEntry(builder: (context) => Positioned(left: x, top: y + 25, child: Column(children: views, mainAxisSize: MainAxisSize.min)));
+      tooltip = OverlayEntry(builder: (context) => Positioned(left: x, top: y + 25, child: Column(mainAxisSize: MainAxisSize.min, children: views)));
       Overlay.of(context).insert(tooltip!);
     }
   }
@@ -247,7 +247,7 @@ BarTooltipItem getTooltipItems(BarChartGroupData group,
     }
     catch(e)
     {
-      print(e);
+      Log().exception(e);
     }
   }
 }

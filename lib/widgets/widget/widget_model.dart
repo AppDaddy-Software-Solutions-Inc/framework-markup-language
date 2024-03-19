@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/datasource_listener_interface.dart';
@@ -151,7 +152,7 @@ class WidgetModel implements IDataSourceListener {
 
     // auto generated id
     String prefix = "auto";
-    if (FmlEngine.kDebugMode)
+    if (kDebugMode)
     {
       prefix = "$runtimeType";
       prefix = prefix.replaceAll(onlyAlpha,'');

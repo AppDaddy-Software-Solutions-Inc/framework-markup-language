@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 class Application extends StatelessWidget
 {
-  Application({super.key});
+  const Application({super.key});
 
   @override
   Widget build(BuildContext context)

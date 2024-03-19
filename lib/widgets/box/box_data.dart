@@ -73,7 +73,7 @@ class LayoutBoxChildData extends ParentDataWidget<BoxData>
   /// Ignored if both top and bottom are non-null.
   final double? height;
 
-  LayoutBoxChildData({
+  const LayoutBoxChildData({super.key,
     required this.model,
     required super.child,
     this.left,

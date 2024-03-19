@@ -20,7 +20,7 @@ class _IconViewState extends WidgetState<IconView> {
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     IconData? value = widget.model.icon;
 

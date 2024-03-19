@@ -17,7 +17,7 @@ class WrapObject extends MultiChildRenderObjectWidget
   /// to be necessary to decide which direction to lay the children in or to
   /// disambiguate `start` or `end` values for the main or cross axis
   /// directions, the [textDirection] must not be null.
-  WrapObject({
+  const WrapObject({
     required this.model,
     super.key,
     this.direction = Axis.horizontal,

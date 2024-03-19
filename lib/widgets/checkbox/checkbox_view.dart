@@ -78,7 +78,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     // pad icon
     button = Padding(
         padding:
-        EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 3),
+        const EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 3),
         child: button);
 
     // add label
@@ -124,11 +124,11 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     if (widget.model.layout == 'row' && widget.model.wrap)
     {
       return Wrap(
-          children: options,
           direction: Axis.horizontal,
           alignment: alignment.mainWrapAlignment,
           runAlignment: alignment.mainWrapAlignment,
-          crossAxisAlignment: alignment.crossWrapAlignment);
+          crossAxisAlignment: alignment.crossWrapAlignment,
+          children: options);
     }
 
     // row
@@ -145,11 +145,11 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     if (widget.model.wrap)
     {
       return Wrap(
-          children: options,
           direction: Axis.vertical,
           alignment: alignment.mainWrapAlignment,
           runAlignment: alignment.mainWrapAlignment,
-          crossAxisAlignment: alignment.crossWrapAlignment);
+          crossAxisAlignment: alignment.crossWrapAlignment,
+          children: options);
     }
 
     // default - column
@@ -164,6 +164,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
+    // ignore: prefer_const_constructors
     if (!widget.model.visible) return Offstage();
 
     // View

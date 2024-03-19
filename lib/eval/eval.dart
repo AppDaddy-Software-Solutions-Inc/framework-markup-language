@@ -23,7 +23,7 @@ import 'package:petitparser/core.dart';
 /// Evals can contain conditional operations; expression ? consequent : alternate
 class Eval
 {
-  static final ExpressionEvaluator evaluator = const ExpressionEvaluator();
+  static const ExpressionEvaluator evaluator = ExpressionEvaluator();
 
   /// The String value mapping of all the functions
   static final Map<String, dynamic> functions = {'abs': _abs, 'acos': acos, 'addTime': _addTime, 'addtime': _addTime, 'asin': asin, 'atan': atan, 'bit': _bit, 'bytes': _bytes, 'case' : _case, 'ceil': _ceil, 'contains': _contains, 'cos': cos, 'decrypt': _decrypt, 'distance': _distance, 'elementAt': _elementAt, 'encrypt': _encrypt, 'endsWith': _endsWith, 'endswith': _endsWith, 'floor': _floor, 'hash' : _hash, 'indexOf': _indexOf, 'if': _if, 'isAfter': _isAfter, 'isafter': _isAfter, 'isBefore': _isBefore, 'isbefore': _isBefore, 'isBool' : _isBool, 'isbool' : _isBool, 'isBoolean' : _isBool, 'isboolean' : _isBool, 'isPhone' : _isValidPhone, 'isCard' : _isValidCreditCard, 'isPassword' : _isValidPassword, 'isEmail' : _isValidEmail, 'isExpiryDate' : _isValidExpiryDate, 'isNull': _isNull, 'isnull': _isNull, 'isNullOrEmpty': _isNullOrEmpty, 'isnullorempty': _isNullOrEmpty, 'isNum' : _isNumeric, 'isnum' : _isNumeric, 'isNumeric' : _isNumeric, 'isnumeric' : _isNumeric, 'join': _join, 'length': _length, 'mod': _mod, 'noe': _isNullOrEmpty, 'number': _number, 'nvl': _nvl, 'pi': pi / 5, 'regex': _regex, 'replace': _replace, 'round': _round, 'sin': sin, 'split': _split, 'startsWith': _startsWith, 'startswith': _startsWith, 'substring': _substring, 'subtractTime': _subtractTime, 'subtracttime': _subtractTime, 'tan': tan, 'timeBetween': _timeBetween, 'timebetween': _timeBetween, 'toBool': _toBool, 'tobool': _toBool, 'toBoolean': _toBool, 'toboolean': _toBool, 'toDate': _toDate, 'todate': _toDate, 'toEpoch': _toEpoch, 'toepoch': _toEpoch, 'toJson': _toJson, 'toLower' : _toLower, 'tolower': _toLower, 'toNum': _toNum, 'tonum': _toNum, 'toNumber': _toNum, 'tonumber': _toNum, 'toStr': _toString, 'tostr': _toString, 'toString': _toString, 'tostring': _toString, 'toUpper' : _toUpper, 'toupper': _toUpper, 'toXml': _toXml, 'truncate': _truncate,};
@@ -605,7 +605,7 @@ class Eval
   }
 
   static final RegExp nonQuotedColons = RegExp(r"\):(?=([^'\\]*(\\.|'([^'\\]*\\.)*[^'\\]*'))*[^']*$)");
-  static final String nonQuotedPlaceholder = "!~!";
+  static const String nonQuotedPlaceholder = "!~!";
 
   static dynamic _case(dynamic value, [dynamic v0, dynamic r0, dynamic v1, dynamic r1, dynamic v2, dynamic r2, dynamic v3, dynamic r3, dynamic v4, dynamic r4, dynamic v5, dynamic r5, dynamic v6, dynamic r6, dynamic v7, dynamic r7, dynamic v8, dynamic r8, dynamic v9, dynamic r9])
   {

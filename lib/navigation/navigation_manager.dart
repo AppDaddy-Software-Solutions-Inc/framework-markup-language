@@ -45,7 +45,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
   NavigationManager._internal()
   {
-    dummyPage = _buildPage("/", child: Offstage());
+    dummyPage = _buildPage("/", child: const Offstage());
     _addPage(dummyPage!);
   }
 
@@ -190,8 +190,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       if (configuration.route != null)
       {
         var route = configuration.route!;
-        var disposition = await route.popDisposition;
-        if (disposition == RoutePopDisposition.doNotPop) canPop = false;
+        if (route.popDisposition == RoutePopDisposition.doNotPop) canPop = false;
         if (!canPop) route.onPopInvoked(canPop);
       }
     }
@@ -535,7 +534,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     var title = Text('${phrase.close} ${phrase.application}?', style: style);
 
     style = TextStyle(color: Theme.of(context).colorScheme.onBackground);
-    var msg = Padding(padding: EdgeInsets.only(top: 0, bottom: 10), child: Text(phrase.confirmExit, style: style));
+    var msg = Padding(padding: const EdgeInsets.only(top: 0, bottom: 10), child: Text(phrase.confirmExit, style: style));
 
     style = TextStyle(color: Theme.of(context).colorScheme.primary);
     var no  = TextButton(onPressed: () => Navigator.pop(context, true),  child: Text(phrase.no, style: style));
@@ -548,7 +547,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     return AlertDialog(
         title: title,
         content: content,
-        contentPadding: EdgeInsets.fromLTRB(4.0, 10.0, 4.0, 10.0),
+        contentPadding: const EdgeInsets.fromLTRB(4.0, 10.0, 4.0, 10.0),
         insetPadding: EdgeInsets.zero);
   }
 

@@ -386,7 +386,7 @@ class BoxModel extends DecoratedWidgetModel
         // This is already done for us in our "positioned" widget view
         if (view is! PositionedView)
         {
-          view = LayoutBoxChildData(child: view!, model: model);
+          view = LayoutBoxChildData(model: model, child: view!);
         }
 
         // add the view to the

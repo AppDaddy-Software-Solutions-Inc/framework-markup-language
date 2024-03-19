@@ -107,7 +107,7 @@ class _ChartViewState extends WidgetState<ChartView>
           ? charts_flutter.NumericExtents(toNum(widget.model.yaxis.min!)!, toNum(widget.model.yaxis.max!)!) : null,
       renderSpec: charts_flutter.SmallTickRendererSpec( // GridlineRendererSpec(
           tickLengthPx: 4,
-          lineStyle: charts_flutter.LineStyleSpec(dashPattern: []),
+          lineStyle: const charts_flutter.LineStyleSpec(dashPattern: []),
           labelStyle: charts_flutter.TextStyleSpec(
               fontSize: widget.model.yaxis.labelvisible == false ? 0 : widget.model.yaxis.labelsize,
               color: charts_flutter.ColorUtil.fromDartColor(
@@ -1137,7 +1137,7 @@ class _ChartViewState extends WidgetState<ChartView>
         outsideJustification: charts_flutter.OutsideJustification.middleDrawArea,
         horizontalFirst: true,
         desiredMaxColumns: 4,
-        cellPadding: EdgeInsets.only(right: 4.0, bottom: 4.0),
+        cellPadding: const EdgeInsets.only(right: 4.0, bottom: 4.0),
       ));
     }
 
@@ -1166,7 +1166,7 @@ class _ChartViewState extends WidgetState<ChartView>
     behaviors.add(
         charts_flutter.LinePointHighlighter(
             drawFollowLinesAcrossChart: true,
-            dashPattern: [3,2],
+            dashPattern: const [3,2],
             selectionModelType: charts_flutter.SelectionModelType.info,
             showHorizontalFollowLine:
             charts_flutter.LinePointHighlighterFollowLineType.nearest,
@@ -1206,7 +1206,7 @@ class _ChartViewState extends WidgetState<ChartView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // Busy / Loading Indicator
     busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
@@ -1232,22 +1232,22 @@ class _ChartViewState extends WidgetState<ChartView>
           break;
         case ChartType.pieChart:
           if (series == null || series.isEmpty) {
-            view = Center(child: Icon(Icons.add_chart));
+            view = const Center(child: Icon(Icons.add_chart));
           } else if (series[0].data.isNotEmpty) {
             view = buildPieChart((series as List<charts_flutter.Series<dynamic, String>>));
           } else {
-            view = Center(child: Icon(Icons.add_chart));
+            view = const Center(child: Icon(Icons.add_chart));
           }
           break;
         case ChartType.timeSeriesChart:
           view = buildTimeChart(series!);
           break;
         default:
-          view = Center(child: Icon(Icons.add_chart));
+          view = const Center(child: Icon(Icons.add_chart));
       }
     } catch(e) {
       Log().exception(e, caller: 'chart_view builder() ');
-      view = Center(child: Icon(Icons.add_chart));
+      view = const Center(child: Icon(Icons.add_chart));
     }
 
     // Prioritize chart ux interactions

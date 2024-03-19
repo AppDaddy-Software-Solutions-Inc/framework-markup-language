@@ -4,11 +4,13 @@ import 'package:fml/system.dart';
 
 /// [ScrollShadow] builds the [ScrollerView] "scroll for more" shadows on the top and bottom
 class ScrollShadow extends StatefulWidget {
+
   final ScrollController scrollController;
   final String pos;
   final Axis axis;
   final Color? shadowColor;
-  ScrollShadow(this.scrollController, this.pos, this.axis, [this.shadowColor]);
+
+  const ScrollShadow(this.scrollController, this.pos, this.axis, this.shadowColor, {super.key});
 
   @override
   State<ScrollShadow> createState() => _ScrollShadowState();
@@ -78,7 +80,7 @@ class _ScrollShadowState extends State<ScrollShadow> {
   {
     // Remove shadows on mobile web.
     if (System().userplatform == 'web' && (System().useragent == 'android' || System().useragent == 'ios')) {
-      return Offstage();
+      return const Offstage();
     }
     Positioned shadow;
     var col =
@@ -96,7 +98,7 @@ class _ScrollShadowState extends State<ScrollShadow> {
               ? BoxDecoration(boxShadow: [
             BoxShadow(color: col, spreadRadius: 3, blurRadius: 8)
           ])
-              : BoxDecoration(),
+              : const BoxDecoration(),
         ),
       )
       // Shadow on bottom
@@ -109,7 +111,7 @@ class _ScrollShadowState extends State<ScrollShadow> {
               ? BoxDecoration(boxShadow: [
             BoxShadow(color: col, spreadRadius: 6, blurRadius: 10)
           ])
-              : BoxDecoration(),
+              : const BoxDecoration(),
         ),
       );
     } else {
@@ -123,7 +125,7 @@ class _ScrollShadowState extends State<ScrollShadow> {
               ? BoxDecoration(boxShadow: [
             BoxShadow(color: col, spreadRadius: 3, blurRadius: 8)
           ])
-              : BoxDecoration(),
+              : const BoxDecoration(),
         ),
       )
           : Positioned(
@@ -135,7 +137,7 @@ class _ScrollShadowState extends State<ScrollShadow> {
               ? BoxDecoration(boxShadow: [
             BoxShadow(color: col, spreadRadius: 3, blurRadius: 8)
           ])
-              : BoxDecoration(),
+              : const BoxDecoration(),
         ),
       );
     }

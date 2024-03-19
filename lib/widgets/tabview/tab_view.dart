@@ -243,8 +243,8 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       // Has delete button?
       bool closeable = toBool(uri.queryParameters['closeable']) ?? true;
       Widget delete = (closeable == false) ? Container()
-      : Padding(padding: EdgeInsets.only(right: 5), child: Container(width: 26, height: 26,
-          child: IconButton(onPressed: () => _onDelete(view), padding: EdgeInsets.all(1.5), icon: Icon(Icons.close, size: 22, color: Theme.of(context).colorScheme.onSurfaceVariant))));
+      : Padding(padding: const EdgeInsets.only(right: 5), child: SizedBox(width: 26, height: 26,
+          child: IconButton(onPressed: () => _onDelete(view), padding: const EdgeInsets.all(1.5), icon: Icon(Icons.close, size: 22, color: Theme.of(context).colorScheme.onSurfaceVariant))));
 
       // tab bar
       String title   = uri.queryParameters['title'] ?? uri.page.toString();
@@ -263,9 +263,9 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       ]);
       Tab tab = Tab(
           child: Tooltip(
-              waitDuration: Duration(milliseconds: 500),
+              waitDuration: const Duration(milliseconds: 500),
               message: url,
-              child: Container(height: height, child: child)));
+              child: SizedBox(height: height, child: child)));
       tabs.add(tab);
     });
     return tabs;
@@ -277,7 +277,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
     List<Tab> tabs = _buildTabs(height);
 
     // Initialize Controller
-    _tabController = TabController(length: tabs.length, vsync: this, initialIndex: widget.model.index ?? 0, animationDuration: Duration(milliseconds: 100));
+    _tabController = TabController(length: tabs.length, vsync: this, initialIndex: widget.model.index ?? 0, animationDuration: const Duration(milliseconds: 100));
 
     // Add Listener
     _tabController!.addListener(onTap);
@@ -286,13 +286,13 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
     var bar = TabBar(controller: _tabController,
         padding: EdgeInsets.zero,
         labelPadding: EdgeInsets.zero,
-        indicator: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(14.0), topRight: Radius.circular(14.0)), color: Theme.of(context).colorScheme.surface),
+        indicator: BoxDecoration(borderRadius: const BorderRadius.only(topLeft: Radius.circular(14.0), topRight: Radius.circular(14.0)), color: Theme.of(context).colorScheme.surface),
         labelColor: Theme.of(context).colorScheme.onBackground,
         unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
         tabs: tabs);
 
     // Formatted bar
-    var view = Container(child: bar, height: height, decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceVariant, borderRadius: BorderRadius.only(topLeft: Radius.circular(14.0), topRight: Radius.circular(14.0))));
+    var view = Container(height: height, decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceVariant, borderRadius: const BorderRadius.only(topLeft: Radius.circular(14.0), topRight: Radius.circular(14.0))), child: bar);
 
     return view;
   }
@@ -303,7 +303,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
     List<PopupMenuItem> popoverItems = [];
 
     // Build close all but open tab
-    PopupMenuItem closeOtherTabs = PopupMenuItem(child: Text('Close other tabs', style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant)), value: -1);
+    PopupMenuItem closeOtherTabs = PopupMenuItem(value: -1, child: Text('Close other tabs', style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant)));
     popoverItems.add(closeOtherTabs);
 
     int i = 0;
@@ -316,7 +316,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       var style = widget.model.index == i ? TextStyle(color: Theme.of(context).colorScheme.primary) : TextStyle(color: Theme.of(context).colorScheme.secondary);
 
       // Button
-      PopupMenuItem button = PopupMenuItem(child: Text(title, style: style), value: i);
+      PopupMenuItem button = PopupMenuItem(value: i, child: Text(title, style: style));
 
       popoverItems.add(button);
       i++;
@@ -327,7 +327,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       color: Theme.of(context).colorScheme.surface,
       onSelected: (val) => onButtonTap(val),
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[...popoverItems],
-      child: Container(decoration: BoxDecoration(color: Theme.of(context).colorScheme.onInverseSurface, borderRadius: BorderRadius.all(Radius.circular(100))), child: Padding(padding: EdgeInsets.all(5), child: Icon(Icons.clear_all, size: 22, color: Theme.of(context).colorScheme.inverseSurface))),
+      child: Container(decoration: BoxDecoration(color: Theme.of(context).colorScheme.onInverseSurface, borderRadius: const BorderRadius.all(Radius.circular(100))), child: Padding(padding: const EdgeInsets.all(5), child: Icon(Icons.clear_all, size: 22, color: Theme.of(context).colorScheme.inverseSurface))),
     );
 
     return popover;
@@ -360,8 +360,8 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       SizedBox(
           height: height - barheight - barpadding,
           child: IndexedStack(
-              children: widget.model.views.values.toList(),
-              index: widget.model.index))
+              index: widget.model.index,
+              children: widget.model.views.values.toList()))
     ]);
 
     return view;
@@ -394,8 +394,8 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
                   minWidth: con.minWidth!,
                   maxWidth: con.maxWidth!),
               child: IndexedStack(
-                  children: widget.model.views.values.toList(),
-                  index: widget.model.index)))
+                  index: widget.model.index,
+                  children: widget.model.views.values.toList())))
     ]);
 
     return view;
@@ -403,7 +403,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
 
   Widget _tabView()
   {
-    Widget view = IndexedStack(children: widget.model.views.values.toList(), index: widget.model.index);
+    Widget view = IndexedStack(index: widget.model.index, children: widget.model.views.values.toList());
     return view;
   }
 
@@ -414,8 +414,8 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
 
     Widget view = Stack(children: [
       IndexedStack(
-          children: widget.model.views.values.toList(),
-          index: widget.model.index),
+          index: widget.model.index,
+          children: widget.model.views.values.toList()),
       Positioned(top: 0, right: 0, child: button),
     ]);
 
@@ -443,7 +443,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // build the view
     Widget view = _buildTabView();

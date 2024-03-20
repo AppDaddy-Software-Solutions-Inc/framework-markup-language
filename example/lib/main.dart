@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    String example1 = 'https://fml.dev';
+    String example1 = 'https://test.appdaddy.co';
     //String example2 = 'file://fmlpad';
     //String example3 = 'file://example';
 

@@ -8,43 +8,40 @@ import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class IconModel extends DecoratedWidgetModel  
-{
+class IconModel extends DecoratedWidgetModel {
   // icon
   IconObservable? _icon;
-  set icon(dynamic v)
-  {
-    if (_icon != null)
-    {
+  set icon(dynamic v) {
+    if (_icon != null) {
       _icon!.set(v);
-    }
-    else if (v != null)
-    {
-      _icon = IconObservable(Binding.toKey(id, 'icon'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _icon = IconObservable(Binding.toKey(id, 'icon'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   IconData? get icon => _icon?.get();
 
   // size
   DoubleObservable? _size;
-  set size(dynamic v)
-  {
-    if (_size != null)
-    {
+  set size(dynamic v) {
+    if (_size != null) {
       _size!.set(v);
-    }
-    else if (v != null)
-    {
-      _size = DoubleObservable(Binding.toKey(id, 'size'), null, scope: scope, listener: onPropertyChange, getter: _sizeGetter, setter: _sizeSetter);
+    } else if (v != null) {
+      _size = DoubleObservable(Binding.toKey(id, 'size'), null,
+          scope: scope,
+          listener: onPropertyChange,
+          getter: _sizeGetter,
+          setter: _sizeSetter);
       _size!.set(v);
     }
   }
+
   double? get size => _size?.get() ?? 24;
 
   dynamic _sizeGetter() => width;
-  dynamic _sizeSetter(dynamic value, {Observable? setter})
-  {
-    width  = value;
+  dynamic _sizeSetter(dynamic value, {Observable? setter}) {
+    width = value;
     height = value;
     return width;
   }
@@ -76,15 +73,14 @@ class IconModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml) 
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 
     // properties
-    icon     = Xml.get(node: xml, tag: 'icon') ?? Xml.get(node: xml, tag: 'value');
-    size     = Xml.get(node: xml, tag: 'size');
-    opacity  = Xml.get(node: xml, tag: 'opacity');
+    icon = Xml.get(node: xml, tag: 'icon') ?? Xml.get(node: xml, tag: 'value');
+    size = Xml.get(node: xml, tag: 'size');
+    opacity = Xml.get(node: xml, tag: 'opacity');
   }
 
   @override

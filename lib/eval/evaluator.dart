@@ -9,8 +9,7 @@ import 'package:decimal/decimal.dart';
 class ExpressionEvaluator {
   const ExpressionEvaluator();
 
-  dynamic eval(Expression? expression, Map<String?, dynamic> context)
-  {
+  dynamic eval(Expression? expression, Map<String?, dynamic> context) {
     if (expression == null) throw ArgumentError.notNull('expression');
     if (expression is Literal) return evalLiteral(expression, context);
     if (expression is Variable) return evalVariable(expression, context);
@@ -46,7 +45,7 @@ class ExpressionEvaluator {
     if (value is List) return value.map((e) => eval(e, context)).toList();
     if (value is Map) {
       return value.map(
-              (key, value) => MapEntry(eval(key, context), eval(value, context)));
+          (key, value) => MapEntry(eval(key, context), eval(value, context)));
     }
     return value;
   }
@@ -59,8 +58,8 @@ class ExpressionEvaluator {
     return context['this'];
   }
 
-  dynamic evalMemberExpression(MemberExpression expression, Map<String?, dynamic> context)
-  {
+  dynamic evalMemberExpression(
+      MemberExpression expression, Map<String?, dynamic> context) {
     // updated by olajos
     return expression.toString();
     //throw UnsupportedError('Member expressions not supported');
@@ -71,8 +70,7 @@ class ExpressionEvaluator {
     return eval(expression.object, context)[eval(expression.index, context)];
   }
 
-  bool isVariable(dynamic object)
-  {
+  bool isVariable(dynamic object) {
     if (object == null) return false;
 
     // this captures instances like a.set()
@@ -80,37 +78,46 @@ class ExpressionEvaluator {
 
     // this captures instances like GLOBAL.a.set()
     String exp = object.toString();
-    if (object is MemberExpression && exp.contains(".") && !exp.contains("(") && !exp.contains("[")) return true;
+    if (object is MemberExpression &&
+        exp.contains(".") &&
+        !exp.contains("(") &&
+        !exp.contains("[")) return true;
 
     return false;
   }
 
-  dynamic evalCallExpression(CallExpression expression, Map<String?, dynamic> context)
-  {
+  dynamic evalCallExpression(
+      CallExpression expression, Map<String?, dynamic> context) {
     // olajos - March 14, 2022 - Added Functionality to Convert a.b() to _call call with parameters id, function, list<arguments>
     // olajos - Modified January 26, 2023 - Added isVariable to capture dot notated executes like GLOBAL.x.set('value') or <id>.<subproperty>.set('red');
-    MemberExpression? exp = (expression.callee is MemberExpression) ? (expression.callee as MemberExpression) : null;
-    if  (exp != null && isVariable(exp.object) && expression.arguments is List)
-    {
+    MemberExpression? exp = (expression.callee is MemberExpression)
+        ? (expression.callee as MemberExpression)
+        : null;
+    if (exp != null && isVariable(exp.object) && expression.arguments is List) {
       // evaluate id. id may be a bindable
       String id = (expression.callee as MemberExpression).object.toString();
-      if (id.startsWith("___V") && context.containsKey(id) && (context[id] is String)) id = context[id];
+      if (id.startsWith("___V") &&
+          context.containsKey(id) &&
+          (context[id] is String)) id = context[id];
 
       // evaluate function. function may be a bindable
       String fn = (expression.callee as MemberExpression).property.toString();
-      if (fn.startsWith("___V") && context.containsKey(fn) && (context[fn] is String)) fn = context[fn];
+      if (fn.startsWith("___V") &&
+          context.containsKey(fn) &&
+          (context[fn] is String)) fn = context[fn];
 
-      expression = CallExpression(Variable(Identifier("execute")), expression.arguments);
+      expression =
+          CallExpression(Variable(Identifier("execute")), expression.arguments);
       var callee = eval(expression.callee, context);
-      var arguments = expression.arguments!.map((e) => eval(e, context)).toList();
+      var arguments =
+          expression.arguments!.map((e) => eval(e, context)).toList();
 
       final List<dynamic> args = [id, fn, arguments];
       return Function.apply(callee, args);
-    }
-    else
-    {
+    } else {
       var callee = eval(expression.callee, context);
-      var arguments = expression.arguments!.map((e) => eval(e, context)).toList();
+      var arguments =
+          expression.arguments!.map((e) => eval(e, context)).toList();
       return Function.apply(callee, arguments);
     }
   }
@@ -124,7 +131,7 @@ class ExpressionEvaluator {
       case '+':
         return argument;
       case '!':
-       // if(argument == null) argument = false; removed by Isaac as we have null aware operator now.
+        // if(argument == null) argument = false; removed by Isaac as we have null aware operator now.
         return !argument;
 
       case '~':
@@ -141,7 +148,8 @@ class ExpressionEvaluator {
       case '||':
         return left || right();
       case '??':
-        return left ?? right(); //Added by isaac for alternate to nvl. Can be expressions on each side.
+        return left ??
+            right(); //Added by isaac for alternate to nvl. Can be expressions on each side.
       case '&&':
         return left && right();
       case '|':
@@ -169,37 +177,48 @@ class ExpressionEvaluator {
       case '=': // added by olajos
         return set(context, left, right());
       case '+':
-        return Decimal.parse(left.toString()) + Decimal.parse(right().toString());
+        return Decimal.parse(left.toString()) +
+            Decimal.parse(right().toString());
       case '-':
-        return Decimal.parse(left.toString()) - Decimal.parse(right().toString());
+        return Decimal.parse(left.toString()) -
+            Decimal.parse(right().toString());
       case '*':
-        return Decimal.parse(left.toString()) * Decimal.parse(right().toString());
+        return Decimal.parse(left.toString()) *
+            Decimal.parse(right().toString());
       case '/':
-        return Decimal.parse(left.toString()) / Decimal.parse(right().toString());
+        return Decimal.parse(left.toString()) /
+            Decimal.parse(right().toString());
       case '%':
-        return Decimal.parse(left.toString()) % Decimal.parse(right().toString());
+        return Decimal.parse(left.toString()) %
+            Decimal.parse(right().toString());
     }
     throw ArgumentError(
         'Unknown operator ${expression.operator} in expression');
   }
 
-  dynamic set(Map<String?, dynamic> context, dynamic left, dynamic right)
-  {
+  dynamic set(Map<String?, dynamic> context, dynamic left, dynamic right) {
     var fn = context.containsKey("execute") ? context["execute"] : null;
-    return fn is Function ? Function.apply(fn, [left, 'set', [right]]) : false;
+    return fn is Function
+        ? Function.apply(fn, [
+            left,
+            'set',
+            [right]
+          ])
+        : false;
   }
 
   dynamic evalConditionalExpression(
-      ConditionalExpression expression, Map<String?, dynamic> context)
-  {
+      ConditionalExpression expression, Map<String?, dynamic> context) {
     // modified by olajos = 2022-03-10
     bool? test;
 
     try {
       test = eval(expression.test, context);
-    } catch(e) {
+    } catch (e) {
       Log().debug("Expression is invalid ${expression.test}", caller: "eval");
     }
-    return (test ?? false) ? eval(expression.consequent, context) : eval(expression.alternate, context);
+    return (test ?? false)
+        ? eval(expression.consequent, context)
+        : eval(expression.alternate, context);
   }
 }

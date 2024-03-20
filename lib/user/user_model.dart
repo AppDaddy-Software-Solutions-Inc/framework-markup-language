@@ -10,8 +10,7 @@ import 'package:fml/system.dart';
 import 'package:fml/token/token.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
-class UserModel extends WidgetModel
-{
+class UserModel extends WidgetModel {
   static const String myId = "USER";
 
   late Future<bool> initialized;
@@ -37,17 +36,15 @@ class UserModel extends WidgetModel
   Jwt? _jwt;
   Jwt? get jwt => _jwt;
 
-  UserModel(WidgetModel parent, {String? jwt}) : super(parent, myId, scope: Scope(id: myId))
-  {
+  UserModel(WidgetModel parent, {String? jwt})
+      : super(parent, myId, scope: Scope(id: myId)) {
     // load the config
     initialized = initialize();
 
     // set token
-    if (jwt != null)
-    {
+    if (jwt != null) {
       var token = Jwt(jwt);
-      if (token.valid)
-      {
+      if (token.valid) {
         _jwt = token;
         logon(token);
       }
@@ -56,23 +53,22 @@ class UserModel extends WidgetModel
 
   // initializes the app
   @override
-  Future<bool> initialize() async
-  {
+  Future<bool> initialize() async {
     // wait for the system to initialize
     await System.initialized;
 
-    _connected = BooleanObservable(Binding.toKey("connected"), false, scope: scope);
-    _language  = StringObservable(Binding.toKey("language"), Phrases.english, scope: scope);
-    _rights    = IntegerObservable(Binding.toKey("rights"), 0, scope: scope);
-    _token     = StringObservable(Binding.toKey('jwt'), null, scope: scope);
+    _connected =
+        BooleanObservable(Binding.toKey("connected"), false, scope: scope);
+    _language = StringObservable(Binding.toKey("language"), Phrases.english,
+        scope: scope);
+    _rights = IntegerObservable(Binding.toKey("rights"), 0, scope: scope);
+    _token = StringObservable(Binding.toKey('jwt'), null, scope: scope);
     return true;
   }
 
-  Future<bool> logon(Jwt jwt) async
-  {
+  Future<bool> logon(Jwt jwt) async {
     // valid token?
-    if (jwt.valid)
-    {
+    if (jwt.valid) {
       // set system token
       _jwt = jwt;
       _token.set(jwt.token);
@@ -81,19 +77,17 @@ class UserModel extends WidgetModel
       _connected.set(true);
 
       // set user claims
-      jwt.claims.forEach((key, value)
-      {
+      jwt.claims.forEach((key, value) {
         key = key.toLowerCase().trim();
-        switch (key)
-        {
-          case 'connected' :
+        switch (key) {
+          case 'connected':
             break;
 
-          case 'rights' :
+          case 'rights':
             _rights.set(value);
             break;
 
-          case 'language' :
+          case 'language':
             _language.set(value);
             break;
 
@@ -101,13 +95,15 @@ class UserModel extends WidgetModel
             if (_claims.containsKey(key)) {
               _claims[key]!.set(value);
             } else {
-              _claims[key] = StringObservable(Binding.toKey(key), value, scope: scope);
+              _claims[key] =
+                  StringObservable(Binding.toKey(key), value, scope: scope);
             }
         }
       });
 
       // clear missing claims
-      _claims.forEach((key, observable) => jwt.claims.containsKey(key) ? null : observable.set(null));
+      _claims.forEach((key, observable) =>
+          jwt.claims.containsKey(key) ? null : observable.set(null));
 
       // set phrase language
       phrase.language = _language.get();
@@ -121,8 +117,7 @@ class UserModel extends WidgetModel
     }
   }
 
-  Future<bool> logoff() async
-  {
+  Future<bool> logoff() async {
     // clear system token
     _jwt = null;
     _token.set(null);
@@ -146,5 +141,6 @@ class UserModel extends WidgetModel
   }
 
   // return specific user claim
-  String? claim(String property) => _claims.containsKey(property) ? _claims[property]?.get() : null;
+  String? claim(String property) =>
+      _claims.containsKey(property) ? _claims[property]?.get() : null;
 }

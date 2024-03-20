@@ -10,8 +10,7 @@ import 'dart:ui';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:perfect_freehand/perfect_freehand.dart';
 
-class ScribbleView extends StatefulWidget implements IWidgetView
-{
+class ScribbleView extends StatefulWidget implements IWidgetView {
   @override
   final ScribbleModel model;
   ScribbleView(this.model) : super(key: ObjectKey(model));
@@ -20,14 +19,12 @@ class ScribbleView extends StatefulWidget implements IWidgetView
   State<ScribbleView> createState() => _ScribbleViewState();
 }
 
-class _ScribbleViewState extends WidgetState<ScribbleView>
-{
-  double width  = 300;
+class _ScribbleViewState extends WidgetState<ScribbleView> {
+  double width = 300;
   double height = 200;
 
   @override
-  void dispose()
-  {
+  void dispose() {
     linesStreamController.close();
     currentLineStreamController.close();
     super.dispose();
@@ -41,8 +38,10 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
   List<Stroke> lines = <Stroke>[];
   Stroke? line;
   StrokeOptions options = StrokeOptions();
-  StreamController<Stroke> currentLineStreamController = StreamController<Stroke>.broadcast();
-  StreamController<List<Stroke>> linesStreamController = StreamController<List<Stroke>>.broadcast();
+  StreamController<Stroke> currentLineStreamController =
+      StreamController<Stroke>.broadcast();
+  StreamController<List<Stroke>> linesStreamController =
+      StreamController<List<Stroke>>.broadcast();
 
   Future<void> clear() async {
     setState(() {
@@ -69,20 +68,19 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
   }
 
   /// Returns collection of 2D points that represents current signature
-  List<Stroke> exportLines()
-  {
+  List<Stroke> exportLines() {
     return lines;
   }
 
   // EXPORT DATA AS PNG AND RETURN BYTES
-  Future<Uint8List?> exportBytes() async
-  {
+  Future<Uint8List?> exportBytes() async {
     var painter = Sketcher(
         lines: lines,
         options: options,
-        color: Colors.black // Hardcode color to black for export a there will be no background/theming
-    );
-    return await painter.export(Size(width,height));
+        color: Colors
+            .black // Hardcode color to black for export a there will be no background/theming
+        );
+    return await painter.export(Size(width, height));
   }
 
   Future<void> updateSizeOption(double size) async {
@@ -117,13 +115,14 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
   }
 
   void onPointerMove(PointerMoveEvent details) {
-    if (canScribble == true)
-    {
+    if (canScribble == true) {
       final box = context.findRenderObject() as RenderBox;
       final offset = box.globalToLocal(details.position);
       late final PointVector point;
-      if (offset.dx < width && offset.dx > 0 && offset.dy < height && offset.dy > 0)
-      {
+      if (offset.dx < width &&
+          offset.dx > 0 &&
+          offset.dy < height &&
+          offset.dy > 0) {
         if (details.kind == PointerDeviceKind.stylus) {
           point = PointVector(
             offset.dx,
@@ -148,8 +147,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
     }
   }
 
-  Widget buildCurrentPath(BuildContext context)
-  {
+  Widget buildCurrentPath(BuildContext context) {
     return Listener(
       onPointerDown: onPointerDown,
       onPointerMove: onPointerMove,
@@ -164,18 +162,16 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
                 builder: (context, snapshot) {
                   return CustomPaint(
                     painter: Sketcher(
-                      lines: line == null ? [] : [line!],
-                      options: options,
-                      color: Theme.of(context).colorScheme.onSurface
-                    ),
+                        lines: line == null ? [] : [line!],
+                        options: options,
+                        color: Theme.of(context).colorScheme.onSurface),
                   );
                 })),
       ),
     );
   }
 
-  Widget buildAllPaths(BuildContext context)
-  {
+  Widget buildAllPaths(BuildContext context) {
     return RepaintBoundary(
       child: SizedBox(
         width: width,
@@ -185,10 +181,9 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
           builder: (context, snapshot) {
             return CustomPaint(
               painter: Sketcher(
-                lines: lines,
-                options: options,
-                color: Theme.of(context).colorScheme.onSurface
-              ),
+                  lines: lines,
+                  options: options,
+                  color: Theme.of(context).colorScheme.onSurface),
             );
           },
         ),
@@ -197,113 +192,122 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
   }
 
   Widget buildToolbar({bool showControls = false}) {
-    return showControls == true ? Positioned(
-        top:  40.0,
-        right: 10.0,
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const Text(
-                'Size',
-                textAlign: TextAlign.start,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-              ),
-              Slider(
-                  value: options.size,
-                  min: 1,
-                  max: 50,
-                  divisions: 100,
-                  label: options.size.round().toString(),
-                  onChanged: (double value) => {
-                    setState(() {
-                      options.size = value;
-                    })
-                  }),
-              const Text(
-                'Thinning',
-                textAlign: TextAlign.start,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-              ),
-              Slider(
-                  value: options.thinning,
-                  min: -1,
-                  max: 1,
-                  divisions: 100,
-                  label: options.thinning.toStringAsFixed(2),
-                  onChanged: (double value) => {
-                    setState(() {
-                      options.thinning = value;
-                    })
-                  }),
-              const Text(
-                'Streamline',
-                textAlign: TextAlign.start,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-              ),
-              Slider(
-                  value: options.streamline,
-                  min: 0,
-                  max: 1,
-                  divisions: 100,
-                  label: options.streamline.toStringAsFixed(2),
-                  onChanged: (double value) => {
-                    setState(() {
-                      options.streamline = value;
-                    })
-                  }),
-              const Text(
-                'Smoothing',
-                textAlign: TextAlign.start,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-              ),
-              Slider(
-                  value: options.smoothing,
-                  min: 0,
-                  max: 1,
-                  divisions: 100,
-                  label: options.smoothing.toStringAsFixed(2),
-                  onChanged: (double value) => {
-                    setState(() {
-                      options.smoothing = value;
-                    })
-                  }),
-              buildClearButton(),
-              buildSaveButton(),
-            ])
-        )
-        : Column(mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Center(child: Container(decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onInverseSurface,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(10.0),
-                  topRight: Radius.circular(10.0),
-                )),
-                child: Row(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,
+    return showControls == true
+        ? Positioned(
+            top: 40.0,
+            right: 10.0,
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  const Text(
+                    'Size',
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                  ),
+                  Slider(
+                      value: options.size,
+                      min: 1,
+                      max: 50,
+                      divisions: 100,
+                      label: options.size.round().toString(),
+                      onChanged: (double value) => {
+                            setState(() {
+                              options.size = value;
+                            })
+                          }),
+                  const Text(
+                    'Thinning',
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                  ),
+                  Slider(
+                      value: options.thinning,
+                      min: -1,
+                      max: 1,
+                      divisions: 100,
+                      label: options.thinning.toStringAsFixed(2),
+                      onChanged: (double value) => {
+                            setState(() {
+                              options.thinning = value;
+                            })
+                          }),
+                  const Text(
+                    'Streamline',
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                  ),
+                  Slider(
+                      value: options.streamline,
+                      min: 0,
+                      max: 1,
+                      divisions: 100,
+                      label: options.streamline.toStringAsFixed(2),
+                      onChanged: (double value) => {
+                            setState(() {
+                              options.streamline = value;
+                            })
+                          }),
+                  const Text(
+                    'Smoothing',
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                  ),
+                  Slider(
+                      value: options.smoothing,
+                      min: 0,
+                      max: 1,
+                      divisions: 100,
+                      label: options.smoothing.toStringAsFixed(2),
+                      onChanged: (double value) => {
+                            setState(() {
+                              options.smoothing = value;
+                            })
+                          }),
                   buildClearButton(),
-                  saveVisible == true ? buildSaveButton() : Container(),
-                ])
-              ))
-            ]
-    );
+                  buildSaveButton(),
+                ]))
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+                Center(
+                    child: Container(
+                        decoration: BoxDecoration(
+                            color:
+                                Theme.of(context).colorScheme.onInverseSurface,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(10.0),
+                              topRight: Radius.circular(10.0),
+                            )),
+                        child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              buildClearButton(),
+                              saveVisible == true
+                                  ? buildSaveButton()
+                                  : Container(),
+                            ])))
+              ]);
   }
 
   Widget buildClearButton() {
     return TextButton(
       style: ButtonStyle(
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(10.0),
-                  topRight: saveVisible == true ? Radius.zero : const Radius.circular(10.0),
-                )),
-          )),
+        RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+          topLeft: const Radius.circular(10.0),
+          topRight:
+              saveVisible == true ? Radius.zero : const Radius.circular(10.0),
+        )),
+      )),
       onPressed: clear,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
@@ -316,11 +320,11 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
     return TextButton(
       style: ButtonStyle(
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(10.0),
-                )),
-          )),
+        const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+          topRight: Radius.circular(10.0),
+        )),
+      )),
       onPressed: save,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
@@ -330,41 +334,82 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
-    Widget icon = Row(mainAxisSize: MainAxisSize.min, children: [
-      Icon(Icons.gesture, size: 64, color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5)),
-      Icon(Icons.mode_edit_outlined, size: 64, color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5))],);
+    Widget icon = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.gesture,
+            size: 64,
+            color:
+                Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5)),
+        Icon(Icons.mode_edit_outlined,
+            size: 64,
+            color:
+                Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5))
+      ],
+    );
 
-    BorderSide borderSide = BorderSide(width: 2, color: Theme.of(context).colorScheme.surfaceVariant);
+    BorderSide borderSide = BorderSide(
+        width: 2, color: Theme.of(context).colorScheme.surfaceVariant);
 
     // view width & height are set by
     // the box layout
-    width  = widget.model.viewWidth  ?? width;
+    width = widget.model.viewWidth ?? width;
     height = widget.model.viewHeight ?? height;
 
     Widget view = Container(
       decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surface,
-      borderRadius: const BorderRadius.all(Radius.circular(8)
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black,
+            spreadRadius: -15,
+            blurRadius: 7,
+            offset: Offset(0, 0), // changes position of shadow
+          ),
+        ],
       ),
-      boxShadow: const [
-        BoxShadow(
-          color: Colors.black,
-          spreadRadius: -15,
-          blurRadius: 7,
-          offset: Offset(0, 0), // changes position of shadow
-        ),
-      ],
-    ),
-      child: Stack(children: [Center(child: icon), buildAllPaths(context), buildCurrentPath(context), buildToolbar(),
-        Positioned(top: 1, left: 1, child: Container(width: 30, height: 30, decoration: BoxDecoration(border: Border(top: borderSide, left: borderSide)))),
-        Positioned(top: 1, right: 1, child: Container(width: 30, height: 30, decoration: BoxDecoration(border: Border(top: borderSide, right: borderSide)))),
-        Positioned(bottom: 1, left: 1, child: Container(width: 30, height: 30, decoration: BoxDecoration(border: Border(bottom: borderSide, left: borderSide)))),
-        Positioned(bottom: 1, right: 1, child: Container(width: 30, height: 30, decoration: BoxDecoration(border: Border(bottom: borderSide, right: borderSide)))),
+      child: Stack(children: [
+        Center(child: icon),
+        buildAllPaths(context),
+        buildCurrentPath(context),
+        buildToolbar(),
+        Positioned(
+            top: 1,
+            left: 1,
+            child: Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                    border: Border(top: borderSide, left: borderSide)))),
+        Positioned(
+            top: 1,
+            right: 1,
+            child: Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                    border: Border(top: borderSide, right: borderSide)))),
+        Positioned(
+            bottom: 1,
+            left: 1,
+            child: Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                    border: Border(bottom: borderSide, left: borderSide)))),
+        Positioned(
+            bottom: 1,
+            right: 1,
+            child: Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                    border: Border(bottom: borderSide, right: borderSide)))),
       ]),
     );
 
@@ -402,7 +447,8 @@ class Sketcher extends CustomPainter {
       } else if (outlinePoints.length < 2) {
         // If the path only has one line, draw a dot.
         path.addOval(Rect.fromCircle(
-            center: Offset(outlinePoints[0].dx, outlinePoints[0].dy), radius: 1));
+            center: Offset(outlinePoints[0].dx, outlinePoints[0].dy),
+            radius: 1));
       } else {
         // Otherwise, draw a line that connects each point with a curve.
         path.moveTo(outlinePoints[0].dx, outlinePoints[0].dy);
@@ -417,11 +463,9 @@ class Sketcher extends CustomPainter {
 
       canvas.drawPath(path, paint);
     }
-
   }
 
-  Future<Uint8List?> export(Size canvasSize) async
-  {
+  Future<Uint8List?> export(Size canvasSize) async {
     var recorder = PictureRecorder();
     var origin = const Offset(0.0, 0.0);
     var paintBounds = Rect.fromPoints(
@@ -444,4 +488,3 @@ class Sketcher extends CustomPainter {
     return true;
   }
 }
-

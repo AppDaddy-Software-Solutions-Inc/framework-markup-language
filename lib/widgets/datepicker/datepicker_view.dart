@@ -74,27 +74,22 @@ class DatepickerViewState extends WidgetState<DatepickerView> {
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
-    if ((cont!.text != widget.model.value) && (widget.model.isPicking != true))
-    {
+  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+    if ((cont!.text != widget.model.value) &&
+        (widget.model.isPicking != true)) {
       widget.model.onChange(context);
     }
     cont!.text = widget.model.value;
     super.onModelChange(model);
   }
 
-
   void onChange(String d) async {
-
     cont!.value = TextEditingValue(
         text: widget.model.value.toString(),
         selection: TextSelection(
-            baseOffset: 0,
-            extentOffset: widget.model.value.toString().length));
+            baseOffset: 0, extentOffset: widget.model.value.toString().length));
 
-    if (oldValue != widget.model.value)
-    {
+    if (oldValue != widget.model.value) {
       // set answer
       bool ok = await widget.model.answer(widget.model.value);
 
@@ -110,44 +105,32 @@ class DatepickerViewState extends WidgetState<DatepickerView> {
     widget.model.value = '';
   }
 
-
-  _getBorder(Color mainColor, Color? secondaryColor){
-
+  _getBorder(Color mainColor, Color? secondaryColor) {
     secondaryColor ??= mainColor;
 
-    if(widget.model.border == "none") {
+    if (widget.model.border == "none") {
       return OutlineInputBorder(
-        borderRadius:
-        BorderRadius.all(Radius.circular(widget.model.radius)),
-        borderSide: const BorderSide(
-            color: Colors.transparent,
-            width: 2),
+        borderRadius: BorderRadius.all(Radius.circular(widget.model.radius)),
+        borderSide: const BorderSide(color: Colors.transparent, width: 2),
       );
-    }
-    else if (widget.model.border == "bottom" ||
-        widget.model.border == "underline"){
+    } else if (widget.model.border == "bottom" ||
+        widget.model.border == "underline") {
       return UnderlineInputBorder(
-        borderRadius: const BorderRadius.all(
-            Radius.circular(0)),
+        borderRadius: const BorderRadius.all(Radius.circular(0)),
         borderSide: BorderSide(
             color: widget.model.editable ? mainColor : secondaryColor,
             width: widget.model.borderWidth),
-      );}
-
-    else {
+      );
+    } else {
       return OutlineInputBorder(
-        borderRadius:
-        BorderRadius.all(Radius.circular(widget.model.radius)),
-        borderSide: BorderSide(
-            color: mainColor,
-            width: widget.model.borderWidth),
+        borderRadius: BorderRadius.all(Radius.circular(widget.model.radius)),
+        borderSide:
+            BorderSide(color: mainColor, width: widget.model.borderWidth),
       );
     }
-
   }
 
-  Future _showDateRangePicker(DatePickerEntryMode mode) async
-  {
+  Future _showDateRangePicker(DatePickerEntryMode mode) async {
     if (!mounted) return;
 
     var format = widget.model.format;
@@ -156,41 +139,40 @@ class DatepickerViewState extends WidgetState<DatepickerView> {
 
     DateTimeRange? result;
 
-    if (mounted)
-    {
+    if (mounted) {
       result = await showDateRangePicker(
         context: context,
         initialEntryMode: mode,
-        firstDate: toDate(oldest, format: format) ?? DateTime(DateTime.now().year - 100),
+        firstDate: toDate(oldest, format: format) ??
+            DateTime(DateTime.now().year - 100),
         currentDate: DateTime.now(),
-        lastDate: toDate(newest, format: format) ?? DateTime(DateTime.now().year + 10),
+        lastDate: toDate(newest, format: format) ??
+            DateTime(DateTime.now().year + 10),
       );
     }
     if (result == null) return;
 
     // set value
-    widget.model.setValue(result.start, TimeOfDay.now(), format, secondResult: result.end);
+    widget.model.setValue(result.start, TimeOfDay.now(), format,
+        secondResult: result.end);
   }
 
-  Future _showTimePicker(TimePickerEntryMode mode) async
-  {
+  Future _showTimePicker(TimePickerEntryMode mode) async {
     if (!mounted) return;
 
     TimeOfDay time = TimeOfDay.now();
     var format = widget.model.format;
-    try
-    {
-      time = TimeOfDay.fromDateTime(toDate(widget.model.value, format: format)!);
-    }
-    catch(e)
-    {
+    try {
+      time =
+          TimeOfDay.fromDateTime(toDate(widget.model.value, format: format)!);
+    } catch (e) {
       Log().exception(e, caller: 'Datepicker');
     }
 
     TimeOfDay? result;
-    if (mounted)
-    {
-      result = await showTimePicker(context: context, initialTime: time, initialEntryMode: mode);
+    if (mounted) {
+      result = await showTimePicker(
+          context: context, initialTime: time, initialEntryMode: mode);
     }
     if (result == null) return;
 
@@ -198,35 +180,41 @@ class DatepickerViewState extends WidgetState<DatepickerView> {
     widget.model.setValue(DateTime.now(), result, format);
   }
 
-  Future _showDateTimePicker(DatePickerEntryMode dmode, TimePickerEntryMode tmode) async
-  {
+  Future _showDateTimePicker(
+      DatePickerEntryMode dmode, TimePickerEntryMode tmode) async {
     if (!mounted) return;
 
-    var type   = widget.model.type;
+    var type = widget.model.type;
     var newest = widget.model.newest;
     var oldest = widget.model.oldest;
-    var value  = widget.model.value;
+    var value = widget.model.value;
     var format = widget.model.format;
 
-    DateTime?  date;
+    DateTime? date;
     TimeOfDay? time;
 
     // show date picker
-    if (mounted)
-    {
+    if (mounted) {
       date = await showDatePicker(
           context: context,
-          initialDatePickerMode: type == "year" || type == "yeartime" ? DatePickerMode.year : DatePickerMode.day,
+          initialDatePickerMode: type == "year" || type == "yeartime"
+              ? DatePickerMode.year
+              : DatePickerMode.day,
           initialEntryMode: dmode,
-          firstDate: toDate(oldest, format: format) ?? DateTime(DateTime.now().year - 100),
+          firstDate: toDate(oldest, format: format) ??
+              DateTime(DateTime.now().year - 100),
           initialDate: toDate(value, format: format) ?? DateTime.now(),
-          lastDate: toDate(newest, format: format) ?? DateTime(DateTime.now().year + 10));
+          lastDate: toDate(newest, format: format) ??
+              DateTime(DateTime.now().year + 10));
 
       // show time picker
-      var show = (type == 'datetime' || type == 'yeartime' || type == 'rangetime');
-      if (show && mounted)
-      {
-          time = await showTimePicker(context: context, initialTime: TimeOfDay.now(), initialEntryMode: tmode);
+      var show =
+          (type == 'datetime' || type == 'yeartime' || type == 'rangetime');
+      if (show && mounted) {
+        time = await showTimePicker(
+            context: context,
+            initialTime: TimeOfDay.now(),
+            initialEntryMode: tmode);
       }
     }
     if (date == null || time == null) return;
@@ -235,8 +223,7 @@ class DatepickerViewState extends WidgetState<DatepickerView> {
     widget.model.setValue(date, time, format);
   }
 
-  Future<bool> show() async
-  {
+  Future<bool> show() async {
     TimePickerEntryMode tmode = TimePickerEntryMode.dial;
     DatePickerEntryMode dmode = DatePickerEntryMode.calendar;
     switch (widget.model.mode) {
@@ -274,8 +261,7 @@ class DatepickerViewState extends WidgetState<DatepickerView> {
 
     widget.model.setFormat();
 
-    switch (widget.model.type)
-    {
+    switch (widget.model.type) {
       case "range":
         await _showDateRangePicker(dmode);
         break;
@@ -291,14 +277,14 @@ class DatepickerViewState extends WidgetState<DatepickerView> {
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
     // set the border color arrays
     // set the border colors
-    Color? enabledBorderColor = widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
+    Color? enabledBorderColor =
+        widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
     Color? disabledBorderColor = Theme.of(context).disabledColor;
     Color? focusBorderColor = Theme.of(context).focusColor;
     Color? errorBorderColor = Theme.of(context).colorScheme.error;
@@ -329,8 +315,7 @@ class DatepickerViewState extends WidgetState<DatepickerView> {
       },
       onTap: () async {
         focusNode!.requestFocus();
-        if (widget.model.editable)
-        {
+        if (widget.model.editable) {
           widget.model.isPicking = true;
           await show();
           widget.model.isPicking = false;
@@ -350,7 +335,7 @@ class DatepickerViewState extends WidgetState<DatepickerView> {
             style: TextStyle(
                 color: widget.model.enabled
                     ? enabledTextColor ??
-                    Theme.of(context).colorScheme.onBackground
+                        Theme.of(context).colorScheme.onBackground
                     : disabledTextColor,
                 fontSize: fontsize),
             textAlignVertical: TextAlignVertical.center,
@@ -361,7 +346,10 @@ class DatepickerViewState extends WidgetState<DatepickerView> {
               fillColor: widget.model.getFieldColor(context),
               filled: true,
               contentPadding: EdgeInsets.only(
-                  left: pad + 10, top: pad + 15, right: pad + 10, bottom: pad + 15),
+                  left: pad + 10,
+                  top: pad + 15,
+                  right: pad + 10,
+                  bottom: pad + 15),
               alignLabelWithHint: true,
               labelStyle: TextStyle(
                 fontSize: fontsize != null ? fontsize - 2 : 14,
@@ -381,10 +369,8 @@ class DatepickerViewState extends WidgetState<DatepickerView> {
                 color: widget.model.getErrorHintColor(context),
               ),
               prefixIcon: Padding(
-                  padding: const EdgeInsets.only(
-                      right: 10,
-                      left: 10,
-                      bottom: 0),
+                  padding:
+                      const EdgeInsets.only(right: 10, left: 10, bottom: 0),
                   child: Icon(widget.model.icon ??
                       (widget.model.type.toLowerCase() == "time"
                           ? Icons.access_time
@@ -392,26 +378,28 @@ class DatepickerViewState extends WidgetState<DatepickerView> {
               prefixIconConstraints: const BoxConstraints(maxHeight: 24),
               suffixIcon: null,
               suffixIconConstraints: null,
-
               border: _getBorder(enabledBorderColor, null),
               errorBorder: _getBorder(errorBorderColor, null),
               focusedErrorBorder: _getBorder(focusBorderColor, null),
               focusedBorder: _getBorder(focusBorderColor, null),
               enabledBorder: _getBorder(enabledBorderColor, null),
-              disabledBorder: _getBorder(disabledBorderColor, enabledBorderColor),
+              disabledBorder:
+                  _getBorder(disabledBorderColor, enabledBorderColor),
             ),
           ),
         ),
       ),
     );
 
-    if (widget.model.dense) view = Padding(padding: const EdgeInsets.all(4), child: view);
+    if (widget.model.dense)
+      view = Padding(padding: const EdgeInsets.all(4), child: view);
 
     // get the model constraints
     var modelConstraints = widget.model.constraints;
 
     // constrain the input to 200 pixels if not constrained by the model
-    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width = 200;
+    if (!modelConstraints.hasHorizontalExpansionConstraints)
+      modelConstraints.width = 200;
 
     // add margins
     view = addMargins(view);

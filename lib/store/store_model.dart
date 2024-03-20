@@ -7,10 +7,9 @@ import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/navigation/page.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 
-class Store extends WidgetModel implements IModelListener
-{
+class Store extends WidgetModel implements IModelListener {
   final List<ApplicationModel> _apps = [];
 
   List<ApplicationModel> getApps() => _apps.toList();
@@ -19,25 +18,21 @@ class Store extends WidgetModel implements IModelListener
 
   static final Store _singleton = Store._initialize();
   factory Store() => _singleton;
-  Store._initialize() : super(null, "STORE")
-  {
-   init();
+  Store._initialize() : super(null, "STORE") {
+    init();
   }
 
-  init() async
-  {
+  init() async {
     initialized = await _load();
   }
 
-  Future<bool> _load() async
-  {
+  Future<bool> _load() async {
     busy = true;
 
     var apps = await ApplicationModel.loadAll();
 
     _apps.clear();
-    for (ApplicationModel app in apps)
-    {
+    for (ApplicationModel app in apps) {
       app.registerListener(this);
       _apps.add(app);
     }
@@ -50,8 +45,7 @@ class Store extends WidgetModel implements IModelListener
     return true;
   }
 
-  Future add(ApplicationModel app) async
-  {
+  Future add(ApplicationModel app) async {
     busy = true;
 
     // insert into the hive
@@ -63,18 +57,15 @@ class Store extends WidgetModel implements IModelListener
     busy = false;
   }
 
-  ApplicationModel? find({String? url})
-  {
+  ApplicationModel? find({String? url}) {
     // query hive
     ApplicationModel? app = _apps.firstWhereOrNull((app) => app.url == url);
 
     return app;
   }
 
-  delete(ApplicationModel? app) async
-  {
-    if (app != null)
-    {
+  delete(ApplicationModel? app) async {
+    if (app != null) {
       busy = true;
 
       // delete from the hive
@@ -87,8 +78,7 @@ class Store extends WidgetModel implements IModelListener
     }
   }
 
-  launch(ApplicationModel app, BuildContext context) async
-  {
+  launch(ApplicationModel app, BuildContext context) async {
     // get the home page
     var page = app.homePage;
 
@@ -100,12 +90,13 @@ class Store extends WidgetModel implements IModelListener
     app.refresh();
 
     // launch the page
-    NavigationManager().setNewRoutePath(PageConfiguration(uri: Uri.tryParse(page), title: "Store"), source: "store");
+    NavigationManager().setNewRoutePath(
+        PageConfiguration(uri: Uri.tryParse(page), title: "Store"),
+        source: "store");
   }
 
   @override
-  onModelChange(WidgetModel model, {String? property, value})
-  {
+  onModelChange(WidgetModel model, {String? property, value}) {
     notifyListeners(property, value);
   }
 }

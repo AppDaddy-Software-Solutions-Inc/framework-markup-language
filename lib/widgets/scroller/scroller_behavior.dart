@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class ProperScrollBehavior extends MaterialScrollBehavior
-{
+class ProperScrollBehavior extends MaterialScrollBehavior {
   /// Override to allow for horizontal scrolling in web -Flex
   @override
-  Widget buildScrollbar(BuildContext context, Widget child, ScrollableDetails details) {
+  Widget buildScrollbar(
+      BuildContext context, Widget child, ScrollableDetails details) {
     switch (axisDirectionToAxis(details.direction)) {
       case Axis.horizontal:
         switch (getPlatform(context)) {

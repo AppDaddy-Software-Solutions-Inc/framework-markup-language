@@ -8,8 +8,8 @@ import 'filepicker_view.dart';
 import 'package:fml/datasources/file/file.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
-if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
-if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
+    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+    if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 FilePickerView create({String? accept}) => FilePickerView(accept: accept);
 
@@ -30,7 +30,8 @@ class FilePickerView implements FilePicker {
       /// and we know the file selector was closed with selection
       Future.delayed(const Duration(milliseconds: 500)).then((value) {
         if (hasSelectedFile == false) {
-          dart_html.window.removeEventListener('focus', cancelledButtonListener);
+          dart_html.window
+              .removeEventListener('focus', cancelledButtonListener);
           completer.complete(null);
           return;
         }
@@ -45,17 +46,15 @@ class FilePickerView implements FilePicker {
       /* File Picker */
       /////////////////
       dart_html.InputElement picker =
-      dart_html.FileUploadInputElement() as dart_html.InputElement;
+          dart_html.FileUploadInputElement() as dart_html.InputElement;
       picker.multiple = false;
       picker.accept = accept;
 
       //////////////////////
       /* On Picker Change */
       //////////////////////
-      picker.onChange.listen((e) async
-      {
-        if (picker.files!.isNotEmpty)
-        {
+      picker.onChange.listen((e) async {
+        if (picker.files!.isNotEmpty) {
           hasSelectedFile = true;
 
           // set file
@@ -67,21 +66,22 @@ class FilePickerView implements FilePicker {
           var file = File(blob, url, name, type, size);
 
           // process detectors
-          if ((detectors != null) && (type.startsWith("image")))
-          {
+          if ((detectors != null) && (type.startsWith("image"))) {
             // read the file
             await file.read();
 
             // convert to raw rgba format
-            if (file.bytes != null)
-            {
+            if (file.bytes != null) {
               var codec = await instantiateImageCodec(file.bytes!);
               var frame = await codec.getNextFrame();
-              var data  = await frame.image.toByteData(format: ImageByteFormat.rawRgba);
-              if (data != null)
-              {
+              var data =
+                  await frame.image.toByteData(format: ImageByteFormat.rawRgba);
+              if (data != null) {
                 // create detectable image
-                DetectableImage detectable = DetectableImage.fromRgba(data.buffer.asUint8List(), frame.image.width, frame.image.height);
+                DetectableImage detectable = DetectableImage.fromRgba(
+                    data.buffer.asUint8List(),
+                    frame.image.width,
+                    frame.image.height);
 
                 // detect in image
                 for (var detector in detectors) {
@@ -105,9 +105,7 @@ class FilePickerView implements FilePicker {
       /* Wait for Result */
       /////////////////////
       return await completer.future;
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().debug('Error Launching File Picker');
       return null;
     }

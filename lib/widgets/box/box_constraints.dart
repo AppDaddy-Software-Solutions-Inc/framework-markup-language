@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-class LocalBoxConstraints extends BoxConstraints
-{
+
+class LocalBoxConstraints extends BoxConstraints {
   const LocalBoxConstraints({
     super.minWidth = 0.0,
     super.maxWidth = double.infinity,
@@ -16,8 +16,7 @@ class LocalBoxConstraints extends BoxConstraints
           maxHeight: constraints.maxHeight);
 
   @override
-  bool get isTight
-  {
+  bool get isTight {
     return false;
   }
 }

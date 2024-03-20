@@ -11,235 +11,194 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io' as io;
 
-class Platform
-{
-  static String? get useragent
-  {
-    if (io.Platform.isIOS)     return  "ios";
-    if (io.Platform.isAndroid) return  "android";
-    if (io.Platform.isMacOS)   return  "macos";
-    if (io.Platform.isWindows) return  "windows";
-    if (io.Platform.isLinux)   return  "linux";
-    if (io.Platform.isFuchsia) return  "fuchsia";
+class Platform {
+  static String? get useragent {
+    if (io.Platform.isIOS) return "ios";
+    if (io.Platform.isAndroid) return "android";
+    if (io.Platform.isMacOS) return "macos";
+    if (io.Platform.isWindows) return "windows";
+    if (io.Platform.isLinux) return "linux";
+    if (io.Platform.isFuchsia) return "fuchsia";
     return null;
   }
 
   // application root path
-  static Future<String?> get path async
-  {
+  static Future<String?> get path async {
     // initialize the app root folder
     if (FmlEngine.isWeb) return null;
-    if (FmlEngine.isMobile || (FmlEngine.isDesktop && useragent == "macos")) return (await getApplicationDocumentsDirectory()).path;
+    if (FmlEngine.isMobile || (FmlEngine.isDesktop && useragent == "macos"))
+      return (await getApplicationDocumentsDirectory()).path;
     return dirname(io.Platform.resolvedExecutable);
   }
 
   static init() async {}
 
-  static Future<dynamic> fileSaveAs(List<int> bytes, String filepath) async
-  {
+  static Future<dynamic> fileSaveAs(List<int> bytes, String filepath) async {
     // make the file name safe
     filepath = Mime.toSafeFileName(filepath);
 
     String? folder;
-    try
-    {
-        Directory? directory = await getDownloadsDirectory();
-        if (directory != null) folder = directory.path;
-    }
-    catch(e){
+    try {
+      Directory? directory = await getDownloadsDirectory();
+      if (directory != null) folder = directory.path;
+    } catch (e) {
       Log().debug('$e');
     }
 
-    try
-    {
-      if (folder == null)
-      {
+    try {
+      if (folder == null) {
         Directory? directory = await getTemporaryDirectory();
         folder = directory.path;
       }
-    }
-    catch(e){
+    } catch (e) {
       Log().debug('$e');
     }
 
-    try
-    {
-      if (folder == null)
-      {
+    try {
+      if (folder == null) {
         Directory? directory = await getExternalStorageDirectory();
         if (directory != null) folder = directory.path;
       }
-    }
-    catch(e){
+    } catch (e) {
       Log().debug('$e');
     }
 
-    if (folder != null)
-    {
-      String path = join(folder,filepath);
+    if (folder != null) {
+      String path = join(folder, filepath);
       File file = File(path);
       await file.writeAsBytes(bytes);
       OpenFilex.open(path);
       return file;
-    }
-    else {
+    } else {
       System.toast("Unable to save file");
     }
   }
 
-  static dynamic fileSaveAsFromBlob(dynamic blob, String filepath)
-  {
+  static dynamic fileSaveAsFromBlob(dynamic blob, String filepath) {
     System.toast("File Save As Blob not supported on Mobile");
   }
 
-  static void openPrinterDialog()
-  {
+  static void openPrinterDialog() {
     Log().warning('openPrinterDialog() Unimplemented for platform.vm.dart');
   }
 
-  static File? getFile(String? filepath)
-  {
+  static File? getFile(String? filepath) {
     if (filepath == null) return null;
-    try
-    {
+    try {
       if (_fileExists(filepath)) return File(filepath);
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e, caller: 'platform.vm.dart => bool file($filepath)');
     }
     return null;
   }
 
-  static bool _folderExists(String? folder)
-  {
-    try
-    {
+  static bool _folderExists(String? folder) {
+    try {
       if (folder == null) return false;
-      return (FileSystemEntity.typeSync(folder) != FileSystemEntityType.notFound);
-    }
-    catch(e)
-    {
-      Log().exception(e, caller: 'platform.vm.dart => bool folderExists($folder)');
+      return (FileSystemEntity.typeSync(folder) !=
+          FileSystemEntityType.notFound);
+    } catch (e) {
+      Log().exception(e,
+          caller: 'platform.vm.dart => bool folderExists($folder)');
       return false;
     }
   }
 
   static bool fileExists(String filepath) => _fileExists(filepath);
-  static bool _fileExists(String filepath)
-  {
-    try
-    {
+  static bool _fileExists(String filepath) {
+    try {
       if (extension(filepath).trim() == "") return false;
-      return (FileSystemEntity.typeSync(filepath) != FileSystemEntityType.notFound);
-    }
-    catch(e)
-    {
-      Log().exception(e, caller: 'platform.vm.dart => bool fileExists($filepath)');
+      return (FileSystemEntity.typeSync(filepath) !=
+          FileSystemEntityType.notFound);
+    } catch (e) {
+      Log().exception(e,
+          caller: 'platform.vm.dart => bool fileExists($filepath)');
       return false;
     }
   }
 
-  static Future<String?> readFile(String? filepath) async
-  {
+  static Future<String?> readFile(String? filepath) async {
     if (filepath == null) return null;
-    try
-    {
+    try {
       // qualify file name
-      if (_fileExists(filepath))
-      {
+      if (_fileExists(filepath)) {
         File file = File(filepath);
         return await file.readAsString();
       }
       return null;
-    }
-    catch(e)
-    {
-      Log().exception(e, caller: 'platform.vm.dart => bool readFile($filepath)');
+    } catch (e) {
+      Log()
+          .exception(e, caller: 'platform.vm.dart => bool readFile($filepath)');
       return null;
     }
   }
 
-  static Future<Uint8List?> readFileBytes(String? filepath) async
-  {
+  static Future<Uint8List?> readFileBytes(String? filepath) async {
     if (filepath == null) return null;
-    try
-    {
+    try {
       // qualify file name
-      if (_fileExists(filepath))
-      {
+      if (_fileExists(filepath)) {
         File file = File(filepath);
         return await file.readAsBytes();
       }
       return null;
-    }
-    catch(e)
-    {
-      Log().exception(e, caller: 'platform.vm.dart => bool readFileBytes($filepath)');
+    } catch (e) {
+      Log().exception(e,
+          caller: 'platform.vm.dart => bool readFileBytes($filepath)');
       return null;
     }
   }
 
-  static Future<String?> createFolder(String folder) async
-  {
-    try
-    {
+  static Future<String?> createFolder(String folder) async {
+    try {
       // qualify folder name
       if (basename(folder).contains(".")) folder = dirname(folder);
 
-      if (!_folderExists(folder))
-      {
+      if (!_folderExists(folder)) {
         Log().info('Creating folder $folder');
         await Directory(folder).create(recursive: true);
       }
       return folder;
-    }
-    catch(e)
-    {
-      Log().exception(e, caller: 'platform.vm.dart => bool createFolder($folder)');
+    } catch (e) {
+      Log().exception(e,
+          caller: 'platform.vm.dart => bool createFolder($folder)');
       return null;
     }
   }
 
-  static Future<bool> writeFile(String? filepath, dynamic content) async
-  {
+  static Future<bool> writeFile(String? filepath, dynamic content) async {
     bool ok = true;
     if (filepath == null) return false;
-    try
-    {
+    try {
       // create the folder
       String? folder = await createFolder(filepath);
 
       // write the file
-      if (folder != null)
-      {
-        if (content is ByteData)  await File(filepath).writeAsBytes(content.buffer.asUint8List());
+      if (folder != null) {
+        if (content is ByteData)
+          await File(filepath).writeAsBytes(content.buffer.asUint8List());
         if (content is Uint8List) await File(filepath).writeAsBytes(content);
-        if (content is String)    await File(filepath).writeAsString(content);
+        if (content is String) await File(filepath).writeAsString(content);
       }
-    }
-    catch(e)
-    {
-      Log().exception(e, caller: 'platform.vm.dart => bool fileWriteBytes($filepath)');
+    } catch (e) {
+      Log().exception(e,
+          caller: 'platform.vm.dart => bool fileWriteBytes($filepath)');
       ok = false;
     }
     return ok;
   }
 
-  static Future<bool> deleteFile(String filepath) async
-  {
-    try
-    {
+  static Future<bool> deleteFile(String filepath) async {
+    try {
       // qualify file name
       filepath = filepath;
 
       // delete the file
       if (_fileExists(filepath)) File(filepath).delete();
       return true;
-    }
-    catch(e)
-    {
-      Log().exception(e, caller: 'platform.vm.dart => bool deleteFile($filepath)');
+    } catch (e) {
+      Log().exception(e,
+          caller: 'platform.vm.dart => bool deleteFile($filepath)');
       return false;
     }
   }
@@ -252,5 +211,4 @@ class Platform
 
   static void js2fml() {}
   static void fml2js({String? version}) {}
-
 }

@@ -7,20 +7,27 @@ import 'package:fml/widgets/table/table_header_cell_model.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TableHeaderGroupModel extends BoxModel
-{
+class TableHeaderGroupModel extends BoxModel {
   // rendered group models
-  List<TableHeaderGroupModel> get groups => findChildrenOfExactType(TableHeaderGroupModel).cast<TableHeaderGroupModel>();
+  List<TableHeaderGroupModel> get groups =>
+      findChildrenOfExactType(TableHeaderGroupModel)
+          .cast<TableHeaderGroupModel>();
 
   // rendered cell models
-  List<TableHeaderCellModel> get cells => findChildrenOfExactType(TableHeaderCellModel).cast<TableHeaderCellModel>();
+  List<TableHeaderCellModel> get cells =>
+      findChildrenOfExactType(TableHeaderCellModel)
+          .cast<TableHeaderCellModel>();
 
   // header
-  TableHeaderModel? get hdr => parent is TableHeaderModel ? parent as TableHeaderModel : parent is TableHeaderGroupModel ? (parent as TableHeaderGroupModel).hdr : null;
+  TableHeaderModel? get hdr => parent is TableHeaderModel
+      ? parent as TableHeaderModel
+      : parent is TableHeaderGroupModel
+          ? (parent as TableHeaderGroupModel).hdr
+          : null;
 
   // column has a user defined layout
   bool usesRenderer = false;
@@ -53,76 +60,64 @@ class TableHeaderGroupModel extends BoxModel
 
   // onChange - only used for simple data grid
   StringObservable? _onChange;
-  set onChange(dynamic v)
-  {
-    if (_onChange != null)
-    {
+  set onChange(dynamic v) {
+    if (_onChange != null) {
       _onChange!.set(v);
-    }
-    else if (v != null)
-    {
-      _onChange = StringObservable(Binding.toKey(id, 'onchange'), v, scope: scope);
+    } else if (v != null) {
+      _onChange =
+          StringObservable(Binding.toKey(id, 'onchange'), v, scope: scope);
     }
   }
+
   String? get onChange => _onChange?.get();
 
   // onInsert
   StringObservable? _onInsert;
-  set onInsert(dynamic v)
-  {
-    if (_onInsert != null)
-    {
+  set onInsert(dynamic v) {
+    if (_onInsert != null) {
       _onInsert!.set(v);
-    }
-    else if (v != null)
-    {
-      _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v, scope: scope, lazyEval: true);
+    } else if (v != null) {
+      _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v,
+          scope: scope, lazyEval: true);
     }
   }
+
   String? get onInsert => _onInsert?.get();
 
   // onDelete
   StringObservable? _onDelete;
-  set onDelete(dynamic v)
-  {
-    if (_onDelete != null)
-    {
+  set onDelete(dynamic v) {
+    if (_onDelete != null) {
       _onDelete!.set(v);
-    }
-    else if (v != null)
-    {
-      _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v, scope: scope, lazyEval: true);
+    } else if (v != null) {
+      _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v,
+          scope: scope, lazyEval: true);
     }
   }
+
   String? get onDelete => _onDelete?.get();
 
   // name - used by grid display
   StringObservable? _title;
-  set title(dynamic v)
-  {
-    if (_title != null)
-    {
+  set title(dynamic v) {
+    if (_title != null) {
       _title!.set(v);
-    }
-    else if (v != null)
-    {
-      _title = StringObservable(Binding.toKey(id, 'title'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _title = StringObservable(Binding.toKey(id, 'title'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get title => _title?.get();
 
   TableHeaderGroupModel(WidgetModel super.parent, super.id);
 
-  static TableHeaderGroupModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static TableHeaderGroupModel? fromXml(WidgetModel parent, XmlElement xml) {
     TableHeaderGroupModel? model;
-    try
-    {
+    try {
       model = TableHeaderGroupModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e, caller: 'column.Model');
       model = null;
     }
@@ -131,40 +126,37 @@ class TableHeaderGroupModel extends BoxModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 
     // properties
-    title = Xml.get(node:xml, tag: 'title');
-    if (_title == null)
-    {
+    title = Xml.get(node: xml, tag: 'title');
+    if (_title == null) {
       TextModel? text = findChildOfExactType(TextModel);
       title = text?.value;
     }
 
     // events
-    onInsert    = Xml.get(node: xml, tag: 'oninsert');
-    onDelete    = Xml.get(node: xml, tag: 'ondelete');
-    onChange    = Xml.get(node:xml, tag: 'onchange');
+    onInsert = Xml.get(node: xml, tag: 'oninsert');
+    onDelete = Xml.get(node: xml, tag: 'ondelete');
+    onChange = Xml.get(node: xml, tag: 'onchange');
   }
 
-  bool hasDescendantCells()
-  {
+  bool hasDescendantCells() {
     if (cells.isNotEmpty) return true;
-    for (var group in groups){
+    for (var group in groups) {
       if (group.hasDescendantCells()) return true;
     }
     return false;
   }
 
   @override
-  List<ViewableWidgetModel> get viewableChildren
-  {
+  List<ViewableWidgetModel> get viewableChildren {
     // we dont want to render TD and TG cells in the table group header
     List<ViewableWidgetModel> list = super.viewableChildren;
-    list.removeWhere((child) => child is TableHeaderCellModel || child is TableHeaderGroupModel);
+    list.removeWhere((child) =>
+        child is TableHeaderCellModel || child is TableHeaderGroupModel);
     return list;
   }
 }

@@ -10,8 +10,7 @@ import 'package:fml/helpers/helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class FadeTransitionModel extends AnimationChildModel
-{
+class FadeTransitionModel extends AnimationChildModel {
   /// Curve starting point from 0.0 to 1.0
   DoubleObservable? _from;
 
@@ -105,5 +104,6 @@ class FadeTransitionModel extends AnimationChildModel
   }
 
   @override
-  Widget getAnimatedView(Widget child, {AnimationController? controller}) => FadeTransitionView(this, child, controller);
+  Widget getAnimatedView(Widget child, {AnimationController? controller}) =>
+      FadeTransitionView(this, child, controller);
 }

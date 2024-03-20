@@ -36,31 +36,38 @@ class TweenViewState extends State<TweenView>
   void initState() {
     super.initState();
     if (widget.controller == null) {
-      _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,));
-    if(widget.model.controllerValue == 1 && widget.model.runonce == true) {
-      _controller.animateTo(widget.model.controllerValue, duration: const Duration());
+      _controller = AnimationController(
+          vsync: this,
+          duration: Duration(milliseconds: widget.model.duration),
+          reverseDuration: Duration(
+            milliseconds: widget.model.reverseduration ?? widget.model.duration,
+          ));
+      if (widget.model.controllerValue == 1 && widget.model.runonce == true) {
+        _controller.animateTo(widget.model.controllerValue,
+            duration: const Duration());
 
-      if (widget.model.autoplay == true && _controller.isAnimating != true) start();
-    }
-    _controller.addStatusListener((status) {
-      _animationListener(status);
-    });
+        if (widget.model.autoplay == true && _controller.isAnimating != true)
+          start();
+      }
+      _controller.addStatusListener((status) {
+        _animationListener(status);
+      });
       soloRequestBuild = true;
     } else {
       _controller = widget.controller!;
     }
 
-      widget.model.value = widget.model.from;
+    widget.model.value = widget.model.from;
 
-      _controller.addListener(() {
-        setState(() {
-          if (widget.model.type == "color") {
-            widget.model.value = "#${_animation.value.value.toRadixString(16)}";
-          } else {
-            widget.model.value = _animation.value.toString();
-          }
-        });
+    _controller.addListener(() {
+      setState(() {
+        if (widget.model.type == "color") {
+          widget.model.value = "#${_animation.value.value.toRadixString(16)}";
+        } else {
+          widget.model.value = _animation.value.toString();
+        }
       });
+    });
   }
 
   @override
@@ -68,17 +75,16 @@ class TweenViewState extends State<TweenView>
     // register model listener
     widget.model.registerListener(this);
 
-    if(soloRequestBuild) {
+    if (soloRequestBuild) {
       // register event listeners
-      EventManager.of(widget.model)?.registerEventListener(
-          EventTypes.animate, onAnimate);
-      EventManager.of(widget.model)?.registerEventListener(
-          EventTypes.reset, onReset);
+      EventManager.of(widget.model)
+          ?.registerEventListener(EventTypes.animate, onAnimate);
+      EventManager.of(widget.model)
+          ?.registerEventListener(EventTypes.reset, onReset);
     }
 
     super.didChangeDependencies();
   }
-
 
   @override
   void didUpdateWidget(TweenView oldWidget) {
@@ -88,44 +94,43 @@ class TweenViewState extends State<TweenView>
       oldWidget.model.removeListener(this);
       widget.model.registerListener(this);
 
-      if(soloRequestBuild) {
+      if (soloRequestBuild) {
         // de-register event listeners
-        EventManager.of(oldWidget.model)?.removeEventListener(
-            EventTypes.animate, onAnimate);
-        EventManager.of(widget.model)?.removeEventListener(
-            EventTypes.reset, onReset);
+        EventManager.of(oldWidget.model)
+            ?.removeEventListener(EventTypes.animate, onAnimate);
+        EventManager.of(widget.model)
+            ?.removeEventListener(EventTypes.reset, onReset);
 
         // register event listeners
-        EventManager.of(widget.model)?.registerEventListener(
-            EventTypes.animate, onAnimate);
-        EventManager.of(widget.model)?.registerEventListener(
-            EventTypes.reset, onReset);
+        EventManager.of(widget.model)
+            ?.registerEventListener(EventTypes.animate, onAnimate);
+        EventManager.of(widget.model)
+            ?.registerEventListener(EventTypes.reset, onReset);
 
         _controller.duration = Duration(milliseconds: widget.model.duration);
         _controller.reverseDuration = Duration(
-            milliseconds: widget.model.reverseduration ??
-                widget.model.duration);
+            milliseconds:
+                widget.model.reverseduration ?? widget.model.duration);
       }
     }
   }
 
   @override
   void dispose() {
-    if(soloRequestBuild) {
+    if (soloRequestBuild) {
       stop();
       // remove controller
       _controller.dispose();
       // de-register event listeners
-      EventManager.of(widget.model)?.removeEventListener(
-          EventTypes.animate, onAnimate);
-      EventManager.of(widget.model)?.removeEventListener(
-          EventTypes.reset, onReset);
+      EventManager.of(widget.model)
+          ?.removeEventListener(EventTypes.animate, onAnimate);
+      EventManager.of(widget.model)
+          ?.removeEventListener(EventTypes.reset, onReset);
     }
 
     // remove model listener
     widget.model.removeListener(this);
     super.dispose();
-
   }
 
   /// Callback to fire the [_AnimationViewState.build] when the [AnimationModel] changes
@@ -135,8 +140,7 @@ class TweenViewState extends State<TweenView>
   }
 
   @override
-Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Tween
     double begin = widget.model.begin;
     double end = widget.model.end;
@@ -145,11 +149,9 @@ Widget build(BuildContext context)
     dynamic to;
     Tween<dynamic> newTween;
 
-
     // we must check from != to and begin !< end
 
-    if (widget.model.type == "color")
-    {
+    if (widget.model.type == "color") {
       from = toColor(widget.model.from) ?? Colors.white;
       to = toColor(widget.model.to) ?? Colors.black;
       newTween = ColorTween(
@@ -182,7 +184,6 @@ Widget build(BuildContext context)
     // Return View
     return Container(child: widget.child);
   }
-
 
   void onAnimate(Event event) {
     if (event.parameters == null) return;
@@ -219,24 +220,23 @@ Widget build(BuildContext context)
 
   void start() {
     try {
-      if(widget.model.hasrun) return;
+      if (widget.model.hasrun) return;
       if (_controller.isCompleted) {
-        if(widget.model.runonce) widget.model.hasrun = true;
+        if (widget.model.runonce) widget.model.hasrun = true;
         _controller.reverse();
         widget.model.controllerValue = 0;
         widget.model.onStart(context);
       } else if (_controller.isDismissed) {
         _controller.forward();
         widget.model.controllerValue = 1;
-        if(widget.model.runonce) widget.model.hasrun = true;
+        if (widget.model.runonce) widget.model.hasrun = true;
         widget.model.onStart(context);
       } else {
         _controller.forward();
         widget.model.controllerValue = 1;
-        if(widget.model.runonce) widget.model.hasrun = true;
+        if (widget.model.runonce) widget.model.hasrun = true;
         widget.model.onStart(context);
       }
-
     } catch (e) {
       Log().debug('$e');
     }
@@ -256,7 +256,7 @@ Widget build(BuildContext context)
     if (status == AnimationStatus.completed) {
       widget.model.controllerValue = 1;
       widget.model.onComplete(context);
-    } else if  (status == AnimationStatus.dismissed) {
+    } else if (status == AnimationStatus.dismissed) {
       widget.model.controllerValue = 0;
       widget.model.onDismiss(context);
     }

@@ -2,33 +2,28 @@
 import 'package:flutter/material.dart';
 import 'package:fml/navigation/page.dart';
 
-abstract class INavigatorObserver
-{
+abstract class INavigatorObserver {
   onNavigatorPush({Map<String?, String>? parameters});
   Map<String?, String>? onNavigatorPop();
   onNavigatorChange();
   BuildContext getNavigatorContext();
 }
 
-class NavigationObserver extends NavigatorObserver
-{
+class NavigationObserver extends NavigatorObserver {
   final List<INavigatorObserver> _listeners = [];
 
   static final NavigationObserver _singleton = NavigationObserver._init();
-  factory NavigationObserver()
-  {
+  factory NavigationObserver() {
     return _singleton;
   }
   NavigationObserver._init();
 
   @override
-  void didPush(Route route, Route? previousRoute)
-  {
+  void didPush(Route route, Route? previousRoute) {
     super.didPush(route, previousRoute);
 
     // remember the route
-    if (route.settings.arguments is PageConfiguration)
-    {
+    if (route.settings.arguments is PageConfiguration) {
       var configuration = route.settings.arguments as PageConfiguration;
       configuration.route = route;
     }
@@ -38,15 +33,13 @@ class NavigationObserver extends NavigatorObserver
     if (pushed != null) pushed.onNavigatorPush();
 
     // signal change
-    for (INavigatorObserver listener in _listeners)
-    {
+    for (INavigatorObserver listener in _listeners) {
       listener.onNavigatorChange();
     }
   }
 
   @override
-  void didPop(Route route, Route? previousRoute)
-  {
+  void didPop(Route route, Route? previousRoute) {
     super.didPop(route, previousRoute);
 
     INavigatorObserver? popped = listenerOf(route);
@@ -66,8 +59,7 @@ class NavigationObserver extends NavigatorObserver
   }
 
   @override
-  void didRemove(Route route, Route? previousRoute)
-  {
+  void didRemove(Route route, Route? previousRoute) {
     super.didRemove(route, previousRoute);
 
     INavigatorObserver? popped = listenerOf(route);
@@ -87,8 +79,7 @@ class NavigationObserver extends NavigatorObserver
   }
 
   @override
-  void didReplace({Route? newRoute, Route? oldRoute})
-  {
+  void didReplace({Route? newRoute, Route? oldRoute}) {
     super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
 
     INavigatorObserver? popped = listenerOf(oldRoute);
@@ -107,39 +98,32 @@ class NavigationObserver extends NavigatorObserver
     }
   }
 
-  registerListener(INavigatorObserver listener)
-  {
+  registerListener(INavigatorObserver listener) {
     if (!_listeners.contains(listener)) _listeners.add(listener);
   }
 
-  removeListener(INavigatorObserver listener)
-  {
+  removeListener(INavigatorObserver listener) {
     if (_listeners.contains(listener)) _listeners.remove(listener);
   }
 
-  INavigatorObserver? listenerOf(Route? route)
-  {
+  INavigatorObserver? listenerOf(Route? route) {
     if (route == null) return null;
-    for (INavigatorObserver listener in _listeners)
-    {
+    for (INavigatorObserver listener in _listeners) {
       BuildContext context = listener.getNavigatorContext();
 
-        Route? listenerRoute = ModalRoute.of(context);
-        if (route == listenerRoute) return listener;
-
+      Route? listenerRoute = ModalRoute.of(context);
+      if (route == listenerRoute) return listener;
     }
     return null;
   }
 
-  INavigatorObserver? listenerOfExactType(Route route, Type T)
-  {
-    for (INavigatorObserver listener in _listeners)
-    {
+  INavigatorObserver? listenerOfExactType(Route route, Type T) {
+    for (INavigatorObserver listener in _listeners) {
       BuildContext context = listener.getNavigatorContext();
 
-        Route? listenerRoute = ModalRoute.of(context);
-        if ((route == listenerRoute) && (listener.runtimeType == T)) return listener;
-
+      Route? listenerRoute = ModalRoute.of(context);
+      if ((route == listenerRoute) && (listener.runtimeType == T))
+        return listener;
     }
     return null;
   }

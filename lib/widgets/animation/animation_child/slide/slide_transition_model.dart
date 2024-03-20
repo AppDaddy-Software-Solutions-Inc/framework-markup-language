@@ -12,8 +12,7 @@ import 'package:fml/helpers/helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class SlideTransitionModel extends AnimationChildModel
-{
+class SlideTransitionModel extends AnimationChildModel {
   /// Curve starting point from 0.0 to 1.0
   StringObservable? _from;
 
@@ -110,5 +109,6 @@ class SlideTransitionModel extends AnimationChildModel
   }
 
   @override
-  Widget getAnimatedView(Widget child, {AnimationController? controller}) => SlideTransitionView(this, child, controller);
+  Widget getAnimatedView(Widget child, {AnimationController? controller}) =>
+      SlideTransitionView(this, child, controller);
 }

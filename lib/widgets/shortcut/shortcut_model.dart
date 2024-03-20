@@ -13,50 +13,42 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 
 class ShowLogIntent extends Intent {}
-class ShowLogAction extends Action<ShowLogIntent>
-{
+
+class ShowLogAction extends Action<ShowLogIntent> {
   ShowLogAction();
 
   @override
-  void invoke(covariant ShowLogIntent intent)
-  {
+  void invoke(covariant ShowLogIntent intent) {
     Log().export();
   }
 }
 
-class ShortcutModel extends WidgetModel
-{
+class ShortcutModel extends WidgetModel {
   // key
   StringObservable? _key;
 
-  bool ctrlPressed  = false;
-  bool altPressed   = false;
+  bool ctrlPressed = false;
+  bool altPressed = false;
   bool shiftPressed = false;
 
-  set key(dynamic v)
-  {
-    if (_key != null)
-    {
+  set key(dynamic v) {
+    if (_key != null) {
       _key!.set(v);
-    }
-    else if (v != null)
-    {
-      _key = StringObservable(Binding.toKey(id, 'key'), null, scope: scope, listener: onKeySetChange);
+    } else if (v != null) {
+      _key = StringObservable(Binding.toKey(id, 'key'), null,
+          scope: scope, listener: onKeySetChange);
       _key!.set(v);
     }
   }
+
   String? get key => _key?.get();
 
   // action
   StringObservable? _action;
-  set action(dynamic v)
-  {
-    if (_action != null)
-    {
+  set action(dynamic v) {
+    if (_action != null) {
       _action!.set(v);
-    }
-    else if (v != null)
-    {
+    } else if (v != null) {
       _action = StringObservable(Binding.toKey(id, 'action'), v, scope: scope);
     }
   }
@@ -66,82 +58,67 @@ class ShortcutModel extends WidgetModel
   // holds the sequence of keys that make up the shortcut
   List<LogicalKeyboardKey> keySequence = [];
 
-  ShortcutModel(WidgetModel super.parent, super.id, {String? key, String? action})
-  {
+  ShortcutModel(WidgetModel super.parent, super.id,
+      {String? key, String? action}) {
     this.key = key;
     this.action = action;
   }
 
-  static ShortcutModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static ShortcutModel? fromXml(WidgetModel parent, XmlElement xml) {
     ShortcutModel? model = ShortcutModel(parent, Xml.get(node: xml, tag: 'id'));
     model.deserialize(xml);
     return model;
   }
 
-  onKeySetChange(_)
-  {
-    ctrlPressed  = false;
-    altPressed   = false;
+  onKeySetChange(_) {
+    ctrlPressed = false;
+    altPressed = false;
     shiftPressed = false;
 
     var keys = key?.split("-");
 
     // lookup logical keys
-    if (keys != null)
-    {
-      for (var keyLabel in keys)
-      {
+    if (keys != null) {
+      for (var keyLabel in keys) {
         // lookup the logical key
         keyLabel = keyLabel.trim();
 
         // control key?
         LogicalKeyboardKey? key;
-        if (keyLabel.toUpperCase() == "CTRL")
-        {
+        if (keyLabel.toUpperCase() == "CTRL") {
           key = LogicalKeyboardKey.control;
           ctrlPressed = true;
-        }
-
-        else if (keyLabel.toUpperCase() == "ALT")
-        {
+        } else if (keyLabel.toUpperCase() == "ALT") {
           key = LogicalKeyboardKey.alt;
           altPressed = true;
-        }
-
-        else if (keyLabel.toUpperCase() == "SHIFT")
-        {
+        } else if (keyLabel.toUpperCase() == "SHIFT") {
           key = LogicalKeyboardKey.shift;
           shiftPressed = true;
         }
 
         // other key?
-        else
-        {
+        else {
           // lookup key
-          key = LogicalKeyboardKey.knownLogicalKeys.firstWhereOrNull((k)
-          {
+          key = LogicalKeyboardKey.knownLogicalKeys.firstWhereOrNull((k) {
             if (k.keyLabel == keyLabel) return true;
             if (k.keyLabel.toUpperCase() == keyLabel.toUpperCase()) return true;
-            for (var s in k.synonyms)
-            {
+            for (var s in k.synonyms) {
               if (s.keyLabel == keyLabel) return true;
-              if (s.keyLabel.toUpperCase() == keyLabel.toUpperCase()) return true;
+              if (s.keyLabel.toUpperCase() == keyLabel.toUpperCase())
+                return true;
             }
             return false;
           });
         }
 
         // no corresponding key
-        if (key == null)
-        {
+        if (key == null) {
           keySequence.clear();
           break;
         }
 
         // add logical key to the set
-        if (!ShortcutHandler.isControlKey(key))
-        {
+        if (!ShortcutHandler.isControlKey(key)) {
           keySequence.add(key);
         }
       }
@@ -149,20 +126,24 @@ class ShortcutModel extends WidgetModel
   }
 
   // returns true if the shortcut was found and executed, false otherwise
-  bool isMatch(List<LogicalKeyboardKey> keysPressed, bool ctrl, bool alt, bool shift)
-  {
+  bool isMatch(
+      List<LogicalKeyboardKey> keysPressed, bool ctrl, bool alt, bool shift) {
     // key set sizes don't match
-    if (keySequence.isEmpty || keySequence.length != keysPressed.length) return false;
+    if (keySequence.isEmpty || keySequence.length != keysPressed.length)
+      return false;
 
     // control keys don't match
-    if ((ctrlPressed && !ctrl) || (altPressed && !alt) || (shiftPressed && !shift)) return false;
+    if ((ctrlPressed && !ctrl) ||
+        (altPressed && !alt) ||
+        (shiftPressed && !shift)) return false;
 
     // evaluate keys
     int i = 0;
     bool matchFound = false;
-    for (var key in keysPressed)
-    {
-      matchFound = (key == keySequence[i] || key.synonyms.contains(keySequence[i]) || keySequence[i].synonyms.contains(key));
+    for (var key in keysPressed) {
+      matchFound = (key == keySequence[i] ||
+          key.synonyms.contains(keySequence[i]) ||
+          keySequence[i].synonyms.contains(key));
       if (matchFound) break;
       i++;
     }
@@ -175,14 +156,13 @@ class ShortcutModel extends WidgetModel
   fire() => EventHandler(this).execute(_action);
 
   @override
-  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async {
-
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
     if (scope == null) return null;
 
     var function = propertyOrFunction.toLowerCase().trim();
 
-    switch (function)
-    {
+    switch (function) {
       // fire event handler
       case 'execute':
         fire();
@@ -193,8 +173,7 @@ class ShortcutModel extends WidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 
@@ -204,8 +183,7 @@ class ShortcutModel extends WidgetModel
   }
 }
 
-class ShortcutHandler
-{
+class ShortcutHandler {
   static final shiftKeys = [
     LogicalKeyboardKey.shift.keyLabel,
     LogicalKeyboardKey.shiftLeft.keyLabel,
@@ -246,15 +224,17 @@ class ShortcutHandler
       .where((key) => metaKeys.contains(key.keyLabel))
       .isNotEmpty;
 
-  static bool isControlKey(LogicalKeyboardKey key) => shiftKeys.contains(key.keyLabel) || altKeys.contains(key.keyLabel) || ctrlKeys.contains(key.keyLabel);
+  static bool isControlKey(LogicalKeyboardKey key) =>
+      shiftKeys.contains(key.keyLabel) ||
+      altKeys.contains(key.keyLabel) ||
+      ctrlKeys.contains(key.keyLabel);
 
   static final List<LogicalKeyboardKey> keysPressed = [];
   static final List<ShortcutModel> defaultShortcuts = [];
 
   // returns true if a shortcut was found and executed,
   // otherwise false
-  static bool handleKeyPress(KeyEvent event, FrameworkModel? framework)
-  {
+  static bool handleKeyPress(KeyEvent event, FrameworkModel? framework) {
     bool handled = false;
 
     // repeat key
@@ -262,8 +242,7 @@ class ShortcutHandler
 
     // none of the control keys are depressed?
     // clear the keys pressed
-    if (!isAltPressed && !isCtrlPressed && !isShiftPressed)
-    {
+    if (!isAltPressed && !isCtrlPressed && !isShiftPressed) {
       keysPressed.clear();
       return handled;
     }
@@ -279,10 +258,9 @@ class ShortcutHandler
 
     // fire the frameworks shortcut handler
     var shortcut = findMatching(framework?.shortcuts);
-    if (shortcut != null)
-    {
+    if (shortcut != null) {
       handled = true;
-      shortcut.execute("ShortcutHandler","execute",[]);
+      shortcut.execute("ShortcutHandler", "execute", []);
     }
 
     // shortcut was handled?
@@ -294,23 +272,20 @@ class ShortcutHandler
     return handled;
   }
 
-  static ShortcutModel? findMatching(List<ShortcutModel>? shortcuts)
-  {
+  static ShortcutModel? findMatching(List<ShortcutModel>? shortcuts) {
     // find the shortcut
-    for (ShortcutModel shortcut in shortcuts ?? [])
-    {
+    for (ShortcutModel shortcut in shortcuts ?? []) {
       // shortcut found?
-      var found = shortcut.isMatch(keysPressed, isCtrlPressed, isAltPressed, isShiftPressed);
+      var found = shortcut.isMatch(
+          keysPressed, isCtrlPressed, isAltPressed, isShiftPressed);
       if (found) return shortcut;
     }
     return null;
   }
 
-  static bool handleDefaults(FrameworkModel? framework)
-  {
+  static bool handleDefaults(FrameworkModel? framework) {
     // initialize default shortcuts
-    if (defaultShortcuts.isEmpty)
-    {
+    if (defaultShortcuts.isEmpty) {
       defaultShortcuts.add(ShortcutModel(System(), "1", key: "CTRL-ALT-R"));
       defaultShortcuts.add(ShortcutModel(System(), "2", key: "CTRL-ALT-L"));
       defaultShortcuts.add(ShortcutModel(System(), "3", key: "CTRL-ALT-T"));
@@ -318,9 +293,8 @@ class ShortcutHandler
 
     // find shortcut from keysPressed
     var shortcut = findMatching(defaultShortcuts);
-    if (shortcut != null)
-    {
-      switch (shortcut.id){
+    if (shortcut != null) {
+      switch (shortcut.id) {
         // refresh
         case "1":
           NavigationManager().refresh();
@@ -340,4 +314,3 @@ class ShortcutHandler
     return shortcut != null;
   }
 }
-

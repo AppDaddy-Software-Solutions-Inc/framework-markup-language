@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
-class PopoverView extends StatefulWidget implements IWidgetView
-{
+class PopoverView extends StatefulWidget implements IWidgetView {
   @override
   final PopoverModel model;
   final Widget? child;
@@ -17,39 +16,31 @@ class PopoverView extends StatefulWidget implements IWidgetView
   State<PopoverView> createState() => _PopoverViewState();
 }
 
-class _PopoverViewState extends WidgetState<PopoverView>
-{
-  Widget _buildPopover()
-  {
+class _PopoverViewState extends WidgetState<PopoverView> {
+  Widget _buildPopover() {
     var color = Theme.of(context).colorScheme.onSecondaryContainer;
 
     List<PopupMenuEntry> itemsList = [];
-    for (var item in widget.model.items)
-    {
-      if (item.visible)
-      {
+    for (var item in widget.model.items) {
+      if (item.visible) {
         Widget child;
-        if (item.viewableChildren.isNotEmpty)
-        {
+        if (item.viewableChildren.isNotEmpty) {
           // note: children cannot use LayoutBuilder
           // this causes the Popover to crash
           List<Widget> children = [];
-          for (var model in item.viewableChildren)
-          {
+          for (var model in item.viewableChildren) {
             var view = model.getView();
-            if (view != null)
-            {
+            if (view != null) {
               children.add(view);
             }
           }
-          child = ListTile(title: Row(mainAxisSize: MainAxisSize.min, children: children));
-        }
-        else
-        {
+          child = ListTile(
+              title: Row(mainAxisSize: MainAxisSize.min, children: children));
+        } else {
           child = Text(item.label, style: TextStyle(color: color));
-          if (item.icon != null)
-          {
-            child = ListTile(title: child, leading: Icon(item.icon, color: color));
+          if (item.icon != null) {
+            child =
+                ListTile(title: child, leading: Icon(item.icon, color: color));
           }
         }
 
@@ -65,12 +56,16 @@ class _PopoverViewState extends WidgetState<PopoverView>
           Icon(widget.model.icon ?? Icons.more_vert,
               color: widget.model.color ??
                   Theme.of(context).colorScheme.inverseSurface),
-          widget.model.label != null ? Text(widget.model.label!, style: TextStyle(
-            color: widget.model.color ?? Theme.of(context).colorScheme.onBackground,
-            fontSize: 10,
-            fontWeight: FontWeight.w400,
-            fontStyle: FontStyle.normal,
-          )) : const Offstage(),
+          widget.model.label != null
+              ? Text(widget.model.label!,
+                  style: TextStyle(
+                    color: widget.model.color ??
+                        Theme.of(context).colorScheme.onBackground,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w400,
+                    fontStyle: FontStyle.normal,
+                  ))
+              : const Offstage(),
         ]);
 
     Widget view = PopupMenuButton(
@@ -83,12 +78,9 @@ class _PopoverViewState extends WidgetState<PopoverView>
 
     view = SizedBox(height: 50, child: view);
 
-    if (widget.model.enabled)
-    {
+    if (widget.model.enabled) {
       view = MouseRegion(cursor: SystemMouseCursors.click, child: view);
-    }
-    else
-    {
+    } else {
       view = Opacity(opacity: 0.5, child: view);
     }
 
@@ -96,10 +88,10 @@ class _PopoverViewState extends WidgetState<PopoverView>
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible || widget.model.items.isEmpty) return const Offstage();
+    if (!widget.model.visible || widget.model.items.isEmpty)
+      return const Offstage();
 
     // build the view
     Widget view = _buildPopover();

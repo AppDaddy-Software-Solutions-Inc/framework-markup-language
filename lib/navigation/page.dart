@@ -4,16 +4,14 @@ import 'package:fml/fml.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/system.dart';
 
-class PageConfiguration
-{
+class PageConfiguration {
   String? title;
   final String? transition;
 
   Uri? uri;
   Route? route;
 
-  String get breadcrumb
-  {
+  String get breadcrumb {
     String text = title ?? uri?.toString() ?? "";
     return text.toLowerCase().split('/').last.split('.xml').first;
   }
@@ -21,10 +19,10 @@ class PageConfiguration
   PageConfiguration({required this.uri, this.title, this.transition});
 }
 
-class CustomMaterialPage<T> extends MaterialPage<T>
-{
+class CustomMaterialPage<T> extends MaterialPage<T> {
   final String? transition;
-  const CustomMaterialPage(this.transition, {
+  const CustomMaterialPage(
+    this.transition, {
     required super.child,
     super.maintainState,
     super.fullscreenDialog,
@@ -36,12 +34,16 @@ class CustomMaterialPage<T> extends MaterialPage<T>
   });
 
   @override
-  Route<T> createRoute(BuildContext context) => CustomPageBasedMaterialPageRoute<T>(page: this, allowSnapshotting: allowSnapshotting);
+  Route<T> createRoute(BuildContext context) =>
+      CustomPageBasedMaterialPageRoute<T>(
+          page: this, allowSnapshotting: allowSnapshotting);
 }
 
-class CustomPageBasedMaterialPageRoute<T> extends PageRoute<T> with MaterialRouteTransitionMixin<T> {
-
-  CustomPageBasedMaterialPageRoute({required MaterialPage<T> page, super.allowSnapshotting}) : super(settings: page);
+class CustomPageBasedMaterialPageRoute<T> extends PageRoute<T>
+    with MaterialRouteTransitionMixin<T> {
+  CustomPageBasedMaterialPageRoute(
+      {required MaterialPage<T> page, super.allowSnapshotting})
+      : super(settings: page);
 
   MaterialPage<T> get _page => settings as MaterialPage<T>;
 
@@ -58,26 +60,27 @@ class CustomPageBasedMaterialPageRoute<T> extends PageRoute<T> with MaterialRout
   String get debugLabel => '${super.debugLabel}(${_page.name})';
 
   @override
-  Duration get transitionDuration => duration != null ? Duration(milliseconds: duration!) : super.transitionDuration;
+  Duration get transitionDuration => duration != null
+      ? Duration(milliseconds: duration!)
+      : super.transitionDuration;
 
   @override
-  Duration get reverseTransitionDuration => durationBack != null ? Duration(milliseconds: durationBack!) : super.reverseTransitionDuration;
+  Duration get reverseTransitionDuration => durationBack != null
+      ? Duration(milliseconds: durationBack!)
+      : super.reverseTransitionDuration;
 
-  PageTransitions get transition
-  {
+  PageTransitions get transition {
     PageTransitions? transition;
-    if (settings.arguments is PageConfiguration)
-    {
+    if (settings.arguments is PageConfiguration) {
       PageConfiguration? args = settings.arguments as PageConfiguration;
-      transition = toEnum(args.transition?.split(",")[0].toLowerCase().trim(), PageTransitions.values);
+      transition = toEnum(args.transition?.split(",")[0].toLowerCase().trim(),
+          PageTransitions.values);
     }
     return transition ?? System.app?.transition ?? FmlEngine.defaultTransition;
   }
 
-  int? get duration
-  {
-    if (settings.arguments is PageConfiguration)
-    {
+  int? get duration {
+    if (settings.arguments is PageConfiguration) {
       PageConfiguration? args = (settings.arguments as PageConfiguration);
       var parts = args.transition?.split(",") ?? [];
       if (parts.length > 1) return toInt(parts[1]);
@@ -85,10 +88,8 @@ class CustomPageBasedMaterialPageRoute<T> extends PageRoute<T> with MaterialRout
     return null;
   }
 
-  int? get durationBack
-  {
-    if (settings.arguments is PageConfiguration)
-    {
+  int? get durationBack {
+    if (settings.arguments is PageConfiguration) {
       PageConfiguration? args = (settings.arguments as PageConfiguration);
       var parts = args.transition?.split(",") ?? [];
       if (parts.length > 2) return toInt(parts[2]);
@@ -97,47 +98,73 @@ class CustomPageBasedMaterialPageRoute<T> extends PageRoute<T> with MaterialRout
   }
 
   @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child)
-  {
-    switch(transition)
-    {
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    switch (transition) {
       // no transition
       case PageTransitions.none:
-      return child;
+        return child;
 
       case PageTransitions.fade:
-        return const FadeUpwardsPageTransitionsBuilder().buildTransitions(this, context, animation, secondaryAnimation, child);
+        return const FadeUpwardsPageTransitionsBuilder().buildTransitions(
+            this, context, animation, secondaryAnimation, child);
 
       case PageTransitions.slide:
       case PageTransitions.slideright:
-        return SlideTransition(position: Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero,).animate(animation), child: child);
+        return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(-1, 0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child);
 
       case PageTransitions.slideleft:
-        return SlideTransition(position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero,).animate(animation), child: child);
+        return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child);
 
       case PageTransitions.zoom:
-        return ScaleTransition(scale: Tween<double>(begin: 0.0, end: 1.0,)
-            .animate(CurvedAnimation(parent: animation, curve: Curves.fastOutSlowIn)), child: child,);
+        return ScaleTransition(
+          scale: Tween<double>(
+            begin: 0.0,
+            end: 1.0,
+          ).animate(
+              CurvedAnimation(parent: animation, curve: Curves.fastOutSlowIn)),
+          child: child,
+        );
 
       case PageTransitions.rotate:
-        return RotationTransition(turns: Tween<double>(begin: 0.0, end: 1.0,)
-            .animate(CurvedAnimation(parent: animation, curve: Curves.linear,),), child: child,);
+        return RotationTransition(
+          turns: Tween<double>(
+            begin: 0.0,
+            end: 1.0,
+          ).animate(
+            CurvedAnimation(
+              parent: animation,
+              curve: Curves.linear,
+            ),
+          ),
+          child: child,
+        );
 
       // platform specific
       case PageTransitions.platform:
       default:
-          PageTransitionsBuilder builder = const ZoomPageTransitionsBuilder();
+        PageTransitionsBuilder builder = const ZoomPageTransitionsBuilder();
 
-          var platform = Theme.of(context).platform;
-          if (platform == TargetPlatform.iOS)     builder = const CupertinoPageTransitionsBuilder();
-          if (platform == TargetPlatform.linux)   builder = const OpenUpwardsPageTransitionsBuilder();
-          if (platform == TargetPlatform.macOS)   builder = const FadeUpwardsPageTransitionsBuilder();
+        var platform = Theme.of(context).platform;
+        if (platform == TargetPlatform.iOS)
+          builder = const CupertinoPageTransitionsBuilder();
+        if (platform == TargetPlatform.linux)
+          builder = const OpenUpwardsPageTransitionsBuilder();
+        if (platform == TargetPlatform.macOS)
+          builder = const FadeUpwardsPageTransitionsBuilder();
 
-          return builder.buildTransitions(this, context, animation, secondaryAnimation, child);
+        return builder.buildTransitions(
+            this, context, animation, secondaryAnimation, child);
     }
   }
 }
-
-
-
-

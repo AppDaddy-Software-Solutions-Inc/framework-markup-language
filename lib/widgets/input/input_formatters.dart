@@ -5,35 +5,33 @@ import 'package:fml/helpers/helpers.dart';
 
 class UpperCaseTextFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue)
-  {
-    return TextEditingValue(text: newValue.text.toUpperCase(), selection: newValue.selection);
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+        text: newValue.text.toUpperCase(), selection: newValue.selection);
   }
 }
 
 class TextInputValidators {
-
-
-  bool isEmailValid(
-      String email) {
-    bool emailValid = RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?").hasMatch(email);
+  bool isEmailValid(String email) {
+    bool emailValid = RegExp(
+            r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+        .hasMatch(email);
     return emailValid;
   }
 
-  bool isExpiryValid(
-      String expiry) {
-    bool expiryValid = RegExp(r"^(0[1-9]|1[0-2])\/?([0-9]{4}|[0-9]{2})$").hasMatch(expiry);
+  bool isExpiryValid(String expiry) {
+    bool expiryValid =
+        RegExp(r"^(0[1-9]|1[0-2])\/?([0-9]{4}|[0-9]{2})$").hasMatch(expiry);
     return expiryValid;
   }
 
-
-  bool isPasswordValid(
-      String password) {
-    bool passwordValid = RegExp(r"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$").hasMatch(password);
+  bool isPasswordValid(String password) {
+    bool passwordValid =
+        RegExp(r"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$")
+            .hasMatch(password);
     return passwordValid;
   }
-
-
 }
 
 class LowerCaseTextFormatter extends TextInputFormatter {
@@ -114,9 +112,7 @@ class TextLengthFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
-    if (
-        (length >= 0) &&
-        (newValue.text.length > length)) {
+    if ((length >= 0) && (newValue.text.length > length)) {
       return TextEditingValue(
           text: oldValue.text, selection: oldValue.selection);
     } else {
@@ -132,8 +128,8 @@ class CustomFormatter extends TextInputFormatter {
   CustomFormatter(this.format);
 
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue,
-      TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
     dynamic v = newValue.text;
     dynamic s = newValue.selection;
 

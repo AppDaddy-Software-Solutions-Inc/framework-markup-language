@@ -6,15 +6,13 @@ import 'package:fml/log/manager.dart';
 import 'nfc_listener_interface.dart';
 import 'payload.dart';
 
-class Reader
-{
+class Reader {
   static final Reader _singleton = Reader._initialize();
   bool stop = false;
 
   List<INfcListener>? _listeners;
 
-  factory Reader()
-  {
+  factory Reader() {
     return _singleton;
   }
 
@@ -23,11 +21,10 @@ class Reader
   bool polling = false;
   int a = 0;
 
-  read() async
-  {
+  read() async {
     bool stopPoll = false;
-    while (_listeners != null && _listeners!.isNotEmpty && !polling && !stopPoll)
-    {
+    while (
+        _listeners != null && _listeners!.isNotEmpty && !polling && !stopPoll) {
       try {
         Log().debug('NFC READ: Polling...');
         polling = true;
@@ -37,8 +34,7 @@ class Reader
         // read the tag
         String? result = await readNFCTag(tag);
 
-        if (result != null)
-        {
+        if (result != null) {
           // ??
           await FlutterNfcKit.finish(iosAlertMessage: "Finished!");
 
@@ -64,24 +60,21 @@ class Reader
               '\nTransceive Result:\n$result');
 
           // format result
-          if (result.contains("text=")) result = result.substring(result.indexOf('text=')+5);
+          if (result.contains("text="))
+            result = result.substring(result.indexOf('text=') + 5);
 
           // notify
           notifyListeners(Payload(id: tag.id, message: result));
-        }
-        else {
+        } else {
           Log().debug('NFC: result is null');
         }
-      }
-        catch(e)
-      {
+      } catch (e) {
         if (e.toString() == '408' && e.toString() == 'Polling tag timeout') {
           Log().debug('NFC: ...Timeout');
         } else if (e.toString() == '409') {
           Log().debug('Polling Loop Ended via result or cancel');
           stopPoll = true;
-        }
-        else {
+        } else {
           Log().debug('NFC ERROR: $e');
         }
       }
@@ -89,26 +82,21 @@ class Reader
     }
   }
 
-  registerListener(INfcListener listener)
-  {
+  registerListener(INfcListener listener) {
     _listeners ??= [];
     if (!_listeners!.contains(listener)) _listeners!.add(listener);
     read();
   }
 
-  removeListener(INfcListener listener)
-  {
-    if ((_listeners != null) && (_listeners!.contains(listener)))
-    {
+  removeListener(INfcListener listener) {
+    if ((_listeners != null) && (_listeners!.contains(listener))) {
       _listeners!.remove(listener);
       if (_listeners!.isEmpty) _listeners = null;
     }
   }
 
-  notifyListeners(Payload data)
-  {
-    if (_listeners != null)
-    {
+  notifyListeners(Payload data) {
+    if (_listeners != null) {
       var listeners = _listeners!.where((element) => true);
       for (var listener in listeners) {
         listener.onMessage(data);
@@ -118,8 +106,7 @@ class Reader
 
   Future<String?> readNFCTag(NFCTag tag) async {
     try {
-      await FlutterNfcKit.setIosAlertMessage(
-          "Working on it...");
+      await FlutterNfcKit.setIosAlertMessage("Working on it...");
       if (tag.type == NFCTagType.iso15693) {
         var ndefRecords = await FlutterNfcKit.readNDEFRecords();
         var ndefString = ndefRecords
@@ -128,8 +115,9 @@ class Reader
         return ndefString;
       } else if (tag.standard == "ISO 14443-4 (Type B)") {
         String result1 = await FlutterNfcKit.transceive("00B0950000");
-        String result2 = await FlutterNfcKit.transceive("00A4040009A00000000386980701");
-          return '$result1 $result2';
+        String result2 =
+            await FlutterNfcKit.transceive("00A4040009A00000000386980701");
+        return '$result1 $result2';
       } else if (tag.type == NFCTagType.iso18092) {
         return await FlutterNfcKit.transceive("060080080100");
       } else if (tag.type == NFCTagType.mifare_ultralight ||
@@ -142,57 +130,55 @@ class Reader
       } else if (tag.type == NFCTagType.webusb) {
         return await FlutterNfcKit.transceive("00A4040006D27600012401");
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e, caller: 'nfc.dart: Reader.readNFCTag()');
       return null;
     }
     Log().debug('Unhandled NFC tag type');
-    Log().warning('Unhandled NFC tag type', caller: 'nfc.dart: Reader.readNFCTag()');
+    Log().warning('Unhandled NFC tag type',
+        caller: 'nfc.dart: Reader.readNFCTag()');
     return null;
   }
-
 }
 
-class Writer
-{
+class Writer {
   bool stop = false;
 
   Function? callback;
   String value;
   Writer(this.value, {this.callback});
 
-  Future<bool> write() async
-  {
+  Future<bool> write() async {
     stop = false;
     Log().debug("Attempting Write to NDEF NFC Tag");
-    ndef.NDEFRecord record = ndef.TextRecord(encoding: ndef.TextEncoding.values[0], language: 'en', text: value);
+    ndef.NDEFRecord record = ndef.TextRecord(
+        encoding: ndef.TextEncoding.values[0], language: 'en', text: value);
     try {
-      NFCTag tag = await FlutterNfcKit.poll(timeout: const Duration(seconds: 10));
-      if (tag.type == NFCTagType.mifare_ultralight || tag.type == NFCTagType.mifare_classic || tag.type == NFCTagType.iso15693)
-      {
+      NFCTag tag =
+          await FlutterNfcKit.poll(timeout: const Duration(seconds: 10));
+      if (tag.type == NFCTagType.mifare_ultralight ||
+          tag.type == NFCTagType.mifare_classic ||
+          tag.type == NFCTagType.iso15693) {
         Log().debug('Writing $value to NFC Tag...');
-        try
-        {
+        try {
           await FlutterNfcKit.writeNDEFRecords([record]);
           await FlutterNfcKit.finish();
           Log().debug('NFC Write Successful');
           return true;
-        }
-        catch(e)
-        {
+        } catch (e) {
           Log().error('NFC Write Unsuccessful');
           Log().exception(e, caller: 'nfc.dart: Writer.write() - write fail');
           return false;
         }
       }
       return false;
-    } on PlatformException catch(e){
+    } on PlatformException catch (e) {
       // throw a custom exception on timeout with a message.
-      if (e.code == "408") throw const CustomException(code: 408, message: 'Poll Timed Out');
+      if (e.code == "408")
+        throw const CustomException(code: 408, message: 'Poll Timed Out');
       if (e.code == "405") {
-        throw const CustomException(code: 405, message: 'NFC Tag Not Writeable');
+        throw const CustomException(
+            code: 405, message: 'NFC Tag Not Writeable');
       } else {
         return false;
       }
@@ -200,8 +186,7 @@ class Writer
   }
 }
 
-class CustomException
-{
+class CustomException {
   final int? code;
   final String? message;
   const CustomException({this.code, this.message = ""});

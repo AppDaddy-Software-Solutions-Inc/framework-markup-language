@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 
-class WidgetAlignment
-{
-  Alignment          aligned            = Alignment.topLeft;
-  CrossAxisAlignment crossAlignment     = CrossAxisAlignment.start;
-  MainAxisAlignment  mainAlignment      = MainAxisAlignment.start;
-  WrapAlignment      mainWrapAlignment  = WrapAlignment.start;
+class WidgetAlignment {
+  Alignment aligned = Alignment.topLeft;
+  CrossAxisAlignment crossAlignment = CrossAxisAlignment.start;
+  MainAxisAlignment mainAlignment = MainAxisAlignment.start;
+  WrapAlignment mainWrapAlignment = WrapAlignment.start;
   WrapCrossAlignment crossWrapAlignment = WrapCrossAlignment.start;
 
-  WidgetAlignment(LayoutType modelLayoutType, bool? center, String? halign, String? valign)
-  {
+  WidgetAlignment(LayoutType modelLayoutType, bool? center, String? halign,
+      String? valign) {
     center = center ?? false;
 
-    HorizontalAlignmentType myHalign = WidgetAlignment.getHorizontalAlignmentType(halign) ?? (center ? HorizontalAlignmentType.center : HorizontalAlignmentType.left);
-    VerticalAlignmentType   myValign = WidgetAlignment.getVerticalAlignmentType(valign)   ?? (center ? VerticalAlignmentType.center   : VerticalAlignmentType.top);
+    HorizontalAlignmentType myHalign =
+        WidgetAlignment.getHorizontalAlignmentType(halign) ??
+            (center
+                ? HorizontalAlignmentType.center
+                : HorizontalAlignmentType.left);
+    VerticalAlignmentType myValign =
+        WidgetAlignment.getVerticalAlignmentType(valign) ??
+            (center ? VerticalAlignmentType.center : VerticalAlignmentType.top);
 
     // determine the alignment for the layout type based on the axes;
-    switch (modelLayoutType)
-    {
+    switch (modelLayoutType) {
       case LayoutType.row:
         _setRowAlignment(myHalign, myValign);
         break;
@@ -35,10 +39,9 @@ class WidgetAlignment
     _setBoxAlignment(center, myHalign, myValign);
   }
 
-  _setBoxAlignment(bool center, HorizontalAlignmentType halign, VerticalAlignmentType valign)
-  {
-    switch (valign)
-    {
+  _setBoxAlignment(bool center, HorizontalAlignmentType halign,
+      VerticalAlignmentType valign) {
+    switch (valign) {
       case VerticalAlignmentType.top:
         if (halign == HorizontalAlignmentType.left) {
           aligned = Alignment.topLeft;
@@ -75,17 +78,17 @@ class WidgetAlignment
         }
         break;
 
-      default: aligned = center ? Alignment.center : Alignment.topLeft;
+      default:
+        aligned = center ? Alignment.center : Alignment.topLeft;
     }
   }
 
-  _setRowAlignment(HorizontalAlignmentType halign, VerticalAlignmentType valign)
-  {
+  _setRowAlignment(
+      HorizontalAlignmentType halign, VerticalAlignmentType valign) {
     // cases for Cross axis
-    switch (valign)
-    {
+    switch (valign) {
       case VerticalAlignmentType.center:
-        crossAlignment     = CrossAxisAlignment.center;
+        crossAlignment = CrossAxisAlignment.center;
         crossWrapAlignment = WrapCrossAlignment.center;
         break;
       case VerticalAlignmentType.top:
@@ -103,8 +106,7 @@ class WidgetAlignment
     }
 
     // cases for main axis
-    switch (halign)
-    {
+    switch (halign) {
       case HorizontalAlignmentType.center:
         mainAlignment = MainAxisAlignment.center;
         mainWrapAlignment = WrapAlignment.center;
@@ -136,10 +138,9 @@ class WidgetAlignment
     }
   }
 
-  _setColumnAlignment(HorizontalAlignmentType halign, VerticalAlignmentType valign)
-  {
-    switch (halign)
-    {
+  _setColumnAlignment(
+      HorizontalAlignmentType halign, VerticalAlignmentType valign) {
+    switch (halign) {
       case HorizontalAlignmentType.center:
         crossAlignment = CrossAxisAlignment.center;
         crossWrapAlignment = WrapCrossAlignment.center;
@@ -159,8 +160,7 @@ class WidgetAlignment
     }
 
     // cases for main axis
-    switch (valign)
-    {
+    switch (valign) {
       case VerticalAlignmentType.center:
         mainAlignment = MainAxisAlignment.center;
         mainWrapAlignment = WrapAlignment.center;
@@ -192,10 +192,9 @@ class WidgetAlignment
     }
   }
 
-  static VerticalAlignmentType? getVerticalAlignmentType(String? alignment, {VerticalAlignmentType? defaultType})
-  {
-    switch (alignment?.toLowerCase().trim())
-    {
+  static VerticalAlignmentType? getVerticalAlignmentType(String? alignment,
+      {VerticalAlignmentType? defaultType}) {
+    switch (alignment?.toLowerCase().trim()) {
       case 'top':
       case 'start':
         return VerticalAlignmentType.top;
@@ -219,14 +218,14 @@ class WidgetAlignment
       case 'evenly':
         return VerticalAlignmentType.evenly;
 
-      default: return defaultType;
+      default:
+        return defaultType;
     }
   }
 
-  static HorizontalAlignmentType? getHorizontalAlignmentType(String? alignment, {HorizontalAlignmentType? defaultType})
-  {
-    switch (alignment?.toLowerCase().trim())
-    {
+  static HorizontalAlignmentType? getHorizontalAlignmentType(String? alignment,
+      {HorizontalAlignmentType? defaultType}) {
+    switch (alignment?.toLowerCase().trim()) {
       case 'left':
       case 'start':
         return HorizontalAlignmentType.left;
@@ -250,8 +249,8 @@ class WidgetAlignment
       case 'evenly':
         return HorizontalAlignmentType.evenly;
 
-      default: return defaultType;
+      default:
+        return defaultType;
     }
   }
 }
-

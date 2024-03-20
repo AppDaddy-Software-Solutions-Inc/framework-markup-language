@@ -4,8 +4,7 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:xml/xml.dart';
 
-class DecoratedInputModel extends FormFieldModel
-{
+class DecoratedInputModel extends FormFieldModel {
   // override padding
   @override
   double? get marginTop => super.marginTop ?? (dense ? 0 : 4);
@@ -29,21 +28,20 @@ class DecoratedInputModel extends FormFieldModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get dense => _dense?.get() ?? false;
 
   /// The hint that sits inside of the input, and floats above if not dense and filled.
   StringObservable? _hint;
-  set hint(dynamic v)
-  {
-    if (_hint != null)
-    {
+  set hint(dynamic v) {
+    if (_hint != null) {
       _hint!.set(v);
-    }
-    else if (v != null)
-    {
-      _hint = StringObservable(Binding.toKey(id, 'hint'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _hint = StringObservable(Binding.toKey(id, 'hint'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get hint => _hint?.get();
 
   /// The color of the text. Can be an array of 3 colors seperated by commas for enabled, disabled, and error.
@@ -56,21 +54,20 @@ class DecoratedInputModel extends FormFieldModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   Color? get textcolor => _textcolor?.get();
 
   /// The weight of the font
   StringObservable? _weight;
-  set weight(dynamic v)
-  {
-    if (_weight != null)
-    {
+  set weight(dynamic v) {
+    if (_weight != null) {
       _weight!.set(v);
-    }
-    else if (v != null)
-    {
-      _weight = StringObservable(Binding.toKey(id, 'weight'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _weight = StringObservable(Binding.toKey(id, 'weight'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get weight => _weight?.get();
 
   /// The style of the font. Will override weight and size.
@@ -83,6 +80,7 @@ class DecoratedInputModel extends FormFieldModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get style => _style?.get();
 
   /// The prefix icon within the input
@@ -95,27 +93,25 @@ class DecoratedInputModel extends FormFieldModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   IconData? get icon => _icon?.get();
 
   /// The radius of the border if all.
   DoubleObservable? _radius;
-  set radius(dynamic v)
-  {
-    if (_radius != null)
-    {
+  set radius(dynamic v) {
+    if (_radius != null) {
       _radius!.set(v);
-    }
-    else if (v != null)
-    {
-      _radius = DoubleObservable(Binding.toKey(id, 'radius'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _radius = DoubleObservable(Binding.toKey(id, 'radius'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   double get radius => _radius?.get() ?? 5;
 
   /// The color of the border for input, defaults to black54. Accepts 4 colors positionally. Enabled, disabled, focused, and error colors.
   ColorObservable? _borderColor;
-  set borderColor(dynamic v)
-  {
+  set borderColor(dynamic v) {
     if (_borderColor != null) {
       _borderColor!.set(v);
     } else if (v != null) {
@@ -123,6 +119,7 @@ class DecoratedInputModel extends FormFieldModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   Color? get borderColor => _borderColor?.get();
 
   /// The width of the containers border, defaults to 2
@@ -135,6 +132,7 @@ class DecoratedInputModel extends FormFieldModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double get borderWidth => _borderWidth?.get() ?? 1;
 
   /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
@@ -147,6 +145,7 @@ class DecoratedInputModel extends FormFieldModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get border {
     if (_border == null) return 'all';
     return _border!.get()?.toLowerCase();
@@ -161,6 +160,7 @@ class DecoratedInputModel extends FormFieldModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get expand => _expand?.get() ?? false;
 
   // label
@@ -173,6 +173,7 @@ class DecoratedInputModel extends FormFieldModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get label => _label?.get();
 
   // font size
@@ -187,10 +188,12 @@ class DecoratedInputModel extends FormFieldModel
       }
     }
   }
+
   double? get size => _size?.get() ?? 14;
 
-  DecoratedInputModel(super.parent, super.id,
-  {
+  DecoratedInputModel(
+    super.parent,
+    super.id, {
     dynamic width,
     dynamic hint,
     dynamic expand,
@@ -207,9 +210,7 @@ class DecoratedInputModel extends FormFieldModel
     dynamic borderWidth,
     dynamic textcolor,
     dynamic label,
-
-  })
-  {
+  }) {
     if (width != null) this.width = width;
     if (hint != null) this.hint = hint;
     if (expand != null) this.expand = expand;
@@ -232,8 +233,7 @@ class DecoratedInputModel extends FormFieldModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 
@@ -249,13 +249,11 @@ class DecoratedInputModel extends FormFieldModel
     // user defined
     if (color != null) return color!;
 
-    if (enabled && border != 'all')
-    {
+    if (enabled && border != 'all') {
       return color ?? Theme.of(context).colorScheme.surfaceVariant;
     }
 
-    if (border == 'all')
-    {
+    if (border == 'all') {
       return color ?? Colors.transparent;
     }
 
@@ -263,8 +261,7 @@ class DecoratedInputModel extends FormFieldModel
   }
 
   //set the field color based on the error state
-  Color getErrorHintColor(BuildContext context, {Color? color})
-  {
+  Color getErrorHintColor(BuildContext context, {Color? color}) {
     // disabled
     if (!enabled) return Theme.of(context).colorScheme.primary.withOpacity(0.5);
 

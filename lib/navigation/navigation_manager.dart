@@ -14,17 +14,17 @@ import 'package:fml/navigation/page.dart';
 import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/framework/framework_view.dart' ;
+import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/store/store_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/helpers/helpers.dart';
 // platform
 import 'package:fml/platform/platform.web.dart'
-if (dart.library.io)   'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';
+    if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+    if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
-class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNotifier, PopNavigatorRouterDelegateMixin<PageConfiguration>
-{
+class NavigationManager extends RouterDelegate<PageConfiguration>
+    with ChangeNotifier, PopNavigatorRouterDelegateMixin<PageConfiguration> {
   GlobalKey<NavigatorState> _key = GlobalKey<NavigatorState>();
 
   @override
@@ -32,8 +32,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
   // singleton
   static final NavigationManager _singleton = NavigationManager._internal();
-  factory NavigationManager({GlobalKey<NavigatorState>? key})
-  {
+  factory NavigationManager({GlobalKey<NavigatorState>? key}) {
     //if (key != null) _singleton._key = key;
     return _singleton;
   }
@@ -43,19 +42,16 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   List<Page> get pages => List.unmodifiable(_pages);
   CustomMaterialPage? dummyPage;
 
-  NavigationManager._internal()
-  {
+  NavigationManager._internal() {
     dummyPage = _buildPage("/", child: const Offstage());
     _addPage(dummyPage!);
   }
 
-  void setKey()
-  {
+  void setKey() {
     _key = GlobalKey<NavigatorState>();
   }
 
-  Future<void> _initialize() async
-  {
+  Future<void> _initialize() async {
     // clear all pages
     _pages.clear();
 
@@ -67,14 +63,18 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     String startPage = System.app?.startPage ?? homePage;
 
     // start page is different than home page?
-    if (homePage.split("?")[0].toLowerCase() != startPage.split("?")[0].toLowerCase())
-    {
+    if (homePage.split("?")[0].toLowerCase() !=
+        startPage.split("?")[0].toLowerCase()) {
       // fetch the template
-      var template = await TemplateManager().fetch(url: startPage, refresh: true);
+      var template =
+          await TemplateManager().fetch(url: startPage, refresh: true);
 
       // document is linkable?
       // default - if singlePageApplication then false, otherwise true
-      bool linkable = toBool(Xml.attribute(node: template.document!.rootElement, tag: "linkable")) ?? System.app?.singlePage ?? false;
+      bool linkable = toBool(Xml.attribute(
+              node: template.document!.rootElement, tag: "linkable")) ??
+          System.app?.singlePage ??
+          false;
 
       // set start page = home page if not linkable
       if (!linkable) startPage = homePage;
@@ -87,14 +87,13 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     //if ((System().getNavigationType() == 1) && (!System().singlePageApplication)) page = System().requestedPage;
 
     // open the page
-    setNewRoutePath(PageConfiguration(uri: Uri.tryParse(startPage)), source: "splash");
+    setNewRoutePath(PageConfiguration(uri: Uri.tryParse(startPage)),
+        source: "splash");
   }
 
-  Future<void> onPageLoaded() async
-  {
+  Future<void> onPageLoaded() async {
     // open the requested page
-    if (System.app?.startPage != null && System.app?.started == false)
-    {
+    if (System.app?.startPage != null && System.app?.started == false) {
       // open the requested page
       _open(System.app?.startPage);
 
@@ -105,58 +104,51 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   }
 
   @override
-  PageConfiguration? get currentConfiguration
-  {
-    return _pages.isNotEmpty ? _pages.last.arguments as PageConfiguration? : PageConfiguration(uri: Uri.tryParse("/"), title: "Dummy");
+  PageConfiguration? get currentConfiguration {
+    return _pages.isNotEmpty
+        ? _pages.last.arguments as PageConfiguration?
+        : PageConfiguration(uri: Uri.tryParse("/"), title: "Dummy");
   }
 
-  FrameworkView? frameworkOf()
-  {
-    if (pages.isNotEmpty)
-    {
+  FrameworkView? frameworkOf() {
+    if (pages.isNotEmpty) {
       var page = pages.last;
-      if (page is CustomMaterialPage && page.child is ModalManagerView)
-      {
-         var manager  = page.child as ModalManagerView;
-         if (manager.model.child is FrameworkView) return manager.model.child as FrameworkView;
+      if (page is CustomMaterialPage && page.child is ModalManagerView) {
+        var manager = page.child as ModalManagerView;
+        if (manager.model.child is FrameworkView)
+          return manager.model.child as FrameworkView;
       }
     }
     return null;
   }
 
   @override
-  Future<void> setNewRoutePath(PageConfiguration configuration, {String source = "system"}) async
-  {
+  Future<void> setNewRoutePath(PageConfiguration configuration,
+      {String source = "system"}) async {
     // initialize
     if (pages.isNotEmpty && pages.first == dummyPage) return _initialize();
 
     // deeplink specified
     String? url = configuration.uri?.toString();
-    if ((!FmlEngine.isWeb) && (source == "system"))
-    {
+    if ((!FmlEngine.isWeb) && (source == "system")) {
       url = await _buildDeeplinkUrl(url);
       if (url == null) return;
     }
 
     // page in navigation history?
     Page? page;
-    if ((url == "/") && (_pages.isNotEmpty))
-    {
+    if ((url == "/") && (_pages.isNotEmpty)) {
       page = _pages.first;
-    }
-    else
-    {
+    } else {
       page = _pages.reversed.firstWhereOrNull((page) => (page.name == url));
     }
 
     // navigate back to the page if found in the navigation history
-    if (page != null)
-    {
+    if (page != null) {
       bool notify = false;
 
       // remove pages until target page encountered
-      while (_pages.isNotEmpty && _pages.last != page)
-      {
+      while (_pages.isNotEmpty && _pages.last != page) {
         bool canPop = await _canPop(_pages.last);
         if (!canPop) break;
 
@@ -168,29 +160,32 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       // notify listeners
       if (notify) notifyListeners();
     }
-    
+
     // open a new page
-    else
-    {
+    else {
       _open(url, transition: configuration.transition);
     }
   }
 
   @override
-  Widget build(BuildContext context) => Navigator(key: navigatorKey, pages: List.of(_pages), onPopPage: _onPopPage, observers: [NavigationObserver()],);
+  Widget build(BuildContext context) => Navigator(
+        key: navigatorKey,
+        pages: List.of(_pages),
+        onPopPage: _onPopPage,
+        observers: [NavigationObserver()],
+      );
 
-  Future<bool> _canPop(Page page) async
-  {
+  Future<bool> _canPop(Page page) async {
     bool canPop = true;
 
     // check if page can be popped
-    if (_pages.last.arguments is PageConfiguration && navigatorKey.currentState?.mounted == true)
-    {
+    if (_pages.last.arguments is PageConfiguration &&
+        navigatorKey.currentState?.mounted == true) {
       var configuration = _pages.last.arguments as PageConfiguration;
-      if (configuration.route != null)
-      {
+      if (configuration.route != null) {
         var route = configuration.route!;
-        if (route.popDisposition == RoutePopDisposition.doNotPop) canPop = false;
+        if (route.popDisposition == RoutePopDisposition.doNotPop)
+          canPop = false;
         if (!canPop) route.onPopInvoked(canPop);
       }
     }
@@ -199,21 +194,16 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   }
 
   @override
-  Future<bool> popRoute() async
-  {
+  Future<bool> popRoute() async {
     // this only fires on mobile
-    if (_pages.length > 1)
-    {
+    if (_pages.length > 1) {
       return _goback(1);
-    }
-    else
-    {
+    } else {
       return showQuitDialog();
     }
   }
 
-  Future<String?> _buildDeeplinkUrl(String? url) async
-  {
+  Future<String?> _buildDeeplinkUrl(String? url) async {
     // empty url?
     if (url == null) return null;
     if (url.startsWith("/")) url = url.replaceFirst("/", "");
@@ -240,32 +230,33 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     return url;
   }
 
-  bool _onPopPage(Route route, dynamic result)
-  {
+  bool _onPopPage(Route route, dynamic result) {
     if (!route.didPop(result)) return false;
     popRoute();
     return true;
   }
 
-  CustomMaterialPage _buildPage(String url, {required child, transition})
-  {
+  CustomMaterialPage _buildPage(String url, {required child, transition}) {
     if (!url.startsWith("/")) url = "/$url";
 
-    var configuration = PageConfiguration(uri: Uri.tryParse(url), transition: transition);
-    var page = CustomMaterialPage(transition, child: child, name: url, arguments: configuration);
+    var configuration =
+        PageConfiguration(uri: Uri.tryParse(url), transition: transition);
+    var page = CustomMaterialPage(transition,
+        child: child, name: url, arguments: configuration);
 
     return page;
   }
 
-  void _addPage(CustomMaterialPage page, {int? index})
-  {
+  void _addPage(CustomMaterialPage page, {int? index}) {
     PageConfiguration? args = page.arguments as PageConfiguration?;
 
     // if you open the exact same page as was on the top of the stack, simply return
-    if ((_pages.isNotEmpty) && (_pages.last.arguments is PageConfiguration) && ((_pages.last.arguments as PageConfiguration).uri?.toString() == args!.uri?.toString())) return;
+    if ((_pages.isNotEmpty) &&
+        (_pages.last.arguments is PageConfiguration) &&
+        ((_pages.last.arguments as PageConfiguration).uri?.toString() ==
+            args!.uri?.toString())) return;
 
-    if (index != null)
-    {
+    if (index != null) {
       if (index >= _pages.length) {
         _pages.add(page);
       } else if (index < (_pages.length * -1)) {
@@ -275,17 +266,17 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       } else if (index.isNegative) {
         _pages.insert(_pages.length + index, page);
       } else {
-        Log().error('Unable to add page at index: $index name: ${args!.title}, url: ${args.uri?.toString()}', caller: 'delegate.dart');
+        Log().error(
+            'Unable to add page at index: $index name: ${args!.title}, url: ${args.uri?.toString()}',
+            caller: 'delegate.dart');
       }
-    }
-    else {
+    } else {
       _pages.add(page);
     }
     notifyListeners();
   }
 
-  Future<bool> _goback(int pages, {bool force = false}) async
-  {
+  Future<bool> _goback(int pages, {bool force = false}) async {
     // set absolute
     pages = pages.abs();
 
@@ -303,8 +294,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
     // remove the page
     bool notify = false;
-    for (int i = 0; i < pages; i++)
-    {
+    for (int i = 0; i < pages; i++) {
       bool canPop = force ? true : await _canPop(_pages.last);
       if (!canPop) break;
 
@@ -316,21 +306,19 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     return true;
   }
 
-
-  int? positionInStack(BuildContext context)
-  {
+  int? positionInStack(BuildContext context) {
     int? index;
-    try
-    {
+    try {
       Page? page;
 
       var route = ModalRoute.of(context);
-      if ((route?.settings != null) && (route!.settings is Page)) page = (route.settings as Page);
+      if ((route?.settings != null) && (route!.settings is Page))
+        page = (route.settings as Page);
 
       // position 0 implies top of stack, 1 page before, ... etc
-      if (page != null && _pages.contains(page)) index = (_pages.length - _pages.indexOf(page) - 1).abs();
-    }
-    catch(e){
+      if (page != null && _pages.contains(page))
+        index = (_pages.length - _pages.indexOf(page) - 1).abs();
+    } catch (e) {
       Log().debug('$e');
     }
     return index;
@@ -339,34 +327,33 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   // top position in stack = 0
   bool isVisible(BuildContext context) => (positionInStack(context) == 0);
 
-  Page? getPage(BuildContext context)
-  {
+  Page? getPage(BuildContext context) {
     Page? page;
-    try
-    {
+    try {
       var route = ModalRoute.of(context);
-      if ((route?.settings != null) && (route!.settings is Page)) page = (route.settings as Page);
-    }
-    catch(e){
+      if ((route?.settings != null) && (route!.settings is Page))
+        page = (route.settings as Page);
+    } catch (e) {
       Log().debug('$e');
     }
     return page;
   }
 
-  Future<bool> open(Map<String, String?>? parameters, {bool? refresh = false, WidgetModel? model, String? dependency}) async
-  {
+  Future<bool> open(Map<String, String?>? parameters,
+      {bool? refresh = false, WidgetModel? model, String? dependency}) async {
     bool ok = true;
     parameters ??= <String, String>{};
 
-    String url         = fromMap(parameters,'url',defaultValue: "");
-    bool?   modal      = fromMapAsBool(parameters,'modal', defaultValue: false);
+    String url = fromMap(parameters, 'url', defaultValue: "");
+    bool? modal = fromMapAsBool(parameters, 'modal', defaultValue: false);
 
-    String? transition = fromMap(parameters,'transition');
-    String? width      = fromMap(parameters,'width');
-    String? height     = fromMap(parameters,'height');
-    int?    index      = fromMapAsInt(parameters,'index');
-    bool?   replace    = fromMapAsBool(parameters,'replace', defaultValue: false);
-    bool?   replaceAll = fromMapAsBool(parameters,'replaceall', defaultValue: false);
+    String? transition = fromMap(parameters, 'transition');
+    String? width = fromMap(parameters, 'width');
+    String? height = fromMap(parameters, 'height');
+    int? index = fromMapAsInt(parameters, 'index');
+    bool? replace = fromMapAsBool(parameters, 'replace', defaultValue: false);
+    bool? replaceAll =
+        fromMapAsBool(parameters, 'replaceall', defaultValue: false);
 
     var uri = URI.parse(url);
     if (uri == null) return false;
@@ -375,15 +362,14 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     var d2 = System.app?.host?.toLowerCase();
 
     bool sameDomain = d1 == d2;
-    bool xmlFile    = uri.pageExtension == "xml";
-    bool local      = sameDomain && xmlFile;
+    bool xmlFile = uri.pageExtension == "xml";
+    bool local = sameDomain && xmlFile;
 
     // We need to keep the file:// prefix as an indicator for fetch() that its a local file
     String? template = uri.domain.toLowerCase();
 
     // missing template?
-    if (isNullOrEmpty(template))
-    {
+    if (isNullOrEmpty(template)) {
       //await DialogService().show(type: DialogType.error, title: phrase.missingTemplate, description: url, buttons: [Text(phrase.ok)]);
       return ok;
     }
@@ -392,17 +378,18 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     if (!local) return _openBrowser(url);
 
     // open new page in modal window?
-    if (modal == true && model != null)
-    {
+    if (modal == true && model != null) {
       bool ok = false;
       var framework = model.findParentOfExactType(FrameworkModel);
-      if (framework != null)
-      {
-        var view = FrameworkModel.fromUrl(framework, url, refresh: refresh ?? false, dependency: dependency).getView();
-        ModalManagerView? manager = model.context?.findAncestorWidgetOfExactType<ModalManagerView>();
-        if (manager != null)
-        {
-          var modal = ModalView(ModalModel(model, null, child: view, modal: false, width: width, height: height));
+      if (framework != null) {
+        var view = FrameworkModel.fromUrl(framework, url,
+                refresh: refresh ?? false, dependency: dependency)
+            .getView();
+        ModalManagerView? manager =
+            model.context?.findAncestorWidgetOfExactType<ModalManagerView>();
+        if (manager != null) {
+          var modal = ModalView(ModalModel(model, null,
+              child: view, modal: false, width: width, height: height));
           manager.model.modals.add(modal);
           manager.model.refresh();
           ok = true;
@@ -423,24 +410,30 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     return ok;
   }
 
-  Future<void> _open(String? url,{String? transition, bool refresh = false, int? index, String? dependency}) async
-  {
+  Future<void> _open(String? url,
+      {String? transition,
+      bool refresh = false,
+      int? index,
+      String? dependency}) async {
     if (url == null) return;
 
     Widget view;
-    switch(url)
-    {
+    switch (url) {
       case "store":
         view = StoreView();
         break;
 
       default:
-        view =  ModalManagerView(ModalManagerModel(FrameworkModel.fromUrl(System.app!, url, refresh: refresh, dependency: dependency).getView()));
+        view = ModalManagerView(ModalManagerModel(FrameworkModel.fromUrl(
+                System.app!, url,
+                refresh: refresh, dependency: dependency)
+            .getView()));
         break;
     }
 
     // build page
-    CustomMaterialPage page = _buildPage(url, child: view, transition: transition);
+    CustomMaterialPage page =
+        _buildPage(url, child: view, transition: transition);
 
     // push the page
     _addPage(page, index: index);
@@ -461,55 +454,48 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     return ok;
   }
 
-  Future<bool> back(dynamic until, {bool force = false}) async
-  {
+  Future<bool> back(dynamic until, {bool force = false}) async {
     bool ok = true;
 
     // determine number of pages to go back
     int? pages;
     if (until is int) pages = until;
-    if (until is String)
-    {
+    if (until is String) {
       // match by index
-      if (until.startsWith('[') && until.endsWith(']'))
-      {
+      if (until.startsWith('[') && until.endsWith(']')) {
         int? pageIndex = toInt(until.substring(1, until.length - 1));
         pages = pageIndex != null ? (_pages.length) - pageIndex : -1;
       }
 
       // match by name
-      else
-      {
+      else {
         if (!until.startsWith("/")) until = "/$until";
         Page? page = _pages.lastWhereOrNull((page) {
           // make sure we leave args off for the comparison
           String name = page.name ?? '';
           return name.split('?')[0] == until;
         });
-        if ((page != null) && (_pages.last != page)) pages = _pages.length - _pages.indexOf(page) - 1;
+        if ((page != null) && (_pages.last != page))
+          pages = _pages.length - _pages.indexOf(page) - 1;
       }
     }
 
     // go back
-    if (pages != null)
-    {
+    if (pages != null) {
       ok = await _goback(pages, force: force);
     }
 
     return ok;
   }
 
-  Future<bool> refresh() async
-  {
+  Future<bool> refresh() async {
     bool ok = true;
-    try
-    {
+    try {
       var context = NavigationManager().navigatorKey.currentContext;
       if (context == null) return ok;
 
       // remove last page from pages list
-      if (_pages.isNotEmpty)
-      {
+      if (_pages.isNotEmpty) {
         // get last page
         Page page = _pages.last;
         PageConfiguration configuration = (page.arguments as PageConfiguration);
@@ -518,31 +504,44 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
         _pages.removeLast();
 
         // reload the same page
-        _open(configuration.uri?.toString(), transition: configuration.transition, refresh: true);
+        _open(configuration.uri?.toString(),
+            transition: configuration.transition, refresh: true);
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e);
     }
     return ok;
   }
 
-  Widget quitAppDialog(BuildContext context)
-  {
+  Widget quitAppDialog(BuildContext context) {
     var style = TextStyle(color: Theme.of(context).colorScheme.primary);
     var title = Text('${phrase.close} ${phrase.application}?', style: style);
 
     style = TextStyle(color: Theme.of(context).colorScheme.onBackground);
-    var msg = Padding(padding: const EdgeInsets.only(top: 0, bottom: 10), child: Text(phrase.confirmExit, style: style));
+    var msg = Padding(
+        padding: const EdgeInsets.only(top: 0, bottom: 10),
+        child: Text(phrase.confirmExit, style: style));
 
     style = TextStyle(color: Theme.of(context).colorScheme.primary);
-    var no  = TextButton(onPressed: () => Navigator.pop(context, true),  child: Text(phrase.no, style: style));
-    var yes = TextButton(onPressed: () => Navigator.pop(context, false), child: Text(phrase.yes, style: style));
-    var buttons = Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.end, children: [no, yes]);
+    var no = TextButton(
+        onPressed: () => Navigator.pop(context, true),
+        child: Text(phrase.no, style: style));
+    var yes = TextButton(
+        onPressed: () => Navigator.pop(context, false),
+        child: Text(phrase.yes, style: style));
+    var buttons = Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [no, yes]);
 
     var width = MediaQuery.of(context).size.width - 60;
-    var content = SizedBox(width: width, height: 100, child: Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.center, children: [msg,buttons]));
+    var content = SizedBox(
+        width: width,
+        height: 100,
+        child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [msg, buttons]));
 
     return AlertDialog(
         title: title,
@@ -551,8 +550,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
         insetPadding: EdgeInsets.zero);
   }
 
-  Future<bool> showQuitDialog() async
-  {
+  Future<bool> showQuitDialog() async {
     if (navigatorKey.currentContext == null) return true;
 
     bool? result = await showDialog<bool>(
@@ -564,32 +562,27 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     return result ?? false;
   }
 
-  Future<bool> _openBrowser(String url) async
-  {
-      bool ok = true;
-      try
-      {
-        // parse url
-        Uri? uri = Uri.tryParse(url);
+  Future<bool> _openBrowser(String url) async {
+    bool ok = true;
+    try {
+      // parse url
+      Uri? uri = Uri.tryParse(url);
 
-        // launch the browser
-        if (uri != null) await launchUrl(uri);
-      }
-      catch(e)
-      {
-        await System.toast("${phrase.cannotLaunchURL} $url");
-        Log().error("${phrase.cannotLaunchURL} $url");
-        ok = false;
-      }
-      return ok;
+      // launch the browser
+      if (uri != null) await launchUrl(uri);
+    } catch (e) {
+      await System.toast("${phrase.cannotLaunchURL} $url");
+      Log().error("${phrase.cannotLaunchURL} $url");
+      ok = false;
+    }
+    return ok;
   }
 
- void setPageTitle(BuildContext context, String? title)
-  {
-    if (!isNullOrEmpty(title))
-    {
+  void setPageTitle(BuildContext context, String? title) {
+    if (!isNullOrEmpty(title)) {
       Page? page = getPage(context);
-      if ((page is CustomMaterialPage) && (page.arguments is PageConfiguration)) (page.arguments as PageConfiguration).title = title;
+      if ((page is CustomMaterialPage) && (page.arguments is PageConfiguration))
+        (page.arguments as PageConfiguration).title = title;
     }
   }
 }

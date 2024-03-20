@@ -11,7 +11,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-
     String example1 = 'https://fml.dev';
     //String example2 = 'file://fmlpad';
     //String example3 = 'file://example';
@@ -20,14 +19,15 @@ class MyApp extends StatelessWidget {
 
     // launch the FML engine
     return FmlEngine(
-        domain: example1,
-        title: "Flutter Markup Language V$version",
-        version: version,
-        multiApp: true,
-        color: Colors.lightBlue,
-        brightness: Brightness.dark,
-        font: 'Roboto',
-        transition: PageTransitions.platform,
-        splashBackgroundColor: Colors.black).launch();
+            domain: example1,
+            title: "Flutter Markup Language V$version",
+            version: version,
+            multiApp: true,
+            color: Colors.lightBlue,
+            brightness: Brightness.dark,
+            font: 'Roboto',
+            transition: PageTransitions.platform,
+            splashBackgroundColor: Colors.black)
+        .launch();
   }
 }

@@ -3,14 +3,13 @@ import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/table/table_footer_cell_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TableFooterModel extends BoxModel
-{
+class TableFooterModel extends BoxModel {
   @override
   String? get layout => super.layout ?? "column";
 
@@ -22,7 +21,8 @@ class TableFooterModel extends BoxModel
   List<XmlElement> prototypes = [];
 
   // cell by index
-  TableFooterCellModel? cell(int index) => index >= 0 && index < cells.length ? cells[index] : null;
+  TableFooterCellModel? cell(int index) =>
+      index >= 0 && index < cells.length ? cells[index] : null;
 
   // table
   TableModel? get table => parent is TableModel ? parent as TableModel : null;
@@ -45,19 +45,16 @@ class TableFooterModel extends BoxModel
   @override
   String? get valign => super.valign ?? table?.valign;
 
-  
-  TableFooterModel(WidgetModel super.parent, super.id) : super(scope: Scope(parent: parent.scope));
+  TableFooterModel(WidgetModel super.parent, super.id)
+      : super(scope: Scope(parent: parent.scope));
 
-  static TableFooterModel? fromXml(WidgetModel parent, XmlElement xml, {Map<dynamic, dynamic>? data})
-  {
+  static TableFooterModel? fromXml(WidgetModel parent, XmlElement xml,
+      {Map<dynamic, dynamic>? data}) {
     TableFooterModel? model;
-    try
-    {
+    try {
       model = TableFooterModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e, caller: 'tableFooter.Model');
       model = null;
     }
@@ -66,13 +63,14 @@ class TableFooterModel extends BoxModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 
     // get header cells
-    cells.addAll(findDescendantsOfExactType(TableFooterCellModel,breakOn: TableModel).cast<TableFooterCellModel>());
+    cells.addAll(
+        findDescendantsOfExactType(TableFooterCellModel, breakOn: TableModel)
+            .cast<TableFooterCellModel>());
 
     // remove cells from child list
     removeChildrenOfExactType(TableFooterCellModel);
@@ -81,16 +79,13 @@ class TableFooterModel extends BoxModel
     _buildDynamicPrototypes();
   }
 
-  void _buildDynamicPrototypes()
-  {
-    bool hasDynamicCells = cells.firstWhereOrNull((cell) => cell.isDynamic) != null;
-    if (hasDynamicCells)
-    {
-      for (var cell in cells)
-      {
+  void _buildDynamicPrototypes() {
+    bool hasDynamicCells =
+        cells.firstWhereOrNull((cell) => cell.isDynamic) != null;
+    if (hasDynamicCells) {
+      for (var cell in cells) {
         var e = cell.element!.copy();
-        if (cell.isDynamic)
-        {
+        if (cell.isDynamic) {
           e.attributes.add(XmlAttribute(XmlName("dynamic"), ""));
         }
         prototypes.add(e);
@@ -99,13 +94,11 @@ class TableFooterModel extends BoxModel
   }
 
   @override
-  dispose()
-  {
+  dispose() {
     super.dispose();
 
     // dispose of cells
-    for (var cell in cells)
-    {
+    for (var cell in cells) {
       cell.dispose();
     }
   }

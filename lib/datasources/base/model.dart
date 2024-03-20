@@ -12,20 +12,18 @@ import 'package:fml/datasources/data/model.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/event/handler.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/event/handler.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 enum ListTypes { replace, lifo, fifo, append, prepend }
 
-class DataSourceModel extends ViewableWidgetModel implements IDataSource
-{
+class DataSourceModel extends ViewableWidgetModel implements IDataSource {
   // data override
   @override
-  Data? get data
-  {
+  Data? get data {
     if (super.data == null) return null;
     if (super.data is Data) {
       return super.data;
@@ -46,8 +44,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
 
   // autoquery timer
   Timer? timer;
-  onTimer(dynamic t)
-  {
+  onTimer(dynamic t) {
     if (!disposed && enabled) start();
   }
 
@@ -61,21 +58,17 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   // enabled
   BooleanObservable? _enabled;
   @override
-  set enabled(dynamic v)
-  {
-    if (_enabled != null)
-    {
+  set enabled(dynamic v) {
+    if (_enabled != null) {
       _enabled!.set(v);
-    }
-    else if (v != null)
-    {
-      _enabled = BooleanObservable(Binding.toKey(id, 'enabled'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _enabled = BooleanObservable(Binding.toKey(id, 'enabled'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
 
   @override
-  bool get enabled
-  {
+  bool get enabled {
     if (!enabledInBackground && _isInBackground) return false;
     return _enabled?.get() ?? true;
   }
@@ -87,9 +80,11 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     if (_queuetype != null) {
       _queuetype!.set(v);
     } else if (v != null) {
-      _queuetype = StringObservable(Binding.toKey(id, 'queuetype'), v, scope: scope);
+      _queuetype =
+          StringObservable(Binding.toKey(id, 'queuetype'), v, scope: scope);
     }
   }
+
   String get queuetype => _queuetype?.get() ?? 'replace';
 
   // max record to retain
@@ -102,6 +97,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
           scope: scope, listener: onPropertyChange);
     }
   }
+
   int? get maxrecords => _maxrecords?.get();
 
   // on success event
@@ -115,6 +111,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
           scope: scope, lazyEval: true);
     }
   }
+
   String? get onsuccess => _onsuccess?.get();
 
   StringObservable? get onWriteSuccessObservable => _onwritesuccess;
@@ -127,6 +124,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
           scope: scope, lazyEval: true);
     }
   }
+
   String? get onwritesuccess => _onwritesuccess?.get();
 
   StringObservable? get onReadSuccessObservable => _onreadsuccess;
@@ -139,6 +137,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
           scope: scope, lazyEval: true);
     }
   }
+
   String? get onreadsuccess => _onreadsuccess?.get();
 
   // on fail event
@@ -152,6 +151,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
           scope: scope, lazyEval: true);
     }
   }
+
   String? get onfail => _onfail?.get();
 
   // time to idle - clears status message field
@@ -164,6 +164,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
           scope: scope, listener: onPropertyChange);
     }
   }
+
   int get timetoidle => _timetoidle?.get() ?? 5;
 
   // status
@@ -175,11 +176,12 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     } else if (v != null) {
       _status = StringObservable(Binding.toKey(id, 'status'), v, scope: scope);
     }
-    if ((v == "success" || v == "error") && timetoidle > 0)
-    {
-      _statusTimer = Timer(Duration(seconds: timetoidle), () => status = "idle");
+    if ((v == "success" || v == "error") && timetoidle > 0) {
+      _statusTimer =
+          Timer(Duration(seconds: timetoidle), () => status = "idle");
     }
   }
+
   String? get status => _status?.get();
 
   // status code
@@ -192,6 +194,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
           IntegerObservable(Binding.toKey(id, 'statuscode'), v, scope: scope);
     }
   }
+
   int? get statuscode => _statuscode?.get();
 
   // status message
@@ -204,6 +207,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
           StringObservable(Binding.toKey(id, 'statusmessage'), v, scope: scope);
     }
   }
+
   String? get statusmessage => _statusmessage?.get();
 
   // Time to Live in Seconds
@@ -214,22 +218,22 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     if (ttl == null) return;
 
     int factor = 1;
-    if (ttl is String)
-    {
+    if (ttl is String) {
       ttl = ttl.trim().toLowerCase();
       if (ttl.endsWith('s')) factor = 1000;
       if (ttl.endsWith('m')) factor = 1000 * 60;
       if (ttl.endsWith('h')) factor = 1000 * 60 * 60;
       if (ttl.endsWith('d')) factor = 1000 * 60 * 60 * 24;
-      if (factor > 1) ttl = (ttl.length > 1) ? ttl.substring(0, ttl.length - 1) : null;
+      if (factor > 1)
+        ttl = (ttl.length > 1) ? ttl.substring(0, ttl.length - 1) : null;
     }
 
-    if (isNumeric(ttl))
-    {
+    if (isNumeric(ttl)) {
       int t = toInt(ttl)! * factor;
       if (t >= 0) _timetolive = t;
     }
   }
+
   int get timetolive => toInt(_timetolive) ?? 0;
 
   // autoexecute
@@ -243,92 +247,78 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
           BooleanObservable(Binding.toKey(id, 'autoexecute'), v, scope: scope);
     }
   }
+
   @override
   bool? get autoexecute => _autoexecute?.get();
 
   // autoquery
   int? _autoquery;
-  set autoquery(dynamic autoquery)
-  {
+  set autoquery(dynamic autoquery) {
     _autoquery = 0;
     if (autoquery == null) return;
 
     int factor = 1;
-    if (autoquery is String)
-    {
+    if (autoquery is String) {
       autoquery = autoquery.trim().toLowerCase();
-      if (autoquery.endsWith('s'))
-      {
+      if (autoquery.endsWith('s')) {
         factor = 1;
-      }
-      else if (autoquery.endsWith('m'))
-      {
+      } else if (autoquery.endsWith('m')) {
         factor = 1 * 60;
-      }
-      else if (autoquery.endsWith('h'))
-      {
+      } else if (autoquery.endsWith('h')) {
         factor = 1 * 60 * 60;
-      }
-      else if (autoquery.endsWith('d'))
-      {
+      } else if (autoquery.endsWith('d')) {
         factor = 1 * 60 * 60 * 24;
       }
-      if (autoquery.endsWith('s') || autoquery.endsWith('m') || autoquery.endsWith('h') || autoquery.endsWith('d'))
-      {
-        autoquery = (autoquery.length > 1) ? autoquery.substring(0, autoquery.length - 1) : null;
+      if (autoquery.endsWith('s') ||
+          autoquery.endsWith('m') ||
+          autoquery.endsWith('h') ||
+          autoquery.endsWith('d')) {
+        autoquery = (autoquery.length > 1)
+            ? autoquery.substring(0, autoquery.length - 1)
+            : null;
       }
     }
 
-    if (isNumeric(autoquery))
-    {
+    if (isNumeric(autoquery)) {
       int t = toInt(autoquery)! * factor;
       if (t >= 0) _autoquery = t;
     }
   }
+
   int? get autoquery => _autoquery;
 
   @override
-  set busy(dynamic v)
-  {
+  set busy(dynamic v) {
     bool oldBusy = busy;
     super.busy = v;
-    if (busy != oldBusy)
-    {
-      for (var listener in listeners)
-      {
+    if (busy != oldBusy) {
+      for (var listener in listeners) {
         listener.onDataSourceBusy(this, busy);
       }
     }
 
     // Set Status
-    if (busy)
-    {
+    if (busy) {
       status = "busy";
-    }
-
-    else if (_statusTimer == null)
-    {
+    } else if (_statusTimer == null) {
       status = "idle";
     }
   }
 
   // value
   ListObservable? _value;
-  set value(dynamic v)
-  {
-    if (_value != null)
-    {
+  set value(dynamic v) {
+    if (_value != null) {
       _value!.set(v);
-    }
-    else
-    {
-      if (v != null)
-      {
-        _value = ListObservable(Binding.toKey(id, 'value'), v, scope: scope, setter: _valueSetter);
+    } else {
+      if (v != null) {
+        _value = ListObservable(Binding.toKey(id, 'value'), v,
+            scope: scope, setter: _valueSetter);
 
         // the setter will have already fired if the value (v) is an eval
         // or contains bindings, so no need to refire the setter.
-        if ((_value?.bindings?.isEmpty ?? true) || !(_value?.isEval ?? false)) _value!.set(v);
+        if ((_value?.bindings?.isEmpty ?? true) || !(_value?.isEval ?? false))
+          _value!.set(v);
       }
     }
   }
@@ -336,12 +326,11 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   // stores a serialized copy of the first item
   String? template;
 
-  dynamic _valueSetter(dynamic jsonOrXml, {Observable? setter, DotNotation? dotnotation})
-  {
+  dynamic _valueSetter(dynamic jsonOrXml,
+      {Observable? setter, DotNotation? dotnotation}) {
     var data = Data.from(jsonOrXml, root: root);
 
-    if (jsonOrXml != null && jsonOrXml is! String)
-    {
+    if (jsonOrXml != null && jsonOrXml is! String) {
       // clone the data so the datasource does not manipulate its inherited widgets data in the original source.
       data = data.clone();
     }
@@ -360,6 +349,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
           scope: scope, listener: onPropertyChange);
     }
   }
+
   @override
   String? get root => _root?.get();
 
@@ -367,17 +357,15 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   // indicates the number of rows in the
   // data set
   IntegerObservable? _rowcount;
-  set rowcount(dynamic v)
-  {
-    if (_rowcount != null)
-    {
+  set rowcount(dynamic v) {
+    if (_rowcount != null) {
       _rowcount!.set(v);
-    }
-    else
-    {
-      _rowcount = IntegerObservable(Binding.toKey(id, 'rowcount'), v ?? 0, scope: scope, listener: onPropertyChange);
+    } else {
+      _rowcount = IntegerObservable(Binding.toKey(id, 'rowcount'), v ?? 0,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   int get rowcount => _rowcount?.get() ?? 0;
 
   // posting body
@@ -385,18 +373,16 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   StringObservable? get bodyObservable => _body;
   StringObservable? _body;
   @override
-  set body(dynamic v)
-  {
-    if (_body != null)
-    {
+  set body(dynamic v) {
+    if (_body != null) {
       _body!.set(v);
-    }
-    else if (v != null)
-    {
+    } else if (v != null) {
       var formatter = _bodyType != null ? _encodeBody : null;
-      _body = StringObservable(Binding.toKey(id, 'body'), v, scope: scope, listener: onPropertyChange, formatter: formatter);
+      _body = StringObservable(Binding.toKey(id, 'body'), v,
+          scope: scope, listener: onPropertyChange, formatter: formatter);
     }
   }
+
   @override
   String? get body => _body?.get();
 
@@ -410,8 +396,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   DataSourceModel(WidgetModel super.parent, super.id);
 
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // extract body
 
     // deserialize
@@ -438,8 +423,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
 
     // set the body
     body = _getBody(xml);
-    if (body != null)
-    {
+    if (body != null) {
       // set body as custom
       _bodyIsCustom = true;
 
@@ -453,21 +437,25 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     if (scope != null) scope!.registerDataSource(this);
 
     // disable in background
-    enabledInBackground = toBool(Xml.get(node: xml, tag: 'background')) ?? enabledInBackground;
-    if (!enabledInBackground) framework?.indexObservable?.registerListener(onIndexChange);
+    enabledInBackground =
+        toBool(Xml.get(node: xml, tag: 'background')) ?? enabledInBackground;
+    if (!enabledInBackground)
+      framework?.indexObservable?.registerListener(onIndexChange);
   }
 
-  String? _getBody(XmlElement xml)
-  {
+  String? _getBody(XmlElement xml) {
     // custom body defined?
     XmlElement? body = Xml.getChildElement(node: xml, tag: 'BODY');
-    if (body != null)
-    {
+    if (body != null) {
       // set body type (format)
       _bodyType = Xml.attribute(node: body, tag: 'type')?.trim().toLowerCase();
 
       // body is all text (cdata or text only)?
-      bool isText = (body.children.firstWhereOrNull((child) => (child is XmlCDATA || child is XmlText || child is XmlComment) ? false : true) == null);
+      bool isText = (body.children.firstWhereOrNull((child) =>
+              (child is XmlCDATA || child is XmlText || child is XmlComment)
+                  ? false
+                  : true) ==
+          null);
       return isText ? body.innerText.trim() : body.innerXml.trim();
     }
 
@@ -481,27 +469,25 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     if (xml.childElements.length > 1) return null;
 
     // single non-textual element
-    if (xml.childElements.length == 1) return xml.childElements.first.toXmlString();
+    if (xml.childElements.length == 1)
+      return xml.childElements.first.toXmlString();
 
     // find cdata node
     var cdata = xml.children.firstWhereOrNull((child) => child is XmlCDATA);
     return cdata?.value?.trim();
   }
 
-  void onIndexChange(Observable index)
-  {
+  void onIndexChange(Observable index) {
     _isInBackground = (toInt(index.get()) != 0);
   }
 
   @override
-  register(IDataSourceListener listener)
-  {
+  register(IDataSourceListener listener) {
     if (!listeners.contains(listener)) listeners.add(listener);
   }
 
   @override
-  Future<void> notify() async
-  {
+  Future<void> notify() async {
     // notify listeners
     var list = listeners.toList();
     for (IDataSourceListener listener in list) {
@@ -510,8 +496,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   }
 
   @override
-  remove(IDataSourceListener listener)
-  {
+  remove(IDataSourceListener listener) {
     if (listeners.contains(listener)) listeners.remove(listener);
   }
 
@@ -557,34 +542,32 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   }
 
   /// finds the element in data either by object or by index
-  dynamic getElement(dynamic element)
-  {
+  dynamic getElement(dynamic element) {
     if (data == null) return null;
 
     // by object
-    if (data!.contains(element))
-    {
+    if (data!.contains(element)) {
       return element;
     }
 
     // by index
-    if (isNumeric(element))
-    {
+    if (isNumeric(element)) {
       var index = toInt(element) ?? -1;
       return (!index.isNegative && index < data!.length) ? data![index] : null;
     }
 
     // by first item in a list
-    if (element is List && element.isNotEmpty && element.length == 1 && data!.contains(element.first))
-    {
+    if (element is List &&
+        element.isNotEmpty &&
+        element.length == 1 &&
+        data!.contains(element.first)) {
       return element.first;
     }
 
     return null;
   }
 
-  Future<bool> copy(dynamic from, dynamic to) async
-  {
+  Future<bool> copy(dynamic from, dynamic to) async {
     var fromElement = getElement(from);
     if (fromElement == null) return false;
 
@@ -595,8 +578,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     int? index = isNumeric(to) ? toInt(to) : null;
 
     // before specific object?
-    if (index == null)
-    {
+    if (index == null) {
       var toElement = getElement(to);
       if (toElement != null) index = data?.indexOf(toElement);
     }
@@ -606,13 +588,14 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   }
 
   @override
-  Future<bool> insert(String? jsonOrXml, int? index, {bool notifyListeners = true}) async
-  {
+  Future<bool> insert(String? jsonOrXml, int? index,
+      {bool notifyListeners = true}) async {
     // make a copy of the first item if no
     // jsonOrXml is specified
-    if (isNullOrEmpty(jsonOrXml))
-    {
-      jsonOrXml = (data?.isNotEmpty ?? true) ? Json.encode(Json.copy(data![0], withValues: false)) : null;
+    if (isNullOrEmpty(jsonOrXml)) {
+      jsonOrXml = (data?.isNotEmpty ?? true)
+          ? Json.encode(Json.copy(data![0], withValues: false))
+          : null;
     }
     if (isNullOrEmpty(jsonOrXml)) return true;
 
@@ -622,21 +605,19 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
 
     // add to existing data set
     data ??= Data();
-    for (var item in Data.from(jsonOrXml))
-    {
-      if (index! < data!.length)
-      {
+    for (var item in Data.from(jsonOrXml)) {
+      if (index! < data!.length) {
         data!.insert(index, item);
-      }
-      else
-      {
+      } else {
         data!.add(item);
       }
       index++;
     }
 
     // template the first record
-    template ??= (data?.isEmpty ?? true) ? null : Json.encode(Json.copy(data![0], withValues: false));
+    template ??= (data?.isEmpty ?? true)
+        ? null
+        : Json.encode(Json.copy(data![0], withValues: false));
 
     // notify listeners of data change
     if (notifyListeners) notify();
@@ -646,11 +627,9 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   }
 
   @override
-  Future<bool> delete(dynamic index, {bool notifyListeners = true}) async
-  {
+  Future<bool> delete(dynamic index, {bool notifyListeners = true}) async {
     var element = getElement(index);
-    if (element != null)
-    {
+    if (element != null) {
       data!.remove(element);
 
       // notify listeners of data change
@@ -661,12 +640,11 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   }
 
   @override
-  Future<bool> move(dynamic from, dynamic to, {bool notifyListeners = true}) async
-  {
+  Future<bool> move(dynamic from, dynamic to,
+      {bool notifyListeners = true}) async {
     var fromElement = getElement(from);
-    var toElement   = getElement(to);
-    if (fromElement != null && toElement != null)
-    {
+    var toElement = getElement(to);
+    if (fromElement != null && toElement != null) {
       // remove element
       int i = data!.indexOf(toElement);
       data!.remove(fromElement);
@@ -680,8 +658,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     return true;
   }
 
-  Future<bool> reverse() async
-  {
+  Future<bool> reverse() async {
     data = data?.reversed;
 
     // notify listeners of data change
@@ -692,8 +669,8 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   }
 
   @override
-  Future<bool> onSuccess(Data data, {int? code, String? message, Observable? onSuccessOverride}) async
-  {
+  Future<bool> onSuccess(Data data,
+      {int? code, String? message, Observable? onSuccessOverride}) async {
     // set busy
     busy = true;
 
@@ -702,13 +679,13 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     if (maxrecords.isNegative) maxrecords = 0;
 
     // apply data transforms
-    if (children != null){
+    if (children != null) {
       for (WidgetModel model in children!) {
-        if (model is ITransform)
-        {
+        if (model is ITransform) {
           await (model as ITransform).apply(data);
         }
-      }}
+      }
+    }
 
     // type - default is replace
     ListTypes? type = toEnum(queuetype, ListTypes.values);
@@ -716,9 +693,11 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     // Fifo - Oldest -> Newest
     if (type == ListTypes.fifo) {
       Data temp = Data();
-      if (this.data != null){ for (var element in this.data!) {
-   temp.add(element);
- }}
+      if (this.data != null) {
+        for (var element in this.data!) {
+          temp.add(element);
+        }
+      }
       for (var element in data) {
         temp.add(element);
       }
@@ -734,9 +713,11 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
       for (var element in data) {
         temp.add(element);
       }
-      if (this.data != null){ for (var element in this.data!) {
-   temp.add(element);
- }}
+      if (this.data != null) {
+        for (var element in this.data!) {
+          temp.add(element);
+        }
+      }
       if (temp.length > maxrecords) {
         temp.removeRange(temp.length - maxrecords - 1, temp.length);
       }
@@ -746,9 +727,11 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     // Append
     if (type == ListTypes.append) {
       Data temp = Data();
-      if (this.data != null){ for (var element in this.data!) {
-   temp.add(element);
- }}
+      if (this.data != null) {
+        for (var element in this.data!) {
+          temp.add(element);
+        }
+      }
       for (var element in data) {
         temp.add(element);
       }
@@ -761,9 +744,11 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
       for (var element in data) {
         temp.add(element);
       }
-      if (this.data != null){ for (var element in this.data!) {
-   temp.add(element);
- }}
+      if (this.data != null) {
+        for (var element in this.data!) {
+          temp.add(element);
+        }
+      }
       data = temp;
     }
 
@@ -771,11 +756,12 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     if (data.length > maxrecords) data.removeRange(maxrecords, data.length);
 
     // Return Success
-    return await onData(data, code: code, message: message, onSuccessOverride: onSuccessOverride);
+    return await onData(data,
+        code: code, message: message, onSuccessOverride: onSuccessOverride);
   }
 
-  Future<bool> onFail(Data data, {int? code, String? message, Observable? onFailOverride}) async
-  {
+  Future<bool> onFail(Data data,
+      {int? code, String? message, Observable? onFailOverride}) async {
     // set data
     this.data = data;
 
@@ -793,11 +779,11 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     statusmessage = message ?? 'Error: $code';
 
     // log exception
-    Log().exception("$statusmessage [$statuscode] id: $id, object: 'DataBroker'");
+    Log().exception(
+        "$statusmessage [$statuscode] id: $id, object: 'DataBroker'");
 
     // fire on fail event
-    if (onFailOverride != null || !isNullOrEmpty(onfail))
-    {
+    if (onFailOverride != null || !isNullOrEmpty(onfail)) {
       EventHandler handler = EventHandler(this);
       await handler.execute(onFailOverride ?? _onfail);
     }
@@ -818,8 +804,8 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     return false;
   }
 
-  Future<bool> onData(Data data, {int? code, String? message, Observable? onSuccessOverride}) async
-  {
+  Future<bool> onData(Data data,
+      {int? code, String? message, Observable? onSuccessOverride}) async {
     bool ok = true;
 
     // set status
@@ -841,19 +827,15 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     notify();
 
     // fire on success event
-    if (onSuccessOverride != null || !isNullOrEmpty(onsuccess))
-    {
+    if (onSuccessOverride != null || !isNullOrEmpty(onsuccess)) {
       EventHandler handler = EventHandler(this);
       await handler.execute(onSuccessOverride ?? _onsuccess);
     }
 
     // notify nested data sources
-    if (datasources != null)
-    {
-      for (IDataSource model in datasources!)
-      {
-        if (model is DataModel)
-        {
+    if (datasources != null) {
+      for (IDataSource model in datasources!) {
+        if (model is DataModel) {
           // clone the data
           model.onSuccess(data.clone(), code: code, message: message);
         }
@@ -871,17 +853,16 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     return ok;
   }
 
-  Future<String?> fromHive(String? key, bool refresh) async
-  {
+  Future<String?> fromHive(String? key, bool refresh) async {
     // get data from cache
-    if ((timetolive > 0) && (!refresh))
-    {
+    if ((timetolive > 0) && (!refresh)) {
       // found cached data?
       hive.Data? row = await hive.Data.find(key!);
 
       // expired?
       bool expired = true;
-      if ((row?.expires ?? 0) >= DateTime.now().millisecondsSinceEpoch) expired = false;
+      if ((row?.expires ?? 0) >= DateTime.now().millisecondsSinceEpoch)
+        expired = false;
 
       // Return Cached Data
       if (!expired) return row!.value;
@@ -889,21 +870,20 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     return null;
   }
 
-  Future toHive(String? key, String? data) async
-  {
-    if (timetolive > 0)
-    {
-      hive.Data d = hive.Data(key: key, value: data, expires: DateTime.now().millisecondsSinceEpoch + timetolive);
+  Future toHive(String? key, String? data) async {
+    if (timetolive > 0) {
+      hive.Data d = hive.Data(
+          key: key,
+          value: data,
+          expires: DateTime.now().millisecondsSinceEpoch + timetolive);
       await d.insert();
     }
   }
 
   String? _encodeBody(dynamic value) => encode(value, _bodyType);
-  static String? encode(dynamic value, String? type)
-  {
+  static String? encode(dynamic value, String? type) {
     if (value == null || value is! String || type == null) return value;
-    switch (type)
-    {
+    switch (type) {
       case "json":
         value = Json.escape(value);
         break;
@@ -925,19 +905,22 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   Future<bool> stop() async => true;
 
   @override
-  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
-  {
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
 
     // template the first record
-    template ??= (data?.isEmpty ?? true) ? null : Json.encode(Json.copy(data![0], withValues: false));
+    template ??= (data?.isEmpty ?? true)
+        ? null
+        : Json.encode(Json.copy(data![0], withValues: false));
 
-    switch (function)
-    {
+    switch (function) {
       // clear the list
       case "clear":
-        return await clear(start: toInt(elementAt(arguments, 0)), end: toInt(elementAt(arguments, 1)));
+        return await clear(
+            start: toInt(elementAt(arguments, 0)),
+            end: toInt(elementAt(arguments, 1)));
 
       // add element to the list
       case "add":
@@ -947,7 +930,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
 
       // add element to the list
       case "copy":
-        return await copy(elementAt(arguments,0), elementAt(arguments, 1));
+        return await copy(elementAt(arguments, 0), elementAt(arguments, 1));
 
       // remove element from the list
       case "delete":
@@ -970,7 +953,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
         // todo
         return true;
 
-    // move element in the list
+      // move element in the list
       case "move":
         return await move(elementAt(arguments, 0), elementAt(arguments, 1));
 

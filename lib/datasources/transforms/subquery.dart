@@ -7,21 +7,22 @@ import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:fml/observable/binding.dart';
 
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart'  ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Query extends TransformModel implements ITransform
-{
+class Query extends TransformModel implements ITransform {
   @override
   final String? source;
   final String? target;
   HttpModel? ds;
 
-  Query(WidgetModel parent, {String? id, this.source, this.target}) : super(parent, id);
+  Query(WidgetModel parent, {String? id, this.source, this.target})
+      : super(parent, id);
 
-  static Query? fromXml(WidgetModel parent, XmlElement xml)
-  {
-    Query model = Query(parent, id : Xml.get(node: xml, tag: 'id'), target : Xml.get(node: xml, tag: 'target'));
+  static Query? fromXml(WidgetModel parent, XmlElement xml) {
+    Query model = Query(parent,
+        id: Xml.get(node: xml, tag: 'id'),
+        target: Xml.get(node: xml, tag: 'target'));
 
     // deserialize the model
     model.deserialize(xml);
@@ -30,37 +31,31 @@ class Query extends TransformModel implements ITransform
   }
 
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 
     // find element
-    for (XmlElement node in xml.childElements)
-    {
+    for (XmlElement node in xml.childElements) {
       String name = node.localName.toLowerCase();
-      if (name == 'get' && parent != null)
-      {
+      if (name == 'get' && parent != null) {
         ds = HttpGetModel.fromXml(parent!, node);
         ds!.autoexecute = false;
-        ds!.autoquery   = false;
-        ds!.timetolive  = 0;
-        ds!.background  = false;
+        ds!.autoquery = false;
+        ds!.timetolive = 0;
+        ds!.background = false;
       }
       if (ds != null) break;
     }
   }
 
-  _execute(Data? list) async
-  {
+  _execute(Data? list) async {
     if (list == null || ds == null) return null;
 
     // register listener
-    for (var row in list)
-    {
+    for (var row in list) {
       var url = ds!.urlObservable?.signature ?? ds!.url;
-      if (url != null)
-      {
+      if (url != null) {
         url = Binding.applyMap(url, row);
         ds!.url = url;
         await ds!.start(refresh: true);
@@ -72,8 +67,7 @@ class Query extends TransformModel implements ITransform
   }
 
   @override
-  apply(Data? data) async
-  {
+  apply(Data? data) async {
     if (enabled == false) return;
     await _execute(data);
   }

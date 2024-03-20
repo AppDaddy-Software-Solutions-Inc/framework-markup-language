@@ -5,13 +5,14 @@ import 'dart:math' as math;
 
 enum LabelledContainerSlot { label, container }
 
-class LabelledBorderContainer extends SlottedMultiChildRenderObjectWidget<LabelledContainerSlot, RenderBox> {
-
+class LabelledBorderContainer extends SlottedMultiChildRenderObjectWidget<
+    LabelledContainerSlot, RenderBox> {
   final BoxDecoration decoration;
   final Container container;
   final Widget label;
 
-  const LabelledBorderContainer(this.container, this.label, {super.key, required this.decoration});
+  const LabelledBorderContainer(this.container, this.label,
+      {super.key, required this.decoration});
 
   @override
   Iterable<LabelledContainerSlot> get slots => LabelledContainerSlot.values;
@@ -27,21 +28,21 @@ class LabelledBorderContainer extends SlottedMultiChildRenderObjectWidget<Labell
   }
 
   @override
-  LabelledContainerRenderer createRenderObject(BuildContext context)
-  {
+  LabelledContainerRenderer createRenderObject(BuildContext context) {
     return LabelledContainerRenderer(decoration: decoration);
   }
 
   @override
-  void updateRenderObject(BuildContext context, LabelledContainerRenderer renderObject)
-  {
+  void updateRenderObject(
+      BuildContext context, LabelledContainerRenderer renderObject) {
     renderObject.decoration = decoration;
   }
 }
 
-class LabelledContainerRenderer extends RenderBox with SlottedContainerRenderObjectMixin<LabelledContainerSlot, RenderBox>
-{
-  LabelledContainerRenderer({required BoxDecoration decoration}) : _decoration = decoration;
+class LabelledContainerRenderer extends RenderBox
+    with SlottedContainerRenderObjectMixin<LabelledContainerSlot, RenderBox> {
+  LabelledContainerRenderer({required BoxDecoration decoration})
+      : _decoration = decoration;
 
   BoxDecoration? _decoration;
   BoxDecoration? get decoration => _decoration;
@@ -58,8 +59,7 @@ class LabelledContainerRenderer extends RenderBox with SlottedContainerRenderObj
   RenderBox? get container => childForSlot(LabelledContainerSlot.container);
 
   @override
-  void visitChildrenForSemantics(RenderObjectVisitor visitor)
-  {
+  void visitChildrenForSemantics(RenderObjectVisitor visitor) {
     if (label != null) visitor(label!);
     if (container != null) visitor(container!);
   }
@@ -78,11 +78,11 @@ class LabelledContainerRenderer extends RenderBox with SlottedContainerRenderObj
 
   final double gapPadding = 6.0;
   final double gapStart = 10.0;
-  Offset get labelOffset => Offset(gapStart + (gapPadding/2), ((label?.size.height ?? 0.0)/2) * -1);
+  Offset get labelOffset => Offset(
+      gapStart + (gapPadding / 2), ((label?.size.height ?? 0.0) / 2) * -1);
 
   @override
   void performLayout() {
-
     // layout main container
     if (container != null) {
       container!.layout(constraints, parentUsesSize: true);
@@ -90,9 +90,15 @@ class LabelledContainerRenderer extends RenderBox with SlottedContainerRenderObj
     }
 
     // layout the label
-    if (label != null)
-    {
-      label!.layout(constraints.copyWith(maxWidth: math.max(0.0,((container?.size.width ?? 0.0) - gapStart - (gapPadding * 4)))), parentUsesSize: true);
+    if (label != null) {
+      label!.layout(
+          constraints.copyWith(
+              maxWidth: math.max(
+                  0.0,
+                  ((container?.size.width ?? 0.0) -
+                      gapStart -
+                      (gapPadding * 4)))),
+          parentUsesSize: true);
       _positionChild(label!, labelOffset);
     }
 
@@ -100,12 +106,12 @@ class LabelledContainerRenderer extends RenderBox with SlottedContainerRenderObj
     size = Size(container?.size.width ?? 0.0, (container?.size.height ?? 0.0));
   }
 
-  void _positionChild(RenderBox child, Offset offset)
-  {
+  void _positionChild(RenderBox child, Offset offset) {
     (child.parentData! as BoxParentData).offset = offset;
   }
 
-  Offset paintChildOffset(RenderBox child, PaintingContext context, Offset offset) {
+  Offset paintChildOffset(
+      RenderBox child, PaintingContext context, Offset offset) {
     final BoxParentData childParentData = child.parentData! as BoxParentData;
     return childParentData.offset + offset;
   }
@@ -115,12 +121,12 @@ class LabelledContainerRenderer extends RenderBox with SlottedContainerRenderObj
   }
 
   @override
-  void paint(PaintingContext context, Offset offset)
-  {
+  void paint(PaintingContext context, Offset offset) {
     // paint the widget
     paintChild(container!, context, offset);
-    paintChild(label!, context, offset + Offset(gapPadding,0));
-    paintChildBorder(paintChildOffset(container!, context, offset),
+    paintChild(label!, context, offset + Offset(gapPadding, 0));
+    paintChildBorder(
+        paintChildOffset(container!, context, offset),
         context.canvas,
         decoration!.border!.top,
         decoration!.borderRadius!.resolve(TextDirection.ltr));
@@ -159,20 +165,23 @@ class LabelledContainerRenderer extends RenderBox with SlottedContainerRenderObj
 
   @override
   double computeMinIntrinsicHeight(double width) {
-    final double height = container?.getMinIntrinsicHeight(double.infinity) ?? 0;
+    final double height =
+        container?.getMinIntrinsicHeight(double.infinity) ?? 0;
     return height;
   }
 
   @override
   double computeMaxIntrinsicHeight(double width) {
-    final double height = container?.getMaxIntrinsicHeight(double.infinity) ?? 0;
+    final double height =
+        container?.getMaxIntrinsicHeight(double.infinity) ?? 0;
     return height;
   }
 
   @override
   Size computeDryLayout(BoxConstraints constraints) {
     const BoxConstraints childConstraints = BoxConstraints();
-    final Size containerSize = container?.computeDryLayout(childConstraints) ?? Size.zero;
+    final Size containerSize =
+        container?.computeDryLayout(childConstraints) ?? Size.zero;
     //final Size labelSize = label?.computeDryLayout(childConstraints) ?? Size.zero;
     return containerSize;
   }
@@ -183,32 +192,33 @@ class LabelledContainerRenderer extends RenderBox with SlottedContainerRenderObj
     }
     a ??= 0.0;
     b ??= 0.0;
-    assert(a.isFinite, 'Cannot interpolate between finite and non-finite values');
-    assert(b.isFinite, 'Cannot interpolate between finite and non-finite values');
+    assert(
+        a.isFinite, 'Cannot interpolate between finite and non-finite values');
+    assert(
+        b.isFinite, 'Cannot interpolate between finite and non-finite values');
     assert(t.isFinite, 't must be finite when interpolating between values');
     return a * (1.0 - t) + b * t;
   }
 
-  void paintChildBorder(
-      Offset offset,
-      Canvas canvas,
-      BorderSide borderSide,
-      BorderRadius borderRadius)
-  {
-    final rect = Rect.fromLTRB(offset.dx, offset.dy, container!.size.width + offset.dx, container!.size.height + offset.dy);
+  void paintChildBorder(Offset offset, Canvas canvas, BorderSide borderSide,
+      BorderRadius borderRadius) {
+    final rect = Rect.fromLTRB(offset.dx, offset.dy,
+        container!.size.width + offset.dx, container!.size.height + offset.dy);
     final paint = borderSide.toPaint();
     final outer = borderRadius.toRRect(rect);
-    final center = outer.inflate(borderSide.width/2);
+    final center = outer.inflate(borderSide.width / 2);
 
     final gapExtent = label?.size.width ?? 0.0;
     if (gapExtent <= 0.0) return canvas.drawRRect(center, paint);
 
     final double extent = lerpDouble(0.0, gapExtent + gapPadding * 2.0, 1)!;
-    final Path path = _gapBorderPath(canvas, borderSide, center, math.max(0.0, gapStart + (gapPadding/2)), extent);
+    final Path path = _gapBorderPath(canvas, borderSide, center,
+        math.max(0.0, gapStart + (gapPadding / 2)), extent);
     canvas.drawPath(path, paint);
   }
 
-  Path _gapBorderPath(Canvas canvas, BorderSide borderSide, RRect center, double start, double extent) {
+  Path _gapBorderPath(Canvas canvas, BorderSide borderSide, RRect center,
+      double start, double extent) {
     // When the corner radii on any side add up to be greater than the
     // given height, each radius has to be scaled to not exceed the
     // size of the width/height of the RRect.
@@ -246,7 +256,8 @@ class LabelledContainerRenderer extends RenderBox with SlottedContainerRenderObj
 
     // Top left corner
     if (scaledRRect.tlRadius != Radius.zero) {
-      final double tlCornerArcSweep = math.acos(clampDouble(1 - start / scaledRRect.tlRadiusX, 0.0, 1.0));
+      final double tlCornerArcSweep =
+          math.acos(clampDouble(1 - start / scaledRRect.tlRadiusX, 0.0, 1.0));
       path.addArc(tlCorner, math.pi, tlCornerArcSweep);
     } else {
       // Because the path is painted with Paint.strokeCap = StrokeCap.butt, horizontal coordinate is moved
@@ -270,7 +281,8 @@ class LabelledContainerRenderer extends RenderBox with SlottedContainerRenderObj
       }
     } else if (start + extent < scaledRRect.width) {
       final double dx = scaledRRect.width - (start + extent);
-      final double sweep = math.asin(clampDouble(1 - dx / scaledRRect.trRadiusX, 0.0, 1.0));
+      final double sweep =
+          math.asin(clampDouble(1 - dx / scaledRRect.trRadiusX, 0.0, 1.0));
       path.addArc(trCorner, trCornerArcStart + sweep, trCornerArcSweep - sweep);
     }
 

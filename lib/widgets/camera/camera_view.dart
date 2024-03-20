@@ -10,7 +10,7 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
 import 'package:fml/widgets/camera/stream/stream.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/datasources/file/file.dart';
@@ -19,12 +19,11 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
-if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
-if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
+    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+    if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
-class CameraView extends StatefulWidget implements IWidgetView
-{
+class CameraView extends StatefulWidget implements IWidgetView {
   @override
   final CameraModel model;
 
@@ -34,8 +33,7 @@ class CameraView extends StatefulWidget implements IWidgetView
   CameraViewState createState() => CameraViewState();
 }
 
-class CameraViewState extends WidgetState<CameraView>
-{
+class CameraViewState extends WidgetState<CameraView> {
   CameraController? controller;
   List<CameraDescription>? cameras;
 
@@ -56,36 +54,30 @@ class CameraViewState extends WidgetState<CameraView>
   late bool initialized;
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
 
     // register camera
     widget.model.camera = this;
 
-    _getCameras().then((value)
-    {
+    _getCameras().then((value) {
       initialized = true;
       _configureCameras();
     });
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     super.dispose();
     _disposeOfCamera();
   }
 
   /// Callback to fire the [CameraViewState.build] when the [CameraModel] changes
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
-    if (mounted)
-    {
+  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+    if (mounted) {
       var b = Binding.fromString(property);
-      switch (b?.property)
-      {
+      switch (b?.property) {
         // changed camera
         case 'index':
           reconfigureCameras();
@@ -100,16 +92,14 @@ class CameraViewState extends WidgetState<CameraView>
         case 'visible':
 
           // stop the camera
-          if (!widget.model.visible)
-          {
+          if (!widget.model.visible) {
             stop();
             setState(() {});
             break;
           }
 
           // start the camera
-          if (controller != null)
-          {
+          if (controller != null) {
             start();
             setState(() {});
             break;
@@ -120,13 +110,11 @@ class CameraViewState extends WidgetState<CameraView>
             reconfigureCameras();
           }
           break;
-
       }
     }
   }
 
-  toggleCamera() async
-  {
+  toggleCamera() async {
     if (cameras != null) {
       int index = widget.model.index ?? 0;
       index++;
@@ -134,55 +122,47 @@ class CameraViewState extends WidgetState<CameraView>
 
       // this will fire onModelChange
       widget.model.index = index;
-    }
-    else {
-      Log().exception('No cameras to toggle',  caller: 'camera.View');
+    } else {
+      Log().exception('No cameras to toggle', caller: 'camera.View');
     }
   }
 
-  Future<bool> _getCameras() async
-  {
-      // get cameras
-      int tries = 0;
-      while (cameras == null && tries < 5)
-      {
-        if (tries > 0) await Future.delayed(const Duration(seconds: 1));
-        tries++;
+  Future<bool> _getCameras() async {
+    // get cameras
+    int tries = 0;
+    while (cameras == null && tries < 5) {
+      if (tries > 0) await Future.delayed(const Duration(seconds: 1));
+      tries++;
 
-        try
-        {
-          cameras = await availableCameras();
-        }
-        catch(e)
-        {
-          if (e is CameraException)
-          {
-          switch (e.code.toLowerCase())
-          {
+      try {
+        cameras = await availableCameras();
+      } catch (e) {
+        if (e is CameraException) {
+          switch (e.code.toLowerCase()) {
             case 'permissiondenied':
-            // Thrown when user is not on a secure (https) connection.
-              widget.model.onFail(Data(), message: "Camera is only available over a secure (https) connection");
+              // Thrown when user is not on a secure (https) connection.
+              widget.model.onFail(Data(),
+                  message:
+                      "Camera is only available over a secure (https) connection");
               break;
             default:
-            // Handle other errors here.
-              widget.model.onFail(Data(), message: "Unable to get any available Cameras");
-              Log().exception('Unable to get availableCameras() - ${e.code}: ${e.toString()}');
+              // Handle other errors here.
+              widget.model.onFail(Data(),
+                  message: "Unable to get any available Cameras");
+              Log().exception(
+                  'Unable to get availableCameras() - ${e.code}: ${e.toString()}');
               break;
           }
-        }
-        else
-        {
-          Log().exception(e,  caller: 'camera.View');
+        } else {
+          Log().exception(e, caller: 'camera.View');
         }
       }
     }
     return true;
   }
 
-  _configureCameras() async
-  {
-    try
-    {
+  _configureCameras() async {
+    try {
       // camera is busy
       widget.model.busy = true;
 
@@ -190,27 +170,29 @@ class CameraViewState extends WidgetState<CameraView>
 
       // a bug in the desktop controller causes the
       // program to crash if re-initialized;
-      if (FmlEngine.isDesktop && controller != null)
-      {
+      if (FmlEngine.isDesktop && controller != null) {
         setState(() {});
         return;
       }
 
       if (cameras == null) {
-        Log().exception('Unable to access device Camera(s) to initialize', caller: 'camera.View');
-        widget.model.onFail(Data(), message: "Unable to access device Camera(s) to initialize");
+        Log().exception('Unable to access device Camera(s) to initialize',
+            caller: 'camera.View');
+        widget.model.onFail(Data(),
+            message: "Unable to access device Camera(s) to initialize");
         return;
       }
 
-      if (cameras!.isNotEmpty)
-      {
+      if (cameras!.isNotEmpty) {
         // set specified camera
         int index = widget.model.index ?? -1;
-        if (index.isNegative)
-        {
+        if (index.isNegative) {
           // get the camera
-          CameraLensDirection direction = toEnum(widget.model.direction, CameraLensDirection.values) ?? CameraLensDirection.back;
-          var camera = cameras!.firstWhereOrNull((camera) => camera.lensDirection == direction);
+          CameraLensDirection direction =
+              toEnum(widget.model.direction, CameraLensDirection.values) ??
+                  CameraLensDirection.back;
+          var camera = cameras!
+              .firstWhereOrNull((camera) => camera.lensDirection == direction);
           if (camera != null) {
             index = cameras!.indexOf(camera);
           } else {
@@ -223,8 +205,7 @@ class CameraViewState extends WidgetState<CameraView>
         }
 
         // index exceeds camera length
-        if (widget.model.index! >= cameras!.length)
-        {
+        if (widget.model.index! >= cameras!.length) {
           // this will fire onModelChange
           widget.model.index = cameras!.length - 1;
           return;
@@ -234,7 +215,11 @@ class CameraViewState extends WidgetState<CameraView>
         CameraDescription camera = cameras![widget.model.index!];
 
         // front facing camera
-        widget.model.direction = (camera.lensDirection == CameraLensDirection.external) || (camera.lensDirection == CameraLensDirection.front) ? fromEnum(CameraLensDirection.front) : fromEnum(CameraLensDirection.back);
+        widget.model.direction =
+            (camera.lensDirection == CameraLensDirection.external) ||
+                    (camera.lensDirection == CameraLensDirection.front)
+                ? fromEnum(CameraLensDirection.front)
+                : fromEnum(CameraLensDirection.back);
 
         // camera name
         widget.model.name = camera.name;
@@ -244,67 +229,80 @@ class CameraViewState extends WidgetState<CameraView>
         if (FmlEngine.isWeb) format = ImageFormatGroup.jpeg;
 
         // default the resolution
-        ResolutionPreset resolution = toEnum(widget.model.resolution, ResolutionPreset.values) ?? ResolutionPreset.medium;
-        if (widget.model.stream) resolution = (FmlEngine.isWeb) ? ResolutionPreset.medium : ResolutionPreset.low;
+        ResolutionPreset resolution =
+            toEnum(widget.model.resolution, ResolutionPreset.values) ??
+                ResolutionPreset.medium;
+        if (widget.model.stream)
+          resolution = (FmlEngine.isWeb)
+              ? ResolutionPreset.medium
+              : ResolutionPreset.low;
 
         // build the controller
-        controller = CameraController(camera, resolution, imageFormatGroup: format, enableAudio: false);
+        controller = CameraController(camera, resolution,
+            imageFormatGroup: format, enableAudio: false);
 
-        if (controller != null)
-        {
-          controller!.addListener(()
-          {
-            if (controller!.value.hasError) Log().debug('Camera Controller error ${controller!.value.errorDescription}', caller: 'camera/camera_view.dart => initialize()');
+        if (controller != null) {
+          controller!.addListener(() {
+            if (controller!.value.hasError)
+              Log().debug(
+                  'Camera Controller error ${controller!.value.errorDescription}',
+                  caller: 'camera/camera_view.dart => initialize()');
           });
-        }
-        else {
-          Log().debug('Camera Controller is null', caller: 'camera/camera_view.dart => initialize()');
+        } else {
+          Log().debug('Camera Controller is null',
+              caller: 'camera/camera_view.dart => initialize()');
         }
 
         // initialize the controller
-        try
-        {
+        try {
           await controller!.initialize();
           if (!mounted) return;
-        }
-        catch(e)
-        {
-          if (e is CameraException)
-          {
-            switch (e.code.toLowerCase())
-            {
+        } catch (e) {
+          if (e is CameraException) {
+            switch (e.code.toLowerCase()) {
               case 'cameraaccessdenied':
-              // Thrown when user denies the camera access permission.
-                widget.model.onFail(Data(), message: "User denied Camera/Microphone access permissions");
+                // Thrown when user denies the camera access permission.
+                widget.model.onFail(Data(),
+                    message:
+                        "User denied Camera/Microphone access permissions");
                 break;
               case 'cameraaccessdeniedwithoutprompt':
-              // iOS only for now. Thrown when user has previously denied the permission. iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy > Camera in order to enable camera access.
-                widget.model.onFail(Data(), message: "User previously denied Camera access permissions, to change this go to Settings > Privacy > Camera");
+                // iOS only for now. Thrown when user has previously denied the permission. iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy > Camera in order to enable camera access.
+                widget.model.onFail(Data(),
+                    message:
+                        "User previously denied Camera access permissions, to change this go to Settings > Privacy > Camera");
                 break;
               case 'cameraaccessrestricted':
-              // iOS only for now. Thrown when camera access is restricted and users cannot grant permission (parental control).
-                widget.model.onFail(Data(), message: "Parental control denied Camera access permissions");
+                // iOS only for now. Thrown when camera access is restricted and users cannot grant permission (parental control).
+                widget.model.onFail(Data(),
+                    message:
+                        "Parental control denied Camera access permissions");
                 break;
               case 'audioaccessdenied':
-              // Thrown when user denies the audio access permission.
-                widget.model.onFail(Data(), message: "User denied Microphone access permissions");
+                // Thrown when user denies the audio access permission.
+                widget.model.onFail(Data(),
+                    message: "User denied Microphone access permissions");
                 break;
               case 'audioaccessdeniedwithoutprompt':
-              // iOS only for now. Thrown when user has previously denied the permission. iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy > Microphone in order to enable audio access.
-                widget.model.onFail(Data(), message: "User previously denied Microphone access permissions, to change this go to Settings > Privacy > Microphone");
+                // iOS only for now. Thrown when user has previously denied the permission. iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy > Microphone in order to enable audio access.
+                widget.model.onFail(Data(),
+                    message:
+                        "User previously denied Microphone access permissions, to change this go to Settings > Privacy > Microphone");
                 break;
               case 'audioaccessrestricted':
-              // iOS only for now. Thrown when audio access is restricted and users cannot grant permission (parental control).
-                widget.model.onFail(Data(), message: "Parental control denied Microphone access permissions");
+                // iOS only for now. Thrown when audio access is restricted and users cannot grant permission (parental control).
+                widget.model.onFail(Data(),
+                    message:
+                        "Parental control denied Microphone access permissions");
                 break;
               default:
-              // Handle other errors here.
-                widget.model.onFail(Data(), message: "Camera Initialization Error");
+                // Handle other errors here.
+                widget.model
+                    .onFail(Data(), message: "Camera Initialization Error");
                 break;
             }
-          }
-          else {
-            Log().exception(e,  caller: 'camera.View');
+          } else {
+            Log().exception(e, caller: 'camera.View');
           }
         }
 
@@ -312,15 +310,14 @@ class CameraViewState extends WidgetState<CameraView>
           // min zoom
           _zoom = await controller!.getMinZoomLevel();
           _minAvailableZoom = _zoom;
-        } catch(e)
-        {
+        } catch (e) {
           Log().debug('$e');
         }
 
         try {
           // max zoom
           _maxAvailableZoom = await controller!.getMaxZoomLevel();
-        } catch(e) {
+        } catch (e) {
           Log().debug('$e');
         }
 
@@ -332,11 +329,11 @@ class CameraViewState extends WidgetState<CameraView>
         widget.model.renderheight = controller!.value.previewSize!.height;
 
         // set orientation
-        widget.model.orientation = fromEnum(controller!.value.deviceOrientation);
+        widget.model.orientation =
+            fromEnum(controller!.value.deviceOrientation);
 
         // start stream
-        if (widget.model.stream)
-        {
+        if (widget.model.stream) {
           if (!FmlEngine.isDesktop) {
             controller!.startImageStream((stream) => onStream(stream, camera));
           } else {
@@ -353,19 +350,16 @@ class CameraViewState extends WidgetState<CameraView>
         // refresh
         setState(() {});
       }
-    } catch(e) {
+    } catch (e) {
       Log().debug(e.toString());
       //DialogService().show(type: DialogType.error, description: e.toString());
     }
   }
 
-  Future<void> _disposeOfCamera() async
-  {
-    try
-    {
+  Future<void> _disposeOfCamera() async {
+    try {
       await controller?.dispose();
-    }
-    catch(e){
+    } catch (e) {
       Log().debug('$e');
     }
 
@@ -385,7 +379,7 @@ class CameraViewState extends WidgetState<CameraView>
     if ((controller != null) &&
         (controller!.value.isInitialized) &&
         (!controller!.value.isPreviewPaused)) controller!.pausePreview();
-        if (widget.model.togglevisible) widget.model.visible = false;
+    if (widget.model.togglevisible) widget.model.visible = false;
     return true;
   }
 
@@ -393,8 +387,11 @@ class CameraViewState extends WidgetState<CameraView>
     bool ok = true;
 
     try {
-      if (cameras != null && cameras!.isNotEmpty && controller != null
-          && controller!.value.isInitialized && widget.model.busy != true) {
+      if (cameras != null &&
+          cameras!.isNotEmpty &&
+          controller != null &&
+          controller!.value.isInitialized &&
+          widget.model.busy != true) {
         // set busy
         widget.model.busy = true;
 
@@ -431,7 +428,7 @@ class CameraViewState extends WidgetState<CameraView>
         widget.model.onFail(Data(), message: "Failed to take picture");
         Log().debug('Unable to take a snapshot');
       }
-    } catch(e) {
+    } catch (e) {
       ok = false;
       Log().exception(e);
       widget.model.busy = false;
@@ -440,27 +437,21 @@ class CameraViewState extends WidgetState<CameraView>
     return ok;
   }
 
-  void didChangeAppLifecycleState(AppLifecycleState state)
-  {
+  void didChangeAppLifecycleState(AppLifecycleState state) {
     System.toast("Life cycle change");
     if (controller == null || !controller!.value.isInitialized) return;
 
-    if (state == AppLifecycleState.inactive)
-    {
+    if (state == AppLifecycleState.inactive) {
       _disposeOfCamera();
-    }
-    else if (state == AppLifecycleState.resumed)
-    {
+    } else if (state == AppLifecycleState.resumed) {
       reconfigureCameras();
     }
   }
 
-  void reconfigureCameras() async
-  {
+  void reconfigureCameras() async {
     await _disposeOfCamera();
     if (initialized) _configureCameras();
   }
-
 
   void _handleScaleStart(ScaleStartDetails details) {
     _baseScale = _zoom;
@@ -485,28 +476,31 @@ class CameraViewState extends WidgetState<CameraView>
         details.localPosition.dy / constraints.maxHeight);
     try {
       cameraController.setExposurePoint(offset);
-    } catch(e) {
-      Log().debug(e.toString(), caller: 'onViewFinderTap() cameraController.setExposurePoint');
+    } catch (e) {
+      Log().debug(e.toString(),
+          caller: 'onViewFinderTap() cameraController.setExposurePoint');
     }
     try {
       cameraController.setFocusPoint(offset);
-    } catch(e) {
-      Log().debug(e.toString(), caller: 'onViewFinderTap() cameraController.setFocusPoint');
+    } catch (e) {
+      Log().debug(e.toString(),
+          caller: 'onViewFinderTap() cameraController.setFocusPoint');
     }
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
     // wait for controller to initialize
     try {
-      if (initialized != true || (controller == null) || (!controller!.value.isInitialized)) {
+      if (initialized != true ||
+          (controller == null) ||
+          (!controller!.value.isInitialized)) {
         return Container();
       }
-    } catch(e) {
+    } catch (e) {
       return Container();
     }
 
@@ -538,7 +532,7 @@ class CameraViewState extends WidgetState<CameraView>
     //////////////////
     /* Constrained? */
     //////////////////
-    double width  = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
     // basic constraints
@@ -552,7 +546,9 @@ class CameraViewState extends WidgetState<CameraView>
     children.add(view);
 
     // hack to initialize background camera stream. current camera widget doesn't support streaming in web
-    if ((FmlEngine.isWeb) && (widget.model.stream) && (backgroundStream == null)) {
+    if ((FmlEngine.isWeb) &&
+        (widget.model.stream) &&
+        (backgroundStream == null)) {
       backgroundStream = StreamView(widget.model);
       if (backgroundStream != null) {
         children.add(Offstage(child: backgroundStream as Widget?));
@@ -587,7 +583,7 @@ class CameraViewState extends WidgetState<CameraView>
       Widget selector;
       if (cameras != null && cameras!.length > 1) {
         selectorbutton ??= IconView(IconModel(null, null,
-              icon: Icons.cameraswitch_sharp, size: 25, color: Colors.black));
+            icon: Icons.cameraswitch_sharp, size: 25, color: Colors.black));
         selector = UnconstrainedBox(
             child: MouseRegion(
                 cursor: SystemMouseCursors.click,
@@ -603,7 +599,7 @@ class CameraViewState extends WidgetState<CameraView>
 
       // shutter
       shutterbutton ??= IconView(IconModel(null, null,
-            icon: Icons.circle, size: 65, color: Colors.white));
+          icon: Icons.circle, size: 65, color: Colors.white));
       var shutter = UnconstrainedBox(
           child: MouseRegion(
               cursor: SystemMouseCursors.click,
@@ -640,8 +636,11 @@ class CameraViewState extends WidgetState<CameraView>
         var bytes = await image.readAsBytes();
         var codec = await instantiateImageCodec(bytes);
         var frame = await codec.getNextFrame();
-        var data  = await frame.image.toByteData(format: ImageByteFormat.rawRgba);
-        if (data != null) detectable = DetectableImage.fromRgba(data.buffer.asUint8List(), frame.image.width, frame.image.height);
+        var data =
+            await frame.image.toByteData(format: ImageByteFormat.rawRgba);
+        if (data != null)
+          detectable = DetectableImage.fromRgba(
+              data.buffer.asUint8List(), frame.image.width, frame.image.height);
       }
 
       // blob image - created in mobile

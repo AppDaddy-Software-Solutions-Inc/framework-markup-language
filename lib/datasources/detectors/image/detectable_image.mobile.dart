@@ -4,28 +4,31 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
-class DetectableImage
-{
+class DetectableImage {
   final dynamic image;
 
   DetectableImage(this.image);
 
-  factory DetectableImage.fromCamera(CameraImage image, CameraDescription camera)
-  {
+  factory DetectableImage.fromCamera(
+      CameraImage image, CameraDescription camera) {
     final WriteBuffer allBytes = WriteBuffer();
 
-    for (final Plane plane in image.planes)
-    {
+    for (final Plane plane in image.planes) {
       allBytes.putUint8List(plane.bytes);
     }
 
     final bytes = allBytes.done().buffer.asUint8List();
 
-    final Size imageSize = Size(image.width.toDouble(), image.height.toDouble());
+    final Size imageSize =
+        Size(image.width.toDouble(), image.height.toDouble());
 
-    final imageRotation = InputImageRotationValue.fromRawValue(camera.sensorOrientation) ?? InputImageRotation.rotation0deg;
+    final imageRotation =
+        InputImageRotationValue.fromRawValue(camera.sensorOrientation) ??
+            InputImageRotation.rotation0deg;
 
-    final inputImageFormat = InputImageFormatValue.fromRawValue(image.format.raw) ?? InputImageFormat.nv21;
+    final inputImageFormat =
+        InputImageFormatValue.fromRawValue(image.format.raw) ??
+            InputImageFormat.nv21;
 
     // final planeData = image.planes.map((Plane plane)
     // {
@@ -33,18 +36,22 @@ class DetectableImage
     // }).toList();
     // final inputImageData = InputImageData(size: imageSize, imageRotation: imageRotation, inputImageFormat: inputImageFormat, planeData: planeData,);
 
-    final inputImageData = InputImageMetadata(size: imageSize, rotation: imageRotation, format: inputImageFormat, bytesPerRow: image.planes[0].bytesPerRow,);
+    final inputImageData = InputImageMetadata(
+      size: imageSize,
+      rotation: imageRotation,
+      format: inputImageFormat,
+      bytesPerRow: image.planes[0].bytesPerRow,
+    );
 
-    return DetectableImage(InputImage.fromBytes(bytes: bytes, metadata: inputImageData));
+    return DetectableImage(
+        InputImage.fromBytes(bytes: bytes, metadata: inputImageData));
   }
 
-  factory DetectableImage.fromFilePath(String path)
-  {
-     return DetectableImage(InputImage.fromFilePath(path));
+  factory DetectableImage.fromFilePath(String path) {
+    return DetectableImage(InputImage.fromFilePath(path));
   }
 
-  factory DetectableImage.fromRgba(List<int> bytes, int width, int height)
-  {
+  factory DetectableImage.fromRgba(List<int> bytes, int width, int height) {
     // not implemented
     return DetectableImage(null);
   }

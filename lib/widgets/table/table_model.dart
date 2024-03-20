@@ -11,7 +11,7 @@ import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/table/table_footer_model.dart';
 import 'package:fml/widgets/table/nodata_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/table/table_view.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
@@ -25,11 +25,10 @@ import 'package:fml/helpers/mime.dart';
 
 // platform
 import 'package:fml/platform/platform.web.dart'
-if (dart.library.io)   'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';
+    if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+    if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
-class TableModel extends BoxModel implements IForm
-{
+class TableModel extends BoxModel implements IForm {
   static String dynamicTableValue1 = "{field}";
   static String dynamicTableValue2 = "[*]";
 
@@ -91,149 +90,134 @@ class TableModel extends BoxModel implements IForm
 
   /// Post tells the form whether or not to include the field in the posting body. If post is null, visible determines post.
   BooleanObservable? _post;
-  set post(dynamic v)
-  {
-    if (_post != null)
-    {
+  set post(dynamic v) {
+    if (_post != null) {
       _post!.set(v);
-    }
-    else if (v != null)
-    {
+    } else if (v != null) {
       _post = BooleanObservable(Binding.toKey(id, 'post'), v, scope: scope);
     }
   }
+
   @override
   bool? get post => _post?.get();
 
   // text color
   ColorObservable? _textColor;
-  set textColor(dynamic v)
-  {
+  set textColor(dynamic v) {
     if (_textColor != null) {
       _textColor!.set(v);
     } else if (v != null) {
-      _textColor = ColorObservable(Binding.toKey(id, 'textcolor'), v, scope: scope, listener: onPropertyChange);
+      _textColor = ColorObservable(Binding.toKey(id, 'textcolor'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   Color? get textColor => _textColor?.get();
-  
+
   // text Size
   DoubleObservable? _textSize;
-  set textSize(dynamic v)
-  {
+  set textSize(dynamic v) {
     if (_textSize != null) {
       _textSize!.set(v);
     } else if (v != null) {
-      _textSize = DoubleObservable(Binding.toKey(id, 'textsize'), v, scope: scope, listener: onPropertyChange);
+      _textSize = DoubleObservable(Binding.toKey(id, 'textsize'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   double get textSize => _textSize?.get() ?? 14;
 
   // show busy spinner by default
   BooleanObservable? _showBusy;
-  set showBusy(dynamic v)
-  {
-    if (_showBusy != null)
-    {
+  set showBusy(dynamic v) {
+    if (_showBusy != null) {
       _showBusy!.set(v);
-    }
-    else if (v != null)
-    {
-      _showBusy = BooleanObservable(Binding.toKey(id, 'showbusy'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _showBusy = BooleanObservable(Binding.toKey(id, 'showbusy'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get showBusy => _showBusy?.get() ?? true;
-  
+
   // show column menu by default
   BooleanObservable? _menu;
-  set menu(dynamic v)
-  {
-    if (_menu != null)
-    {
+  set menu(dynamic v) {
+    if (_menu != null) {
       _menu!.set(v);
-    }
-    else if (v != null)
-    {
-      _menu = BooleanObservable(Binding.toKey(id, 'menu'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _menu = BooleanObservable(Binding.toKey(id, 'menu'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get menu => _menu?.get() ?? true;
 
   // allow sorting
   BooleanObservable? _sortable;
-  set sortable(dynamic v)
-  {
-    if (_sortable != null)
-    {
+  set sortable(dynamic v) {
+    if (_sortable != null) {
       _sortable!.set(v);
-    }
-    else if (v != null)
-    {
-      _sortable = BooleanObservable(Binding.toKey(id, 'sortable'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _sortable = BooleanObservable(Binding.toKey(id, 'sortable'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get sortable => _sortable?.get() ?? true;
-  
+
   // allow resizing
   BooleanObservable? _resizeable;
-  set resizeable(dynamic v)
-  {
-    if (_resizeable != null)
-    {
+  set resizeable(dynamic v) {
+    if (_resizeable != null) {
       _resizeable!.set(v);
-    }
-    else if (v != null)
-    {
-      _resizeable = BooleanObservable(Binding.toKey(id, 'resizeable'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _resizeable = BooleanObservable(Binding.toKey(id, 'resizeable'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get resizeable => _resizeable?.get() ?? true;
 
   // editable - used on non row prototype only
   BooleanObservable? _editable;
-  set editable(dynamic v)
-  {
-    if (_editable != null)
-    {
+  set editable(dynamic v) {
+    if (_editable != null) {
       _editable!.set(v);
-    }
-    else if (v != null)
-    {
-      _editable = BooleanObservable(Binding.toKey(id, 'editable'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _editable = BooleanObservable(Binding.toKey(id, 'editable'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   bool? get editable => _editable?.get();
 
   // allow filtering
   BooleanObservable? _filter;
-  set filter(dynamic v)
-  {
-    if (_filter != null)
-    {
+  set filter(dynamic v) {
+    if (_filter != null) {
       _filter!.set(v);
-    }
-    else if (v != null)
-    {
-      _filter = BooleanObservable(Binding.toKey(id, 'filter'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _filter = BooleanObservable(Binding.toKey(id, 'filter'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get filter => _filter?.get() ?? false;
 
   // display shadow
   BooleanObservable? _shadow;
-  set shadow(dynamic v)
-  {
-    if (_shadow != null)
-    {
+  set shadow(dynamic v) {
+    if (_shadow != null) {
       _shadow!.set(v);
-    }
-    else if (v != null)
-    {
-      _shadow = BooleanObservable(Binding.toKey(id, 'shadow'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _shadow = BooleanObservable(Binding.toKey(id, 'shadow'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get shadow => _shadow?.get() ?? false;
-  
+
   // current row selected
   TableRowModel? selectedRow;
 
@@ -242,92 +226,78 @@ class TableModel extends BoxModel implements IForm
 
   // data map from the row that is currently selected
   ListObservable? _selected;
-  set selected(dynamic v)
-  {
-    if (_selected != null)
-    {
+  set selected(dynamic v) {
+    if (_selected != null) {
       _selected!.set(v);
-    }
-    else if (v != null)
-    {
+    } else if (v != null) {
       // we don't want this to update the table view so don't add listener: onPropertyChange
-      _selected = ListObservable(Binding.toKey(id, 'selected'), null, scope: scope);
+      _selected =
+          ListObservable(Binding.toKey(id, 'selected'), null, scope: scope);
       _selected!.set(v);
     }
   }
+
   dynamic get selected => _selected?.get();
 
   // onChange - only used for simple data grid
   StringObservable? _onChange;
-  set onChange(dynamic v)
-  {
-    if (_onChange != null)
-    {
+  set onChange(dynamic v) {
+    if (_onChange != null) {
       _onChange!.set(v);
-    }
-    else if (v != null)
-    {
-      _onChange = StringObservable(Binding.toKey(id, 'onchange'), v, scope: scope);
+    } else if (v != null) {
+      _onChange =
+          StringObservable(Binding.toKey(id, 'onchange'), v, scope: scope);
     }
   }
+
   String? get onChange => _onChange?.get();
 
   // onInsert
   StringObservable? _onInsert;
-  set onInsert(dynamic v)
-  {
-    if (_onInsert != null)
-    {
+  set onInsert(dynamic v) {
+    if (_onInsert != null) {
       _onInsert!.set(v);
-    }
-    else if (v != null)
-    {
-      _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v, scope: scope, lazyEval: true);
+    } else if (v != null) {
+      _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v,
+          scope: scope, lazyEval: true);
     }
   }
+
   String? get onInsert => _onInsert?.get();
 
   // onDelete
   StringObservable? _onDelete;
-  set onDelete(dynamic v)
-  {
-    if (_onDelete != null)
-    {
+  set onDelete(dynamic v) {
+    if (_onDelete != null) {
       _onDelete!.set(v);
-    }
-    else if (v != null)
-    {
-      _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v, scope: scope, lazyEval: true);
+    } else if (v != null) {
+      _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v,
+          scope: scope, lazyEval: true);
     }
   }
+
   String? get onDelete => _onDelete?.get();
-  
+
   // dirty
   @override
   BooleanObservable? get dirtyObservable => _dirty;
   BooleanObservable? _dirty;
   @override
-  set dirty(dynamic v)
-  {
-    if (_dirty != null)
-    {
+  set dirty(dynamic v) {
+    if (_dirty != null) {
       _dirty!.set(v);
-    }
-    else if (v != null)
-    {
+    } else if (v != null) {
       _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
     }
   }
+
   @override
   bool get dirty => _dirty?.get() ?? false;
 
-  void onDirtyListener(Observable property)
-  {
+  void onDirtyListener(Observable property) {
     bool isDirty = false;
-    for (var entry in rows.entries)
-    {
-      if ((entry.value.dirty == true))
-      {
+    for (var entry in rows.entries) {
+      if ((entry.value.dirty == true)) {
         isDirty = true;
         break;
       }
@@ -337,43 +307,36 @@ class TableModel extends BoxModel implements IForm
 
   // Clean
   @override
-  set clean(bool b)
-  {
+  set clean(bool b) {
     dirty = false;
     rows.forEach((index, row) => row.dirty = false);
   }
 
   // page size - used for paging
   IntegerObservable? _pageSize;
-  set pageSize(dynamic v)
-  {
-    if (_pageSize != null)
-    {
+  set pageSize(dynamic v) {
+    if (_pageSize != null) {
       _pageSize!.set(v);
-    }
-    else if (v != null)
-    {
-      _pageSize = IntegerObservable(Binding.toKey(id, 'pagesize'), v, scope: scope, listener: onPageSizeChange);
+    } else if (v != null) {
+      _pageSize = IntegerObservable(Binding.toKey(id, 'pagesize'), v,
+          scope: scope, listener: onPageSizeChange);
     }
   }
+
   int get pageSize => _pageSize?.get() ?? 0;
-  
-  TableModel(WidgetModel super.parent, super.id)
-  {
+
+  TableModel(WidgetModel super.parent, super.id) {
     // instantiate busy observable
     busy = false;
   }
 
   static TableModel? fromXml(WidgetModel parent, XmlElement xml) {
     TableModel? model;
-    try
-    {
+    try {
       model = TableModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'form.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'form.Model');
       model = null;
     }
     return model;
@@ -381,39 +344,39 @@ class TableModel extends BoxModel implements IForm
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     busy = false;
 
     // deserialize
     super.deserialize(xml);
 
     // properties
-    menu       = Xml.get(node: xml, tag: 'menu');
-    sortable   = Xml.get(node: xml, tag: 'sortable');
+    menu = Xml.get(node: xml, tag: 'menu');
+    sortable = Xml.get(node: xml, tag: 'sortable');
     resizeable = Xml.get(node: xml, tag: 'resizeable');
-    editable   = Xml.get(node: xml, tag: 'editable');
-    shadow     = Xml.get(node: xml, tag: 'shadow');
-    showBusy   = Xml.get(node: xml, tag: 'showbusy');
-    post       = Xml.get(node: xml, tag: 'post');
-    textSize   = Xml.get(node: xml, tag: 'textsize') ?? Xml.get(node: xml, tag: 'fontsize');
-    textColor  = Xml.get(node: xml, tag: 'textcolor') ?? Xml.get(node: xml, tag: 'fontcolor');
-    filter     = Xml.get(node: xml, tag: 'filter');
+    editable = Xml.get(node: xml, tag: 'editable');
+    shadow = Xml.get(node: xml, tag: 'shadow');
+    showBusy = Xml.get(node: xml, tag: 'showbusy');
+    post = Xml.get(node: xml, tag: 'post');
+    textSize = Xml.get(node: xml, tag: 'textsize') ??
+        Xml.get(node: xml, tag: 'fontsize');
+    textColor = Xml.get(node: xml, tag: 'textcolor') ??
+        Xml.get(node: xml, tag: 'fontcolor');
+    filter = Xml.get(node: xml, tag: 'filter');
 
     // legacy support
-    String? size  = "0";
+    String? size = "0";
     var paged = toBool(Xml.get(node: xml, tag: 'paged'));
-    if (paged != false)
-    {
+    if (paged != false) {
       size = Xml.get(node: xml, tag: 'pagesize');
       if (size == null && paged == true) size = "20";
     }
     pageSize = size ?? "0";
 
     // events
-    onInsert    = Xml.get(node: xml, tag: 'oninsert');
-    onDelete    = Xml.get(node: xml, tag: 'ondelete');
-    onChange    = Xml.get(node:xml, tag: 'onchange');
+    onInsert = Xml.get(node: xml, tag: 'oninsert');
+    onDelete = Xml.get(node: xml, tag: 'ondelete');
+    onChange = Xml.get(node: xml, tag: 'onchange');
 
     // set header
     header = findChildOfExactType(TableHeaderModel);
@@ -429,45 +392,42 @@ class TableModel extends BoxModel implements IForm
     _setInitialRows();
   }
 
-  void _buildDefaultHeader()
-  {
+  void _buildDefaultHeader() {
     var th = XmlElement(XmlName("TH"));
     header = TableHeaderModel.fromXml(this, th);
   }
 
-  void _setInitialRows()
-  {
+  void _setInitialRows() {
     // get all child rows
-    List<TableRowModel> rows = findChildrenOfExactType(TableRowModel).cast<TableRowModel>();
+    List<TableRowModel> rows =
+        findChildrenOfExactType(TableRowModel).cast<TableRowModel>();
 
     // iterate through all rows
-    for (var row in rows)
-    {
+    for (var row in rows) {
       var isFirstRow = rows.first == row;
 
       // first row?
       // set header as simple
-      if (isFirstRow)
-      {
+      if (isFirstRow) {
         // set usesRenderer
-        for (var cell in row.cells)
-        {
+        for (var cell in row.cells) {
           var cellIdx = row.cells.indexOf(cell);
-          var column  = header != null && cellIdx < header!.cells.length ? header!.cells[cellIdx] : null;
+          var column = header != null && cellIdx < header!.cells.length
+              ? header!.cells[cellIdx]
+              : null;
           column?.usesRenderer = TableRowCellModel.usesRenderer(cell);
-          column?.hasEnterableFields = TableRowCellModel.hasEnterableFields(cell);
+          column?.hasEnterableFields =
+              TableRowCellModel.hasEnterableFields(cell);
         }
       }
 
       // draggable rows?
-      if (isFirstRow && row.draggable)
-      {
+      if (isFirstRow && row.draggable) {
         draggableRows = true;
       }
 
       // create the row prototype
-      if (isFirstRow && hasDataSource)
-      {
+      if (isFirstRow && hasDataSource) {
         // create the row prototype
         prototype = prototypeOf(row.element);
 
@@ -479,15 +439,13 @@ class TableModel extends BoxModel implements IForm
       }
 
       // add the row to the list
-      else
-      {
+      else {
         this.rows[this.rows.length] = row;
       }
     }
   }
 
-  TableRowModel? getRowModel(int index)
-  {
+  TableRowModel? getRowModel(int index) {
     // model exists?
     if (rows.containsKey(index)) return rows[index];
 
@@ -495,38 +453,36 @@ class TableModel extends BoxModel implements IForm
     if (prototype == null) return null;
 
     // get data
-    var data = (index >= 0 && this.data is Data && index < (this.data as Data).length) ? this.data[index] : null;
+    var data =
+        (index >= 0 && this.data is Data && index < (this.data as Data).length)
+            ? this.data[index]
+            : null;
     if (data == null) return null;
 
     // build the row model
     TableRowModel? model = TableRowModel.fromXml(this, prototype, data: data);
 
     // register a listener to dirty field
-    if (model?.dirtyObservable != null)
-    {
+    if (model?.dirtyObservable != null) {
       model?.dirtyObservable!.registerListener(onDirtyListener);
     }
 
     // add it to the list of rows
-    if (model != null)
-    {
+    if (model != null) {
       rows[index] = model;
     }
 
     return model;
   }
 
-  TableRowCellModel? getRowCellModel(int rowIdx, int cellIdx)
-  {
+  TableRowCellModel? getRowCellModel(int rowIdx, int cellIdx) {
     TableRowModel? model = getRowModel(rowIdx);
     if (model == null || cellIdx >= model.cells.length) return null;
-    return model.cells[max(cellIdx,0)];
+    return model.cells[max(cellIdx, 0)];
   }
 
-  Future<bool> _build(IDataSource source, Data? data) async
-  {
-    if (isNullOrEmpty(datasource) || datasource == source.id)
-    {
+  Future<bool> _build(IDataSource source, Data? data) async {
+    if (isNullOrEmpty(datasource) || datasource == source.id) {
       // save pointer to data source
       myDataSource = source;
 
@@ -535,7 +491,7 @@ class TableModel extends BoxModel implements IForm
       clean = true;
 
       // clear rows
-      rows.forEach((_,row) => row.dispose());
+      rows.forEach((_, row) => row.dispose());
       rows.clear();
 
       this.data = data;
@@ -543,8 +499,7 @@ class TableModel extends BoxModel implements IForm
 
     // this forces a table refresh
     var view = findListenerOfExactType(TableViewState);
-    if (view is TableViewState)
-    {
+    if (view is TableViewState) {
       hasDynamicHeaders ? view.rebuild() : view.reload();
     }
 
@@ -559,24 +514,20 @@ class TableModel extends BoxModel implements IForm
   }
 
   // export to excel
-  Future<bool> export(String? format, String? filename) async
-  {
-    try
-    {
+  Future<bool> export(String? format, String? filename) async {
+    try {
       var view = findListenerOfExactType(TableViewState);
-      if (view is TableViewState)
-      {
+      if (view is TableViewState) {
         if (isNullOrEmpty(filename)) filename = newId();
         var name = Mime.toSafeFileName(filename!.split(".")[0]);
-        switch (format?.toLowerCase().trim())
-        {
-          case "raw" :
-            var file  = await Data.toCsv(Data.from(data));
+        switch (format?.toLowerCase().trim()) {
+          case "raw":
+            var file = await Data.toCsv(Data.from(data));
             var bytes = utf8.encode(file);
             Platform.fileSaveAs(bytes, "$name.csv");
             break;
 
-          case "csv" :
+          case "csv":
             var file = await view.exportToCSV();
             var bytes = utf8.encode(file ?? "");
             Platform.fileSaveAs(bytes, "$name.csv");
@@ -589,57 +540,46 @@ class TableModel extends BoxModel implements IForm
             break;
         }
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e);
     }
     return true;
   }
 
   // autosize
-  bool autosize(String? mode)
-  {
-    try
-    {
+  bool autosize(String? mode) {
+    try {
       var view = findListenerOfExactType(TableViewState);
-      if (view is TableViewState)
-      {
+      if (view is TableViewState) {
         view.autosize(mode);
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e);
     }
     return true;
   }
 
   @override
-  dispose()
-  {
+  dispose() {
     // cleanup
     header?.dispose();
 
     // clear rows
-    rows.forEach((_,row) => row.dispose());
+    rows.forEach((_, row) => row.dispose());
     rows.clear();
 
     super.dispose();
   }
 
   @override
-  Future<bool> complete() async
-  {
+  Future<bool> complete() async {
     busy = true;
 
     bool ok = true;
 
     // post the form
-    if (dirty)
-    {
-      for (var model in rows.values)
-      {
+    if (dirty) {
+      for (var model in rows.values) {
         ok = await model.complete();
       }
     }
@@ -654,14 +594,12 @@ class TableModel extends BoxModel implements IForm
   @override
   Future<bool> save() async => true;
 
-  void _buildDynamicHeaders(Data? data)
-  {
+  void _buildDynamicHeaders(Data? data) {
     // header has no dynamic fields?
     if (header == null || !header!.isDynamic) return;
 
     // cleanup
-    for (var cell in header!.cells)
-    {
+    for (var cell in header!.cells) {
       // remove cell from parent child list
       cell.parent?.children?.remove(cell);
 
@@ -673,49 +611,51 @@ class TableModel extends BoxModel implements IForm
     header!.cells.clear();
 
     // build new header cells
-    header!.prototypes.forEach((prototype, parentModel)
-    {
+    header!.prototypes.forEach((prototype, parentModel) {
       // create a new header cells
       WidgetModel parent = parentModel ?? header!;
       parent.children ??= [];
 
       // build dynamic cell(s)
-      if (Xml.hasAttribute(node: prototype, tag: "dynamic"))
-      {
+      if (Xml.hasAttribute(node: prototype, tag: "dynamic")) {
         var hasData = (data?.isNotEmpty ?? false) && (data?.first is Map);
-        if (hasData)
-        {
+        if (hasData) {
           // replace wildcards
-          var keys = (data!.first as Map).keys.where((key) => key != 'xml' && key != 'rownum');
-          for (var key in keys)
-          {
+          var keys = (data!.first as Map)
+              .keys
+              .where((key) => key != 'xml' && key != 'rownum');
+          for (var key in keys) {
             // replace [*] and {field} with key
-            var xml = prototype.toString().replaceAll(dynamicTableValue1, key).replaceAll(dynamicTableValue2, key);
+            var xml = prototype
+                .toString()
+                .replaceAll(dynamicTableValue1, key)
+                .replaceAll(dynamicTableValue2, key);
 
             // parse the element
             XmlDocument? document = Xml.tryParse(xml);
-            if (document != null)
-            {
+            if (document != null) {
               // get id of proposed model
               var id = Xml.attribute(node: document.rootElement, tag: "id");
 
               // get id of proposed model
-              var visible = toBool(Xml.attribute(node: document.rootElement, tag: "visible")) ?? true;
+              var visible = toBool(Xml.attribute(
+                      node: document.rootElement, tag: "visible")) ??
+                  true;
 
               // dynamic cells with the same id as static fields do not get rendered
               var exists = header!.staticFields?.contains(id) ?? false;
 
-              if (!exists && visible)
-              {
-                var cell = TableHeaderCellModel.fromXml(parent, document.rootElement) ?? TableHeaderCellModel(parent, null);
+              if (!exists && visible) {
+                var cell = TableHeaderCellModel.fromXml(
+                        parent, document.rootElement) ??
+                    TableHeaderCellModel(parent, null);
                 parent.children!.add(cell);
                 header!.cells.add(cell);
               }
             }
 
             // dummy model form invalid xml
-            else
-            {
+            else {
               var cell = TableHeaderCellModel(parent, null);
               parent.children!.add(cell);
               header!.cells.add(cell);
@@ -725,14 +665,14 @@ class TableModel extends BoxModel implements IForm
       }
 
       // build static cell
-      else
-      {
+      else {
         // get id of proposed model
-        var visible = toBool(Xml.attribute(node: prototype, tag: "visible")) ?? true;
+        var visible =
+            toBool(Xml.attribute(node: prototype, tag: "visible")) ?? true;
 
-        if (visible)
-        {
-          var cell = TableHeaderCellModel.fromXml(parent, prototype) ?? TableHeaderCellModel(parent, null);
+        if (visible) {
+          var cell = TableHeaderCellModel.fromXml(parent, prototype) ??
+              TableHeaderCellModel(parent, null);
           parent.children!.add(cell);
           header!.cells.add(cell);
         }
@@ -740,15 +680,14 @@ class TableModel extends BoxModel implements IForm
     });
   }
 
-  void _buildRowPrototype(Data? data)
-  {
+  void _buildRowPrototype(Data? data) {
     if (prototype == null) return;
 
     // build row prototype cells
-    if (data?.isNotEmpty ?? false)
-    {
+    if (data?.isNotEmpty ?? false) {
       // build row model
-      TableRowModel? model = TableRowModel.fromXml(this, prototype, data: data!.first);
+      TableRowModel? model =
+          TableRowModel.fromXml(this, prototype, data: data!.first);
       if (model == null) return;
 
       // create new row prototype
@@ -759,41 +698,48 @@ class TableModel extends BoxModel implements IForm
 
       // process each cell
       int cellIdx = 0;
-      for (var cell in model.cells)
-      {
-        var td = cell.element?.toString() ?? XmlElement(XmlName("TD")).toString();
+      for (var cell in model.cells) {
+        var td =
+            cell.element?.toString() ?? XmlElement(XmlName("TD")).toString();
 
         // dynamic cell
-        bool isDynamic = td.contains(dynamicTableValue1) || td.contains(dynamicTableValue2);
-        if (isDynamic)
-        {
+        bool isDynamic =
+            td.contains(dynamicTableValue1) || td.contains(dynamicTableValue2);
+        if (isDynamic) {
           var map = data.first is Map ? data.first as Map : null;
 
           // replace wildcards
-          var keys = map?.keys.where((key) => key != 'xml' && key != 'rownum') ?? [];
-          for (var key in keys)
-          {
-              var xml  = td.replaceAll(dynamicTableValue1, "{data.$key}").replaceAll(dynamicTableValue2, "{data.$key}");
-              var doc  = Xml.tryParse(xml);
-              var node = doc?.rootElement.copy() ?? XmlElement(XmlName("TD"));
-              tr.children.add(node);
+          var keys =
+              map?.keys.where((key) => key != 'xml' && key != 'rownum') ?? [];
+          for (var key in keys) {
+            var xml = td
+                .replaceAll(dynamicTableValue1, "{data.$key}")
+                .replaceAll(dynamicTableValue2, "{data.$key}");
+            var doc = Xml.tryParse(xml);
+            var node = doc?.rootElement.copy() ?? XmlElement(XmlName("TD"));
+            tr.children.add(node);
 
-              var column  = header != null && cellIdx < header!.cells.length ? header!.cells[cellIdx] : null;
-              column?.usesRenderer = TableRowCellModel.usesRenderer(cell);
-              column?.hasEnterableFields = TableRowCellModel.hasEnterableFields(cell);
-              cellIdx++;
+            var column = header != null && cellIdx < header!.cells.length
+                ? header!.cells[cellIdx]
+                : null;
+            column?.usesRenderer = TableRowCellModel.usesRenderer(cell);
+            column?.hasEnterableFields =
+                TableRowCellModel.hasEnterableFields(cell);
+            cellIdx++;
           }
         }
 
         // static cell
-        else
-        {
+        else {
           var node = cell.element?.copy();
           if (node != null) tr.children.add(node);
 
-          var column  = header != null && cellIdx < header!.cells.length ? header!.cells[cellIdx] : null;
+          var column = header != null && cellIdx < header!.cells.length
+              ? header!.cells[cellIdx]
+              : null;
           column?.usesRenderer = TableRowCellModel.usesRenderer(cell);
-          column?.hasEnterableFields = TableRowCellModel.hasEnterableFields(cell);
+          column?.hasEnterableFields =
+              TableRowCellModel.hasEnterableFields(cell);
           cellIdx++;
         }
       }
@@ -807,8 +753,7 @@ class TableModel extends BoxModel implements IForm
     }
   }
 
-  Future<void> _buildDynamic(Data? data) async
-  {
+  Future<void> _buildDynamic(Data? data) async {
     // build dynamic headers
     _buildDynamicHeaders(data);
 
@@ -816,17 +761,16 @@ class TableModel extends BoxModel implements IForm
     _buildRowPrototype(data);
   }
 
-  Future<bool> onChangeHandler(int rowIdx, int colIdx, dynamic value, dynamic oldValue) async
-  {
-    var row  = (rowIdx >= 0 && rowIdx < rows.length) ? rows[rowIdx] : null;
+  Future<bool> onChangeHandler(
+      int rowIdx, int colIdx, dynamic value, dynamic oldValue) async {
+    var row = (rowIdx >= 0 && rowIdx < rows.length) ? rows[rowIdx] : null;
     var rowCell = row?.cell(colIdx);
     var colCell = header?.cell(colIdx);
     var data = getData(rowIdx);
-    var fld  = colCell?.field;
+    var fld = colCell?.field;
 
     bool ok = true;
-    if (data != null && colCell != null && fld != null)
-    {
+    if (data != null && colCell != null && fld != null) {
       // write new value
       Data.write(data, fld, value);
 
@@ -852,11 +796,13 @@ class TableModel extends BoxModel implements IForm
       if (ok) ok = await header?.onChangeHandler() ?? true;
 
       // fire the table's change handler
-      if (ok) ok = _onChange != null ? await EventHandler(this).execute(_onChange) : true;
+      if (ok)
+        ok = _onChange != null
+            ? await EventHandler(this).execute(_onChange)
+            : true;
 
       // on fail, restore old value
-      if (!ok)
-      {
+      if (!ok) {
         Data.write(data, fld, oldValue);
 
         // reset current row data
@@ -869,8 +815,7 @@ class TableModel extends BoxModel implements IForm
     return ok;
   }
 
-  void onSelect(int rowIdx, int cellIdx)
-  {
+  void onSelect(int rowIdx, int cellIdx) {
     // set row selection
     var row = getRowModel(rowIdx);
     if (row != selectedRow) selectedRow?.selected = false;
@@ -888,8 +833,7 @@ class TableModel extends BoxModel implements IForm
     _selected?.notifyListeners();
   }
 
-  void onDeSelect()
-  {
+  void onDeSelect() {
     // set row selection
     selectedRow?.selected = false;
     selectedRow = null;
@@ -903,92 +847,83 @@ class TableModel extends BoxModel implements IForm
   }
 
   // returns the specified row in data
-  dynamic getData(int rowIdx) => (rowIdx >= 0 && data is Data && rowIdx < data.length) ? data[rowIdx] : null;
+  dynamic getData(int rowIdx) =>
+      (rowIdx >= 0 && data is Data && rowIdx < data.length)
+          ? data[rowIdx]
+          : null;
 
   // returns the length of the dataset
   int getDataRowCount() => data is Data ? (data as Data).length : 0;
 
   @override
-  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
-  {
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
     /// setter
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
 
-    switch (function)
-    {
+    switch (function) {
       // export the data
-      case "export" :
+      case "export":
         var format = toStr(elementAt(arguments, 0));
         var filename = toStr(elementAt(arguments, 1));
-        await export(format,filename);
+        await export(format, filename);
         return true;
 
       // move a row
-      case "move" :
-        moveRow(toInt(elementAt(arguments, 0)) ?? 0, toInt(elementAt(arguments, 1)) ?? 0);
+      case "move":
+        moveRow(toInt(elementAt(arguments, 0)) ?? 0,
+            toInt(elementAt(arguments, 1)) ?? 0);
         return true;
 
-    // delete a row
-      case "delete" :
+      // delete a row
+      case "delete":
         deleteRow(toInt(elementAt(arguments, 0)));
         return true;
 
       // add a row
-      case "insert" :
-        insertRow(toStr(elementAt(arguments, 0)), toInt(elementAt(arguments, 1)));
+      case "insert":
+        insertRow(
+            toStr(elementAt(arguments, 0)), toInt(elementAt(arguments, 1)));
         return true;
 
       // autosize the fields
-      case "autosize" :
+      case "autosize":
         var mode = toStr(elementAt(arguments, 0));
         autosize(mode);
         return true;
     }
-    
+
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
-  void onPageSizeChange(Observable observable)
-  {
-    try
-    {
+  void onPageSizeChange(Observable observable) {
+    try {
       var view = findListenerOfExactType(TableViewState);
-      if (view is TableViewState)
-      {
+      if (view is TableViewState) {
         view.setPageSize(pageSize);
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e);
     }
   }
 
-  void onFilterBarChange(Observable observable)
-  {
-    try
-    {
+  void onFilterBarChange(Observable observable) {
+    try {
       var view = findListenerOfExactType(TableViewState);
-      if (view is TableViewState)
-      {
+      if (view is TableViewState) {
         view.setFilterBar(filter);
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e);
     }
   }
 
   // delete a row
-  Future<bool> insertRow(String? jsonOrXml, int? rowIndex) async
-  {
-    try
-    {
+  Future<bool> insertRow(String? jsonOrXml, int? rowIndex) async {
+    try {
       var view = findListenerOfExactType(TableViewState);
-      if (view is TableViewState)
-      {
+      if (view is TableViewState) {
         // get current row index if not specified
         rowIndex ??= view.currentRowIndex ?? 0;
 
@@ -1008,8 +943,7 @@ class TableModel extends BoxModel implements IForm
         var row = getRowModel(rowIndex);
 
         // add row to rows
-        if (row != null)
-        {
+        if (row != null) {
           rows[rowIndex] = row;
 
           // fire the rows onInsert event
@@ -1021,38 +955,30 @@ class TableModel extends BoxModel implements IForm
         // add row to table view
         rowIndex = view.insertRow(rowIndex);
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e);
     }
     return true;
   }
 
   // delete a row
-  Future<bool> deleteRow(int? rowIndex) async
-  {
-    try
-    {
+  Future<bool> deleteRow(int? rowIndex) async {
+    try {
       var view = findListenerOfExactType(TableViewState);
-      if (view is TableViewState)
-      {
+      if (view is TableViewState) {
         // delete row from table view
         rowIndex = view.deleteRow(rowIndex);
 
         // row was deleted?
-        if (rowIndex != null)
-        {
+        if (rowIndex != null) {
           // lookup the row
           var row = rows.containsKey(rowIndex) ? rows[rowIndex] : null;
-          if (row != null)
-          {
+          if (row != null) {
             // fire the rows onDelete event
             bool ok = await row.onDeleteHandler();
 
             // continue?
-            if (ok)
-            {
+            if (ok) {
               // reorder hashmap
               deleteInHashmap(rows, rowIndex);
 
@@ -1065,19 +991,15 @@ class TableModel extends BoxModel implements IForm
           }
         }
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e);
     }
     return true;
   }
 
   // delete a row
-  Future<bool> moveRow(int fromIndex, int toIndex) async
-  {
-    try
-    {
+  Future<bool> moveRow(int fromIndex, int toIndex) async {
+    try {
       // reorder hashmap
       moveInHashmap(rows, fromIndex, toIndex);
 
@@ -1086,20 +1008,16 @@ class TableModel extends BoxModel implements IForm
       myDataSource?.move(fromIndex, toIndex, notifyListeners: false);
       data = myDataSource?.data ?? data;
       notificationsEnabled = true;
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e);
     }
     return true;
   }
 
-  Future<bool> onDragDrop(int dragIndex, int dropIndex) async
-  {
+  Future<bool> onDragDrop(int dragIndex, int dropIndex) async {
     var draggable = getRowModel(dragIndex);
     var droppable = getRowModel(dropIndex);
-    if (draggable != null && droppable != null)
-    {
+    if (draggable != null && droppable != null) {
       // fire onDrop event
       await DragDrop.onDrop(droppable, draggable);
 

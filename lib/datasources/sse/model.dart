@@ -7,47 +7,39 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
-import 'package:fml/widgets/widget/widget_model.dart'  ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class SseModel extends HttpModel implements IDataSource
-{
+class SseModel extends HttpModel implements IDataSource {
   late final SseChannel channel;
 
   String? events;
 
   // connected
   BooleanObservable? _connected;
-  set connected (dynamic v)
-  {
-    if (_connected != null)
-    {
+  set connected(dynamic v) {
+    if (_connected != null) {
       _connected!.set(v);
-    }
-    else if (v != null)
-    {
-      _connected = BooleanObservable(Binding.toKey(id, 'connected'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _connected = BooleanObservable(Binding.toKey(id, 'connected'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get connected => _connected?.get() ?? false;
-  
-  SseModel(super.parent, super.id)
-  {
+
+  SseModel(super.parent, super.id) {
     connected = false;
   }
 
-  static SseModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static SseModel? fromXml(WidgetModel parent, XmlElement xml) {
     SseModel? model;
-    try
-    {
+    try {
       model = SseModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'SseModel');
+    } catch (e) {
+      Log().exception(e, caller: 'SseModel');
       model = null;
     }
     return model;
@@ -55,8 +47,7 @@ class SseModel extends HttpModel implements IDataSource
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 
@@ -65,20 +56,17 @@ class SseModel extends HttpModel implements IDataSource
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     stop();
     super.dispose();
   }
 
   @override
-  Future<bool> start({bool refresh = false, String? key}) async
-  {
+  Future<bool> start({bool refresh = false, String? key}) async {
     bool ok = true;
     busy = true;
 
-    try
-    {
+    try {
       var uri = URI.parse(url!);
       connected = false;
       if (uri != null) {
@@ -90,11 +78,9 @@ class SseModel extends HttpModel implements IDataSource
         channel.stream.listen(_onData, onError: _onError, onDone: _onDone);
         connected = true;
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       connected = false;
-      Log().error('Error Connecting to $url. Error is $e',  caller: 'SseModel');
+      Log().error('Error Connecting to $url. Error is $e', caller: 'SseModel');
     }
 
     busy = false;
@@ -102,53 +88,47 @@ class SseModel extends HttpModel implements IDataSource
   }
 
   @override
-  Future<bool> stop() async
-  {
+  Future<bool> stop() async {
     bool ok = true;
-    try
-    {
+    try {
       channel.close();
-    }
-    catch(e)
-    {
+    } catch (e) {
       ok = false;
     }
     super.stop();
     return ok;
   }
 
-  void _onData(var msg)
-  {
+  void _onData(var msg) {
     Log().debug('Received message >> $msg', caller: 'SseModel');
     Data data = Data.from(msg, root: root);
     onSuccess(data);
   }
 
-  _onError(var msg)
-  {
+  _onError(var msg) {
     Log().debug('Error is $msg', caller: 'SseModel');
     Data data = Data.from(msg);
     onFail(data);
   }
 
-  _onDone()
-  {
+  _onDone() {
     Log().debug('Done', caller: 'SseModel');
     connected = false;
   }
 
   @override
-  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
-  {
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
     /// setter
     if (scope == null) return null;
     String function = propertyOrFunction.toLowerCase().trim();
 
-    bool refresh = toBool(elementAt(arguments,0)) ?? false;
-    switch (function)
-    {
-      case "start" : return await start(refresh: refresh);
-      case "stop"  : return await stop();
+    bool refresh = toBool(elementAt(arguments, 0)) ?? false;
+    switch (function) {
+      case "start":
+        return await start(refresh: refresh);
+      case "stop":
+        return await stop();
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }

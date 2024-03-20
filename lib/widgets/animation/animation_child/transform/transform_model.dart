@@ -12,8 +12,7 @@ import 'package:fml/helpers/helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class TransformModel extends AnimationChildModel
-{
+class TransformModel extends AnimationChildModel {
   /// Curve starting point from 0.0 to 1.0
   StringObservable? _rotateFrom;
 
@@ -41,7 +40,6 @@ class TransformModel extends AnimationChildModel
   }
 
   String get rotateTo => _rotateTo?.get() ?? "0,0";
-
 
   StringObservable? _translateFrom;
 
@@ -97,7 +95,6 @@ class TransformModel extends AnimationChildModel
   }
 
   double? get warp => _warp?.get();
-
 
   TransformModel(super.parent, super.id); // ; {key: value}
 
@@ -155,5 +152,6 @@ class TransformModel extends AnimationChildModel
   }
 
   @override
-  Widget getAnimatedView(Widget child, {AnimationController? controller}) => TransformView(this, child, controller);
+  Widget getAnimatedView(Widget child, {AnimationController? controller}) =>
+      TransformView(this, child, controller);
 }

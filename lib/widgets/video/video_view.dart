@@ -15,8 +15,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_player_win/video_player_win_plugin.dart';
 
-class VideoView extends StatefulWidget implements IWidgetView
-{
+class VideoView extends StatefulWidget implements IWidgetView {
   @override
   final VideoModel model;
 
@@ -26,11 +25,11 @@ class VideoView extends StatefulWidget implements IWidgetView
   VideoViewState createState() => VideoViewState();
 }
 
-class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
-{
+class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer {
   VideoPlayerController? _controller;
   IconView? playButton;
-  IconModel playButtonModel = IconModel(null, null, icon: Icons.pause, size: 65, color: Colors.white);
+  IconModel playButtonModel =
+      IconModel(null, null, icon: Icons.pause, size: 65, color: Colors.white);
 
   TextView? speedLabel;
   TextModel speedLabelModel = TextModel(null, null);
@@ -47,8 +46,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
   ];
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
 
     // If running on windows ensure to register the Windows Media Player
@@ -62,8 +60,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     _controller?.removeListener(onVideoController);
     _controller?.dispose();
     _controller = null;
@@ -71,13 +68,11 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
   }
 
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
-    if (mounted) setState((){});
+  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+    if (mounted) setState(() {});
   }
 
-  Widget getPlayButton()
-  {
+  Widget getPlayButton() {
     // shutter
     playButton ??= IconView(playButtonModel);
     var play = UnconstrainedBox(
@@ -92,48 +87,59 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     return Positioned(bottom: 0, top: 0, left: 0, right: 0, child: play);
   }
 
-  Widget getSpeedButton()
-  {
+  Widget getSpeedButton() {
     speedLabel ??= TextView(speedLabelModel);
     speedLabelModel.value = '${_controller?.value.playbackSpeed}x';
 
     var label = Stack(alignment: Alignment.center, children: [
-      const Icon(Icons.circle, color: Colors.white38, size: 40), speedLabel!]);
+      const Icon(Icons.circle, color: Colors.white38, size: 40),
+      speedLabel!
+    ]);
 
     var popup = PopupMenuButton<double>(
         initialValue: _controller?.value.playbackSpeed,
         tooltip: 'Playback speed',
-        onSelected: (double speed)
-        {
+        onSelected: (double speed) {
           _controller?.setPlaybackSpeed(speed);
           speedLabelModel.value = '${speed}x';
         },
-        itemBuilder: (BuildContext context)
-        {
-          return <PopupMenuItem<double>>[for (final double speed in _playbackRates) PopupMenuItem<double>(value: speed, child: Text('${speed}x'))];
+        itemBuilder: (BuildContext context) {
+          return <PopupMenuItem<double>>[
+            for (final double speed in _playbackRates)
+              PopupMenuItem<double>(value: speed, child: Text('${speed}x'))
+          ];
         },
         child: label);
 
-      return Positioned(top: 5, right: 5, child: popup);
-    }
+    return Positioned(top: 5, right: 5, child: popup);
+  }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
     // create the view
     Widget view = Container();
-    if (_controller != null && _controller!.value.isInitialized)
-    {
+    if (_controller != null && _controller!.value.isInitialized) {
       var videoPlayer = VideoPlayer(_controller!);
-      var subTitles   = ClosedCaption(text: _controller!.value.caption.text);
-      var progressBar = widget.model.controls ? VideoProgressIndicator(_controller!, allowScrubbing: true) : const Offstage();
-      var playButton  = widget.model.controls ? getPlayButton()  : const Offstage();
-      var speedButton = widget.model.controls ? getSpeedButton() : const Offstage();
-      var stack = Stack(alignment: Alignment.bottomCenter, children: <Widget>[videoPlayer,subTitles,speedButton, playButton, progressBar]);
-      view = AspectRatio(aspectRatio: _controller!.value.aspectRatio, child: stack);
+      var subTitles = ClosedCaption(text: _controller!.value.caption.text);
+      var progressBar = widget.model.controls
+          ? VideoProgressIndicator(_controller!, allowScrubbing: true)
+          : const Offstage();
+      var playButton =
+          widget.model.controls ? getPlayButton() : const Offstage();
+      var speedButton =
+          widget.model.controls ? getSpeedButton() : const Offstage();
+      var stack = Stack(alignment: Alignment.bottomCenter, children: <Widget>[
+        videoPlayer,
+        subTitles,
+        speedButton,
+        playButton,
+        progressBar
+      ]);
+      view = AspectRatio(
+          aspectRatio: _controller!.value.aspectRatio, child: stack);
       view = GestureDetector(onTap: startstop, child: view);
     }
 
@@ -147,58 +153,51 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     return view;
   }
 
-  void onVideoController()
-  {
+  void onVideoController() {
     if (_controller == null) return;
-    if(!_controller!.value.isPlaying)
-    {
+    if (!_controller!.value.isPlaying) {
       playButtonModel.icon = Icons.pause;
       playButtonModel.size = 65;
       if (_controller!.value.position == _controller!.value.duration) seek(0);
-    }
-    else
-    {
+    } else {
       playButtonModel.icon = Icons.play_arrow;
       playButtonModel.size = 65;
     }
     _controller!.setLooping(widget.model.loop);
   }
 
-  Future<bool> startstop() async
-  {
+  Future<bool> startstop() async {
     if (_controller == null) return false;
     if (_controller!.value.isPlaying) return await pause();
-    if (_controller!.value.position == _controller!.value.duration) return await start();
+    if (_controller!.value.position == _controller!.value.duration)
+      return await start();
     return await resume();
   }
 
   @override
-  Future<bool> play(String? url) async
-  {
+  Future<bool> play(String? url) async {
     if (_controller != null) _controller!.dispose();
     Uri? uri = Uri.tryParse(url ?? "");
-    if (uri != null)
-    {
+    if (uri != null) {
       // initialize the controller
-      _controller = VideoPlayerController.networkUrl(uri)..initialize().then((_)
-      {
-        // fire onInitialized() event
-        if (!isNullOrEmpty(widget.model.onInitialized))
-        {
-          WidgetsBinding.instance.addPostFrameCallback((_) => widget.model.onInitializedHandler());
-        }
+      _controller = VideoPlayerController.networkUrl(uri)
+        ..initialize().then((_) {
+          // fire onInitialized() event
+          if (!isNullOrEmpty(widget.model.onInitialized)) {
+            WidgetsBinding.instance.addPostFrameCallback(
+                (_) => widget.model.onInitializedHandler());
+          }
 
-        // ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-        if (mounted) setState(() {});
-      });
+          // ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+          if (mounted) setState(() {});
+        });
       _controller!.addListener(onVideoController);
     }
     return true;
   }
 
   @override
-  Future<bool> start() async
-  {
+  Future<bool> start() async {
     if (_controller == null) return false;
     if (!_controller!.value.isInitialized) await _controller!.initialize();
     await seek(0);
@@ -207,11 +206,9 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
   }
 
   @override
-  Future<bool> stop() async
-  {
+  Future<bool> stop() async {
     if (_controller == null) return false;
-    if (_controller!.value.isInitialized)
-    {
+    if (_controller!.value.isInitialized) {
       await _controller!.pause();
       await seek(0);
     }
@@ -219,15 +216,13 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
   }
 
   @override
-  Future<bool> pause() async
-  {
+  Future<bool> pause() async {
     if (_controller == null) return false;
     if (_controller!.value.isInitialized) await _controller!.pause();
     return true;
   }
 
-  Future<bool> resume() async
-  {
+  Future<bool> resume() async {
     if (_controller == null) return false;
     if (!_controller!.value.isInitialized) await _controller!.initialize();
     _controller!.play();
@@ -235,10 +230,10 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
   }
 
   @override
-  Future<bool> seek(int seconds) async
-  {
+  Future<bool> seek(int seconds) async {
     if (_controller == null) return false;
-    if (_controller!.value.isInitialized) await _controller!.seekTo(Duration(seconds: seconds));
+    if (_controller!.value.isInitialized)
+      await _controller!.seekTo(Duration(seconds: seconds));
     return true;
   }
 }

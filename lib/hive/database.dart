@@ -5,8 +5,7 @@ import 'package:hive/hive.dart';
 import 'package:fml/eval/eval.dart' as fml_eval;
 import 'package:fml/helpers/helpers.dart';
 
-class Database
-{
+class Database {
   static final Database _singleton = Database._initialize();
   Database._initialize();
 
@@ -18,19 +17,15 @@ class Database
 
   factory Database() => _singleton;
 
-  initialize(String? path) async
-  {
+  initialize(String? path) async {
     bool ok = false;
-    try
-    {
+    try {
       Log().info('Initializing Database at Path: $path');
       this.path = path;
       encryptionKey = encryptionKey;
       if (path != null) Hive.init(path);
       ok = true;
-    }
-    catch(e)
-    {
+    } catch (e) {
       ok = false;
       Log().exception(e, caller: "database -> initialize(String? path) async");
     }
@@ -40,123 +35,107 @@ class Database
     return ok;
   }
 
-  Future<Exception?> insert(String table, String key, Map<String, dynamic> map, {bool logExceptions = true}) async
-  {
+  Future<Exception?> insert(String table, String key, Map<String, dynamic> map,
+      {bool logExceptions = true}) async {
     Exception? exception;
-    try
-    {
+    try {
       if (!_initialized) return null;
       var box = await Hive.openBox(table);
       await box.put(key, map);
-    }
-    on Exception catch(e)
-    {
+    } on Exception catch (e) {
       // log calling insert causes an infinite loop on error
       // we pass logExceptions=false to prevent this
-      if (logExceptions)
-      {
+      if (logExceptions) {
         Log().error('Error Inserting Record Key [$key] into Table [$table]');
-        Log().exception(e, caller: 'Future<Exception?> insert(String table, dynamic key, dynamic record) async');
+        Log().exception(e,
+            caller:
+                'Future<Exception?> insert(String table, dynamic key, dynamic record) async');
       }
       exception = e;
     }
     return exception;
   }
 
-  Future<Exception?> update(String table, String key, Map<String, dynamic> map) async
-  {
+  Future<Exception?> update(
+      String table, String key, Map<String, dynamic> map) async {
     Exception? exception;
-    try
-    {
+    try {
       if (!_initialized) return null;
       var box = await Hive.openBox(table);
-      if (box.containsKey(key))
-      {
+      if (box.containsKey(key)) {
         await box.put(key, map);
       }
-    }
-    on Exception catch(e)
-    {
+    } on Exception catch (e) {
       Log().error('Error Updating Record Key [$key] in Table [$table]');
-      Log().exception(e, caller: 'Future<Exception?> update($table, $key, $map) async');
+      Log().exception(e,
+          caller: 'Future<Exception?> update($table, $key, $map) async');
       exception = e;
     }
     return exception;
   }
 
-  Future<Exception?> upsert(String table, String key, Map<String, dynamic> map) async
-  {
+  Future<Exception?> upsert(
+      String table, String key, Map<String, dynamic> map) async {
     Exception? exception;
-    try
-    {
+    try {
       if (!_initialized) return null;
       var box = await Hive.openBox(table);
       await box.put(key, map);
-    }
-    on Exception catch(e)
-    {
-      Log().error('Error Inserting/Updating Record Key [$key] in Table [$table]');
-      Log().exception(e, caller: 'Future<Exception?> update($table, $key, $map) async');
+    } on Exception catch (e) {
+      Log().error(
+          'Error Inserting/Updating Record Key [$key] in Table [$table]');
+      Log().exception(e,
+          caller: 'Future<Exception?> update($table, $key, $map) async');
       exception = e;
     }
     return exception;
   }
 
-  Future<Exception?> delete(String table, String key) async
-  {
+  Future<Exception?> delete(String table, String key) async {
     Exception? exception;
-    try
-    {
+    try {
       if (!_initialized) return null;
       var box = await Hive.openBox(table);
-      if (box.containsKey(key))
-      {
+      if (box.containsKey(key)) {
         await box.delete(key);
       }
-    }
-    on Exception catch(e)
-    {
+    } on Exception catch (e) {
       Log().error('Error Deleting Record Key [$key] in Table [$table]');
-      Log().exception(e, caller: 'Future<Exception?> delete($table, $key) async');
+      Log().exception(e,
+          caller: 'Future<Exception?> delete($table, $key) async');
       exception = e;
     }
     return exception;
   }
 
-  Future<Exception?> deleteAll(String table) async
-  {
+  Future<Exception?> deleteAll(String table) async {
     Exception? exception;
-    try
-    {
+    try {
       if (!_initialized) return null;
       var box = await Hive.openBox(table);
       await box.clear();
-    }
-    on Exception catch(e)
-    {
+    } on Exception catch (e) {
       Log().error('Error Clearing Table [$table]');
-      Log().exception(e, caller: 'Future<Exception?> deleteAll(String $table) async');
+      Log().exception(e,
+          caller: 'Future<Exception?> deleteAll(String $table) async');
       exception = e;
     }
     return exception;
   }
 
-  Future<Map<String, dynamic>?> find(String table, String key) async
-  {
+  Future<Map<String, dynamic>?> find(String table, String key) async {
     dynamic value;
-    try
-    {
+    try {
       var box = await Hive.openBox(table);
       if (box.containsKey(key)) {
         value = await box.get(key);
       } else {
         Log().debug('Table [$table] does not contain a Key [$key]');
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().error('Error Querying Record Key [$key] in Table [$table]');
-      Log().exception(e, caller: 'Future<dynamic> find(String $table, dynamic $key) async');
+      Log().exception(e,
+          caller: 'Future<dynamic> find(String $table, dynamic $key) async');
     }
 
     // convert to Map<String, dynamic>
@@ -168,20 +147,17 @@ class Database
     return null;
   }
 
-  Future<List<Map<String, dynamic>>> query(String table, {String? where, String? orderby}) async
-  {
+  Future<List<Map<String, dynamic>>> query(String table,
+      {String? where, String? orderby}) async {
     List<Map<String, dynamic>> list = [];
-    try
-    {
+    try {
       // open the table
       var box = await Hive.openBox(table);
 
       // where clause
-      Iterable values = box.values.where((map)
-      {
+      Iterable values = box.values.where((map) {
         bool? ok = true;
-        if (!isNullOrEmpty(where))
-        {
+        if (!isNullOrEmpty(where)) {
           String? sql = Binding.applyMap(where, map, caseSensitive: false);
           ok = toBool(fml_eval.Eval.evaluate(sql));
         }
@@ -196,8 +172,7 @@ class Database
       }
 
       // order by clause
-      if (!isNullOrEmpty(orderby))
-      {
+      if (!isNullOrEmpty(orderby)) {
         // get ordre by field and descending clause
         orderby = orderby!.trim();
         while (orderby!.contains("  ")) {
@@ -209,8 +184,7 @@ class Database
         if ((s.isNotEmpty) && (s[1].toLowerCase() == "desc")) descending = true;
 
         // sort values
-        list.sort((a, b)
-        {
+        list.sort((a, b) {
           if ((a.containsKey(orderby)) && (b.containsKey(orderby))) {
             return Comparable.compare(b[orderby], a[orderby]);
           } else {
@@ -221,28 +195,26 @@ class Database
         // sort descending?
         if (descending) list = list.reversed.toList();
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().error('Error Querying Table [$table]');
-      Log().exception(e, caller: 'database.dart => Future<List<dynamic>> query($table, where: $where, orderby: $orderby)');
+      Log().exception(e,
+          caller:
+              'database.dart => Future<List<dynamic>> query($table, where: $where, orderby: $orderby)');
     }
     return list;
   }
 
-  Future<List<Map<String, dynamic>>> findAll(String table) async
-  {
+  Future<List<Map<String, dynamic>>> findAll(String table) async {
     List<Map<String, dynamic>> list = [];
-    try
-    {
+    try {
       var box = await Hive.openBox(table);
       var values = box.toMap();
-      values.forEach((key, value) => list.add({key.toString() : value}));
-    }
-    catch(e)
-    {
+      values.forEach((key, value) => list.add({key.toString(): value}));
+    } catch (e) {
       Log().error('Error Querying All Record Keys in Table [$table]');
-      Log().exception(e, caller: 'database.dart => Future<dynamic> findAll(String tableName) async');
+      Log().exception(e,
+          caller:
+              'database.dart => Future<dynamic> findAll(String tableName) async');
     }
     return list;
   }

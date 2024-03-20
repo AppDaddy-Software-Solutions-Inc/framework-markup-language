@@ -14,7 +14,8 @@ import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:community_charts_flutter/community_charts_flutter.dart' as charts_flutter;
+import 'package:community_charts_flutter/community_charts_flutter.dart'
+    as charts_flutter;
 import 'package:fml/widgets/widget/widget_state.dart';
 
 enum ChartType {
@@ -29,8 +30,7 @@ enum ChartType {
 ///
 /// Builds a Chart View using [CHART.ChartModel], [SERIES.ChartSeriesModel], [AXIS.ChartAxisModel] and
 /// [EXCERPT.Model] properties
-class ChartView extends StatefulWidget implements IWidgetView
-{
+class ChartView extends StatefulWidget implements IWidgetView {
   @override
   final ChartModel model;
   ChartView(this.model) : super(key: ObjectKey(model));
@@ -39,16 +39,14 @@ class ChartView extends StatefulWidget implements IWidgetView
   State<ChartView> createState() => _ChartViewState();
 }
 
-class _ChartViewState extends WidgetState<ChartView>
-{
+class _ChartViewState extends WidgetState<ChartView> {
   Future<Template>? template;
   Future<ChartModel>? chartViewModel;
   Widget? busy;
   ChartType? chartType;
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
     chartType = getChartType();
   }
@@ -65,31 +63,36 @@ class _ChartViewState extends WidgetState<ChartView>
   ///  We don't support a fallback in the case your axis/series are unmatched
   ///  its important to show the data type syntax for template clarity
   ChartType? getChartType() {
-    ChartSeriesModel? pieSeries = widget.model.series.firstWhereOrNull((series) => series.type?.toLowerCase() == 'pie' || series.type?.toLowerCase() == 'circle');
-    ChartSeriesModel? nonBarSeries = widget.model.series.firstWhereOrNull((series) => series.type != 'bar');
-    ChartSeriesModel? stackedSeries = widget.model.series.firstWhereOrNull((series) => series.type == 'bar' && series.stack != null);
-    if (pieSeries != null || widget.model.type != null && (widget.model.type!.toLowerCase() == 'pie' || widget.model.type!.toLowerCase() == 'circle')) {
+    ChartSeriesModel? pieSeries = widget.model.series.firstWhereOrNull(
+        (series) =>
+            series.type?.toLowerCase() == 'pie' ||
+            series.type?.toLowerCase() == 'circle');
+    ChartSeriesModel? nonBarSeries =
+        widget.model.series.firstWhereOrNull((series) => series.type != 'bar');
+    ChartSeriesModel? stackedSeries = widget.model.series.firstWhereOrNull(
+        (series) => series.type == 'bar' && series.stack != null);
+    if (pieSeries != null ||
+        widget.model.type != null &&
+            (widget.model.type!.toLowerCase() == 'pie' ||
+                widget.model.type!.toLowerCase() == 'circle')) {
       return ChartType.pieChart;
-    }
-    else if (stackedSeries == null &&
+    } else if (stackedSeries == null &&
         (widget.model.xaxis.type == ChartAxisType.datetime ||
-        widget.model.xaxis.type == ChartAxisType.date ||
-        widget.model.xaxis.type == ChartAxisType.time)) {
+            widget.model.xaxis.type == ChartAxisType.date ||
+            widget.model.xaxis.type == ChartAxisType.time)) {
       // Determine if the X Axis is time based, timebased charts override other base chart types.
       //
       // Bar charts cannot have a timeSeries axis if they are stacked/grouped&stacked,
       // they will be converted to category axis and built as BarCharts in that case.
       return ChartType.timeSeriesChart;
-    }
-    else if (nonBarSeries == null) {
+    } else if (nonBarSeries == null) {
       // Aside from BarCharts built as timeSeriesCharts all other barcharts must be a
       // String (category) x axis as per the library restriction on series value type.
       if (widget.model.xaxis.type != ChartAxisType.category) {
         widget.model.xaxis.type = ChartAxisType.category;
       }
       return ChartType.barChart;
-    }
-    else if (widget.model.xaxis.type == ChartAxisType.category) {
+    } else if (widget.model.xaxis.type == ChartAxisType.category) {
       return ChartType.ordinalComboChart;
     } else if (widget.model.xaxis.type == ChartAxisType.numeric) {
       return ChartType.numericComboChart;
@@ -101,60 +104,84 @@ class _ChartViewState extends WidgetState<ChartView>
   }
 
   /// Measure/Y Axis Specifications
-  charts_flutter.NumericAxisSpec yNumericAxisSpec({int? ticks}) => charts_flutter.NumericAxisSpec(
-      tickProviderSpec: charts_flutter.BasicNumericTickProviderSpec(zeroBound: !widget.model.yaxis.truncate, dataIsInWholeNumbers: true, desiredTickCount: ticks),
-      viewport: widget.model.yaxis.min != null && widget.model.yaxis.max != null
-          ? charts_flutter.NumericExtents(toNum(widget.model.yaxis.min!)!, toNum(widget.model.yaxis.max!)!) : null,
-      renderSpec: charts_flutter.SmallTickRendererSpec( // GridlineRendererSpec(
+  charts_flutter.NumericAxisSpec yNumericAxisSpec({int? ticks}) =>
+      charts_flutter.NumericAxisSpec(
+        tickProviderSpec: charts_flutter.BasicNumericTickProviderSpec(
+            zeroBound: !widget.model.yaxis.truncate,
+            dataIsInWholeNumbers: true,
+            desiredTickCount: ticks),
+        viewport:
+            widget.model.yaxis.min != null && widget.model.yaxis.max != null
+                ? charts_flutter.NumericExtents(toNum(widget.model.yaxis.min!)!,
+                    toNum(widget.model.yaxis.max!)!)
+                : null,
+        renderSpec: charts_flutter.SmallTickRendererSpec(
+          // GridlineRendererSpec(
           tickLengthPx: 4,
           lineStyle: const charts_flutter.LineStyleSpec(dashPattern: []),
           labelStyle: charts_flutter.TextStyleSpec(
-              fontSize: widget.model.yaxis.labelvisible == false ? 0 : widget.model.yaxis.labelsize,
+              fontSize: widget.model.yaxis.labelvisible == false
+                  ? 0
+                  : widget.model.yaxis.labelsize,
               color: charts_flutter.ColorUtil.fromDartColor(
                   Theme.of(context).colorScheme.onBackground)),
-      ),
-  );
+        ),
+      );
 
-  charts_flutter.NumericAxisSpec xNumComboAxisSpec({int? ticks}) => charts_flutter.NumericAxisSpec(
-      tickProviderSpec: charts_flutter.BasicNumericTickProviderSpec(dataIsInWholeNumbers: false, desiredTickCount: ticks),
-      viewport: widget.model.yaxis.min != null && widget.model.yaxis.max != null
-          ? charts_flutter.NumericExtents(toNum(widget.model.yaxis.min!)!, toNum(widget.model.yaxis.max!)!) : null,
-      renderSpec: charts_flutter.SmallTickRendererSpec(
-        axisLineStyle: charts_flutter.LineStyleSpec(
-            color: charts_flutter.ColorUtil.fromDartColor(
-                Theme.of(context).colorScheme.onBackground)),
-        labelStyle: charts_flutter.TextStyleSpec(
-            fontSize: widget.model.xaxis.labelvisible == false ? 0 : widget.model.xaxis.labelsize,
-            color: charts_flutter.ColorUtil.fromDartColor(
-                Theme.of(context).colorScheme.onBackground)),
-        labelRotation: widget.model.xaxis.labelrotation.abs() * -1,
-        labelOffsetFromAxisPx: (sin(widget.model.xaxis.labelrotation.abs() * (pi / 180)) * 80).ceil() + 8, // 80 is rough estimate of our text length
-        labelOffsetFromTickPx: 10,
-        labelJustification: TickLabelJustification.inside,
-      ),
-  );
+  charts_flutter.NumericAxisSpec xNumComboAxisSpec({int? ticks}) =>
+      charts_flutter.NumericAxisSpec(
+        tickProviderSpec: charts_flutter.BasicNumericTickProviderSpec(
+            dataIsInWholeNumbers: false, desiredTickCount: ticks),
+        viewport:
+            widget.model.yaxis.min != null && widget.model.yaxis.max != null
+                ? charts_flutter.NumericExtents(toNum(widget.model.yaxis.min!)!,
+                    toNum(widget.model.yaxis.max!)!)
+                : null,
+        renderSpec: charts_flutter.SmallTickRendererSpec(
+          axisLineStyle: charts_flutter.LineStyleSpec(
+              color: charts_flutter.ColorUtil.fromDartColor(
+                  Theme.of(context).colorScheme.onBackground)),
+          labelStyle: charts_flutter.TextStyleSpec(
+              fontSize: widget.model.xaxis.labelvisible == false
+                  ? 0
+                  : widget.model.xaxis.labelsize,
+              color: charts_flutter.ColorUtil.fromDartColor(
+                  Theme.of(context).colorScheme.onBackground)),
+          labelRotation: widget.model.xaxis.labelrotation.abs() * -1,
+          labelOffsetFromAxisPx:
+              (sin(widget.model.xaxis.labelrotation.abs() * (pi / 180)) * 80)
+                      .ceil() +
+                  8, // 80 is rough estimate of our text length
+          labelOffsetFromTickPx: 10,
+          labelJustification: TickLabelJustification.inside,
+        ),
+      );
 
-  charts_flutter.AxisSpec<String> xStringAxisSpec() => charts_flutter.AxisSpec<String>(
-    renderSpec: charts_flutter.SmallTickRendererSpec(
-      axisLineStyle: charts_flutter.LineStyleSpec(
-          color: charts_flutter.ColorUtil.fromDartColor(
-              Theme.of(context).colorScheme.onBackground)),
-      labelStyle: charts_flutter.TextStyleSpec(
-          fontSize: widget.model.xaxis.labelvisible == false ? 0 : widget.model.xaxis.labelsize,
-          color: charts_flutter.ColorUtil.fromDartColor(
-              Theme.of(context).colorScheme.onBackground)),
-      labelRotation: widget.model.xaxis.labelrotation.abs() * -1,
-      labelOffsetFromAxisPx:
-      (sin(widget.model.xaxis.labelrotation.abs() * (pi / 180)) * 80)
-          .ceil() +
-          (widget.model.horizontal == true
-              ? 28
-              : 8), // 80 is rough estimate of our text length
-      labelOffsetFromTickPx: 10,
-    ),
-  );
+  charts_flutter.AxisSpec<String> xStringAxisSpec() =>
+      charts_flutter.AxisSpec<String>(
+        renderSpec: charts_flutter.SmallTickRendererSpec(
+          axisLineStyle: charts_flutter.LineStyleSpec(
+              color: charts_flutter.ColorUtil.fromDartColor(
+                  Theme.of(context).colorScheme.onBackground)),
+          labelStyle: charts_flutter.TextStyleSpec(
+              fontSize: widget.model.xaxis.labelvisible == false
+                  ? 0
+                  : widget.model.xaxis.labelsize,
+              color: charts_flutter.ColorUtil.fromDartColor(
+                  Theme.of(context).colorScheme.onBackground)),
+          labelRotation: widget.model.xaxis.labelrotation.abs() * -1,
+          labelOffsetFromAxisPx:
+              (sin(widget.model.xaxis.labelrotation.abs() * (pi / 180)) * 80)
+                      .ceil() +
+                  (widget.model.horizontal == true
+                      ? 28
+                      : 8), // 80 is rough estimate of our text length
+          labelOffsetFromTickPx: 10,
+        ),
+      );
 
-  charts_flutter.AxisSpec<DateTime> xDateTimeAxisSpec(List<charts_flutter.TickSpec<DateTime>> ticks) {
+  charts_flutter.AxisSpec<DateTime> xDateTimeAxisSpec(
+      List<charts_flutter.TickSpec<DateTime>> ticks) {
     return charts_flutter.DateTimeAxisSpec(
       renderSpec: charts_flutter.SmallTickRendererSpec(
         axisLineStyle: charts_flutter.LineStyleSpec(
@@ -162,16 +189,18 @@ class _ChartViewState extends WidgetState<ChartView>
                 Theme.of(context).colorScheme.onBackground)),
         labelAnchor: charts_flutter.TickLabelAnchor.after,
         labelStyle: charts_flutter.TextStyleSpec(
-            fontSize: widget.model.xaxis.labelvisible == false ? 0 : widget.model.xaxis.labelsize,
+            fontSize: widget.model.xaxis.labelvisible == false
+                ? 0
+                : widget.model.xaxis.labelsize,
             color: charts_flutter.ColorUtil.fromDartColor(
                 Theme.of(context).colorScheme.onBackground)),
         labelRotation: widget.model.xaxis.labelrotation.abs() * -1,
         labelOffsetFromAxisPx:
-        (sin(widget.model.xaxis.labelrotation.abs() * (pi / 180)) * 80)
-            .ceil() +
-            (widget.model.horizontal == true
-                ? 28
-                : 8), // 80 is rough estimate of our text length
+            (sin(widget.model.xaxis.labelrotation.abs() * (pi / 180)) * 80)
+                    .ceil() +
+                (widget.model.horizontal == true
+                    ? 28
+                    : 8), // 80 is rough estimate of our text length
         labelOffsetFromTickPx: 10,
       ),
       tickProviderSpec: charts_flutter.StaticDateTimeTickProviderSpec(ticks),
@@ -179,7 +208,9 @@ class _ChartViewState extends WidgetState<ChartView>
   }
 
   List<charts_flutter.TickSpec<DateTime>> dateTimeTickBuilder(
-      List<DateTime> tickData, {String? interval, String? format}) {
+      List<DateTime> tickData,
+      {String? interval,
+      String? format}) {
     // Axis Ticks
     List<charts_flutter.TickSpec<DateTime>> ticks = [];
     // Utilize a TUD to define our interval
@@ -188,9 +219,8 @@ class _ChartViewState extends WidgetState<ChartView>
     // Check if we need to draw interval ticks/ have enough data to display the interval
     if (tud.amount == 0 || tickData.length < 2) {
       for (DateTime v in tickData) {
-        ticks.add(charts_flutter.TickSpec(v, label: format != null
-                    ? DT.formatDateTime(v, format)
-                    : null));
+        ticks.add(charts_flutter.TickSpec(v,
+            label: format != null ? DT.formatDateTime(v, format) : null));
       }
       return ticks;
     }
@@ -208,17 +238,20 @@ class _ChartViewState extends WidgetState<ChartView>
     // Set the first tick to min DateTime
     DateTime tick = firstTick;
     // Add all the interval ticks starting at min
-    while(DT.isBefore(tick, lastTick)) {
-      ticks.add(charts_flutter.TickSpec(tick, label: format != null ? DT.formatDateTime(tick, format) : null));
+    while (DT.isBefore(tick, lastTick)) {
+      ticks.add(charts_flutter.TickSpec(tick,
+          label: format != null ? DT.formatDateTime(tick, format) : null));
       tick = DT.add(tick, tud);
     }
     // Add the last (max) DateTime tick
-    ticks.add(charts_flutter.TickSpec(lastTick, label: format != null ? DT.formatDateTime(lastTick, format) : null));
+    ticks.add(charts_flutter.TickSpec(lastTick,
+        label: format != null ? DT.formatDateTime(lastTick, format) : null));
 
     return ticks;
   }
 
-  charts_flutter.BarChart buildBarChart(List<charts_flutter.Series<dynamic, String>> series) {
+  charts_flutter.BarChart buildBarChart(
+      List<charts_flutter.Series<dynamic, String>> series) {
     // Determine if there is any grouping and/or stacking (grouped/stacked/groupedStacked)
     charts_flutter.BarGroupingType barGroupingType;
     ChartSeriesModel seriesModel = widget.model.series[0];
@@ -249,22 +282,30 @@ class _ChartViewState extends WidgetState<ChartView>
       // Calculate Numeric Y Axis Ticks
       if (widget.model.yaxis.interval != null && s.dataPoint.isNotEmpty) {
         num ySeriesMin = s.dataPoint.fold(
-            toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
-        previous < (toNum(current.y) ?? yMin) ? previous : (toNum(current.y) ?? yMin));
+            toNum(s.dataPoint[0].y) ?? yMin,
+            (num previous, ChartDataPoint current) =>
+                previous < (toNum(current.y) ?? yMin)
+                    ? previous
+                    : (toNum(current.y) ?? yMin));
         yMin = ySeriesMin < yMin ? ySeriesMin : yMin;
 
         num ySeriesMax = s.dataPoint.fold(
-            toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
-        previous > (toNum(current.y) ?? yMin) ? previous : (toNum(current.y) ?? yMin));
+            toNum(s.dataPoint[0].y) ?? yMin,
+            (num previous, ChartDataPoint current) =>
+                previous > (toNum(current.y) ?? yMin)
+                    ? previous
+                    : (toNum(current.y) ?? yMin));
         yMax = ySeriesMax > yMax ? ySeriesMax : yMax;
       }
     }
 
     // Determine Y Axis Ticks dynamically based on the value range and interval
     if (widget.model.yaxis.interval != null) {
-      num range = (toNum(widget.model.yaxis.max) ?? yMax) - (toNum(widget.model.yaxis.min) ?? yMin);
+      num range = (toNum(widget.model.yaxis.max) ?? yMax) -
+          (toNum(widget.model.yaxis.min) ?? yMin);
       if (range.isFinite) {
-        yTicksCount = (range / (toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
+        yTicksCount =
+            (range / (toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
       }
     }
 
@@ -276,7 +317,9 @@ class _ChartViewState extends WidgetState<ChartView>
       domainAxis: xStringAxisSpec(),
       barGroupingType: barGroupingType,
       vertical: widget.model.horizontal == true ? false : true,
-      barRendererDecorator: charts_flutter.BarLabelDecorator<String>(labelPosition: charts_flutter.BarLabelPosition.inside, labelAnchor: charts_flutter.BarLabelAnchor.middle),
+      barRendererDecorator: charts_flutter.BarLabelDecorator<String>(
+          labelPosition: charts_flutter.BarLabelPosition.inside,
+          labelAnchor: charts_flutter.BarLabelAnchor.middle),
       customSeriesRenderers: seriesRenderers,
       selectionModels: [
         charts_flutter.SelectionModelConfig(
@@ -287,7 +330,8 @@ class _ChartViewState extends WidgetState<ChartView>
     );
   }
 
-  charts_flutter.NumericComboChart buildNumericChart(List<charts_flutter.Series> series) {
+  charts_flutter.NumericComboChart buildNumericChart(
+      List<charts_flutter.Series> series) {
     List<charts_flutter.SeriesRendererConfig<num>> seriesRenderers = [];
     num xMin = double.infinity;
     num xMax = double.negativeInfinity;
@@ -307,41 +351,57 @@ class _ChartViewState extends WidgetState<ChartView>
       // Calculate Numeric X Axis Ticks
       if (widget.model.xaxis.interval != null && s.dataPoint.isNotEmpty) {
         num xSeriesMin = s.dataPoint.fold(
-            toNum(s.dataPoint[0].x) ?? xMin, (num previous, ChartDataPoint current) =>
-        previous < (toNum(current.x) ?? xMin) ? previous : (toNum(current.x) ?? xMin));
+            toNum(s.dataPoint[0].x) ?? xMin,
+            (num previous, ChartDataPoint current) =>
+                previous < (toNum(current.x) ?? xMin)
+                    ? previous
+                    : (toNum(current.x) ?? xMin));
         xMin = xSeriesMin < xMin ? xSeriesMin : xMin;
 
         num xSeriesMax = s.dataPoint.fold(
-            toNum(s.dataPoint[0].x) ?? xMin, (num previous, ChartDataPoint current) =>
-        previous > (toNum(current.x) ?? xMin) ? previous : (toNum(current.x) ?? xMin));
+            toNum(s.dataPoint[0].x) ?? xMin,
+            (num previous, ChartDataPoint current) =>
+                previous > (toNum(current.x) ?? xMin)
+                    ? previous
+                    : (toNum(current.x) ?? xMin));
         xMax = xSeriesMax > xMax ? xSeriesMax : xMax;
       }
       // Calculate Numeric Y Axis Ticks
       if (widget.model.yaxis.interval != null && s.dataPoint.isNotEmpty) {
         num ySeriesMin = s.dataPoint.fold(
-            toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
-        previous < (toNum(current.y) ?? yMin) ? previous : (toNum(current.y) ?? yMin));
+            toNum(s.dataPoint[0].y) ?? yMin,
+            (num previous, ChartDataPoint current) =>
+                previous < (toNum(current.y) ?? yMin)
+                    ? previous
+                    : (toNum(current.y) ?? yMin));
         yMin = ySeriesMin < yMin ? ySeriesMin : yMin;
 
         num ySeriesMax = s.dataPoint.fold(
-            toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
-        previous > (toNum(current.y) ?? yMin) ? previous : (toNum(current.y) ?? yMin));
+            toNum(s.dataPoint[0].y) ?? yMin,
+            (num previous, ChartDataPoint current) =>
+                previous > (toNum(current.y) ?? yMin)
+                    ? previous
+                    : (toNum(current.y) ?? yMin));
         yMax = ySeriesMax > yMax ? ySeriesMax : yMax;
       }
     }
 
     // Determine Y Axis Ticks dynamically based on the value range and interval
     if (widget.model.yaxis.interval != null) {
-      num range = (toNum(widget.model.yaxis.max) ?? yMax) - (toNum(widget.model.yaxis.min) ?? yMin);
+      num range = (toNum(widget.model.yaxis.max) ?? yMax) -
+          (toNum(widget.model.yaxis.min) ?? yMin);
       if (range.isFinite) {
-        yTicksCount = (range / (toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
+        yTicksCount =
+            (range / (toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
       }
     }
     // Determine X Axis Ticks dynamically based on the value range and interval
     if (widget.model.xaxis.interval != null) {
-      num range = (toNum(widget.model.xaxis.max) ?? xMax) - (toNum(widget.model.xaxis.min) ?? xMin);
+      num range = (toNum(widget.model.xaxis.max) ?? xMax) -
+          (toNum(widget.model.xaxis.min) ?? xMin);
       if (range.isFinite) {
-        xTicksCount = (range / (toNum(widget.model.xaxis.interval) ?? 1) + 1).ceil();
+        xTicksCount =
+            (range / (toNum(widget.model.xaxis.interval) ?? 1) + 1).ceil();
       }
     }
 
@@ -361,7 +421,8 @@ class _ChartViewState extends WidgetState<ChartView>
     );
   }
 
-  charts_flutter.OrdinalComboChart buildOrdinalChart(List<charts_flutter.Series> series) {
+  charts_flutter.OrdinalComboChart buildOrdinalChart(
+      List<charts_flutter.Series> series) {
     List<charts_flutter.SeriesRendererConfig<String>> seriesRenderers = [];
     num yMin = double.infinity;
     num yMax = double.negativeInfinity;
@@ -377,22 +438,30 @@ class _ChartViewState extends WidgetState<ChartView>
       // Calculate Numeric Y Axis Ticks
       if (widget.model.yaxis.interval != null && s.dataPoint.isNotEmpty) {
         num ySeriesMin = s.dataPoint.fold(
-            toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
-        previous < (toNum(current.y) ?? yMin) ? previous : (toNum(current.y) ?? yMin));
+            toNum(s.dataPoint[0].y) ?? yMin,
+            (num previous, ChartDataPoint current) =>
+                previous < (toNum(current.y) ?? yMin)
+                    ? previous
+                    : (toNum(current.y) ?? yMin));
         yMin = ySeriesMin < yMin ? ySeriesMin : yMin;
 
         num ySeriesMax = s.dataPoint.fold(
-            toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
-        previous > (toNum(current.y) ?? yMin) ? previous : (toNum(current.y) ?? yMin));
+            toNum(s.dataPoint[0].y) ?? yMin,
+            (num previous, ChartDataPoint current) =>
+                previous > (toNum(current.y) ?? yMin)
+                    ? previous
+                    : (toNum(current.y) ?? yMin));
         yMax = ySeriesMax > yMax ? ySeriesMax : yMax;
       }
     }
 
     // Determine Y Axis Ticks dynamically based on the value range and interval
     if (widget.model.yaxis.interval != null) {
-      num range = (toNum(widget.model.yaxis.max) ?? yMax) - (toNum(widget.model.yaxis.min) ?? yMin);
+      num range = (toNum(widget.model.yaxis.max) ?? yMax) -
+          (toNum(widget.model.yaxis.min) ?? yMin);
       if (range.isFinite) {
-        yTicksCount = (range / (toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
+        yTicksCount =
+            (range / (toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
       }
     }
 
@@ -412,7 +481,8 @@ class _ChartViewState extends WidgetState<ChartView>
     );
   }
 
-  charts_flutter.TimeSeriesChart buildTimeChart(List<charts_flutter.Series> series) {
+  charts_flutter.TimeSeriesChart buildTimeChart(
+      List<charts_flutter.Series> series) {
     List<charts_flutter.SeriesRendererConfig<DateTime>> seriesRenderers = [];
     List<charts_flutter.TickSpec<DateTime>> xTicks = [];
     SplayTreeMap<int, DateTime> ticksMap = SplayTreeMap<int, DateTime>();
@@ -426,7 +496,8 @@ class _ChartViewState extends WidgetState<ChartView>
         Log().warning(
             'Stacked Bar Series are only compatible with Category type X Axis and each series must be type="bar"');
       }
-      Function configFunc = getSeriesRenderer(s, /*widget.model.xaxis.type ??*/ ChartAxisType.datetime);
+      Function configFunc = getSeriesRenderer(
+          s, /*widget.model.xaxis.type ??*/ ChartAxisType.datetime);
       charts_flutter.SeriesRendererConfig<DateTime> config = configFunc(s);
       seriesRenderers.add(config);
       // Map all the x values for the ticks
@@ -435,13 +506,13 @@ class _ChartViewState extends WidgetState<ChartView>
         if (xDateTime != null) {
           int epoch = xDateTime.toUtc().millisecondsSinceEpoch;
           // Ignore date/time data ticks before the min datetime on the x axis
-          if (widget.model.xaxis.min != null
-              && DT.isBefore(xDateTime, toDate(widget.model.xaxis.min!)!)) {
+          if (widget.model.xaxis.min != null &&
+              DT.isBefore(xDateTime, toDate(widget.model.xaxis.min!)!)) {
             continue;
           }
           // Ignore date/time data ticks after the max datetime on the x axis
-          if (widget.model.xaxis.max != null
-              && DT.isAfter(xDateTime, toDate(widget.model.xaxis.max!)!)) {
+          if (widget.model.xaxis.max != null &&
+              DT.isAfter(xDateTime, toDate(widget.model.xaxis.max!)!)) {
             continue;
           }
           ticksMap[epoch] = xDateTime;
@@ -453,27 +524,36 @@ class _ChartViewState extends WidgetState<ChartView>
       // Calculate Numeric Y Axis Ticks
       if (widget.model.yaxis.interval != null && s.dataPoint.isNotEmpty) {
         num ySeriesMin = s.dataPoint.fold(
-            toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
-        previous < (toNum(current.y) ?? yMin) ? previous : (toNum(current.y) ?? yMin));
+            toNum(s.dataPoint[0].y) ?? yMin,
+            (num previous, ChartDataPoint current) =>
+                previous < (toNum(current.y) ?? yMin)
+                    ? previous
+                    : (toNum(current.y) ?? yMin));
         yMin = ySeriesMin < yMin ? ySeriesMin : yMin;
 
         num ySeriesMax = s.dataPoint.fold(
-            toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
-        previous > (toNum(current.y) ?? yMin) ? previous : (toNum(current.y) ?? yMin));
+            toNum(s.dataPoint[0].y) ?? yMin,
+            (num previous, ChartDataPoint current) =>
+                previous > (toNum(current.y) ?? yMin)
+                    ? previous
+                    : (toNum(current.y) ?? yMin));
         yMax = ySeriesMax > yMax ? ySeriesMax : yMax;
       }
     }
 
     // Statically build each X Axis datetime tick
-    xTicks = dateTimeTickBuilder(ticksMap.entries.map((entry) => entry.value).toList(),
+    xTicks = dateTimeTickBuilder(
+        ticksMap.entries.map((entry) => entry.value).toList(),
         interval: widget.model.xaxis.interval.toString().trim(),
         format: widget.model.xaxis.format);
 
     // Determine Y Axis Ticks dynamically based on the value range and interval
     if (widget.model.yaxis.interval != null) {
-      num range = (toNum(widget.model.yaxis.max) ?? yMax) - (toNum(widget.model.yaxis.min) ?? yMin);
+      num range = (toNum(widget.model.yaxis.max) ?? yMax) -
+          (toNum(widget.model.yaxis.min) ?? yMin);
       if (range.isFinite) {
-        yTicksCount = (range / (toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
+        yTicksCount =
+            (range / (toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
       }
     }
 
@@ -493,13 +573,16 @@ class _ChartViewState extends WidgetState<ChartView>
     );
   }
 
-  charts_flutter.PieChart buildPieChart(List<charts_flutter.Series<dynamic, String>> series) {
+  charts_flutter.PieChart buildPieChart(
+      List<charts_flutter.Series<dynamic, String>> series) {
     charts_flutter.ArcRendererConfig<String>? labelRendererWithData;
     // Flex: I Added this based on a bug Isaac reported where the arc label renderer without data held up
     // other paint jobs using the same data, ie a MAP drawn after a pie chart using the same datasource.
     if (series.isNotEmpty && series[0].data.isNotEmpty) {
-      labelRendererWithData = charts_flutter.ArcRendererConfig(arcRendererDecorators: [
-        charts_flutter.ArcLabelDecorator(labelPosition: charts_flutter.ArcLabelPosition.auto)
+      labelRendererWithData =
+          charts_flutter.ArcRendererConfig(arcRendererDecorators: [
+        charts_flutter.ArcLabelDecorator(
+            labelPosition: charts_flutter.ArcLabelPosition.auto)
       ]);
     }
     return charts_flutter.PieChart<String>(
@@ -556,7 +639,7 @@ class _ChartViewState extends WidgetState<ChartView>
           dynamic yParsed;
           try {
             xParsed = parsePlotPoint(point.x, widget.model.xaxis.type);
-          } catch(e) {
+          } catch (e) {
             Log().error(
                 'Unable to parse X axis plot point, chart id: ${widget.model.id.toString()} - series name: ${series.name.toString()} - $e');
             break;
@@ -565,7 +648,7 @@ class _ChartViewState extends WidgetState<ChartView>
             yParsed = isNullOrEmpty(point.y)
                 ? null
                 : parsePlotPoint(point.y, widget.model.yaxis.type);
-          } catch(e) {
+          } catch (e) {
             Log().error(
                 'Unable to parse Y axis plot point, chart id: ${widget.model.id.toString()} - series name: ${series.name.toString()} - $e');
             break;
@@ -575,18 +658,20 @@ class _ChartViewState extends WidgetState<ChartView>
           if (yAllNull == true) yAllNull = yParsed == null;
           // Ignore date/time data points before the min datetime on the x axis
           if ((widget.model.xaxis.type == ChartAxisType.datetime ||
-              widget.model.xaxis.type == ChartAxisType.date ||
-              widget.model.xaxis.type == ChartAxisType.time) &&
-              widget.model.xaxis.min != null && xParsed != null
-              && DT.isBefore(xParsed, toDate(widget.model.xaxis.min!)!)) {
+                  widget.model.xaxis.type == ChartAxisType.date ||
+                  widget.model.xaxis.type == ChartAxisType.time) &&
+              widget.model.xaxis.min != null &&
+              xParsed != null &&
+              DT.isBefore(xParsed, toDate(widget.model.xaxis.min!)!)) {
             continue;
           }
           // Ignore date/time data points after the max datetime on the x axis
           if ((widget.model.xaxis.type == ChartAxisType.datetime ||
-              widget.model.xaxis.type == ChartAxisType.date ||
-              widget.model.xaxis.type == ChartAxisType.time) &&
-              widget.model.xaxis.max != null && xParsed != null
-              && DT.isAfter(xParsed, toDate(widget.model.xaxis.max!)!)) {
+                  widget.model.xaxis.type == ChartAxisType.date ||
+                  widget.model.xaxis.type == ChartAxisType.time) &&
+              widget.model.xaxis.max != null &&
+              xParsed != null &&
+              DT.isAfter(xParsed, toDate(widget.model.xaxis.max!)!)) {
             continue;
           }
           // get label
@@ -616,20 +701,23 @@ class _ChartViewState extends WidgetState<ChartView>
               id: series.id,
               displayName: series.name ?? series.id,
               // seriesCategory: series.stack,
-              areaColorFn: (dynamic plot, _) => charts_flutter.ColorUtil.fromDartColor(
-                  (plot.color ?? series.color)?.withOpacity(0.1) ??
-                      Colors.black12),
-              colorFn: (dynamic plot, _) => charts_flutter.ColorUtil.fromDartColor(
-                  plot.color ??
+              areaColorFn: (dynamic plot, _) =>
+                  charts_flutter.ColorUtil.fromDartColor(
+                      (plot.color ?? series.color)?.withOpacity(0.1) ??
+                          Colors.black12),
+              colorFn: (dynamic plot, _) =>
+                  charts_flutter.ColorUtil.fromDartColor(plot.color ??
                       series.color ??
                       (ColorHelper.niceColors.length > _!
                           ? ColorHelper.niceColors[_]!
                           : Colors.black)),
               domainFn: (dynamic plot, _) => plot.x,
               measureFn: (dynamic plot, _) => plot.y,
-              labelAccessorFn: (dynamic plot, _) => drawLabel(plot), // Unavailable outside of pie/bar charts
+              labelAccessorFn: (dynamic plot, _) =>
+                  drawLabel(plot), // Unavailable outside of pie/bar charts
               data: seriesData)
-            ..setAttribute(charts_flutter.rendererIdKey, getRendererKey(series)));
+            ..setAttribute(
+                charts_flutter.rendererIdKey, getRendererKey(series)));
           break;
         // Numeric based X axis
         case ChartAxisType.numeric:
@@ -637,20 +725,23 @@ class _ChartViewState extends WidgetState<ChartView>
               id: series.id,
               displayName: series.name ?? series.id,
               // seriesCategory: series.stack,
-              areaColorFn: (dynamic plot, _) => charts_flutter.ColorUtil.fromDartColor(
-                  (plot.color ?? series.color)?.withOpacity(0.1) ??
-                      Colors.black12),
-              colorFn: (dynamic plot, _) => charts_flutter.ColorUtil.fromDartColor(
-                  plot.color ??
+              areaColorFn: (dynamic plot, _) =>
+                  charts_flutter.ColorUtil.fromDartColor(
+                      (plot.color ?? series.color)?.withOpacity(0.1) ??
+                          Colors.black12),
+              colorFn: (dynamic plot, _) =>
+                  charts_flutter.ColorUtil.fromDartColor(plot.color ??
                       series.color ??
                       (ColorHelper.niceColors.length > _!
                           ? ColorHelper.niceColors[_]!
                           : Colors.black)),
               domainFn: (dynamic plot, _) => plot.x,
               measureFn: (dynamic plot, _) => plot.y,
-              labelAccessorFn: (dynamic plot, _) => drawLabel(plot), // Unavailable outside of pie/bar charts
+              labelAccessorFn: (dynamic plot, _) =>
+                  drawLabel(plot), // Unavailable outside of pie/bar charts
               data: seriesData)
-            ..setAttribute(charts_flutter.rendererIdKey, getRendererKey(series)));
+            ..setAttribute(
+                charts_flutter.rendererIdKey, getRendererKey(series)));
           break;
         // Category/String based X axis
         case ChartAxisType.category:
@@ -658,20 +749,23 @@ class _ChartViewState extends WidgetState<ChartView>
               id: series.id,
               displayName: series.name ?? series.id,
               seriesCategory: series.stack,
-              areaColorFn: (dynamic plot, _) => charts_flutter.ColorUtil.fromDartColor(
-                  (plot.color ?? series.color)?.withOpacity(0.1) ??
-                      Colors.black12),
-              colorFn: (dynamic plot, _) => charts_flutter.ColorUtil.fromDartColor(
-                  plot.color ??
+              areaColorFn: (dynamic plot, _) =>
+                  charts_flutter.ColorUtil.fromDartColor(
+                      (plot.color ?? series.color)?.withOpacity(0.1) ??
+                          Colors.black12),
+              colorFn: (dynamic plot, _) =>
+                  charts_flutter.ColorUtil.fromDartColor(plot.color ??
                       series.color ??
                       (ColorHelper.niceColors.length > _!
                           ? ColorHelper.niceColors[_]!
                           : Colors.black)),
               domainFn: (dynamic plot, _) => plot.x,
               measureFn: (dynamic plot, _) => plot.y,
-              labelAccessorFn: (dynamic plot, _) => drawLabel(plot), // Unavailable outside of pie/bar charts
+              labelAccessorFn: (dynamic plot, _) =>
+                  drawLabel(plot), // Unavailable outside of pie/bar charts
               data: seriesData)
-            ..setAttribute(charts_flutter.rendererIdKey, getRendererKey(series)));
+            ..setAttribute(
+                charts_flutter.rendererIdKey, getRendererKey(series)));
           break;
         default:
           Log().warning(
@@ -776,7 +870,8 @@ class _ChartViewState extends WidgetState<ChartView>
 
   charts_flutter.SeriesRendererConfig<DateTime> buildDateTimeBarRenderer(
       ChartSeriesModel series) {
-    return charts_flutter.BarRendererConfig(customRendererId: series.group ?? series.id);
+    return charts_flutter.BarRendererConfig(
+        customRendererId: series.group ?? series.id);
   }
 
   charts_flutter.SeriesRendererConfig<num> buildNumericBarRenderer(
@@ -888,12 +983,11 @@ class _ChartViewState extends WidgetState<ChartView>
             }
           }
         }
-      } catch(e) {
-        Log().warning(
-            'Unable to set Chart Series Point selection$e');
+      } catch (e) {
+        Log().warning('Unable to set Chart Series Point selection$e');
       }
-    }
-    else { // delselect
+    } else {
+      // delselect
       // stop listening during build
       widget.model.removeListener(this);
       widget.model.selected = null;
@@ -912,11 +1006,15 @@ class _ChartViewState extends WidgetState<ChartView>
     List<RangeAnnotationSegment<dynamic>> annotations = [];
 
     for (ChartLabelModel labels in widget.model.labels) {
-
       // Loop through each label from the dataset
       for (ChartDataLabel label in labels.dataLabel) {
         // Check label has a positional value
-        if (isNullOrEmpty(label.x) && isNullOrEmpty(label.x1) && isNullOrEmpty(label.x2) && isNullOrEmpty(label.y) && isNullOrEmpty(label.y1) && isNullOrEmpty(label.y2)) {
+        if (isNullOrEmpty(label.x) &&
+            isNullOrEmpty(label.x1) &&
+            isNullOrEmpty(label.x2) &&
+            isNullOrEmpty(label.y) &&
+            isNullOrEmpty(label.y1) &&
+            isNullOrEmpty(label.y2)) {
           continue;
         }
 
@@ -957,10 +1055,10 @@ class _ChartViewState extends WidgetState<ChartView>
           if (hasY && hasY2 && !isNullOrEmpty(label.y2)) {
             y2Parsed = parsePlotPoint(label.y2, widget.model.yaxis.type);
           }
-        }
-        catch(e) {
-            Log().error('Unable to parse label location: x: ${label.x.toString()}, x1: ${label.x1.toString()}, x2: ${label.x2.toString()}, y: ${label.y.toString()}, y1: ${label.y1.toString()}, y2: ${label.y2.toString()}, $e');
-            break;
+        } catch (e) {
+          Log().error(
+              'Unable to parse label location: x: ${label.x.toString()}, x1: ${label.x1.toString()}, x2: ${label.x2.toString()}, y: ${label.y.toString()}, y1: ${label.y1.toString()}, y2: ${label.y2.toString()}, $e');
+          break;
         }
 
         // Build the annotations (labels) and use the parameters to determine
@@ -1004,7 +1102,6 @@ class _ChartViewState extends WidgetState<ChartView>
             break;
         }
 
-
         switch (label.direction?.toLowerCase()) {
           case 'horizontal':
             direction = charts_flutter.AnnotationLabelDirection.horizontal;
@@ -1026,84 +1123,188 @@ class _ChartViewState extends WidgetState<ChartView>
 
         if (axis == RangeAnnotationAxisType.measure) {
           annotation = charts_flutter.RangeAnnotationSegment<num>(
-            hasX ? xParsed ?? x1Parsed : yParsed ?? y1Parsed,
-            hasX ? x2Parsed ?? x1Parsed ?? xParsed : y2Parsed ?? y1Parsed ?? yParsed,
-            axis,
-            startLabel: label.startlabel ?? '',
-            middleLabel: label.label ?? '',
-            endLabel: label.endlabel ?? '',
-            labelAnchor: anchor, // middle/start/end
-            labelPosition: position, // AnnotationLabelPosition.auto/inside/outside/margin
-            labelDirection: direction, // horizontal/vertical
-            color: charts_flutter.Color(r: label.color.red, g: label.color.green, b: label.color.blue, a: label.color.alpha),
-            labelStyleSpec: charts_flutter.TextStyleSpec(fontSize: label.labelsize ?? 12,
-                color: label.labelcolor != null
-                    ? charts_flutter.Color(r: label.labelcolor.red, g: label.labelcolor.green, b: label.labelcolor.blue, a: label.labelcolor.alpha)
-                    : charts_flutter.Color(r: Theme.of(context).colorScheme.onSurfaceVariant.red, g: Theme.of(context).colorScheme.onSurfaceVariant.green, b: Theme.of(context).colorScheme.onSurfaceVariant.blue, a: Theme.of(context).colorScheme.onSurfaceVariant.alpha))
-          ) as RangeAnnotationSegment<T>;
+              hasX ? xParsed ?? x1Parsed : yParsed ?? y1Parsed,
+              hasX
+                  ? x2Parsed ?? x1Parsed ?? xParsed
+                  : y2Parsed ?? y1Parsed ?? yParsed,
+              axis,
+              startLabel: label.startlabel ?? '',
+              middleLabel: label.label ?? '',
+              endLabel: label.endlabel ?? '',
+              labelAnchor: anchor, // middle/start/end
+              labelPosition:
+                  position, // AnnotationLabelPosition.auto/inside/outside/margin
+              labelDirection: direction, // horizontal/vertical
+              color: charts_flutter.Color(
+                  r: label.color.red,
+                  g: label.color.green,
+                  b: label.color.blue,
+                  a: label.color.alpha),
+              labelStyleSpec: charts_flutter.TextStyleSpec(
+                  fontSize: label.labelsize ?? 12,
+                  color: label.labelcolor != null
+                      ? charts_flutter.Color(
+                          r: label.labelcolor.red,
+                          g: label.labelcolor.green,
+                          b: label.labelcolor.blue,
+                          a: label.labelcolor.alpha)
+                      : charts_flutter.Color(
+                          r: Theme.of(context).colorScheme.onSurfaceVariant.red,
+                          g: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant
+                              .green,
+                          b: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant
+                              .blue,
+                          a: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant
+                              .alpha))) as RangeAnnotationSegment<T>;
         } else if (axis == RangeAnnotationAxisType.domain) {
           switch (widget.model.xaxis.type) {
             case ChartAxisType.date:
             case ChartAxisType.time:
             case ChartAxisType.datetime:
               annotation = charts_flutter.RangeAnnotationSegment<DateTime>(
-                hasX ? xParsed ?? x1Parsed : yParsed ?? y1Parsed,
-                hasX ? x2Parsed ?? x1Parsed ?? xParsed : y2Parsed ?? y1Parsed ?? yParsed,
-                axis,
-                startLabel: label.startlabel ?? '',
-                middleLabel: label.label ?? '',
-                endLabel: label.endlabel ?? '',
-                labelAnchor: anchor, // middle/start/end
-                labelPosition: position, // AnnotationLabelPosition.auto/inside/outside/margin
-                labelDirection: direction, // horizontal/vertical
-                color: charts_flutter.Color(r: label.color.red, g: label.color.green, b: label.color.blue, a: label.color.alpha),
-                labelStyleSpec: charts_flutter.TextStyleSpec(fontSize: label.labelsize ?? 12,
-                    color: label.labelcolor != null
-                        ? charts_flutter.Color(r: label.labelcolor.red, g: label.labelcolor.green, b: label.labelcolor.blue, a: label.labelcolor.alpha)
-                        : charts_flutter.Color(r: Theme.of(context).colorScheme.onSurfaceVariant.red, g: Theme.of(context).colorScheme.onSurfaceVariant.green, b: Theme.of(context).colorScheme.onSurfaceVariant.blue, a: Theme.of(context).colorScheme.onSurfaceVariant.alpha))
-              ) as RangeAnnotationSegment<T>;
+                  hasX ? xParsed ?? x1Parsed : yParsed ?? y1Parsed,
+                  hasX
+                      ? x2Parsed ?? x1Parsed ?? xParsed
+                      : y2Parsed ?? y1Parsed ?? yParsed,
+                  axis,
+                  startLabel: label.startlabel ?? '',
+                  middleLabel: label.label ?? '',
+                  endLabel: label.endlabel ?? '',
+                  labelAnchor: anchor, // middle/start/end
+                  labelPosition:
+                      position, // AnnotationLabelPosition.auto/inside/outside/margin
+                  labelDirection: direction, // horizontal/vertical
+                  color: charts_flutter.Color(
+                      r: label.color.red,
+                      g: label.color.green,
+                      b: label.color.blue,
+                      a: label.color.alpha),
+                  labelStyleSpec: charts_flutter.TextStyleSpec(
+                      fontSize: label.labelsize ?? 12,
+                      color: label.labelcolor != null
+                          ? charts_flutter.Color(
+                              r: label.labelcolor.red,
+                              g: label.labelcolor.green,
+                              b: label.labelcolor.blue,
+                              a: label.labelcolor.alpha)
+                          : charts_flutter.Color(
+                              r: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .red,
+                              g: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .green,
+                              b: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .blue,
+                              a: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .alpha))) as RangeAnnotationSegment<T>;
               break;
             case ChartAxisType.category:
               annotation = charts_flutter.RangeAnnotationSegment<String>(
-                hasX ? xParsed ?? x1Parsed : yParsed ?? y1Parsed,
-                hasX ? x2Parsed ?? x1Parsed ?? xParsed : y2Parsed ?? y1Parsed ?? yParsed,
-                axis,
-                startLabel: label.startlabel ?? '',
-                middleLabel: label.label ?? '',
-                endLabel: label.endlabel ?? '',
-                labelAnchor: anchor, // middle/start/end
-                labelPosition: position, // AnnotationLabelPosition.auto/inside/outside/margin
-                labelDirection: direction, // horizontal/vertical
-                color: charts_flutter.Color(r: label.color.red, g: label.color.green, b: label.color.blue, a: label.color.alpha),
-                labelStyleSpec: charts_flutter.TextStyleSpec(fontSize: label.labelsize ?? 12,
-                    color: label.labelcolor != null
-                        ? charts_flutter.Color(r: label.labelcolor.red, g: label.labelcolor.green, b: label.labelcolor.blue, a: label.labelcolor.alpha)
-                        : charts_flutter.Color(r: Theme.of(context).colorScheme.onSurfaceVariant.red, g: Theme.of(context).colorScheme.onSurfaceVariant.green, b: Theme.of(context).colorScheme.onSurfaceVariant.blue, a: Theme.of(context).colorScheme.onSurfaceVariant.alpha))
-              ) as RangeAnnotationSegment<T>;
+                  hasX ? xParsed ?? x1Parsed : yParsed ?? y1Parsed,
+                  hasX
+                      ? x2Parsed ?? x1Parsed ?? xParsed
+                      : y2Parsed ?? y1Parsed ?? yParsed,
+                  axis,
+                  startLabel: label.startlabel ?? '',
+                  middleLabel: label.label ?? '',
+                  endLabel: label.endlabel ?? '',
+                  labelAnchor: anchor, // middle/start/end
+                  labelPosition:
+                      position, // AnnotationLabelPosition.auto/inside/outside/margin
+                  labelDirection: direction, // horizontal/vertical
+                  color: charts_flutter.Color(
+                      r: label.color.red,
+                      g: label.color.green,
+                      b: label.color.blue,
+                      a: label.color.alpha),
+                  labelStyleSpec: charts_flutter.TextStyleSpec(
+                      fontSize: label.labelsize ?? 12,
+                      color: label.labelcolor != null
+                          ? charts_flutter.Color(
+                              r: label.labelcolor.red,
+                              g: label.labelcolor.green,
+                              b: label.labelcolor.blue,
+                              a: label.labelcolor.alpha)
+                          : charts_flutter.Color(
+                              r: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .red,
+                              g: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .green,
+                              b: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .blue,
+                              a: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .alpha))) as RangeAnnotationSegment<T>;
               break;
             case ChartAxisType.numeric:
               annotation = charts_flutter.RangeAnnotationSegment<num>(
-                hasX ? xParsed ?? x1Parsed : yParsed ?? y1Parsed,
-                hasX ? x2Parsed ?? x1Parsed ?? xParsed : y2Parsed ?? y1Parsed ?? yParsed,
-                axis,
-                startLabel: label.startlabel ?? '',
-                middleLabel: label.label ?? '',
-                endLabel: label.endlabel ?? '',
-                labelAnchor: anchor, // middle/start/end
-                labelPosition: position, // AnnotationLabelPosition.auto/inside/outside/margin
-                labelDirection: direction, // horizontal/vertical
-                color: charts_flutter.Color(r: label.color.red, g: label.color.green, b: label.color.blue, a: label.color.alpha),
-                labelStyleSpec: charts_flutter.TextStyleSpec(fontSize: label.labelsize ?? 12,
-                    color: label.labelcolor != null
-                        ? charts_flutter.Color(r: label.labelcolor.red, g: label.labelcolor.green, b: label.labelcolor.blue, a: label.labelcolor.alpha)
-                        : charts_flutter.Color(r: Theme.of(context).colorScheme.onSurfaceVariant.red, g: Theme.of(context).colorScheme.onSurfaceVariant.green, b: Theme.of(context).colorScheme.onSurfaceVariant.blue, a: Theme.of(context).colorScheme.onSurfaceVariant.alpha))
-              ) as RangeAnnotationSegment<T>;
+                  hasX ? xParsed ?? x1Parsed : yParsed ?? y1Parsed,
+                  hasX
+                      ? x2Parsed ?? x1Parsed ?? xParsed
+                      : y2Parsed ?? y1Parsed ?? yParsed,
+                  axis,
+                  startLabel: label.startlabel ?? '',
+                  middleLabel: label.label ?? '',
+                  endLabel: label.endlabel ?? '',
+                  labelAnchor: anchor, // middle/start/end
+                  labelPosition:
+                      position, // AnnotationLabelPosition.auto/inside/outside/margin
+                  labelDirection: direction, // horizontal/vertical
+                  color: charts_flutter.Color(
+                      r: label.color.red,
+                      g: label.color.green,
+                      b: label.color.blue,
+                      a: label.color.alpha),
+                  labelStyleSpec: charts_flutter.TextStyleSpec(
+                      fontSize: label.labelsize ?? 12,
+                      color: label.labelcolor != null
+                          ? charts_flutter.Color(
+                              r: label.labelcolor.red,
+                              g: label.labelcolor.green,
+                              b: label.labelcolor.blue,
+                              a: label.labelcolor.alpha)
+                          : charts_flutter.Color(
+                              r: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .red,
+                              g: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .green,
+                              b: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .blue,
+                              a: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .alpha))) as RangeAnnotationSegment<T>;
               break;
             default:
               continue;
           }
-        }
-        else {
+        } else {
           continue;
         }
 
@@ -1119,22 +1320,28 @@ class _ChartViewState extends WidgetState<ChartView>
     // if (chartType != ChartType.pieChart) behaviors.add(charts_flutter.PanAndZoomBehavior());
 
     if (widget.model.showlegend != 'false' && chartType != ChartType.pieChart) {
-      behaviors.add(
-          charts_flutter.SeriesLegend(
-              position: legendPosition(widget.model.showlegend,),
-              entryTextStyle: charts_flutter.TextStyleSpec(
-                fontSize: widget.model.legendsize,
-                color: charts_flutter.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}')),
-          ));
+      behaviors.add(charts_flutter.SeriesLegend(
+        position: legendPosition(
+          widget.model.showlegend,
+        ),
+        entryTextStyle: charts_flutter.TextStyleSpec(
+            fontSize: widget.model.legendsize,
+            color: charts_flutter.Color.fromHex(
+                code:
+                    '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}')),
+      ));
     }
 
     if (widget.model.showlegend != 'false' && chartType == ChartType.pieChart) {
       behaviors.add(charts_flutter.DatumLegend(
         position: legendPosition(widget.model.showlegend),
         entryTextStyle: charts_flutter.TextStyleSpec(
-          color: charts_flutter.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
+          color: charts_flutter.Color.fromHex(
+              code:
+                  '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
         ),
-        outsideJustification: charts_flutter.OutsideJustification.middleDrawArea,
+        outsideJustification:
+            charts_flutter.OutsideJustification.middleDrawArea,
         horizontalFirst: true,
         desiredMaxColumns: 4,
         cellPadding: const EdgeInsets.only(right: 4.0, bottom: 4.0),
@@ -1144,40 +1351,48 @@ class _ChartViewState extends WidgetState<ChartView>
     if (widget.model.xaxis.title != null) {
       behaviors.add(charts_flutter.ChartTitle(widget.model.xaxis.title!,
           titleStyleSpec: charts_flutter.TextStyleSpec(
-            color: charts_flutter.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
+            color: charts_flutter.Color.fromHex(
+                code:
+                    '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
           ),
           behaviorPosition: widget.model.horizontal == true
               ? charts_flutter.BehaviorPosition.start
               : charts_flutter.BehaviorPosition.bottom,
-          titleOutsideJustification: charts_flutter.OutsideJustification.middleDrawArea));
+          titleOutsideJustification:
+              charts_flutter.OutsideJustification.middleDrawArea));
     }
 
     if (widget.model.yaxis.title != null) {
       behaviors.add(charts_flutter.ChartTitle(widget.model.yaxis.title!,
           titleStyleSpec: charts_flutter.TextStyleSpec(
-            color: charts_flutter.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
+            color: charts_flutter.Color.fromHex(
+                code:
+                    '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
           ),
           behaviorPosition: widget.model.horizontal == true
               ? charts_flutter.BehaviorPosition.bottom
               : charts_flutter.BehaviorPosition.start,
-          titleOutsideJustification: charts_flutter.OutsideJustification.middleDrawArea));
+          titleOutsideJustification:
+              charts_flutter.OutsideJustification.middleDrawArea));
     }
 
-    behaviors.add(
-        charts_flutter.LinePointHighlighter(
-            drawFollowLinesAcrossChart: true,
-            dashPattern: const [3,2],
-            selectionModelType: charts_flutter.SelectionModelType.info,
-            showHorizontalFollowLine:
+    behaviors.add(charts_flutter.LinePointHighlighter(
+        drawFollowLinesAcrossChart: true,
+        dashPattern: const [3, 2],
+        selectionModelType: charts_flutter.SelectionModelType.info,
+        showHorizontalFollowLine:
             charts_flutter.LinePointHighlighterFollowLineType.nearest,
-            showVerticalFollowLine:
+        showVerticalFollowLine:
             charts_flutter.LinePointHighlighterFollowLineType.nearest,
-            symbolRenderer: charts_flutter.CircleSymbolRenderer(isSolid: true)));
-    behaviors.add(charts_flutter.SelectNearest(eventTrigger: charts_flutter.SelectionTrigger.tapAndDrag));
+        symbolRenderer: charts_flutter.CircleSymbolRenderer(isSolid: true)));
+    behaviors.add(charts_flutter.SelectNearest(
+        eventTrigger: charts_flutter.SelectionTrigger.tapAndDrag));
 
     List<RangeAnnotationSegment<dynamic>>? labelBehaviors = [];
     labelBehaviors = getLabels<dynamic>();
-    if (labelBehaviors.isNotEmpty) behaviors.add(charts_flutter.RangeAnnotation<T>(labelBehaviors.cast<AnnotationSegment<Object>>()));
+    if (labelBehaviors.isNotEmpty)
+      behaviors.add(charts_flutter.RangeAnnotation<T>(
+          labelBehaviors.cast<AnnotationSegment<Object>>()));
 
     return behaviors;
   }
@@ -1200,16 +1415,15 @@ class _ChartViewState extends WidgetState<ChartView>
     }
   }
 
-
-
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
     // Busy / Loading Indicator
-    busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
+    busy ??= BusyModel(widget.model,
+            visible: widget.model.busy, observable: widget.model.busyObservable)
+        .getView();
 
     Widget view;
 
@@ -1234,7 +1448,8 @@ class _ChartViewState extends WidgetState<ChartView>
           if (series == null || series.isEmpty) {
             view = const Center(child: Icon(Icons.add_chart));
           } else if (series[0].data.isNotEmpty) {
-            view = buildPieChart((series as List<charts_flutter.Series<dynamic, String>>));
+            view = buildPieChart(
+                (series as List<charts_flutter.Series<dynamic, String>>));
           } else {
             view = const Center(child: Icon(Icons.add_chart));
           }
@@ -1245,7 +1460,7 @@ class _ChartViewState extends WidgetState<ChartView>
         default:
           view = const Center(child: Icon(Icons.add_chart));
       }
-    } catch(e) {
+    } catch (e) {
       Log().exception(e, caller: 'chart_view builder() ');
       view = const Center(child: Icon(Icons.add_chart));
     }

@@ -2,13 +2,12 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class StackModel extends BoxModel
-{
+class StackModel extends BoxModel {
   @override
   LayoutType layoutType = LayoutType.stack;
 
@@ -17,17 +16,13 @@ class StackModel extends BoxModel
 
   StackModel(WidgetModel super.parent, super.id);
 
-  static StackModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static StackModel? fromXml(WidgetModel parent, XmlElement xml) {
     StackModel? model;
-    try
-    {
+    try {
       // build model
       model = StackModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e, caller: 'stack.Model');
       model = null;
     }
@@ -35,26 +30,23 @@ class StackModel extends BoxModel
   }
 
   @override
-  List<Widget> inflate()
-  {
+  List<Widget> inflate() {
     // sort children by depth
     if (children != null) {
-    children!.sort((a, b)
-    {
-      if (a is ViewableWidgetModel && b is ViewableWidgetModel)
-      {
-        if(a.depth != null && b.depth != null) return a.depth?.compareTo(b.depth!) ?? 0;
-      }
-      return 0;
-    });
+      children!.sort((a, b) {
+        if (a is ViewableWidgetModel && b is ViewableWidgetModel) {
+          if (a.depth != null && b.depth != null)
+            return a.depth?.compareTo(b.depth!) ?? 0;
+        }
+        return 0;
+      });
     }
     return super.inflate();
   }
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
   }

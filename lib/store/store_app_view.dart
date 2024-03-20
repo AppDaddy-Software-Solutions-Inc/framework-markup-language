@@ -7,21 +7,18 @@ import 'package:fml/store/store_model.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 
-class AppForm extends StatefulWidget
-{
+class AppForm extends StatefulWidget {
   const AppForm({super.key});
 
   @override
-  AppFormState createState()
-  {
+  AppFormState createState() {
     return AppFormState();
   }
 }
 
-class AppFormState extends State<AppForm>
-{
-  final   _formKey  = GlobalKey<FormState>();
-  String  errorText = '';
+class AppFormState extends State<AppForm> {
+  final _formKey = GlobalKey<FormState>();
+  String errorText = '';
   String? title;
   String? url;
   bool unreachable = false;
@@ -31,14 +28,12 @@ class AppFormState extends State<AppForm>
   // busy
   BooleanObservable busy = BooleanObservable(null, false);
 
-  String? _validateTitle(title)
-  {
+  String? _validateTitle(title) {
     this.title = null;
     errorText = '';
 
     // missing title
-    if (isNullOrEmpty(title))
-    {
+    if (isNullOrEmpty(title)) {
       errorText = "Title must be supplied";
       return errorText;
     }
@@ -49,21 +44,18 @@ class AppFormState extends State<AppForm>
     return null;
   }
 
-  String? _validateUrl(url)
-  {
+  String? _validateUrl(url) {
     this.url = null;
     errorText = '';
 
     // missing url
-    if (unreachable)
-    {
+    if (unreachable) {
       errorText = "Site unreachable or is missing config.xml";
       return errorText;
     }
 
     // missing url
-    if (isNullOrEmpty(url))
-    {
+    if (isNullOrEmpty(url)) {
       errorText = phrase.missingURL;
       return errorText;
     }
@@ -71,29 +63,25 @@ class AppFormState extends State<AppForm>
     var uri = Uri.tryParse(url);
 
     // invalid url
-    if (uri == null)
-    {
+    if (uri == null) {
       errorText = 'The address in not a valid web address';
       return errorText;
     }
 
     // missing scheme
-    if (!uri.hasScheme)
-    {
+    if (!uri.hasScheme) {
       uri = Uri.parse('https://${uri.url}');
       urlController.text = uri.toString();
     }
 
     // missing host
-    if (isNullOrEmpty(uri.authority))
-    {
+    if (isNullOrEmpty(uri.authority)) {
       errorText = 'Missing host in address';
       return errorText;
     }
 
     // already defined
-    if (Store().find(url: uri.toString()) != null)
-    {
+    if (Store().find(url: uri.toString()) != null) {
       errorText = 'You are already connected to this application';
       return errorText;
     }
@@ -104,23 +92,19 @@ class AppFormState extends State<AppForm>
     return null;
   }
 
-  Future _addApp() async
-  {
+  Future _addApp() async {
     // validate the form
     unreachable = false;
     busy.set(true);
     bool ok = _formKey.currentState!.validate();
-    if (ok)
-    {
-      ApplicationModel app = ApplicationModel(System(),url: url!, title: title);
+    if (ok) {
+      ApplicationModel app =
+          ApplicationModel(System(), url: url!, title: title);
       await app.initialized;
-      if (app.hasConfig)
-      {
+      if (app.hasConfig) {
         Store().add(app);
         if (mounted) Navigator.of(context).pop();
-      }
-      else
-      {
+      } else {
         unreachable = true;
         _formKey.currentState!.validate();
       }
@@ -129,26 +113,38 @@ class AppFormState extends State<AppForm>
   }
 
   @override
-  Widget build(BuildContext context)
-  {
-    var nameDecoration = InputDecoration(labelText: phrase.appName,
+  Widget build(BuildContext context) {
+    var nameDecoration = InputDecoration(
+        labelText: phrase.appName,
         labelStyle: const TextStyle(fontSize: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: const BorderSide()));
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide()));
 
     var style = TextStyle(color: Theme.of(context).colorScheme.onBackground);
 
-    var name = TextFormField(validator: _validateTitle, decoration: nameDecoration, style: style);
+    var name = TextFormField(
+        validator: _validateTitle, decoration: nameDecoration, style: style);
 
     var addressDecoration = InputDecoration(
         labelText: phrase.appUrl,
         labelStyle: const TextStyle(fontSize: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: const BorderSide()));
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide()));
 
-    var url = TextFormField(controller: urlController, validator: _validateUrl, keyboardType: TextInputType.url, decoration: addressDecoration, style: style);
+    var url = TextFormField(
+        controller: urlController,
+        validator: _validateUrl,
+        keyboardType: TextInputType.url,
+        decoration: addressDecoration,
+        style: style);
 
-    var cancel = TextButton(child: Text(phrase.cancel),  onPressed: () => Navigator.of(context).pop());
+    var cancel = TextButton(
+        child: Text(phrase.cancel),
+        onPressed: () => Navigator.of(context).pop());
 
-    var connect =  TextButton(onPressed: _addApp, child: Text(phrase.connect));
+    var connect = TextButton(onPressed: _addApp, child: Text(phrase.connect));
 
     List<Widget> layout = [];
 
@@ -159,12 +155,26 @@ class AppFormState extends State<AppForm>
     layout.add(name);
 
     // buttons
-    var buttons = Padding(padding: const EdgeInsets.only(top: 10.0, bottom: 10),child: Align(alignment: Alignment.bottomCenter, child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [cancel,connect])));
+    var buttons = Padding(
+        padding: const EdgeInsets.only(top: 10.0, bottom: 10),
+        child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [cancel, connect])));
     layout.add(buttons);
 
-    var b = BusyModel(Store(), visible: (busy.get() ?? false), observable: busy, modal: false).getView();
-    var form = Form(key: _formKey, child: Column(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.start, children: layout));
+    var b = BusyModel(Store(),
+            visible: (busy.get() ?? false), observable: busy, modal: false)
+        .getView();
+    var form = Form(
+        key: _formKey,
+        child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: layout));
 
-    return Stack(fit: StackFit.passthrough, children: [form,b]);
+    return Stack(fit: StackFit.passthrough, children: [form, b]);
   }
 }

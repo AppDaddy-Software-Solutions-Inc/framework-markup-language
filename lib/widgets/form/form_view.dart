@@ -27,20 +27,17 @@ class FormView extends StatefulWidget implements IWidgetView {
   FormViewState createState() => FormViewState();
 }
 
-class FormViewState extends WidgetState<FormView> implements IGpsListener
-{
+class FormViewState extends WidgetState<FormView> implements IGpsListener {
   Widget? busy;
 
   @override
-  onGpsData({Payload? payload})
-  {
+  onGpsData({Payload? payload}) {
     // Save Current Location
     if (payload != null) System().currentLocation = payload;
   }
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
 
     // Listen to GPS
@@ -51,27 +48,31 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     // Stop Listening to GPS
     System().gps.removeListener(this);
 
     super.dispose();
   }
 
-  Future<bool> quit() async
-  {
+  Future<bool> quit() async {
     WidgetModel.unfocus();
     bool exit = true;
 
     // model is dirty?
-    if (widget.model.dirty)
-    {
+    if (widget.model.dirty) {
       //var color = Theme.of(context).buttonTheme.colorScheme?.inversePrimary ?? Theme.of(context).colorScheme.inversePrimary;
       var color = Colors.black87;
-      var no  = Text(phrase.no,  style: TextStyle(fontSize: 14, color: color, fontWeight: FontWeight.w500));
-      var yes = Text(phrase.yes, style: TextStyle(fontSize: 14, color: color, fontWeight: FontWeight.w500));
-      int? response = await widget.model.framework?.show(type: DialogType.info, title: phrase.continueQuitting, buttons: [no, yes]);
+      var no = Text(phrase.no,
+          style: TextStyle(
+              fontSize: 14, color: color, fontWeight: FontWeight.w500));
+      var yes = Text(phrase.yes,
+          style: TextStyle(
+              fontSize: 14, color: color, fontWeight: FontWeight.w500));
+      int? response = await widget.model.framework?.show(
+          type: DialogType.info,
+          title: phrase.continueQuitting,
+          buttons: [no, yes]);
       exit = (response == 1);
     }
     return exit;
@@ -121,8 +122,7 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
@@ -133,10 +133,17 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener
     //final gesture = GestureDetector(onTap: () => WidgetModel.unfocus(), child: view);
 
     /// Busy / Loading Indicator
-    busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
+    busy ??= BusyModel(widget.model,
+            visible: widget.model.busy, observable: widget.model.busyObservable)
+        .getView();
 
     // stack gets the same size as the view when busy is positioned rather than center
-    view = GoBack(canGoBack: quit, child: Stack(children: [view, Positioned(left: 0, right: 0, top:0, bottom: 0, child: busy!)]));
+    view = GoBack(
+        canGoBack: quit,
+        child: Stack(children: [
+          view,
+          Positioned(left: 0, right: 0, top: 0, bottom: 0, child: busy!)
+        ]));
 
     // apply user defined constraints
     return view;

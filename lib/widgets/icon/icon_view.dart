@@ -15,10 +15,8 @@ class IconView extends StatefulWidget implements IWidgetView {
 }
 
 class _IconViewState extends WidgetState<IconView> {
-
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 

@@ -8,8 +8,7 @@ import 'package:google_fonts/google_fonts.dart' deferred as fonts;
 import 'package:fml/eval/text_parser.dart' as parse;
 import 'package:flutter/material.dart';
 
-class TextView extends StatefulWidget implements IWidgetView
-{
+class TextView extends StatefulWidget implements IWidgetView {
   @override
   final TextModel model;
   TextView(this.model) : super(key: ObjectKey(model));
@@ -18,8 +17,7 @@ class TextView extends StatefulWidget implements IWidgetView
   State<TextView> createState() => _TextViewState();
 }
 
-class _TextViewState extends WidgetState<TextView>
-{
+class _TextViewState extends WidgetState<TextView> {
   String? text;
 
   // google fonts
@@ -27,40 +25,34 @@ class _TextViewState extends WidgetState<TextView>
   List<parse.TextValue> markupTextValues = [];
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
 
     // load the library
-    if (libraryLoader == null)
-    {
+    if (libraryLoader == null) {
       libraryLoader = Completer();
       fonts.loadLibrary().then((value) => libraryLoader!.complete(true));
     }
 
     // wait for the library to load
     if (!libraryLoader!.isCompleted) {
-      libraryLoader!.future.whenComplete(()
-    {
-      if (mounted) setState(() {});
-    });
+      libraryLoader!.future.whenComplete(() {
+        if (mounted) setState(() {});
+      });
     }
   }
 
   @override
-  didChangeDependencies()
-  {
+  didChangeDependencies() {
     text = null;
     super.didChangeDependencies();
   }
 
-  void _parseText(String? value)
-  {
+  void _parseText(String? value) {
     String? finalVal = '';
     if (widget.model.raw) return;
 
-    try
-    {
+    try {
       if (value?.contains(':') ?? false) value = parseEmojis(value!);
       markupTextValues = [];
       parse.textValues = [];
@@ -71,47 +63,51 @@ class _TextViewState extends WidgetState<TextView>
       for (var element in markupTextValues) {
         finalVal = finalVal! + element.text;
       }
-    } catch(e) {
+    } catch (e) {
       finalVal = value;
     }
   }
 
-  Color _getTextColor()
-  {
+  Color _getTextColor() {
     if (widget.model.color != null) return widget.model.color!;
-    return Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
+    return Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : Colors.black;
   }
 
-  Widget _getRichTextView({required bool rebuild})
-  {
+  Widget _getRichTextView({required bool rebuild}) {
     // re-parse the text
     if (rebuild) _parseText(widget.model.value);
 
     // build text spans
-    List<InlineSpan> textSpans = _buildTextSpans(_getTextShadow(), _getTextDecorationStyle());
+    List<InlineSpan> textSpans =
+        _buildTextSpans(_getTextShadow(), _getTextDecorationStyle());
 
     var style = TextStyle(
         fontSize: widget.model.size ?? _getTextStyle()!.fontSize,
         color: _getTextColor(),
         fontWeight: getTextWeight(),
-        fontStyle: widget.model.italic ? FontStyle.italic : _getTextStyle()!.fontStyle,
+        fontStyle:
+            widget.model.italic ? FontStyle.italic : _getTextStyle()!.fontStyle,
         decoration: _getTextDecoration());
 
-    return (widget.model.selectable) ?
-      SelectableText.rich(TextSpan(children: textSpans, style: style), textAlign: _getTextAlignment()) :
-      RichText(text: TextSpan(children: textSpans, style: style), overflow: _getTextOverflow(), textAlign: _getTextAlignment());
+    return (widget.model.selectable)
+        ? SelectableText.rich(TextSpan(children: textSpans, style: style),
+            textAlign: _getTextAlignment())
+        : RichText(
+            text: TextSpan(children: textSpans, style: style),
+            overflow: _getTextOverflow(),
+            textAlign: _getTextAlignment());
   }
 
-  Widget _getSimpleTextView()
-  {
+  Widget _getSimpleTextView() {
     TextDecoration textDecoration = _getTextDecoration();
     TextDecorationStyle? textDecoStyle = _getTextDecorationStyle();
     Shadow? textShadow = _getTextShadow();
 
     // text style
     TextStyle? textStyle;
-    if (widget.model.font != null && (libraryLoader?.isCompleted ?? false))
-    {
+    if (widget.model.font != null && (libraryLoader?.isCompleted ?? false)) {
       textStyle = fonts.GoogleFonts.getFont(
           color: _getTextColor(),
           widget.model.font!,
@@ -126,9 +122,7 @@ class _TextViewState extends WidgetState<TextView>
           decorationStyle: textDecoStyle,
           decorationColor: widget.model.decorationcolor,
           decorationThickness: widget.model.decorationweight);
-    }
-    else
-    {
+    } else {
       textStyle = TextStyle(
           color: _getTextColor(),
           wordSpacing: widget.model.wordspace,
@@ -144,17 +138,17 @@ class _TextViewState extends WidgetState<TextView>
     }
 
     // selectable text?
-    var text = widget.model.selectable ? SelectableText(widget.model.value ?? '', style: textStyle) : Text(widget.model.value ?? '', style: textStyle);
+    var text = widget.model.selectable
+        ? SelectableText(widget.model.value ?? '', style: textStyle)
+        : Text(widget.model.value ?? '', style: textStyle);
 
     // SizedBox is used to make the text fit the size of the widget.
     return SizedBox(width: widget.model.width, child: text);
   }
 
-  TextOverflow _getTextOverflow()
-  {
+  TextOverflow _getTextOverflow() {
     TextOverflow textOverflow = TextOverflow.visible;
-    switch (widget.model.overflow?.toLowerCase())
-    {
+    switch (widget.model.overflow?.toLowerCase()) {
       case "wrap":
         textOverflow = TextOverflow.visible;
         break;
@@ -172,11 +166,9 @@ class _TextViewState extends WidgetState<TextView>
     return textOverflow;
   }
 
-  TextAlign _getTextAlignment()
-  {
+  TextAlign _getTextAlignment() {
     TextAlign? textAlign = TextAlign.start;
-    switch (widget.model.halign?.toLowerCase())
-    {
+    switch (widget.model.halign?.toLowerCase()) {
       case "start":
       case "left":
         textAlign = TextAlign.left;
@@ -195,11 +187,9 @@ class _TextViewState extends WidgetState<TextView>
     return textAlign;
   }
 
-  TextDecoration _getTextDecoration()
-  {
+  TextDecoration _getTextDecoration() {
     TextDecoration textDecoration = TextDecoration.none;
-    switch (widget.model.decoration?.toLowerCase())
-    {
+    switch (widget.model.decoration?.toLowerCase()) {
       case "underline":
         textDecoration = TextDecoration.underline;
         break;
@@ -215,7 +205,7 @@ class _TextViewState extends WidgetState<TextView>
 
   FontWeight getTextWeight() {
     if (widget.model.bold) return FontWeight.bold;
-    switch(widget.model.weight) {
+    switch (widget.model.weight) {
       case 100:
         return FontWeight.w100;
       case 200:
@@ -239,11 +229,9 @@ class _TextViewState extends WidgetState<TextView>
     }
   }
 
-  TextDecorationStyle? _getTextDecorationStyle()
-  {
+  TextDecorationStyle? _getTextDecorationStyle() {
     TextDecorationStyle? textDecoStyle;
-    switch (widget.model.decorationstyle?.toLowerCase())
-    {
+    switch (widget.model.decorationstyle?.toLowerCase()) {
       case "dashed":
         textDecoStyle = TextDecorationStyle.dashed;
         break;
@@ -263,14 +251,12 @@ class _TextViewState extends WidgetState<TextView>
     return textDecoStyle;
   }
 
-  TextStyle? _getTextStyle()
-  {
+  TextStyle? _getTextStyle() {
     // get theme
     var textTheme = Theme.of(context).textTheme;
 
     TextStyle? textStyle = textTheme.bodyMedium;
-    switch (widget.model.style?.toLowerCase())
-    {
+    switch (widget.model.style?.toLowerCase()) {
       case "h1":
       case "headline1":
       case "displaylarge":
@@ -293,7 +279,7 @@ class _TextViewState extends WidgetState<TextView>
         break;
       case "h5":
       case "headline5":
-      case"headlinesmall":
+      case "headlinesmall":
         textStyle = textTheme.headlineSmall;
         break;
       case "h6":
@@ -344,15 +330,18 @@ class _TextViewState extends WidgetState<TextView>
     return textStyle;
   }
 
-  Shadow? _getTextShadow()
-  {
+  Shadow? _getTextShadow() {
     if (widget.model.elevation <= 0) return null;
-    var color = widget.model.shadowcolor ?? Theme.of(context).colorScheme.outline.withOpacity(0.4);
-    return Shadow(color: color, blurRadius: widget.model.elevation, offset: Offset(widget.model.shadowx!,widget.model.shadowy!));
+    var color = widget.model.shadowcolor ??
+        Theme.of(context).colorScheme.outline.withOpacity(0.4);
+    return Shadow(
+        color: color,
+        blurRadius: widget.model.elevation,
+        offset: Offset(widget.model.shadowx!, widget.model.shadowy!));
   }
 
-  List<InlineSpan> _buildTextSpans(Shadow? shadow, TextDecorationStyle? textDecoStyle)
-  {
+  List<InlineSpan> _buildTextSpans(
+      Shadow? shadow, TextDecorationStyle? textDecoStyle) {
     List<InlineSpan> textSpans = [];
 
     if (markupTextValues.isNotEmpty) {
@@ -366,8 +355,7 @@ class _TextViewState extends WidgetState<TextView>
         String? codeBlockFont;
 
         for (var element in element.styles) {
-          switch (element)
-          {
+          switch (element) {
             case "underline":
               deco = TextDecoration.underline;
               break;
@@ -390,7 +378,8 @@ class _TextViewState extends WidgetState<TextView>
               script = "sup";
               break;
             case "code":
-              codeBlockBG = Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.7);
+              codeBlockBG =
+                  Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.7);
               codeBlockFont = 'Inconsolata';
               weight = FontWeight.w400;
               break;
@@ -405,50 +394,61 @@ class _TextViewState extends WidgetState<TextView>
           }
         }
 
-        String text = element.text.replaceAll('\\n', '\n').replaceAll('\\t','\t\t\t\t');
+        String text =
+            element.text.replaceAll('\\n', '\n').replaceAll('\\t', '\t\t\t\t');
 
         if (widget.model.addWhitespace) text = ' $text';
 
         //4 ts here as dart interprets the tab character as a single space.
         if (script == "sub") {
-          WidgetSpan widgetSpan = WidgetSpan(child: Transform.translate(
-            offset: const Offset(2, 4),
-            child: Text(text,
-              textScaler: const TextScaler.linear(0.7),
-              style: TextStyle(
-                color: widget.model.color ?? Theme.of(context).colorScheme.onSurface,
-                wordSpacing: widget.model.wordspace,
-                letterSpacing: widget.model.letterspace,
-                height: widget.model.lineheight,
-                shadows: shadow != null ? [shadow] : null,
-                fontWeight: weight,
-                fontStyle: style,
-                decoration: deco,
-                decorationStyle: textDecoStyle,
-                decorationColor: widget.model.decorationcolor,
-                decorationThickness: widget.model.decorationweight),),),);
+          WidgetSpan widgetSpan = WidgetSpan(
+            child: Transform.translate(
+              offset: const Offset(2, 4),
+              child: Text(
+                text,
+                textScaler: const TextScaler.linear(0.7),
+                style: TextStyle(
+                    color: widget.model.color ??
+                        Theme.of(context).colorScheme.onSurface,
+                    wordSpacing: widget.model.wordspace,
+                    letterSpacing: widget.model.letterspace,
+                    height: widget.model.lineheight,
+                    shadows: shadow != null ? [shadow] : null,
+                    fontWeight: weight,
+                    fontStyle: style,
+                    decoration: deco,
+                    decorationStyle: textDecoStyle,
+                    decorationColor: widget.model.decorationcolor,
+                    decorationThickness: widget.model.decorationweight),
+              ),
+            ),
+          );
           textSpans.add(widgetSpan);
-        }
-        else if (script == "sup") {
-          WidgetSpan widgetSpan = WidgetSpan(child: Transform.translate(
-            offset: const Offset(2, -4),
-            child: Text(text,
-              textScaler: const TextScaler.linear(0.7),
-              style: TextStyle(
-                  color: widget.model.color ?? Theme.of(context).colorScheme.onSurface,
-                wordSpacing: widget.model.wordspace,
-                letterSpacing: widget.model.letterspace,
-                height: widget.model.lineheight,
-                shadows: shadow != null ? [shadow] : null,
-                fontWeight: weight,
-                fontStyle: style,
-                decoration: deco,
-                decorationStyle: textDecoStyle,
-                decorationColor: widget.model.decorationcolor,
-                decorationThickness: widget.model.decorationweight),),),);
+        } else if (script == "sup") {
+          WidgetSpan widgetSpan = WidgetSpan(
+            child: Transform.translate(
+              offset: const Offset(2, -4),
+              child: Text(
+                text,
+                textScaler: const TextScaler.linear(0.7),
+                style: TextStyle(
+                    color: widget.model.color ??
+                        Theme.of(context).colorScheme.onSurface,
+                    wordSpacing: widget.model.wordspace,
+                    letterSpacing: widget.model.letterspace,
+                    height: widget.model.lineheight,
+                    shadows: shadow != null ? [shadow] : null,
+                    fontWeight: weight,
+                    fontStyle: style,
+                    decoration: deco,
+                    decorationStyle: textDecoStyle,
+                    decorationColor: widget.model.decorationcolor,
+                    decorationThickness: widget.model.decorationweight),
+              ),
+            ),
+          );
           textSpans.add(widgetSpan);
-        }
-        else {
+        } else {
           TextStyle? textstyle;
           String? font = codeBlockFont ?? widget.model.font;
           if (font != null && (libraryLoader?.isCompleted ?? false)) {
@@ -464,8 +464,7 @@ class _TextViewState extends WidgetState<TextView>
                 decorationStyle: textDecoStyle,
                 decorationColor: widget.model.decorationcolor,
                 decorationThickness: widget.model.decorationweight);
-          }
-          else {
+          } else {
             textstyle = TextStyle(
                 wordSpacing: widget.model.wordspace,
                 letterSpacing: widget.model.letterspace,
@@ -488,8 +487,7 @@ class _TextViewState extends WidgetState<TextView>
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
@@ -498,7 +496,9 @@ class _TextViewState extends WidgetState<TextView>
     text = widget.model.value;
 
     // build the view
-    Widget view = widget.model.raw ? _getSimpleTextView() : _getRichTextView(rebuild: textHasChanged);
+    Widget view = widget.model.raw
+        ? _getSimpleTextView()
+        : _getRichTextView(rebuild: textHasChanged);
 
     // is part of a larger span?
     if (widget.model.isSpan) return SizedBox(child: view);

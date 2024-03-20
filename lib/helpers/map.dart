@@ -48,16 +48,13 @@ double? fromMapAsDouble(Map map, dynamic key, {double? defaultValue}) {
   return value;
 }
 
-void insertInHashmap(HashMap map, int index)
-{
+void insertInHashmap(HashMap map, int index) {
   // re-order hashmap
   var newMap = HashMap();
-  if (map.containsKey(index))
-  {
+  if (map.containsKey(index)) {
     // build new map
     var keys = map.keys.toList(growable: false);
-    for (var key in keys)
-    {
+    for (var key in keys) {
       // define key
       var k = key < index ? key : key + 1;
       newMap[k] = map[key]!;
@@ -65,19 +62,16 @@ void insertInHashmap(HashMap map, int index)
 
     // add new entries back into original map
     map.clear();
-    for (var entry in newMap.entries)
-    {
+    for (var entry in newMap.entries) {
       map[entry.key] = entry.value;
     }
   }
 }
 
-void moveInHashmap(HashMap map, int fromIndex, int toIndex)
-{
+void moveInHashmap(HashMap map, int fromIndex, int toIndex) {
   // re-order hashmap
   var newMap = HashMap();
-  if (map.containsKey(fromIndex))
-  {
+  if (map.containsKey(fromIndex)) {
     // add fromIndex value at toIndex
     newMap[toIndex] = map[fromIndex]!;
 
@@ -87,34 +81,31 @@ void moveInHashmap(HashMap map, int fromIndex, int toIndex)
 
   // build new map
   var keys = map.keys.toList(growable: false);
-  for (var key in keys)
-  {
+  for (var key in keys) {
     // define key
-    var k = (toIndex < fromIndex) ? key + (key >= toIndex && key <= fromIndex ? 1 : 0) : key - (key >= fromIndex && key <= toIndex ? 1 : 0);
+    var k = (toIndex < fromIndex)
+        ? key + (key >= toIndex && key <= fromIndex ? 1 : 0)
+        : key - (key >= fromIndex && key <= toIndex ? 1 : 0);
     newMap[k] = map[key]!;
   }
 
   // add new entries back into original map
   map.clear();
-  for (var entry in newMap.entries)
-  {
+  for (var entry in newMap.entries) {
     map[entry.key] = entry.value;
   }
 }
 
-void deleteInHashmap(HashMap map, int index)
-{
+void deleteInHashmap(HashMap map, int index) {
   // re-order hashmap
   var newMap = HashMap();
-  if (map.containsKey(index))
-  {
+  if (map.containsKey(index)) {
     // remove fromEntry from map
     map.remove(index);
 
     // build new map
     var keys = map.keys.toList(growable: false);
-    for (var key in keys)
-    {
+    for (var key in keys) {
       // define key
       var k = key < index ? key : key - 1;
       newMap[k] = map[key]!;
@@ -122,8 +113,7 @@ void deleteInHashmap(HashMap map, int index)
 
     // add new entries back into original map
     map.clear();
-    for (var entry in newMap.entries)
-    {
+    for (var entry in newMap.entries) {
       map[entry.key] = entry.value;
     }
   }

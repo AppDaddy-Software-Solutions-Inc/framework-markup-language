@@ -14,14 +14,14 @@ class GoBack extends StatelessWidget {
   final CanGoBackCallback canGoBack;
 
   @override
-  Widget build(BuildContext context)
-  {
-    return PopScope(canPop: false, child: child,
-      onPopInvoked: (popped) async
-      {
-        if (popped) return;
-        bool? ok = await canGoBack();
-        if (ok == true) NavigationManager().back(1, force: true);
-      });
+  Widget build(BuildContext context) {
+    return PopScope(
+        canPop: false,
+        child: child,
+        onPopInvoked: (popped) async {
+          if (popped) return;
+          bool? ok = await canGoBack();
+          if (ok == true) NavigationManager().back(1, force: true);
+        });
   }
 }

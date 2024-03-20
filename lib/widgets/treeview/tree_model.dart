@@ -13,39 +13,34 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TreeModel extends BoxModel
-{
+class TreeModel extends BoxModel {
   // data sourced prototype
   XmlElement? prototype;
 
   // Icon
   IconObservable? _icon;
-  set icon (dynamic v)
-  {
-    if (_icon != null)
-    {
+  set icon(dynamic v) {
+    if (_icon != null) {
       _icon!.set(v);
-    }
-    else if (v != null)
-    {
-      _icon = IconObservable(Binding.toKey(id, 'icon'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _icon = IconObservable(Binding.toKey(id, 'icon'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   IconData? get icon => _icon?.get();
 
   // expanded icon
   IconObservable? _expandedicon;
-  set expandedicon (dynamic v)
-  {
-    if (_expandedicon != null)
-    {
+  set expandedicon(dynamic v) {
+    if (_expandedicon != null) {
       _expandedicon!.set(v);
-    }
-    else if (v != null)
-    {
-      _expandedicon = IconObservable(Binding.toKey(id, 'expandedicon'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _expandedicon = IconObservable(Binding.toKey(id, 'expandedicon'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   IconData? get expandedicon => _expandedicon?.get();
 
   final List<TreeNodeModel> nodes = [];
@@ -53,27 +48,22 @@ class TreeModel extends BoxModel
 
   TreeModel(WidgetModel super.parent, super.id);
 
-  static TreeModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static TreeModel? fromXml(WidgetModel parent, XmlElement xml) {
     TreeModel? model;
-    try
-    {
+    try {
       model = TreeModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e, caller: 'TreeModel');
       model = null;
     }
     return model;
   }
 
-   /// Deserializes the FML template elements, attributes and children
+  /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
-    // deserialize 
+  void deserialize(XmlElement xml) {
+    // deserialize
     super.deserialize(xml);
 
     // properties
@@ -87,28 +77,23 @@ class TreeModel extends BoxModel
     _buildPrototype();
   }
 
-  void _buildPrototype()
-  {
+  void _buildPrototype() {
     // build the prototype
-    if (datasource != null && nodes.isNotEmpty)
-    {
+    if (datasource != null && nodes.isNotEmpty) {
       prototype = prototypeOf(nodes.first.element);
       nodes.removeAt(0);
     }
   }
 
   @override
-  dispose()
-  {
+  dispose() {
     // clear nodes
-    for (var model in nodes)
-    {
+    for (var model in nodes) {
       model.dispose();
     }
     nodes.clear();
 
-    for (var model in youngestGeneration)
-    {
+    for (var model in youngestGeneration) {
       model?.dispose();
     }
     youngestGeneration.clear();
@@ -116,38 +101,34 @@ class TreeModel extends BoxModel
     super.dispose();
   }
 
-  void focusTreeNode(TreeNodeModel? node)
-  {
-      for (TreeNodeModel? n in youngestGeneration)
-      {
-        if (node == null) {
-          n!.selected = false;
-        } else if (n!.id == node.id) {
-          n.selected = true;
-        } else {
-          n.selected = false;
-        }
+  void focusTreeNode(TreeNodeModel? node) {
+    for (TreeNodeModel? n in youngestGeneration) {
+      if (node == null) {
+        n!.selected = false;
+      } else if (n!.id == node.id) {
+        n.selected = true;
+      } else {
+        n.selected = false;
       }
+    }
   }
 
   // show this node as focused
-  void onFocus(Event event) async
-  {
+  void onFocus(Event event) async {
     // set focus
-    if (event.parameters != null)
-    {
+    if (event.parameters != null) {
       // key of model that opened the focsed tab
-      String? key = event.parameters!.containsKey('key') ? event.parameters!['key'] : null;
+      String? key = event.parameters!.containsKey('key')
+          ? event.parameters!['key']
+          : null;
 
       // node needs to be focused in the treeview?
-      if (key != null)
-      {
+      if (key != null) {
         // find node in model tree children
         TreeNodeModel? node = findDescendantOfExactType(TreeNodeModel, id: key);
 
         // found? set focus
-        if (node != null)
-        {
+        if (node != null) {
           event.handled = true;
           focusTreeNode(node);
         }
@@ -158,56 +139,44 @@ class TreeModel extends BoxModel
     if (!event.handled) focusTreeNode(null);
   }
 
-  _buildNodes()
-  {
+  _buildNodes() {
     // clear nodes
-    for (var model in this.nodes)
-    {
+    for (var model in this.nodes) {
       model.dispose();
     }
     this.nodes.clear();
 
-    for (var model in youngestGeneration)
-    {
+    for (var model in youngestGeneration) {
       model?.dispose();
     }
     youngestGeneration.clear();
 
-    List<TreeNodeModel> nodes = findChildrenOfExactType(TreeNodeModel).cast<TreeNodeModel>();
-    for (var node in nodes)
-    {
+    List<TreeNodeModel> nodes =
+        findChildrenOfExactType(TreeNodeModel).cast<TreeNodeModel>();
+    for (var node in nodes) {
       this.nodes.add(node);
       _buildSubNodes(node);
     }
   }
 
-  void _buildSubNodes(dynamic node)
-  {
-    for (dynamic n in node.children)
-    {
-      if (n.children != null && n.children.length > 0)
-      {
+  void _buildSubNodes(dynamic node) {
+    for (dynamic n in node.children) {
+      if (n.children != null && n.children.length > 0) {
         _buildSubNodes(n);
-      }
-      else
-      {
+      } else {
         youngestGeneration.add(n);
       }
     }
   }
 
   @override
-  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
-  {
-    if (source is HttpModel)
-    {
+  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async {
+    if (source is HttpModel) {
       // parse the xml
       var document = Xml.tryParse(source.response);
-      if (document is XmlDocument)
-      {
+      if (document is XmlDocument) {
         var model = WidgetModel.fromXml(this, document.rootElement);
-        if (model is TreeNodeModel)
-        {
+        if (model is TreeNodeModel) {
           busy = true;
           removeChildrenOfExactType(TreeNodeModel);
           children ??= [];
@@ -220,7 +189,6 @@ class TreeModel extends BoxModel
     }
     return true;
   }
-
 
   @override
   Widget getView({Key? key}) => getReactiveView(TreeView(this));

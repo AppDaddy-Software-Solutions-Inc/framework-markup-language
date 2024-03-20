@@ -7,8 +7,7 @@ import 'payload.dart';
 import 'gps_listener_interface.dart';
 import 'package:geolocator/geolocator.dart';
 
-class Gps
-{
+class Gps {
   List<IGpsListener>? _listeners;
   Position? _location;
   StreamSubscription<Position>? _subscription;
@@ -20,48 +19,42 @@ class Gps
 
   Gps._initialize();
 
-  Future _start() async
-  {
+  Future _start() async {
     _location = await _determinePosition();
-    if (_location != null)
-    {
+    if (_location != null) {
       // Already Subscribed?
-      if (_subscription == null)
-      {
+      if (_subscription == null) {
         // Listen for GPS Changes
         final LocationSettings locationSettings = _getLocationSettings();
 
-        _subscription = Geolocator.getPositionStream(locationSettings: locationSettings).listen(
-                (Position? position) async {
-                  try {
-                    last = Payload(accuracy: position?.accuracy,
-                        latitude: position?.latitude,
-                        longitude: position?.longitude,
-                        altitude: position?.altitude,
-                        speed: position?.speed,
-                        speedaccuracy: position?.speedAccuracy,
-                        heading: position?.heading,
-                        epoch: DateTime
-                            .now()
-                            .millisecondsSinceEpoch,
-                        user: System.app?.user.claim('key'),
-                        username: System.app?.user.claim('name'));
-                    await notifyListeners(last);
-                  }
-                  catch(e) {
-                    Log().debug('GPD Data Point');
-                    Log().exception(e);
-                  }
-            });
+        _subscription =
+            Geolocator.getPositionStream(locationSettings: locationSettings)
+                .listen((Position? position) async {
+          try {
+            last = Payload(
+                accuracy: position?.accuracy,
+                latitude: position?.latitude,
+                longitude: position?.longitude,
+                altitude: position?.altitude,
+                speed: position?.speed,
+                speedaccuracy: position?.speedAccuracy,
+                heading: position?.heading,
+                epoch: DateTime.now().millisecondsSinceEpoch,
+                user: System.app?.user.claim('key'),
+                username: System.app?.user.claim('name'));
+            await notifyListeners(last);
+          } catch (e) {
+            Log().debug('GPD Data Point');
+            Log().exception(e);
+          }
+        });
       }
     }
   }
 
-  LocationSettings _getLocationSettings()
-  {
+  LocationSettings _getLocationSettings() {
     late LocationSettings locationSettings;
-    switch (defaultTargetPlatform)
-    {
+    switch (defaultTargetPlatform) {
       // case TargetPlatform.android:
       //   locationSettings = AndroidSettings(
       //       accuracy: LocationAccuracy.high,
@@ -91,42 +84,34 @@ class Gps
 
       default:
         locationSettings = const LocationSettings(
-            accuracy: LocationAccuracy.high,
-            distanceFilter: 100);
+            accuracy: LocationAccuracy.high, distanceFilter: 100);
     }
     return locationSettings;
   }
 
   Future _stop() async => _subscription?.cancel();
 
-  registerListener(IGpsListener listener)
-  {
+  registerListener(IGpsListener listener) {
     _listeners ??= [];
-    if (!_listeners!.contains(listener))
-    {
+    if (!_listeners!.contains(listener)) {
       _listeners!.add(listener);
       _start();
     }
     listener.onGpsData(payload: last);
   }
 
-  removeListener(IGpsListener listener)
-  {
-    if ((_listeners != null) && (_listeners!.contains(listener)))
-    {
+  removeListener(IGpsListener listener) {
+    if ((_listeners != null) && (_listeners!.contains(listener))) {
       _listeners!.remove(listener);
-      if (_listeners!.isEmpty)
-        {
-          _listeners = null;
-          _stop();
-        }
+      if (_listeners!.isEmpty) {
+        _listeners = null;
+        _stop();
+      }
     }
   }
 
-  Future<bool> notifyListeners(Payload? data) async
-  {
-    _listeners?.forEach((listener)
-    {
+  Future<bool> notifyListeners(Payload? data) async {
+    _listeners?.forEach((listener) {
       listener.onGpsData(payload: data);
     });
     return true;

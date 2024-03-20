@@ -9,8 +9,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 /// Breadcrumb View
 ///
 /// Builds the View from the [BREADCRUMB.BreadcrumbModel] properties
-class BreadcrumbView extends StatefulWidget implements IWidgetView
-{
+class BreadcrumbView extends StatefulWidget implements IWidgetView {
   @override
   final BreadcrumbModel model;
 
@@ -28,11 +27,9 @@ class BreadcrumbView extends StatefulWidget implements IWidgetView
   State<BreadcrumbView> createState() => _BreadcrumbViewState();
 }
 
-class _BreadcrumbViewState extends WidgetState<BreadcrumbView>
-{
+class _BreadcrumbViewState extends WidgetState<BreadcrumbView> {
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
@@ -125,31 +122,31 @@ class _TextCrumbState extends State<_TextCrumb> {
   @override
   Widget build(BuildContext context) {
     Widget crumb = Row(mainAxisSize: MainAxisSize.min, children: [
-          Padding(
-            padding: EdgeInsetsDirectional.only(
-                start: widget.isFirstButton ? 16 : 8, end: 8),
-            child: Text(
-              widget.isFirstButton ? '' : widget.separator,
-              style: TextStyle(color: widget.color, fontSize: 14),
-            ),
-          ),
-          MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onHover: (event) {
-        setHovered(true);
-      },
-      onExit: (event) {
-        setHovered(false);
-      },
-      child: Text(
-        widget.text,
-        style: TextStyle(
-            color: widget.color,
-            fontSize: 13,
-            decoration:
-                hovered ? TextDecoration.underline : TextDecoration.none),
-      ))
-        ]);
+      Padding(
+        padding: EdgeInsetsDirectional.only(
+            start: widget.isFirstButton ? 16 : 8, end: 8),
+        child: Text(
+          widget.isFirstButton ? '' : widget.separator,
+          style: TextStyle(color: widget.color, fontSize: 14),
+        ),
+      ),
+      MouseRegion(
+          cursor: SystemMouseCursors.click,
+          onHover: (event) {
+            setHovered(true);
+          },
+          onExit: (event) {
+            setHovered(false);
+          },
+          child: Text(
+            widget.text,
+            style: TextStyle(
+                color: widget.color,
+                fontSize: 13,
+                decoration:
+                    hovered ? TextDecoration.underline : TextDecoration.none),
+          ))
+    ]);
     return crumb;
   }
 }

@@ -2,12 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/switch/switch_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart' ;
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/text/text_view.dart';
 
-class SwitchView extends StatefulWidget implements IWidgetView
-{
+class SwitchView extends StatefulWidget implements IWidgetView {
   @override
   final SwitchModel model;
   final dynamic onChangeCallback;
@@ -17,11 +16,10 @@ class SwitchView extends StatefulWidget implements IWidgetView
   State<SwitchView> createState() => _SwitchViewState();
 }
 
-class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserver
-{
+class _SwitchViewState extends WidgetState<SwitchView>
+    with WidgetsBindingObserver {
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
@@ -83,13 +81,11 @@ class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserv
     return view;
   }
 
-  onChange(bool value) async
-  {
+  onChange(bool value) async {
     if (!widget.model.editable) return;
 
     // value changed?
-    if (widget.model.value != value)
-    {
+    if (widget.model.value != value) {
       // set answer
       await widget.model.answer(value);
 

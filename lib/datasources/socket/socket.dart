@@ -7,20 +7,17 @@ import 'package:fml/helpers/helpers.dart';
 
 import 'socket_listener_interface.dart';
 
-class Socket
-{
+class Socket {
   Uri? _uri;
-  set uri (dynamic url)
-  {
-    if (url is String)
-    {
+  set uri(dynamic url) {
+    if (url is String) {
       var scheme = (System.app?.secure ?? false) ? "wss" : "ws";
       _uri = URI.parse(url)?.replace(scheme: scheme);
-    }
-    else if (url is Uri) {
+    } else if (url is Uri) {
       _uri = url;
     }
   }
+
   Uri? get uri => _uri;
 
   String? get url => _uri?.toString();
@@ -30,28 +27,23 @@ class Socket
   WebSocketChannel? _socket;
   bool connected = false;
 
-  Socket(String? url, this.listener)
-  {
+  Socket(String? url, this.listener) {
     uri = url;
     if (!isNullOrEmpty(url) && uri == null) Log().error('SOCKET:: Invalid Url');
   }
 
-  Future reconnect(String? url) async
-  {
+  Future reconnect(String? url) async {
     // set the uri if url is passed and reconnect
-    if (!isNullOrEmpty(url))
-    {
+    if (!isNullOrEmpty(url)) {
       Log().info('SOCKET:: Attempting Reconnect ...');
 
       // set the uri
       Uri? uri = Uri.tryParse(url!);
 
       // valid url?
-      if (uri != null)
-      {
+      if (uri != null) {
         // reconnect
-        if (connected && this.url != uri.toString())
-        {
+        if (connected && this.url != uri.toString()) {
           Log().info('SOCKET:: Reconnecting ...');
 
           // disconnect from existing
@@ -66,8 +58,7 @@ class Socket
       }
 
       // invalid url?
-      else
-      {
+      else {
         Log().error('SOCKET:: The supplied url => $url is invalid');
 
         // disconnect?
@@ -79,20 +70,16 @@ class Socket
     }
   }
 
-  Future<bool> connect({bool forceReconnect = false}) async
-  {
+  Future<bool> connect({bool forceReconnect = false}) async {
     // cannot connect to an invalid uri
-    if (uri == null)
-    {
+    if (uri == null) {
       Log().error('SOCKET:: Uri has not been set. Cannot connect');
       return false;
     }
 
-    try
-    {
+    try {
       // connect to the socket
-      if (!connected || forceReconnect)
-      {
+      if (!connected || forceReconnect) {
         Log().debug('SOCKET:: Connecting to $url');
 
         lastMessage = null;
@@ -113,28 +100,23 @@ class Socket
         // notify listener of connection
         listener.onConnected();
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       connected = false;
       Log().error('SOCKET:: Error Connecting to $url. Error is $e');
     }
     return connected;
   }
 
-  Future<bool> disconnect() async
-  {
+  Future<bool> disconnect() async {
     Log().debug('SOCKET:: Closing connection to $url');
 
-    try
-    {
+    try {
       // Close the channel
-      if (_socket != null)
-      {await _socket!.sink.close();}
+      if (_socket != null) {
+        await _socket!.sink.close();
+      }
       connected = false;
-    }
-    on Exception catch(e)
-    {
+    } on Exception catch (e) {
       Log().error('SOCKET:: Error closing connection to $url. Error is $e');
     }
 
@@ -143,52 +125,47 @@ class Socket
     return true;
   }
 
-  void _onData(data)
-  {
+  void _onData(data) {
     Log().debug('SOCKET:: Received message >> $data');
     connected = true;
-    if (data is String)
-    {
+    if (data is String) {
       lastMessage = data;
       listener.onMessage(data);
     }
   }
 
-  _onError(e)
-  {
+  _onError(e) {
     String msg = (e is String) ? e : "?";
     Log().debug('SOCKET:: Error on $url. Error is $msg');
     listener.onError("<Error><message><![CDATA[$msg]]></message></Error>");
   }
 
-  _onDone()
-  {
-    Log().debug('SOCKET:: Done. Close code is ${_socket?.closeCode} and reason is ${_socket?.closeReason}');
-    if (connected && _socket?.closeCode != null)
-    {
+  _onDone() {
+    Log().debug(
+        'SOCKET:: Done. Close code is ${_socket?.closeCode} and reason is ${_socket?.closeReason}');
+    if (connected && _socket?.closeCode != null) {
       connected = false;
       int? code = _socket?.closeCode;
 
       // The close reason must be no longer than 123 bytes
-      String? msg = isNullOrEmpty(_socket?.closeReason) ? lastMessage : _socket?.closeReason;
+      String? msg = isNullOrEmpty(_socket?.closeReason)
+          ? lastMessage
+          : _socket?.closeReason;
 
       listener.onDisconnected(code, msg);
     }
   }
 
-  Future<bool> send(dynamic message) async
-  {
+  Future<bool> send(dynamic message) async {
     bool ok = true;
-    try
-    {
+    try {
       // ensure connected
       await connect();
 
       // send the message
-      if (connected && message != null && _socket != null) _socket!.sink.add(message);
-    }
-    catch(e)
-    {
+      if (connected && message != null && _socket != null)
+        _socket!.sink.add(message);
+    } catch (e) {
       ok = false;
       Log().error('SOCKET:: Error sending message to $url');
       Log().exception(e);

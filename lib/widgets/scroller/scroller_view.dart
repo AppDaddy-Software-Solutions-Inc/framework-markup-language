@@ -7,7 +7,7 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/scroller/scroller_shadow_view.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/event/event.dart' ;
+import 'package:fml/event/event.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 /// Scroll View
@@ -16,8 +16,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 /// This widget creates a scrollable widget that expands to its parents size
 /// constraint, if the children would overflow because they are larger they will
 /// instead be contained within this scrollable widget.
-class ScrollerView extends StatefulWidget implements IWidgetView
-{
+class ScrollerView extends StatefulWidget implements IWidgetView {
   @override
   final ScrollerModel model;
   ScrollerView(this.model) : super(key: ObjectKey(model));
@@ -26,48 +25,46 @@ class ScrollerView extends StatefulWidget implements IWidgetView
   State<ScrollerView> createState() => ScrollerViewState();
 }
 
-class ScrollerViewState extends WidgetState<ScrollerView>
-{
+class ScrollerViewState extends WidgetState<ScrollerView> {
   final ScrollController controller = ScrollController();
 
   /// When true the scroller has been scrolled to the end
   bool hasScrolledThrough = false;
 
   @override
-  void initState()
-  {
+  void initState() {
     controller.addListener(_scrollListener);
     super.initState();
   }
 
   @override
-  didChangeDependencies()
-  {
+  didChangeDependencies() {
     // register event listeners
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
+    EventManager.of(widget.model)
+        ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
     super.didChangeDependencies();
   }
 
   @override
-  void didUpdateWidget(ScrollerView oldWidget)
-  {
+  void didUpdateWidget(ScrollerView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
-    if (oldWidget.model != widget.model)
-    {
+
+    if (oldWidget.model != widget.model) {
       // remove old event listeners
-      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
+      EventManager.of(oldWidget.model)
+          ?.removeEventListener(EventTypes.scrollto, onScrollTo);
 
       // register new event listeners
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
+      EventManager.of(widget.model)
+          ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
     }
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     // remove event listeners
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
+    EventManager.of(widget.model)
+        ?.removeEventListener(EventTypes.scrollto, onScrollTo);
     controller.dispose();
     super.dispose();
   }
@@ -75,14 +72,12 @@ class ScrollerViewState extends WidgetState<ScrollerView>
   /// Takes an event (onscroll) and uses the id to scroll to that widget
   onScrollTo(Event event) {
     // BuildContext context;
-    if (event.parameters!.containsKey('id'))
-    {
+    if (event.parameters!.containsKey('id')) {
       String? id = event.parameters!['id'];
       var child = widget.model.findDescendantOfExactType(null, id: id);
 
       // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
-      if ((child != null) && (child.context != null))
-      {
+      if ((child != null) && (child.context != null)) {
         event.handled = true;
         Scrollable.ensureVisible(child.context,
             duration: const Duration(seconds: 1), alignment: 0.2);
@@ -93,8 +88,7 @@ class ScrollerViewState extends WidgetState<ScrollerView>
   // Listener for detecting if the scroller has reached the end
   _scrollListener() {
     if (hasScrolledThrough != true &&
-        controller.offset >=
-            controller.position.maxScrollExtent &&
+        controller.offset >= controller.position.maxScrollExtent &&
         !controller.position.outOfRange) {
       if (hasScrolledThrough != true) widget.model.scrolledToEnd(context);
       setState(() {
@@ -103,37 +97,38 @@ class ScrollerViewState extends WidgetState<ScrollerView>
     }
   }
 
-  ScrollBehavior _getScrollBehaviour(Axis direction)
-  {
+  ScrollBehavior _getScrollBehaviour(Axis direction) {
     late ScrollBehavior behavior;
 
     // Check to see if pulldown is enabled, allowDrag is enabled, or horizontal is enabled (as web doesnt support device horizontal scrolling) and enable
     // dragging for the scroller.
-    if(widget.model.onpulldown != null || widget.model.allowDrag || direction == Axis.horizontal)
-    {
-      behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true, dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse});
-    }
-    else
-    {
-      behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true);
+    if (widget.model.onpulldown != null ||
+        widget.model.allowDrag ||
+        direction == Axis.horizontal) {
+      behavior = ScrollConfiguration.of(context).copyWith(
+          scrollbars: widget.model.scrollbar == false ? false : true,
+          dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse});
+    } else {
+      behavior = ScrollConfiguration.of(context)
+          .copyWith(scrollbars: widget.model.scrollbar == false ? false : true);
     }
     return behavior;
   }
 
-  Widget _addScrollShadows(Widget view, Axis direction)
-  {
-    switch (direction)
-    {
+  Widget _addScrollShadows(Widget view, Axis direction) {
+    switch (direction) {
       case Axis.vertical:
-        view = Listener(behavior: HitTestBehavior.translucent,
+        view = Listener(
+            behavior: HitTestBehavior.translucent,
             onPointerSignal: (ps) {},
-            child: Stack(fit: StackFit.loose,
-                children: [
-                  view,
-                  ScrollShadow(controller, 'top', Axis.vertical, widget.model.shadowColor),
-                  ScrollShadow(controller, 'bottom', Axis.vertical, widget.model.shadowColor),
-                  const SizedBox.expand(),
-                ]));
+            child: Stack(fit: StackFit.loose, children: [
+              view,
+              ScrollShadow(
+                  controller, 'top', Axis.vertical, widget.model.shadowColor),
+              ScrollShadow(controller, 'bottom', Axis.vertical,
+                  widget.model.shadowColor),
+              const SizedBox.expand(),
+            ]));
         break;
 
       case Axis.horizontal:
@@ -144,8 +139,10 @@ class ScrollerViewState extends WidgetState<ScrollerView>
             fit: StackFit.loose,
             children: [
               view,
-              ScrollShadow(controller, 'top', Axis.horizontal, widget.model.shadowColor),
-              ScrollShadow(controller, 'bottom', Axis.horizontal, widget.model.shadowColor),
+              ScrollShadow(
+                  controller, 'top', Axis.horizontal, widget.model.shadowColor),
+              ScrollShadow(controller, 'bottom', Axis.horizontal,
+                  widget.model.shadowColor),
               const SizedBox.expand(),
             ],
           ),
@@ -153,16 +150,17 @@ class ScrollerViewState extends WidgetState<ScrollerView>
     }
     return view;
   }
-  Widget _buildScrollbar(Widget child)
-  {
+
+  Widget _buildScrollbar(Widget child) {
     Widget view;
 
     // build body
-    Axis direction = widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical;
+    Axis direction = widget.model.layoutType == LayoutType.row
+        ? Axis.horizontal
+        : Axis.vertical;
 
     // add pull down
-    if (widget.model.onpulldown != null)
-    {
+    if (widget.model.onpulldown != null) {
       view = RefreshIndicator(
           onRefresh: () => widget.model.onPull(context),
           child: SingleChildScrollView(
@@ -170,41 +168,42 @@ class ScrollerViewState extends WidgetState<ScrollerView>
               scrollDirection: direction,
               controller: controller,
               child: child));
-    }
-    else
-    {
-      view = SingleChildScrollView(scrollDirection: direction, controller: controller, child: child);
+    } else {
+      view = SingleChildScrollView(
+          scrollDirection: direction, controller: controller, child: child);
     }
 
     // add scroll bar
-    if (widget.model.scrollbar)
-    {
-      view = Scrollbar(controller: controller, thumbVisibility: widget.model.scrollbar, child: view);
-      view = Listener(behavior: HitTestBehavior.translucent,
-        onPointerSignal: (ps) {},
-        child: Stack(fit: StackFit.loose, children: [view, const SizedBox.shrink()]));
+    if (widget.model.scrollbar) {
+      view = Scrollbar(
+          controller: controller,
+          thumbVisibility: widget.model.scrollbar,
+          child: view);
+      view = Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerSignal: (ps) {},
+          child: Stack(
+              fit: StackFit.loose, children: [view, const SizedBox.shrink()]));
     }
 
     // no scroll bar - add scroll shadow
-    else
-    {
+    else {
       view = _addScrollShadows(view, direction);
     }
 
     // set behavior
-    view = ScrollConfiguration(behavior: _getScrollBehaviour(direction), child: view);
+    view = ScrollConfiguration(
+        behavior: _getScrollBehaviour(direction), child: view);
 
     return view;
   }
 
-  Offset? positionOf()
-  {
+  Offset? positionOf() {
     RenderBox? render = context.findRenderObject() as RenderBox?;
     return render?.localToGlobal(Offset.zero);
   }
 
-  Size? sizeOf()
-  {
+  Size? sizeOf() {
     RenderBox? render = context.findRenderObject() as RenderBox?;
     return render?.size;
   }
@@ -212,8 +211,7 @@ class ScrollerViewState extends WidgetState<ScrollerView>
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
+  Widget builder(BuildContext context, BoxConstraints constraints) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
@@ -230,17 +228,18 @@ class ScrollerViewState extends WidgetState<ScrollerView>
     view = addMargins(view);
 
     // expand in both axis
-    if (widget.model.expand)
-    {
-      view = SizedBox(width: constraints.maxWidth, height: constraints.maxHeight, child: view);
+    if (widget.model.expand) {
+      view = SizedBox(
+          width: constraints.maxWidth,
+          height: constraints.maxHeight,
+          child: view);
     }
 
     // contract in cross axis
-    else
-    {
-      view = widget.model.layoutType == LayoutType.row ?
-      Column(mainAxisSize: MainAxisSize.min, children: [view]) :
-      Row(mainAxisSize: MainAxisSize.min, children: [view]);
+    else {
+      view = widget.model.layoutType == LayoutType.row
+          ? Column(mainAxisSize: MainAxisSize.min, children: [view])
+          : Row(mainAxisSize: MainAxisSize.min, children: [view]);
     }
 
     return view;

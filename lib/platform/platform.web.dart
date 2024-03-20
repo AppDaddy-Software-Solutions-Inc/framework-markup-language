@@ -12,52 +12,46 @@ import 'package:fml/system.dart';
 import 'package:universal_html/js.dart';
 import 'package:fml/event/manager.dart';
 
-class Platform
-{
+class Platform {
   // application root path
   static Future<String?> get path async => null;
 
-  static String? get useragent
-  {
-    const appleType   = "ios";
+  static String? get useragent {
+    const appleType = "ios";
     const androidType = "android";
     const desktopType = "desktop";
 
     final userAgent = window.navigator.userAgent.toString().toLowerCase();
 
     // smartphone
-    if( userAgent.contains("iphone"))   return appleType;
-    if( userAgent.contains("android"))  return androidType;
+    if (userAgent.contains("iphone")) return appleType;
+    if (userAgent.contains("android")) return androidType;
 
     // tablet
-    if( userAgent.contains("ipad")) return appleType;
-    if( window.navigator.platform!.toLowerCase().contains("macintel") && window.navigator.maxTouchPoints! > 0 ) return appleType;
+    if (userAgent.contains("ipad")) return appleType;
+    if (window.navigator.platform!.toLowerCase().contains("macintel") &&
+        window.navigator.maxTouchPoints! > 0) return appleType;
 
     return desktopType;
   }
 
   static final dynamic iframe = window.document.getElementById('invisible');
 
-  static init() async
-  {
-    try
-    {
+  static init() async {
+    try {
       window.document.getElementById("logo")!.style.visibility = "hidden";
-    }
-    catch(e){
+    } catch (e) {
       Log().debug('$e');
     }
   }
 
-  static Future<dynamic> fileSaveAs(List<int> bytes, String filename) async
-  {
-    try
-    {
+  static Future<dynamic> fileSaveAs(List<int> bytes, String filename) async {
+    try {
       // make the file name safe
       filename = Mime.toSafeFileName(filename);
 
-      final blob   = Blob([bytes]);
-      final url    = Url.createObjectUrlFromBlob(blob);
+      final blob = Blob([bytes]);
+      final url = Url.createObjectUrlFromBlob(blob);
       final anchor = document.createElement('a') as AnchorElement;
 
       anchor.href = url;
@@ -69,9 +63,7 @@ class Platform
 
       document.body!.children.remove(anchor);
       Url.revokeObjectUrl(url);
-    }
-    catch(e)
-    {
+    } catch (e) {
       System.toast("Unable to save file");
       Log().error('Error writing file');
       Log().exception(e);
@@ -81,9 +73,8 @@ class Platform
     return null;
   }
 
-  static dynamic fileSaveAsFromBlob(Blob blob, String? filename)
-  {
-    final url    = Url.createObjectUrlFromBlob(blob);
+  static dynamic fileSaveAsFromBlob(Blob blob, String? filename) {
+    final url = Url.createObjectUrlFromBlob(blob);
     final anchor = document.createElement('a') as AnchorElement;
 
     anchor.href = url;
@@ -97,8 +88,7 @@ class Platform
     Url.revokeObjectUrl(url);
   }
 
-  static void openPrinterDialog()
-  {
+  static void openPrinterDialog() {
     window.print();
   }
 
@@ -110,16 +100,14 @@ class Platform
   static Future<String?> readFile(String? filepath) async => null;
   static Future<Uint8List?> readFileBytes(String? filepath) async => null;
   static Future<String?> createFolder(String? folder) async => null;
-  static Future<bool> writeFile(String? filename, dynamic content) async => true;
+  static Future<bool> writeFile(String? filename, dynamic content) async =>
+      true;
   static Future<bool> deleteFile(String filename) async => true;
 
-  static Future<bool> goBackPages(int pages) async
-  {
-    try
-    {
+  static Future<bool> goBackPages(int pages) async {
+    try {
       String id = "fmlGo2";
-      if (document.getElementById(id) == null)
-      {
+      if (document.getElementById(id) == null) {
         var script = document.createElement("script");
         script.id = id;
         script.innerText = "function $id(i) { window.history.go(i); }";
@@ -127,30 +115,24 @@ class Platform
       }
       context.callMethod(id, [-1 * pages]);
       return true;
-    }
-    catch(e)
-    {
+    } catch (e) {
       return false;
     }
   }
 
-  static int getNavigationType()
-  {
-    try
-    {
+  static int getNavigationType() {
+    try {
       return window.performance.navigation.type ?? 0;
-    }
-    catch(e)
-    {
+    } catch (e) {
       return 0;
     }
   }
 
-  static String get title
-  {
+  static String get title {
     String? title;
     var e = window.document.getElementsByName("description");
-    if (e.isNotEmpty && e.first is MetaElement) title = (e.first as MetaElement).content;
+    if (e.isNotEmpty && e.first is MetaElement)
+      title = (e.first as MetaElement).content;
     return title ?? FmlEngine.title;
   }
 
@@ -185,7 +167,6 @@ class Platform
   ///       }
   ///   });
 
-
   /// Basic implementation to show a template sent from js for vscode extension.
   /// Next step: non-breaking refactor to expand the protocol and enhance fml2js
   static void js2fml() {
@@ -194,7 +175,8 @@ class Platform
       // `js2fml({'data': `${event.data}`, 'from': `${event.origin}`, 'to': 'fml'});`
       String doc = json['data'];
       WidgetModel? model = System();
-      EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.openjstemplate, parameters: {'templ8': doc}));
+      EventManager.of(model)?.broadcastEvent(
+          model, Event(EventTypes.openjstemplate, parameters: {'templ8': doc}));
     };
   }
 
@@ -211,5 +193,4 @@ class Platform
     final json = jsonEncoder.convert(data);
     context.callMethod('postMessage', [json, '*']);
   }
-
 }

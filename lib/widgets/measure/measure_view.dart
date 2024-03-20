@@ -4,8 +4,7 @@ import 'package:flutter/rendering.dart';
 
 typedef OnWidgetSizeChange = void Function(Size size, {dynamic data});
 
-class MeasureObject extends RenderProxyBox
-{
+class MeasureObject extends RenderProxyBox {
   Size? oldSize;
 
   final OnWidgetSizeChange onChange;
@@ -14,11 +13,9 @@ class MeasureObject extends RenderProxyBox
   MeasureObject(this.onChange, {this.data});
 
   @override
-  void performLayout()
-  {
-    Size size = const Size(0,0);
-    if (child != null)
-    {
+  void performLayout() {
+    Size size = const Size(0, 0);
+    if (child != null) {
       child!.layout(constraints, parentUsesSize: true);
       size = child!.size;
     }
@@ -26,30 +23,27 @@ class MeasureObject extends RenderProxyBox
 
     if (oldSize == size) return;
     oldSize = size;
-    WidgetsBinding.instance.addPostFrameCallback((_)
-    {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       onChange(size, data: data);
     });
   }
 
   @override
-  void paint(PaintingContext context, Offset offset)
-  {
+  void paint(PaintingContext context, Offset offset) {
     // do nothing
     return;
   }
 }
 
-class MeasureView extends SingleChildRenderObjectWidget
-{
+class MeasureView extends SingleChildRenderObjectWidget {
   final OnWidgetSizeChange onChange;
   final dynamic data;
 
-  const MeasureView(Widget widget,this.onChange,{super.key, this.data}) : super(child: widget);
+  const MeasureView(Widget widget, this.onChange, {super.key, this.data})
+      : super(child: widget);
 
   @override
-  RenderObject createRenderObject(BuildContext context)
-  {
+  RenderObject createRenderObject(BuildContext context) {
     return MeasureObject(onChange, data: data);
   }
 }

@@ -1,7 +1,6 @@
 import 'package:fml/observable/observables/boolean.dart';
 
-abstract class IForm
-{
+abstract class IForm {
   // Dirty
   bool? get dirty;
   set dirty(bool? b);

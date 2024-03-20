@@ -4,20 +4,17 @@ import 'package:universal_html/html.dart';
 import 'package:fml/datasources/sse/lib/src/channel.dart';
 import 'package:stream_channel/stream_channel.dart';
 
-class HtmlSseChannel extends StreamChannelMixin implements SseChannel
-{
-  late  EventSource source;
+class HtmlSseChannel extends StreamChannelMixin implements SseChannel {
+  late EventSource source;
   Timer? _timer;
   final _controller = StreamController<String>();
 
   final _onConnected = Completer();
   Future<void> get onConnected => _onConnected.future;
 
-  HtmlSseChannel(String url, List<String>? events)
-  {
+  HtmlSseChannel(String url, List<String>? events) {
     source = EventSource(url, withCredentials: false);
-    source.onOpen.first.whenComplete(()
-    {
+    source.onOpen.first.whenComplete(() {
       _onConnected.complete();
     });
 
@@ -26,31 +23,34 @@ class HtmlSseChannel extends StreamChannelMixin implements SseChannel
     events?.forEach((type) => source.addEventListener(type, _onMessage));
 
     source.onOpen.listen((_) => _timer?.cancel());
-    source.onError.listen((error)
-    {
+    source.onError.listen((error) {
       // By default the SSE client uses keep-alive.
       // Allow for a retry to connect before giving up.
-      if (!(_timer?.isActive ?? false)) _timer = Timer(const Duration(seconds: 5), () => _closeWithError(error));
+      if (!(_timer?.isActive ?? false))
+        _timer =
+            Timer(const Duration(seconds: 5), () => _closeWithError(error));
     });
   }
 
-  factory HtmlSseChannel.connect(Uri url, {String? method, String? body, Map<String, String>? headers, List<String>? events}) => HtmlSseChannel(url.toString(), events);
+  factory HtmlSseChannel.connect(Uri url,
+          {String? method,
+          String? body,
+          Map<String, String>? headers,
+          List<String>? events}) =>
+      HtmlSseChannel(url.toString(), events);
 
-  void _onMessage(Event message)
-  {
+  void _onMessage(Event message) {
     var msg = (message as MessageEvent).data;
     _controller.add(msg);
   }
 
   @override
-  void close()
-  {
+  void close() {
     source.close();
     _controller.close();
   }
 
-  void _closeWithError(Object error)
-  {
+  void _closeWithError(Object error) {
     _controller.addError(error);
     close();
 

@@ -28,8 +28,8 @@ import 'fml.dart';
 import 'widgets/framework/framework_model.dart';
 // platform
 import 'package:fml/platform/platform.web.dart'
-if (dart.library.io)   'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';
+    if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+    if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class System extends WidgetModel implements IEventManager {
   static const String myId = "SYSTEM";
@@ -137,7 +137,6 @@ class System extends WidgetModel implements IEventManager {
   late String baseUrl;
 
   _initialize() async {
-
     // base URL changes (fragment is dropped) if
     // used past this point
     baseUrl = Uri.base.toString();
@@ -211,14 +210,19 @@ class System extends WidgetModel implements IEventManager {
     _screenwidth = IntegerObservable(Binding.toKey('screenwidth'),
         PlatformDispatcher.instance.views.first.physicalSize.width,
         scope: scope);
-    _userplatform = StringObservable(Binding.toKey('platform'), FmlEngine.platform, scope: scope);
-    _useragent = StringObservable(Binding.toKey('useragent'), Platform.useragent, scope: scope);
-    _version = StringObservable(Binding.toKey('version'), FmlEngine.version, scope: scope);
-    _uuid = StringObservable(Binding.toKey('uuid'), newId(), scope: scope, getter: newId);
+    _userplatform = StringObservable(
+        Binding.toKey('platform'), FmlEngine.platform,
+        scope: scope);
+    _useragent = StringObservable(
+        Binding.toKey('useragent'), Platform.useragent,
+        scope: scope);
+    _version = StringObservable(Binding.toKey('version'), FmlEngine.version,
+        scope: scope);
+    _uuid = StringObservable(Binding.toKey('uuid'), newId(),
+        scope: scope, getter: newId);
 
     // this satisfies/eliminates the compiler warning
-    if (kDebugMode)
-    {
+    if (kDebugMode) {
       print(_uuid);
     }
 
@@ -266,7 +270,8 @@ class System extends WidgetModel implements IEventManager {
       folderpath = await Platform.createFolder(folderpath);
 
       // read asset manifest
-      Map<String, dynamic> manifest = json.decode(await rootBundle.loadString('AssetManifest.json'));
+      Map<String, dynamic> manifest =
+          json.decode(await rootBundle.loadString('AssetManifest.json'));
 
       // copy assets
       for (String key in manifest.keys) {
@@ -276,11 +281,8 @@ class System extends WidgetModel implements IEventManager {
           await Platform.writeFile(filepath, await rootBundle.load(key));
         }
       }
-    }
-    catch (e)
-    {
-      if (kDebugMode)
-      {
+    } catch (e) {
+      if (kDebugMode) {
         print("Error building application assets. Error is $e");
       }
       ok = false;
@@ -339,12 +341,10 @@ class System extends WidgetModel implements IEventManager {
   static String get title => Platform.title;
 
   // launches the application
-  launchApplication(ApplicationModel app, bool notifyOnThemeChange)
-  {
+  launchApplication(ApplicationModel app, bool notifyOnThemeChange) {
     // Close the old application if one
     // is running
-    if (_app != null)
-    {
+    if (_app != null) {
       // closing app
       Log().info("Closing Application ${_app!.url}");
 
@@ -386,25 +386,30 @@ class System extends WidgetModel implements IEventManager {
 
   // sets the active framework
   FrameworkModel? activeFramework;
-  void setActiveFramework(FrameworkModel model)
-  {
+  void setActiveFramework(FrameworkModel model) {
     activeFramework = model;
   }
 
   // handle key press
-  bool onShortcutHandler(KeyEvent event) => ShortcutHandler.handleKeyPress(event, activeFramework);
+  bool onShortcutHandler(KeyEvent event) =>
+      ShortcutHandler.handleKeyPress(event, activeFramework);
 
   /// Event Manager Host
   final EventManager manager = EventManager();
   @override
-  registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);
+  registerEventListener(EventTypes type, OnEventCallback callback,
+          {int? priority}) =>
+      manager.register(type, callback, priority: priority);
 
   @override
-  removeEventListener(EventTypes type, OnEventCallback callback) => manager.remove(type, callback);
+  removeEventListener(EventTypes type, OnEventCallback callback) =>
+      manager.remove(type, callback);
 
   @override
-  broadcastEvent(WidgetModel source, Event event) => manager.broadcast(this, event);
+  broadcastEvent(WidgetModel source, Event event) =>
+      manager.broadcast(this, event);
 
   @override
-  executeEvent(WidgetModel source, String event) => manager.execute(this, event);
+  executeEvent(WidgetModel source, String event) =>
+      manager.execute(this, event);
 }

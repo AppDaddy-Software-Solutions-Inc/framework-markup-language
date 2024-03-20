@@ -7,7 +7,7 @@ import 'package:petitparser/petitparser.dart';
 class ExpressionParser {
   ExpressionParser() {
     expression.set(binaryExpression.seq(conditionArguments.optional()).map(
-            (l) => l[1] == null
+        (l) => l[1] == null
             ? l[0]
             : ConditionalExpression(l[0], l[1][0], l[1][1])));
     token.set((literal | unaryExpression | variable).cast<Expression>());
@@ -22,43 +22,43 @@ class ExpressionParser {
 
   // Parse simple numeric literals: `12`, `3.4`, `.5`.
   Parser<Literal> get numericLiteral => ((digit() | char('.')).and() &
-  (digit().star() &
-  ((char('.') & digit().plus()) |
-  (char('x') & digit().plus()) |
-  (anyOf('Ee') &
-  anyOf('+-').optional() &
-  digit().plus()))
-      .optional()))
-      .flatten()
-      .map((v) {
-    return Literal(num.parse(v), v);
-  });
+              (digit().star() &
+                  ((char('.') & digit().plus()) |
+                          (char('x') & digit().plus()) |
+                          (anyOf('Ee') &
+                              anyOf('+-').optional() &
+                              digit().plus()))
+                      .optional()))
+          .flatten()
+          .map((v) {
+        return Literal(num.parse(v), v);
+      });
 
   Parser<String> get escapedChar =>
       (char(r'\') & anyOf("nrtbfv\"'")).pick(1).cast();
 
   String unescape(String v) => v.replaceAllMapped(
       RegExp("\\\\[nrtbf\"']"),
-          (v) => const {
-        'n': '\n',
-        'r': '\r',
-        't': '\t',
-        'b': '\b',
-        'f': '\f',
-        'v': '\v',
-        "'": "'",
-        '"': '"'
-      }[v.group(0)!.substring(1)]!);
+      (v) => const {
+            'n': '\n',
+            'r': '\r',
+            't': '\t',
+            'b': '\b',
+            'f': '\f',
+            'v': '\v',
+            "'": "'",
+            '"': '"'
+          }[v.group(0)!.substring(1)]!);
 
   Parser<Literal> get sqStringLiteral => (char("'") &
-  (anyOf(r"'\").neg() | escapedChar).star().flatten() &
-  char("'"))
+          (anyOf(r"'\").neg() | escapedChar).star().flatten() &
+          char("'"))
       .pick(1)
       .map((v) => Literal(unescape(v), "'$v'"));
 
   Parser<Literal> get dqStringLiteral => (char('"') &
-  (anyOf(r'"\').neg() | escapedChar).star().flatten() &
-  char('"'))
+          (anyOf(r'"\').neg() | escapedChar).star().flatten() &
+          char('"'))
       .pick(1)
       .map((v) => Literal(unescape(v), '"$v"'));
 
@@ -93,11 +93,11 @@ class ExpressionParser {
           .map((l) => Literal(l, '$l'));
 
   Parser<Literal> get literal => (numericLiteral |
-  stringLiteral |
-  boolLiteral |
-  nullLiteral |
-  arrayLiteral |
-  mapLiteral)
+          stringLiteral |
+          boolLiteral |
+          nullLiteral |
+          arrayLiteral |
+          mapLiteral)
       .cast();
 
   // An individual part of a binary expression:
@@ -108,7 +108,8 @@ class ExpressionParser {
   // binary precedence for quick reference:
   // see [Order of operations](http://en.wikipedia.org/wiki/Order_of_operations#Programming_language)
   static const Map<String, int> binaryOperations = {
-    '??': 1, //Added by isaac to allow null aware operations opposed to nvl syntax.
+    '??':
+        1, //Added by isaac to allow null aware operations opposed to nvl syntax.
     '||': 2,
     '&&': 3,
     '|': 4,
@@ -210,23 +211,23 @@ class ExpressionParser {
   // It also gobbles function calls:
   // e.g. `Math.acos(obj.angle)`
   Parser<Expression?> get variable => groupOrIdentifier
-      .seq((memberArgument.cast() | indexArgument | callArgument).star())
-      .map((l) {
-    var a = l[0] as Expression?;
-    var b = l[1] as List;
-    return b.fold(a, (Expression? object, argument) {
-      if (argument is Identifier) {
-        return MemberExpression(object, argument);
-      }
-      if (argument is Expression) {
-        return IndexExpression(object, argument);
-      }
-      if (argument is List<Expression>) {
-        return CallExpression(object, argument);
-      }
-      throw ArgumentError('Invalid type ${argument.runtimeType}');
-    });
-  });
+          .seq((memberArgument.cast() | indexArgument | callArgument).star())
+          .map((l) {
+        var a = l[0] as Expression?;
+        var b = l[1] as List;
+        return b.fold(a, (Expression? object, argument) {
+          if (argument is Identifier) {
+            return MemberExpression(object, argument);
+          }
+          if (argument is Expression) {
+            return IndexExpression(object, argument);
+          }
+          if (argument is List<Expression>) {
+            return CallExpression(object, argument);
+          }
+          throw ArgumentError('Invalid type ${argument.runtimeType}');
+        });
+      });
 
   // Responsible for parsing a group of things within parentheses `()`
   // This function assumes that it needs to gobble the opening parenthesis

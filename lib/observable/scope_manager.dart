@@ -4,54 +4,49 @@ import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class ScopeManager
-{
-  final directory  = HashMap<String,List<Scope>>();
+class ScopeManager {
+  final directory = HashMap<String, List<Scope>>();
   HashMap<String?, List<Observable>>? unresolved;
 
   ScopeManager();
 
-  add(Scope scope, {String? alias})
-  {
+  add(Scope scope, {String? alias}) {
     var id = scope.id;
     if (alias != null) id = alias;
-    
+
     if (!directory.containsKey(id)) directory[id] = [];
     if (!directory[id]!.contains(scope)) directory[id]!.add(scope);
   }
 
-  remove(Scope scope)
-  {
-    if ((directory.containsKey(scope.id)) && (directory[scope.id]!.contains(scope))) directory[scope.id]!.remove(scope);
-    if (unresolved != null)
-    {
+  remove(Scope scope) {
+    if ((directory.containsKey(scope.id)) &&
+        (directory[scope.id]!.contains(scope)))
+      directory[scope.id]!.remove(scope);
+    if (unresolved != null) {
       unresolved!.removeWhere((scopeId, observable) => scopeId == scope.id);
       if (unresolved!.isEmpty) unresolved = null;
     }
   }
 
-  Scope? of(String? id)
-  {
+  Scope? of(String? id) {
     if (id == null) return null;
     if (directory.containsKey(id)) return directory[id]!.last;
     return null;
   }
 
-  register(Observable observable)
-  {
-    if ((isNullOrEmpty(observable.key)) || (observable.scope == null)) return null;
+  register(Observable observable) {
+    if ((isNullOrEmpty(observable.key)) || (observable.scope == null))
+      return null;
 
-    // Notify 
+    // Notify
     _notifyDescendants(observable.scope!, observable);
 
-    // Unresolved Named Scope 
+    // Unresolved Named Scope
     if (unresolved != null) _notifyUnresolved(observable.scope!.id);
   }
 
-  void _notifyUnresolved(String? scopeId)
-  {
-    if (unresolved!.containsKey(scopeId))
-    {
+  void _notifyUnresolved(String? scopeId) {
+    if (unresolved!.containsKey(scopeId)) {
       List<Observable> targets = [];
       for (var observable in unresolved![scopeId]!) {
         targets.add(observable);
@@ -63,18 +58,17 @@ class ScopeManager
     }
   }
 
-  void _notifyDescendants(Scope scope, Observable observable)
-  {
-    // Resolve 
-    if (scope.unresolved.containsKey(observable.key))
-    {
-      List<Observable> unresolved = scope.unresolved[observable.key]!.toList(growable: false);
+  void _notifyDescendants(Scope scope, Observable observable) {
+    // Resolve
+    if (scope.unresolved.containsKey(observable.key)) {
+      List<Observable> unresolved =
+          scope.unresolved[observable.key]!.toList(growable: false);
       for (var target in unresolved) {
         scope.bind(target);
       }
     }
 
-    // Resolve Children 
+    // Resolve Children
     if (scope.children != null) {
       for (var scope in scope.children!) {
         _notifyDescendants(scope, observable);
@@ -82,40 +76,42 @@ class ScopeManager
     }
   }
 
-  Observable? findObservableInScope(Observable? target, String? scopeId, String? observableKey)
-  {
-    // Find Scope 
-    Scope? scope = directory.containsKey(scopeId) ? directory[scopeId]!.last : null;
+  Observable? findObservableInScope(
+      Observable? target, String? scopeId, String? observableKey) {
+    // Find Scope
+    Scope? scope =
+        directory.containsKey(scopeId) ? directory[scopeId]!.last : null;
 
-    // Find Observable in Scope 
+    // Find Observable in Scope
     Observable? observable;
-    if (scope != null) observable = scope.observables.containsKey(observableKey) ? scope.observables[observableKey] : null;
+    if (scope != null)
+      observable = scope.observables.containsKey(observableKey)
+          ? scope.observables[observableKey]
+          : null;
 
-    // Not Found 
-    if ((observable == null) && (target != null) && (target.scope != null))
-    {
-      // Create New Unresolved 
+    // Not Found
+    if ((observable == null) && (target != null) && (target.scope != null)) {
+      // Create New Unresolved
       unresolved ??= HashMap<String?, List<Observable>>();
 
-      // Create New Unresolved Scope 
+      // Create New Unresolved Scope
       if (!unresolved!.containsKey(scopeId)) unresolved![scopeId] = [];
 
-      // Create New Unresolved Scope Target 
-      if (!unresolved![scopeId]!.contains(target)) unresolved![scopeId]!.add(target);
+      // Create New Unresolved Scope Target
+      if (!unresolved![scopeId]!.contains(target))
+        unresolved![scopeId]!.add(target);
     }
 
     return observable;
   }
 
-  Observable? findObservable(Scope? scope, String? key)
-  {
+  Observable? findObservable(Scope? scope, String? key) {
     if ((scope == null) || (isNullOrEmpty(key))) return null;
     if (scope.observables.containsKey(key)) return scope.observables[key];
     return findObservable(scope.parent, key);
   }
 
-  bool hasScope(String? id)
-  {
+  bool hasScope(String? id) {
     if (id == null) return false;
     return directory.containsKey(id);
   }

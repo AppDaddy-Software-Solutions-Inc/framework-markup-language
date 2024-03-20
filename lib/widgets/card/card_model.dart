@@ -2,7 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -11,8 +11,7 @@ import 'package:fml/helpers/helpers.dart';
 ///
 /// DEPRECATED
 /// Defines the properties used to build a [CARD.CardView]
-class CardModel extends BoxModel
-{
+class CardModel extends BoxModel {
   @override
   double get elevation => super.elevation ?? 1;
 
@@ -28,27 +27,23 @@ class CardModel extends BoxModel
   double? get margins => super.marginTop ?? 5;
 
   @override
-  String  get halign  => super.halign  ?? "start";
+  String get halign => super.halign ?? "start";
 
   @override
-  String  get valign  => super.valign  ?? "start";
+  String get valign => super.valign ?? "start";
 
   @override
   Color? get color => super.color ?? Colors.white;
 
   CardModel(WidgetModel super.parent, super.id) : super(expandDefault: false);
 
-  static CardModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static CardModel? fromXml(WidgetModel parent, XmlElement xml) {
     CardModel? model;
-    try
-    {
+    try {
       // build model
       model = CardModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e, caller: 'card.Model');
       model = null;
     }
@@ -56,13 +51,12 @@ class CardModel extends BoxModel
   }
 
   @override
-  void deserialize(XmlElement? xml)
-  {
+  void deserialize(XmlElement? xml) {
     if (xml == null) return;
 
     /// override of expand
     var expand = Xml.get(node: xml, tag: 'expand');
-    if (expand == null) this.expand= false;
+    if (expand == null) this.expand = false;
 
     // deserialize
     super.deserialize(xml);
@@ -71,4 +65,3 @@ class CardModel extends BoxModel
   @override
   Widget getView({Key? key}) => getReactiveView(BoxView(this));
 }
-

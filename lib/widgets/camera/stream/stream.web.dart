@@ -12,23 +12,22 @@ import 'package:fml/widgets/widget/widget_state.dart';
 import 'dart:ui' as ui;
 import 'package:fml/datasources/file/file.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/camera/stream/stream.dart';
 import 'package:fml/helpers/helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
-if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
-if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
+    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+    if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 // platform
 import 'package:fml/platform/platform.web.dart'
-if (dart.library.io)   'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';
+    if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+    if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 View getView(model) => View(model);
 
-class View extends StatefulWidget implements IWidgetView, StreamView
-{
+class View extends StatefulWidget implements IWidgetView, StreamView {
   @override
   final CameraModel model;
 
@@ -38,8 +37,7 @@ class View extends StatefulWidget implements IWidgetView, StreamView
   ViewState createState() => ViewState();
 }
 
-class ViewState extends WidgetState<View>
-{
+class ViewState extends WidgetState<View> {
   List<dynamic> cameras = [];
   int selectedCamera = 0;
 
@@ -187,7 +185,7 @@ class ViewState extends WidgetState<View>
           // process stream image
           onStream(rgba, width, height);
         }
-      } catch(e) {
+      } catch (e) {
         //DialogService().show(type: DialogType.error, title: 'detecting error2');
       }
     }
@@ -230,8 +228,7 @@ class ViewState extends WidgetState<View>
         widget.model.renderwidth = videoRenderSize["width"];
         widget.model.renderheight = videoRenderSize["height"];
 
-        if (widget.model.scale)
-        {
+        if (widget.model.scale) {
           canvas.width = toInt(videoRenderSize["width"]);
           canvas.height = toInt(videoRenderSize["height"]);
           canvas.context2D.drawImageScaled(video, xOffset, 0,
@@ -244,7 +241,7 @@ class ViewState extends WidgetState<View>
 
         lastFrame = epoch;
       }
-    } catch(e) {
+    } catch (e) {
       // System.toast("Error in video");
     }
 
@@ -282,8 +279,8 @@ class ViewState extends WidgetState<View>
         }
       };
       dynamic cameras;
-      cameras ??= await window.navigator.mediaDevices!
-            .getUserMedia(mediaConstraints);
+      cameras ??=
+          await window.navigator.mediaDevices!.getUserMedia(mediaConstraints);
       window.navigator.mediaDevices!
           .getUserMedia(mediaConstraints)
           .then((MediaStream stream) {
@@ -293,7 +290,7 @@ class ViewState extends WidgetState<View>
         window.requestAnimationFrame(renderFrame);
       }).catchError(onError);
       Log().debug("Camera Started");
-    } catch(e) {
+    } catch (e) {
       Log().debug('$e');
     }
   }
@@ -308,7 +305,7 @@ class ViewState extends WidgetState<View>
       }
       stream = null;
       Log().debug("Camera Stopped");
-    } catch(e) {
+    } catch (e) {
       Log().debug('$e');
     }
   }
@@ -319,7 +316,7 @@ class ViewState extends WidgetState<View>
       Log().debug("Pausing Camera");
       video.pause();
       Log().debug("Camera Paused");
-    } catch(e) {
+    } catch (e) {
       Log().debug('$e');
     }
   }
@@ -331,10 +328,10 @@ class ViewState extends WidgetState<View>
         Log().debug("Playing Camera");
         video.play();
         Log().debug("Camera Playing");
-      } catch(e) {
+      } catch (e) {
         Log().debug('$e');
       }
-    } catch(e) {
+    } catch (e) {
       Log().debug('$e');
     }
   }
@@ -373,17 +370,18 @@ class ViewState extends WidgetState<View>
           await Platform.fileSaveAsFromBlob(blob, "${newId()}-.png");
         }
 
-        ImageData image2 =
-            canvas2.context2D.getImageData(0, 0, width, height);
+        ImageData image2 = canvas2.context2D.getImageData(0, 0, width, height);
         var rgba2 = image2.data.toList();
 
         // save snapshot
         String uri = canvas2.toDataUrl('image/png', 1.0);
         await onSnapshot(rgba2, width, height, UriData.fromString(uri));
-      } catch(e) {
+      } catch (e) {
         Log().debug('$e');
       }
-    } catch(e) {Log().debug('$e');}
+    } catch (e) {
+      Log().debug('$e');
+    }
   }
 
   onError(error) {
@@ -408,7 +406,8 @@ class ViewState extends WidgetState<View>
   void onStream(List<int> bytes, int width, int height) {
     // detect in stream
     if (widget.model.detectors != null) {
-      DetectableImage? detectable = DetectableImage.fromRgba(bytes, width, height);
+      DetectableImage? detectable =
+          DetectableImage.fromRgba(bytes, width, height);
       widget.model.detectInStream(detectable);
     }
   }
@@ -417,7 +416,8 @@ class ViewState extends WidgetState<View>
       List<int> bytes, int width, int height, UriData uri) async {
     // detect in stream
     if (widget.model.detectors != null) {
-      DetectableImage? detectable = DetectableImage.fromRgba(bytes, width, height);
+      DetectableImage? detectable =
+          DetectableImage.fromRgba(bytes, width, height);
       widget.model.detectInImage(detectable);
     }
 

@@ -33,8 +33,7 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView> {
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     var model = widget.model;
 
     // Check if widget is visible before wasting resources on building it

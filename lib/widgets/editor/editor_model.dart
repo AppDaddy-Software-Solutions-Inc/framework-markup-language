@@ -4,73 +4,64 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/editor/editor_view.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class EditorModel extends DecoratedWidgetModel 
-{
+class EditorModel extends DecoratedWidgetModel {
   // theme
   StringObservable? _theme;
-  set theme(dynamic v)
-  {
-    if (_theme != null)
-    {
+  set theme(dynamic v) {
+    if (_theme != null) {
       _theme!.set(v);
-    }
-    else
-    {
-      if (v != null) _theme = StringObservable(Binding.toKey(id, 'theme'), v, scope: scope, listener: onPropertyChange);
+    } else {
+      if (v != null)
+        _theme = StringObservable(Binding.toKey(id, 'theme'), v,
+            scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get theme => _theme?.get();
-  
+
   // value
   StringObservable? _value;
-  set value(dynamic v)
-  {
-    if (_value != null)
-    {
+  set value(dynamic v) {
+    if (_value != null) {
       _value!.set(v);
-    }
-    else
-    {
-      if (v != null) _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
+    } else {
+      if (v != null)
+        _value = StringObservable(Binding.toKey(id, 'value'), v,
+            scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get value => _value?.get();
 
   // language
   StringObservable? _language;
-  set language(dynamic v)
-  {
-    if (_language != null)
-    {
+  set language(dynamic v) {
+    if (_language != null) {
       _language!.set(v);
-    }
-    else
-    {
-      if (v != null) _language = StringObservable(Binding.toKey(id, 'language'), v, scope: scope, listener: onPropertyChange);
+    } else {
+      if (v != null)
+        _language = StringObservable(Binding.toKey(id, 'language'), v,
+            scope: scope, listener: onPropertyChange);
     }
   }
+
   String get language => _language?.get() ?? "xml";
 
-  EditorModel(super.parent, super.id, {dynamic value, dynamic language})
-  {
-    if (value    != null) this.value = value;
+  EditorModel(super.parent, super.id, {dynamic value, dynamic language}) {
+    if (value != null) this.value = value;
     if (language != null) this.language = language;
   }
-  
-  static EditorModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+
+  static EditorModel? fromXml(WidgetModel parent, XmlElement xml) {
     EditorModel? model;
-    try
-    {
+    try {
       model = EditorModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e, caller: 'EditorModel');
       model = null;
     }
@@ -79,14 +70,13 @@ class EditorModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 
-    value    = Xml.get(node: xml, tag: 'value');
+    value = Xml.get(node: xml, tag: 'value');
     language = Xml.get(node: xml, tag: 'language')?.toLowerCase().trim();
-    theme    = Xml.get(node: xml, tag: 'theme');
+    theme = Xml.get(node: xml, tag: 'theme');
   }
 
   @override

@@ -3,15 +3,15 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/widget_model.dart'  ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/datasources/zebra/wedge.dart' as zebra;
 import 'package:fml/datasources/detectors/barcode/barcode_detector.dart';
 import 'package:fml/datasources/zebra/wedge.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
-{
+class ZebraModel extends DataSourceModel
+    implements IDataSource, IZebraListener {
   // disable datasource by default when not top of stack
   // override by setting background="true"
   @override
@@ -22,34 +22,27 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
 
   ZebraModel(super.parent, super.id);
 
-  static ZebraModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static ZebraModel? fromXml(WidgetModel parent, XmlElement xml) {
     ZebraModel? model;
-    try
-    {
+    try {
       model = ZebraModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'zebra.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'zebra.Model');
       model = null;
     }
     return model;
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     zebra.Reader().removeListener(this);
     super.dispose();
   }
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
-
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 
@@ -57,24 +50,21 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
   }
 
   @override
-  Future<bool> start({bool refresh = false, String? key}) async
-  {
+  Future<bool> start({bool refresh = false, String? key}) async {
     zebra.Reader().registerListener(this);
     //zebra.Reader().startScan();
     return true;
   }
 
   @override
-  Future<bool> stop() async
-  {
+  Future<bool> stop() async {
     zebra.Reader().removeListener(this);
     super.stop();
     return true;
   }
 
   @override
-  onZebraData({Payload? payload})
-  {
+  onZebraData({Payload? payload}) {
     // enabled?
     if (enabled == false) return;
 
@@ -83,9 +73,9 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
     Data data = Data();
     for (var barcode in payload.barcodes) {
       Map<dynamic, dynamic> map = <dynamic, dynamic>{};
-      map["type"]    = barcode.type != null ? barcode.type.toString() : "";
-      map["source"]  = barcode.source ?? "";
-      map["format"]  = barcode.format;
+      map["type"] = barcode.type != null ? barcode.type.toString() : "";
+      map["source"] = barcode.source ?? "";
+      map["format"] = barcode.format;
       map["display"] = barcode.display;
       map["barcode"] = barcode.barcode != null ? barcode.barcode!.trim() : "";
       barcode.parameters?.forEach((key, value) => map[key] = value);

@@ -2,14 +2,12 @@
 import 'dart:collection';
 import 'package:fml/helpers/helpers.dart';
 
-class NotationSegment
-{
+class NotationSegment {
   String name = "";
-  int  offset = 0;
+  int offset = 0;
 }
 
-class DotNotation with ListMixin<NotationSegment>
-{
+class DotNotation with ListMixin<NotationSegment> {
   final List<NotationSegment> _list = [];
   final String signature;
 
@@ -22,7 +20,8 @@ class DotNotation with ListMixin<NotationSegment>
   void addAll(Iterable<NotationSegment> iterable) => _list.addAll(iterable);
 
   @override
-  void operator []=(int index, NotationSegment property) => _list[index] = property;
+  void operator []=(int index, NotationSegment property) =>
+      _list[index] = property;
 
   @override
   NotationSegment operator [](int index) => _list[index];
@@ -33,34 +32,29 @@ class DotNotation with ListMixin<NotationSegment>
   @override
   int get length => _list.length;
 
-  static DotNotation? fromString(String? string)
-  {
+  static DotNotation? fromString(String? string) {
     if (string == null) return null;
 
     DotNotation? dotnotation;
 
     // build sub-properties (name and offset) list
     List<String> parts = string.split(".");
-    if (parts.isNotEmpty)
-    {
+    if (parts.isNotEmpty) {
       dotnotation = DotNotation(string);
-      for (String part in parts)
-      {
+      for (String part in parts) {
         // split by name:offset
         List<String> subparts = part.split(":");
 
         NotationSegment property = NotationSegment();
 
         // set name
-        if (subparts.isNotEmpty)
-        {
+        if (subparts.isNotEmpty) {
           property.name = subparts[0].trim();
           subparts.removeAt(0);
         }
 
         // set offset
-        if (subparts.isNotEmpty)
-        {
+        if (subparts.isNotEmpty) {
           String offset = subparts[0].trim();
           if (offset == "*") offset = "-1";
           property.offset = toInt(offset) ?? 0;
@@ -75,14 +69,11 @@ class DotNotation with ListMixin<NotationSegment>
   }
 
   @override
-  String toString()
-  {
+  String toString() {
     var k = "";
-    if (isNotEmpty)
-    {
+    if (isNotEmpty) {
       String dn = "";
-      for (var segment in this)
-      {
+      for (var segment in this) {
         dn = "$dn.${segment.name}";
       }
       k = "$k$dn";

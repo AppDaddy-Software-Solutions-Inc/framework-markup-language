@@ -2,8 +2,7 @@
 import '../data/data.dart';
 import 'datasource_interface.dart';
 
-abstract class IDataSourceListener
-{
+abstract class IDataSourceListener {
   Future<bool> onDataSourceSuccess(IDataSource source, Data? map);
   onDataSourceException(IDataSource source, Exception exception);
   onDataSourceBusy(IDataSource source, bool busy);

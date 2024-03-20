@@ -6,13 +6,11 @@ import 'package:fml/system.dart';
 import 'package:fml/theme/theme.dart';
 import 'package:provider/provider.dart';
 
-class Application extends StatelessWidget
-{
+class Application extends StatelessWidget {
   const Application({super.key});
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return MaterialApp.router(
         title: System.title,
         debugShowCheckedModeBanner: false,

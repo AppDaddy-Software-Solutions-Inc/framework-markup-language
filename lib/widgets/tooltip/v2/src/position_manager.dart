@@ -39,12 +39,10 @@ enum TooltipPosition {
   leftEnd,
 }
 
-
 /// Calculates the position of the tooltip and the arrow on the screen
 /// Verifies if the desired position fits the screen.
 /// If it doesn't the position changes automatically.
-class PositionManager
-{
+class PositionManager {
   final bool showArrow;
 
   /// [arrowBox] width, height, position x and y of the arrow.
@@ -90,12 +88,14 @@ class PositionManager
         y: triggerBox.y - overlayBox.h - distance - arrowBox.h,
       ),
       position: TooltipPosition.topStart,
-      radius: showArrow ? BorderRadius.only(
-        topLeft: Radius.circular(radius),
-        topRight: Radius.circular(radius),
-        bottomLeft: Radius.zero,
-        bottomRight: Radius.circular(radius),
-      ) : BorderRadius.all(Radius.circular(radius)),
+      radius: showArrow
+          ? BorderRadius.only(
+              topLeft: Radius.circular(radius),
+              topRight: Radius.circular(radius),
+              bottomLeft: Radius.zero,
+              bottomRight: Radius.circular(radius),
+            )
+          : BorderRadius.all(Radius.circular(radius)),
     );
   }
 
@@ -134,12 +134,14 @@ class PositionManager
         y: triggerBox.y - overlayBox.h - distance - arrowBox.h,
       ),
       position: TooltipPosition.topEnd,
-      radius: showArrow ? BorderRadius.only(
-        topLeft: Radius.circular(radius),
-        topRight: Radius.circular(radius),
-        bottomLeft: Radius.circular(radius),
-        bottomRight: Radius.zero,
-      ) : BorderRadius.all(Radius.circular(radius)),
+      radius: showArrow
+          ? BorderRadius.only(
+              topLeft: Radius.circular(radius),
+              topRight: Radius.circular(radius),
+              bottomLeft: Radius.circular(radius),
+              bottomRight: Radius.zero,
+            )
+          : BorderRadius.all(Radius.circular(radius)),
     );
   }
 
@@ -158,12 +160,14 @@ class PositionManager
         y: triggerBox.y + triggerBox.h + distance + arrowBox.h,
       ),
       position: TooltipPosition.bottomStart,
-      radius: showArrow ? BorderRadius.only(
-        topLeft: Radius.zero,
-        topRight: Radius.circular(radius),
-        bottomLeft: Radius.circular(radius),
-        bottomRight: Radius.circular(radius),
-      ) : BorderRadius.all(Radius.circular(radius)),
+      radius: showArrow
+          ? BorderRadius.only(
+              topLeft: Radius.zero,
+              topRight: Radius.circular(radius),
+              bottomLeft: Radius.circular(radius),
+              bottomRight: Radius.circular(radius),
+            )
+          : BorderRadius.all(Radius.circular(radius)),
     );
   }
 
@@ -202,12 +206,14 @@ class PositionManager
         y: triggerBox.y + triggerBox.h + distance + arrowBox.h,
       ),
       position: TooltipPosition.bottomEnd,
-      radius: showArrow ? BorderRadius.only(
-        topLeft: Radius.circular(radius),
-        topRight: Radius.zero,
-        bottomLeft: Radius.circular(radius),
-        bottomRight: Radius.circular(radius),
-      ) : BorderRadius.all(Radius.circular(radius)),
+      radius: showArrow
+          ? BorderRadius.only(
+              topLeft: Radius.circular(radius),
+              topRight: Radius.zero,
+              bottomLeft: Radius.circular(radius),
+              bottomRight: Radius.circular(radius),
+            )
+          : BorderRadius.all(Radius.circular(radius)),
     );
   }
 
@@ -227,12 +233,14 @@ class PositionManager
         y: triggerBox.y + _half(triggerBox.h),
       ),
       position: TooltipPosition.leftStart,
-      radius: showArrow ? BorderRadius.only(
-        topLeft: Radius.circular(radius),
-        topRight: Radius.zero,
-        bottomLeft: Radius.circular(radius),
-        bottomRight: Radius.circular(radius),
-      ) : BorderRadius.all(Radius.circular(radius)),
+      radius: showArrow
+          ? BorderRadius.only(
+              topLeft: Radius.circular(radius),
+              topRight: Radius.zero,
+              bottomLeft: Radius.circular(radius),
+              bottomRight: Radius.circular(radius),
+            )
+          : BorderRadius.all(Radius.circular(radius)),
     );
   }
 
@@ -273,12 +281,14 @@ class PositionManager
         y: triggerBox.y + _half(triggerBox.h) - overlayBox.h,
       ),
       position: TooltipPosition.leftEnd,
-      radius: showArrow ? BorderRadius.only(
-        topLeft: Radius.circular(radius),
-        topRight: Radius.circular(radius),
-        bottomLeft: Radius.circular(radius),
-        bottomRight: Radius.zero,
-      ) : BorderRadius.all(Radius.circular(radius)),
+      radius: showArrow
+          ? BorderRadius.only(
+              topLeft: Radius.circular(radius),
+              topRight: Radius.circular(radius),
+              bottomLeft: Radius.circular(radius),
+              bottomRight: Radius.zero,
+            )
+          : BorderRadius.all(Radius.circular(radius)),
     );
   }
 
@@ -298,12 +308,14 @@ class PositionManager
         y: (triggerBox.y + _half(triggerBox.h)).floorToDouble(),
       ),
       position: TooltipPosition.rightStart,
-      radius: showArrow ? BorderRadius.only(
-        topLeft: Radius.zero,
-        topRight: Radius.circular(radius),
-        bottomLeft: Radius.circular(radius),
-        bottomRight: Radius.circular(radius),
-      ) : BorderRadius.all(Radius.circular(radius)),
+      radius: showArrow
+          ? BorderRadius.only(
+              topLeft: Radius.zero,
+              topRight: Radius.circular(radius),
+              bottomLeft: Radius.circular(radius),
+              bottomRight: Radius.circular(radius),
+            )
+          : BorderRadius.all(Radius.circular(radius)),
     );
   }
 
@@ -342,12 +354,14 @@ class PositionManager
         y: triggerBox.y + _half(triggerBox.h) - overlayBox.h,
       ),
       position: TooltipPosition.rightEnd,
-      radius: showArrow ? BorderRadius.only(
-        topLeft: Radius.circular(radius),
-        topRight: Radius.circular(radius),
-        bottomLeft: Radius.zero,
-        bottomRight: Radius.circular(radius),
-      ) : BorderRadius.all(Radius.circular(radius)),
+      radius: showArrow
+          ? BorderRadius.only(
+              topLeft: Radius.circular(radius),
+              topRight: Radius.circular(radius),
+              bottomLeft: Radius.zero,
+              bottomRight: Radius.circular(radius),
+            )
+          : BorderRadius.all(Radius.circular(radius)),
     );
   }
 

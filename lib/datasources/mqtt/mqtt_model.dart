@@ -5,7 +5,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:xml/xml.dart';
 import 'mqtt_interface.dart';
@@ -14,8 +14,7 @@ import 'payload.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
-{
+class MqttModel extends DataSourceModel implements IDataSource, IMqttListener {
   IMqtt? mqtt;
 
   // message count
@@ -32,208 +31,183 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
 
   // on connected event
   StringObservable? _onconnected;
-  set onconnected(dynamic v) 
-  {
-    if (_onconnected != null) 
-    {
+  set onconnected(dynamic v) {
+    if (_onconnected != null) {
       _onconnected!.set(v);
-    } 
-    else if (v != null) 
-    {
-      _onconnected = StringObservable(Binding.toKey(id, 'onconnected'), v, scope: scope, lazyEval: true);
+    } else if (v != null) {
+      _onconnected = StringObservable(Binding.toKey(id, 'onconnected'), v,
+          scope: scope, lazyEval: true);
     }
   }
+
   String? get onconnected => _onconnected?.get();
 
   // on disconnected event
   StringObservable? _ondisconnected;
-  set ondisconnected(dynamic v)
-  {
-    if (_ondisconnected != null)
-    {
+  set ondisconnected(dynamic v) {
+    if (_ondisconnected != null) {
       _ondisconnected!.set(v);
-    }
-    else if (v != null)
-    {
-      _ondisconnected = StringObservable(Binding.toKey(id, 'ondisconnected'), v, scope: scope, lazyEval: true);
+    } else if (v != null) {
+      _ondisconnected = StringObservable(Binding.toKey(id, 'ondisconnected'), v,
+          scope: scope, lazyEval: true);
     }
   }
+
   String? get ondisconnected => _ondisconnected?.get();
 
   // on subscribed event
   StringObservable? _onsubscribed;
-  set onsubscribed(dynamic v)
-  {
-    if (_onsubscribed != null)
-    {
+  set onsubscribed(dynamic v) {
+    if (_onsubscribed != null) {
       _onsubscribed!.set(v);
-    }
-    else if (v != null)
-    {
-      _onsubscribed = StringObservable(Binding.toKey(id, 'onsubscribed'), v, scope: scope, lazyEval: true);
+    } else if (v != null) {
+      _onsubscribed = StringObservable(Binding.toKey(id, 'onsubscribed'), v,
+          scope: scope, lazyEval: true);
     }
   }
+
   String? get onsubscribed => _onsubscribed?.get();
 
   // on ununsubscribed event
   StringObservable? _onunsubscribed;
-  set onunsubscribed(dynamic v)
-  {
-    if (_onunsubscribed != null)
-    {
+  set onunsubscribed(dynamic v) {
+    if (_onunsubscribed != null) {
       _onunsubscribed!.set(v);
-    }
-    else if (v != null)
-    {
-      _onunsubscribed = StringObservable(Binding.toKey(id, 'onunsubscribed'), v, scope: scope, lazyEval: true);
+    } else if (v != null) {
+      _onunsubscribed = StringObservable(Binding.toKey(id, 'onunsubscribed'), v,
+          scope: scope, lazyEval: true);
     }
   }
+
   String? get onunsubscribed => _onunsubscribed?.get();
-  
+
   // on published event
   StringObservable? _onpublished;
-  set onpublished(dynamic v)
-  {
-    if (_onpublished != null)
-    {
+  set onpublished(dynamic v) {
+    if (_onpublished != null) {
       _onpublished!.set(v);
-    }
-    else if (v != null)
-    {
-      _onpublished = StringObservable(Binding.toKey(id, 'onpublished'), v, scope: scope, lazyEval: true);
+    } else if (v != null) {
+      _onpublished = StringObservable(Binding.toKey(id, 'onpublished'), v,
+          scope: scope, lazyEval: true);
     }
   }
+
   String? get onpublished => _onpublished?.get();
 
   // on onerror event
   StringObservable? _onerror;
-  set onerror(dynamic v)
-  {
-    if (_onerror != null)
-    {
+  set onerror(dynamic v) {
+    if (_onerror != null) {
       _onerror!.set(v);
-    }
-    else if (v != null)
-    {
-      _onerror = StringObservable(Binding.toKey(id, 'onerror'), v, scope: scope, lazyEval: true);
+    } else if (v != null) {
+      _onerror = StringObservable(Binding.toKey(id, 'onerror'), v,
+          scope: scope, lazyEval: true);
     }
   }
+
   String? get onerror => _onerror?.get();
 
   // on message event
   StringObservable? _onmessage;
-  set onmessage(dynamic v)
-  {
-    if (_onmessage != null)
-    {
+  set onmessage(dynamic v) {
+    if (_onmessage != null) {
       _onmessage!.set(v);
     }
     // its important that we instantiate the onmessage observable
     // on every call since it overrides the onsuccess
     // else if (v != null)
     {
-      _onmessage = StringObservable(Binding.toKey(id, 'onmessage'), v, scope: scope);
+      _onmessage =
+          StringObservable(Binding.toKey(id, 'onmessage'), v, scope: scope);
     }
   }
+
   String? get onmessage => _onmessage?.get();
 
   // connected
   BooleanObservable? _connected;
-  set connected (dynamic v)
-  {
-    if (_connected != null)
-    {
+  set connected(dynamic v) {
+    if (_connected != null) {
       _connected!.set(v);
-    }
-    else if (v != null)
-    {
-      _connected = BooleanObservable(Binding.toKey(id, 'connected'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _connected = BooleanObservable(Binding.toKey(id, 'connected'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get connected => _connected?.get() ?? false;
 
   // url
   StringObservable? _url;
-  set url(dynamic v)
-  {
-    if (_url != null)
-    {
+  set url(dynamic v) {
+    if (_url != null) {
       _url!.set(v);
-    }
-    else if (v != null)
-    {
-      _url = StringObservable(Binding.toKey(id, 'url'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _url = StringObservable(Binding.toKey(id, 'url'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get url => _url?.get();
 
   // username
   StringObservable? _username;
-  set username(dynamic v)
-  {
-    if (_username != null)
-    {
+  set username(dynamic v) {
+    if (_username != null) {
       _username!.set(v);
-    }
-    else if (v != null)
-    {
-      _username = StringObservable(Binding.toKey(id, 'username'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _username = StringObservable(Binding.toKey(id, 'username'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get username => _username?.get();
-  
+
   // password
   StringObservable? _password;
-  set password(dynamic v)
-  {
-    if (_password != null)
-    {
+  set password(dynamic v) {
+    if (_password != null) {
       _password!.set(v);
-    }
-    else if (v != null)
-    {
-      _password = StringObservable(Binding.toKey(id, 'password'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _password = StringObservable(Binding.toKey(id, 'password'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get password => _password?.get();
-  
+
   // subscriptions
   List<String> subscriptions = [];
 
-  MqttModel(WidgetModel parent, String? id) : super(parent, id)
-  {
-    _received = IntegerObservable(Binding.toKey(id, 'received'), 0, scope: scope);
-    _topic    = StringObservable(Binding.toKey(id, 'topic'), null, scope: scope);
-    _message  = StringObservable(Binding.toKey(id, 'message'), null, scope: scope);
+  MqttModel(WidgetModel parent, String? id) : super(parent, id) {
+    _received =
+        IntegerObservable(Binding.toKey(id, 'received'), 0, scope: scope);
+    _topic = StringObservable(Binding.toKey(id, 'topic'), null, scope: scope);
+    _message =
+        StringObservable(Binding.toKey(id, 'message'), null, scope: scope);
   }
 
-  static MqttModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static MqttModel? fromXml(WidgetModel parent, XmlElement xml) {
     MqttModel? model;
-    try
-    {
+    try {
       model = MqttModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'mqtt.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'mqtt.Model');
       model = null;
     }
     return model;
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     mqtt?.dispose();
     super.dispose();
   }
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 
@@ -248,27 +222,25 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     onmessage = Xml.get(node: xml, tag: 'onmessage');
     username = Xml.get(node: xml, tag: 'username');
     password = Xml.get(node: xml, tag: 'password');
-    
+
     // subscriptions
     var subscriptions = Xml.get(node: xml, tag: 'subscriptions')?.split(",");
-    subscriptions?.forEach((subscription)
-    {
-      if (!isNullOrEmpty(subscription) && !this.subscriptions.contains(subscription.trim())) this.subscriptions.add(subscription.trim());
+    subscriptions?.forEach((subscription) {
+      if (!isNullOrEmpty(subscription) &&
+          !this.subscriptions.contains(subscription.trim()))
+        this.subscriptions.add(subscription.trim());
     });
   }
 
   @override
-  Future<bool> start({bool refresh = false, String? key}) async
-  {
+  Future<bool> start({bool refresh = false, String? key}) async {
     bool ok = true;
-    if (mqtt == null && url != null) mqtt = IMqtt.create(url!, this, username: username, password: password);
-    if (mqtt != null)
-    {
-         ok = await mqtt!.connect();
-         connected = ok;
-    }
-    else
-    {
+    if (mqtt == null && url != null)
+      mqtt = IMqtt.create(url!, this, username: username, password: password);
+    if (mqtt != null) {
+      ok = await mqtt!.connect();
+      connected = ok;
+    } else {
       connected = false;
       ok = false;
     }
@@ -276,8 +248,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   }
 
   @override
-  Future<bool> stop() async
-  {
+  Future<bool> stop() async {
     mqtt?.disconnect();
     super.stop();
     connected = false;
@@ -285,16 +256,16 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   }
 
   @override
-  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
-  {
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
     var function = propertyOrFunction.toLowerCase().trim();
-    switch (function)
-    {
+    switch (function) {
       case "write":
       case "publish":
-        String? topic   = toStr(elementAt(arguments, 0));
+        String? topic = toStr(elementAt(arguments, 0));
         String? message = toStr(elementAt(arguments, 1));
-        if (mqtt != null && topic != null && message != null) mqtt!.publish(topic,message);
+        if (mqtt != null && topic != null && message != null)
+          mqtt!.publish(topic, message);
         return true;
 
       case "read":
@@ -318,8 +289,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   }
 
   @override
-  onMessage(Payload payload)
-  {
+  onMessage(Payload payload) {
     // enabled?
     if (enabled == false) return;
 
@@ -338,71 +308,61 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     // if the message didn't deserialize (length 0)
     // so create a simple map with topic and message bindables <id>.data.topic and <id>.data.message
     // otherwise the data is the deserialized message payload
-    if (data.isEmpty) data.insert(0, {'topic': payload.topic , 'message' : payload.message});
+    if (data.isEmpty)
+      data.insert(0, {'topic': payload.topic, 'message': payload.message});
 
     // fire the onresponse
     onSuccess(data, code: HttpStatus.ok, onSuccessOverride: _onmessage);
   }
 
   @override
-  onConnected() async
-  {
+  onConnected() async {
     for (var topic in subscriptions) {
       await mqtt?.subscribe(topic);
     }
-    if (!isNullOrEmpty(onconnected))
-    {
+    if (!isNullOrEmpty(onconnected)) {
       EventHandler handler = EventHandler(this);
       await handler.execute(_onconnected);
     }
   }
 
   @override
-  onDisconnected(String origin) async
-  {
-    if (!isNullOrEmpty(ondisconnected))
-    {
+  onDisconnected(String origin) async {
+    if (!isNullOrEmpty(ondisconnected)) {
       EventHandler handler = EventHandler(this);
       await handler.execute(_ondisconnected);
     }
-    onData(data ?? Data(), code: HttpStatus.ok, message: "Disconnected by $origin");
+    onData(data ?? Data(),
+        code: HttpStatus.ok, message: "Disconnected by $origin");
   }
 
   @override
-  onPublished(String topic, String message) async
-  {
-    if (!isNullOrEmpty(onpublished))
-    {
+  onPublished(String topic, String message) async {
+    if (!isNullOrEmpty(onpublished)) {
       EventHandler handler = EventHandler(this);
       await handler.execute(_onpublished);
     }
   }
 
   @override
-  onSubscribed(String topic) async
-  {
-    if (!isNullOrEmpty(onsubscribed))
-    {
+  onSubscribed(String topic) async {
+    if (!isNullOrEmpty(onsubscribed)) {
       EventHandler handler = EventHandler(this);
       await handler.execute(_onsubscribed);
     }
   }
 
   @override
-  onUnsubscribed(String topic) async
-  {
-    if (!isNullOrEmpty(onunsubscribed))
-    {
+  onUnsubscribed(String topic) async {
+    if (!isNullOrEmpty(onunsubscribed)) {
       EventHandler handler = EventHandler(this);
       await handler.execute(_onunsubscribed);
     }
   }
 
   @override
-  onError(String error) async
-  {
-    if (!isNullOrEmpty(onerror))
-    {
+  onError(String error) async {
+    if (!isNullOrEmpty(onerror)) {
       EventHandler handler = EventHandler(this);
       await handler.execute(_onerror);
     }

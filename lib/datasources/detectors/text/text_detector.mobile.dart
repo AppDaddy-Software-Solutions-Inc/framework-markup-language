@@ -4,60 +4,50 @@ import 'package:fml/log/manager.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'text_detector.dart';
 
-class LineRow
-{
+class LineRow {
   List<TextElement> words = [];
 
-  LineRow(List<TextElement> e)
-  {
+  LineRow(List<TextElement> e) {
     words = e;
   }
 }
 
 TextDetector getDetector() => TextDetector();
 
-class TextDetector implements ITextDetector
-{
+class TextDetector implements ITextDetector {
   static final TextDetector _singleton = TextDetector._initialize();
 
   static late dynamic _detector;
 
-  factory TextDetector()
-  {
+  factory TextDetector() {
     return _singleton;
   }
 
   TextDetector._initialize();
 
   @override
-  Future<Payload?> detect(dynamic detectable) async
-  {
-      try
-      {
-        Payload? result;
+  Future<Payload?> detect(dynamic detectable) async {
+    try {
+      Payload? result;
 
-        if (detectable?.image is InputImage)
-        {
-          var image = detectable.image;
+      if (detectable?.image is InputImage) {
+        var image = detectable.image;
 
-          // process the image
-          var text = await _detector.processImage(image);
+        // process the image
+        var text = await _detector.processImage(image);
 
-          // return result
-          result = payload(text);
-        }
-
-        return result;
+        // return result
+        result = payload(text);
       }
-      catch(e)
-      {
-        Log().exception(e);
-        return null;
-      }
+
+      return result;
+    } catch (e) {
+      Log().exception(e);
+      return null;
+    }
   }
 
-  Payload payload(RecognizedText vtext)
-  {
+  Payload payload(RecognizedText vtext) {
     List<Line> lines = [];
     // BASIC LINE DETECTION
     // for (TextBlock block in vtext.blocks)
@@ -100,7 +90,8 @@ class TextDetector implements ITextDetector
           // if so add it and then find where it belongs horizontally
           // within the line elements left of each index or added to the end
 
-          for (int i = 0; i < ocrLines.length; i++) { // Determine which line the element belongs to
+          for (int i = 0; i < ocrLines.length; i++) {
+            // Determine which line the element belongs to
             double y1Ocr = ocrLines[i].words[0].boundingBox.top;
             double y2Ocr = ocrLines[i].words[0].boundingBox.bottom;
             // ensure the top is above the lowest line point and the bottom is below the highest line point

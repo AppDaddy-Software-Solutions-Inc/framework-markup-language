@@ -14,8 +14,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class MapView extends StatefulWidget implements IWidgetView
-{
+class MapView extends StatefulWidget implements IWidgetView {
   @override
   final MapModel model;
   MapView(this.model) : super(key: ObjectKey(model));
@@ -24,31 +23,31 @@ class MapView extends StatefulWidget implements IWidgetView
   State<MapView> createState() => _MapViewState();
 }
 
-class _MapViewState extends WidgetState<MapView>
-{
+class _MapViewState extends WidgetState<MapView> {
   Widget? busy;
   Future<MapModel>? future;
   bool startup = true;
 
-  HashMap<String?, BitmapDescriptor> icons  = HashMap<String?, BitmapDescriptor>();
+  HashMap<String?, BitmapDescriptor> icons =
+      HashMap<String?, BitmapDescriptor>();
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
 
   double? latitudeUpperBound;
   double? longitudeUpperBound;
   double? latitudeLowerBound;
   double? longitudeLowerBound;
-  GoogleMap?  map;
+  GoogleMap? map;
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
 
     /////////////////////
     /* Position Camera */
     /////////////////////
     Future.delayed(const Duration(milliseconds: 500), _showAll);
-    WidgetsBinding.instance.addPostFrameCallback((_) => Future.delayed(const Duration(seconds: 1), () => busy = null));
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => Future.delayed(const Duration(seconds: 1), () => busy = null));
   }
 
   final Completer<GoogleMapController> _controller = Completer();
@@ -83,8 +82,7 @@ class _MapViewState extends WidgetState<MapView>
   // }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     widget.model.busy = false;
 
     // Check if widget is visible before wasting resources on building it
@@ -101,53 +99,78 @@ class _MapViewState extends WidgetState<MapView>
     map ??= _buildGoogleMap();
 
     /// Busy / Loading Indicator
-    busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
+    busy ??= BusyModel(widget.model,
+            visible: widget.model.busy, observable: widget.model.busyObservable)
+        .getView();
 
-    var width = widget.model.width   ?? widget.model.myMaxWidthOrDefault;
+    var width = widget.model.width ?? widget.model.myMaxWidthOrDefault;
     var height = widget.model.height ?? widget.model.myMaxHeightOrDefault;
 
     //////////////////
     /* Reset Button */
     //////////////////
-   var reset = FloatingActionButton.extended(onPressed: _showAll, label: Text(phrase.reset), icon: const Icon(Icons.zoom_out_map_outlined));
+    var reset = FloatingActionButton.extended(
+        onPressed: _showAll,
+        label: Text(phrase.reset),
+        icon: const Icon(Icons.zoom_out_map_outlined));
 
     //////////
     /* View */
     //////////
-    dynamic view = GestureDetector(behavior: HitTestBehavior.opaque, onDoubleTap: () => true, onVerticalDragCancel: () => true, onVerticalDragUpdate: (_) => true, onVerticalDragStart: (_) => true, onVerticalDragDown: (_) => true, onVerticalDragEnd: (_) => true, onHorizontalDragCancel: () => true, onHorizontalDragUpdate: (_) => true, onHorizontalDragStart: (_) => true, onHorizontalDragDown: (_) => true, onHorizontalDragEnd: (_) => true, // block scroll events while writing
-        child: Listener(behavior: HitTestBehavior.opaque, onPointerSignal: (ps) => true,
-            child: SizedBox(width: width, height: height,
-                child: Stack(fit: StackFit.expand,
-                    children: [map!, Positioned(top: 10, right: 10, child: reset), busy!]))));
+    dynamic view = GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onDoubleTap: () => true,
+        onVerticalDragCancel: () => true,
+        onVerticalDragUpdate: (_) => true,
+        onVerticalDragStart: (_) => true,
+        onVerticalDragDown: (_) => true,
+        onVerticalDragEnd: (_) => true,
+        onHorizontalDragCancel: () => true,
+        onHorizontalDragUpdate: (_) => true,
+        onHorizontalDragStart: (_) => true,
+        onHorizontalDragDown: (_) => true,
+        onHorizontalDragEnd: (_) => true, // block scroll events while writing
+        child: Listener(
+            behavior: HitTestBehavior.opaque,
+            onPointerSignal: (ps) => true,
+            child: SizedBox(
+                width: width,
+                height: height,
+                child: Stack(fit: StackFit.expand, children: [
+                  map!,
+                  Positioned(top: 10, right: 10, child: reset),
+                  busy!
+                ]))));
 
     // apply user defined constraints
     return applyConstraints(view, widget.model.constraints);
   }
 
-  GoogleMap? _buildGoogleMap()
-  {
-      ////////////////
-      /* Create Map */
-      ////////////////
-      try
-      {
-        //////////////
-        /* Map Type */
-        //////////////
-        MapType type = MapType.hybrid;
-        if (widget.model.mapType == MapTypes.roadmap)   type = MapType.hybrid;
-        if (widget.model.mapType == MapTypes.terrain)   type = MapType.terrain;
-        if (widget.model.mapType == MapTypes.satellite) type = MapType.satellite;
+  GoogleMap? _buildGoogleMap() {
+    ////////////////
+    /* Create Map */
+    ////////////////
+    try {
+      //////////////
+      /* Map Type */
+      //////////////
+      MapType type = MapType.hybrid;
+      if (widget.model.mapType == MapTypes.roadmap) type = MapType.hybrid;
+      if (widget.model.mapType == MapTypes.terrain) type = MapType.terrain;
+      if (widget.model.mapType == MapTypes.satellite) type = MapType.satellite;
 
-        /////////
-        /* Map */
-        /////////
-        GoogleMap map = GoogleMap(
-          onMapCreated: (GoogleMapController controller)
-          {
+      /////////
+      /* Map */
+      /////////
+      GoogleMap map = GoogleMap(
+          onMapCreated: (GoogleMapController controller) {
             _controller.complete(controller);
           },
-          initialCameraPosition: CameraPosition(target: const LatLng(44.4749157,-76.1394201), bearing: 192.8334901395799, tilt: 59.440717697143555, zoom: widget.model.zoom),
+          initialCameraPosition: CameraPosition(
+              target: const LatLng(44.4749157, -76.1394201),
+              bearing: 192.8334901395799,
+              tilt: 59.440717697143555,
+              zoom: widget.model.zoom),
           compassEnabled: false,
           mapToolbarEnabled: true,
           cameraTargetBounds: CameraTargetBounds.unbounded,
@@ -163,19 +186,19 @@ class _MapViewState extends WidgetState<MapView>
           trafficEnabled: false,
           markers: Set<Marker>.of(markers.values),
           // This fixes gestures but there is an issue with mousehweel onPointerSignals triggering on both the map and a scrollable parent
-          gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer())});
+          gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+            Factory<OneSequenceGestureRecognizer>(
+                () => EagerGestureRecognizer())
+          });
 
-        return map;
-      }
-      catch(e)
-      {
-        Log().exception(e, caller: 'widget.map.View');
-      }
-      return null;
+      return map;
+    } catch (e) {
+      Log().exception(e, caller: 'widget.map.View');
+    }
+    return null;
   }
 
-  void _buildMarkers() async
-  {
+  void _buildMarkers() async {
     try {
       ///////////////////
       /* Clear Markers */
@@ -185,8 +208,8 @@ class _MapViewState extends WidgetState<MapView>
       //////////////////
       /* Reset Bounds */
       //////////////////
-      latitudeUpperBound  = null;
-      latitudeLowerBound  = null;
+      latitudeUpperBound = null;
+      latitudeLowerBound = null;
       longitudeUpperBound = null;
       longitudeLowerBound = null;
 
@@ -194,34 +217,44 @@ class _MapViewState extends WidgetState<MapView>
       /* Build Markers */
       ///////////////////
       int locationIndex = 0;
-      for (MapLocationModel location in widget.model.locations)
-      {
-        if (location.latitude != null && location.longitude != null)
-        {
+      for (MapLocationModel location in widget.model.locations) {
+        if (location.latitude != null && location.longitude != null) {
           ///////////////
           /* Marker Id */
           ///////////////
-          MarkerId id = MarkerId('$locationIndex,${location.latitude},${location.longitude}');
+          MarkerId id = MarkerId(
+              '$locationIndex,${location.latitude},${location.longitude}');
 
           /////////////////
           /* Info Window */
           /////////////////
-          InfoWindow? info = ((!isNullOrEmpty(location.title)) || (!isNullOrEmpty(location.description)) || (location.onTap != null)) ? InfoWindow(title:location.title, snippet: location.description) : null;
+          InfoWindow? info = ((!isNullOrEmpty(location.title)) ||
+                  (!isNullOrEmpty(location.description)) ||
+                  (location.onTap != null))
+              ? InfoWindow(title: location.title, snippet: location.description)
+              : null;
 
           //////////
           /* Icon */
           //////////
           BitmapDescriptor icon = BitmapDescriptor.defaultMarker;
-          if (!icons.containsKey(location.marker))
-          {
-            if (location.icon != null) icon = BitmapDescriptor.fromBytes(location.icon!);
+          if (!icons.containsKey(location.marker)) {
+            if (location.icon != null)
+              icon = BitmapDescriptor.fromBytes(location.icon!);
             icons[location.marker] = icon;
           }
 
           ////////////
           /* Marker */
           ////////////
-          markers[id] = Marker(markerId: id, position: LatLng(location.latitude!, location.longitude!), icon: icon, onTap: () {_show(location.latitude, location.longitude);}, infoWindow: info ?? InfoWindow.noText);
+          markers[id] = Marker(
+              markerId: id,
+              position: LatLng(location.latitude!, location.longitude!),
+              icon: icon,
+              onTap: () {
+                _show(location.latitude, location.longitude);
+              },
+              infoWindow: info ?? InfoWindow.noText);
 
           ////////////////
           /* Set Bounds */
@@ -230,15 +263,12 @@ class _MapViewState extends WidgetState<MapView>
         }
         locationIndex++;
       }
-    }
-    catch(e) {
+    } catch (e) {
       Log().debug('$e');
     }
-
   }
 
-  void _showAll() async
-  {
+  void _showAll() async {
     if (map != null) {
       //////////
       /* Busy */
@@ -253,18 +283,19 @@ class _MapViewState extends WidgetState<MapView>
       ///////////////////////
       /* Show Single Point */
       ///////////////////////
-      if (markers.length == 1)
-      {
-        _show(markers.values.first.position.latitude, markers.values.first.position.longitude);
+      if (markers.length == 1) {
+        _show(markers.values.first.position.latitude,
+            markers.values.first.position.longitude);
         return;
       }
 
       /////////////////////
       /* Show All Points */
       /////////////////////
-      if (markers.length > 1)
-      {
-        final LatLngBounds spot = LatLngBounds(southwest: LatLng(latitudeLowerBound!, longitudeLowerBound!), northeast: LatLng(latitudeUpperBound!, longitudeUpperBound!));
+      if (markers.length > 1) {
+        final LatLngBounds spot = LatLngBounds(
+            southwest: LatLng(latitudeLowerBound!, longitudeLowerBound!),
+            northeast: LatLng(latitudeUpperBound!, longitudeUpperBound!));
         controller.animateCamera(CameraUpdate.newLatLngBounds(spot, 10.0));
       }
     }
@@ -275,8 +306,7 @@ class _MapViewState extends WidgetState<MapView>
     widget.model.busy = false;
   }
 
-  void _show(final double? latitude, final double? longitude) async
-  {
+  void _show(final double? latitude, final double? longitude) async {
     //////////
     /* Busy */
     //////////
@@ -284,9 +314,12 @@ class _MapViewState extends WidgetState<MapView>
 
     final GoogleMapController controller = await _controller.future;
 
-
-      final CameraPosition spot = CameraPosition(target: LatLng(latitude!, longitude!), bearing: 192.8334901395799, tilt: 59.440717697143555, zoom: widget.model.zoom);
-      controller.animateCamera(CameraUpdate.newCameraPosition(spot));
+    final CameraPosition spot = CameraPosition(
+        target: LatLng(latitude!, longitude!),
+        bearing: 192.8334901395799,
+        tilt: 59.440717697143555,
+        zoom: widget.model.zoom);
+    controller.animateCamera(CameraUpdate.newCameraPosition(spot));
 
     //////////
     /* Busy */
@@ -294,19 +327,23 @@ class _MapViewState extends WidgetState<MapView>
     widget.model.busy = false;
   }
 
-  void _setMarkerBounds(Marker? marker) 
-  {
-    if(widget.model.showAll == true) 
-    {
-      if (latitudeLowerBound == null || marker!.position.latitude < latitudeLowerBound!)    latitudeLowerBound = marker!.position.latitude;
-      if (latitudeUpperBound == null || marker.position.latitude > latitudeUpperBound!)    latitudeUpperBound = marker.position.latitude;
-      if (longitudeLowerBound == null || marker.position.longitude < longitudeLowerBound!) longitudeLowerBound = marker.position.longitude;
-      if (longitudeUpperBound == null || marker.position.longitude > longitudeUpperBound!) longitudeUpperBound = marker.position.longitude;
-    }
-    else 
-    {
-      latitudeUpperBound  = marker!.position.latitude;
-      latitudeLowerBound  = marker.position.latitude;
+  void _setMarkerBounds(Marker? marker) {
+    if (widget.model.showAll == true) {
+      if (latitudeLowerBound == null ||
+          marker!.position.latitude < latitudeLowerBound!)
+        latitudeLowerBound = marker!.position.latitude;
+      if (latitudeUpperBound == null ||
+          marker.position.latitude > latitudeUpperBound!)
+        latitudeUpperBound = marker.position.latitude;
+      if (longitudeLowerBound == null ||
+          marker.position.longitude < longitudeLowerBound!)
+        longitudeLowerBound = marker.position.longitude;
+      if (longitudeUpperBound == null ||
+          marker.position.longitude > longitudeUpperBound!)
+        longitudeUpperBound = marker.position.longitude;
+    } else {
+      latitudeUpperBound = marker!.position.latitude;
+      latitudeLowerBound = marker.position.latitude;
       longitudeUpperBound = marker.position.longitude;
       longitudeLowerBound = marker.position.longitude;
     }

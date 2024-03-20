@@ -2,13 +2,12 @@
 import 'package:fml/datasources/detectors/detector_interface.dart';
 
 import 'filepicker_mobile_view.dart'
-if (dart.library.io)   'filepicker_mobile_view.dart'
-if (dart.library.html) 'filepicker_web_view.dart';
+    if (dart.library.io) 'filepicker_mobile_view.dart'
+    if (dart.library.html) 'filepicker_web_view.dart';
 
 import 'package:fml/datasources/file/file.dart';
 
-abstract class FilePicker
-{
+abstract class FilePicker {
   factory FilePicker(String? accept) => create(accept: accept);
   Future<File?> launchPicker(List<IDetectable>? detectors);
 }

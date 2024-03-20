@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart'  ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -25,30 +25,27 @@ class ChartDataPoint {
 /// Chart Series [ChartSeriesModel]
 ///
 /// Defines the properties used to build a Charts's Series
-class PieChartSeriesModel extends ChartPainterSeriesModel
-{
+class PieChartSeriesModel extends ChartPainterSeriesModel {
   List<PieChartSectionDataExtended> pieDataPoint = [];
 
   PieChartSeriesModel(
-      super.parent,
-      super.id, {
-        dynamic x,
-        dynamic y,
-        dynamic color,
-        dynamic stroke,
-        dynamic radius,
-        dynamic size,
-        dynamic label,
-        dynamic animated,
-        dynamic name,
-        dynamic group,
-        dynamic stack,
-        dynamic showarea,
-        dynamic showline,
-        dynamic showpoints,
-      }
-      )
-  {
+    super.parent,
+    super.id, {
+    dynamic x,
+    dynamic y,
+    dynamic color,
+    dynamic stroke,
+    dynamic radius,
+    dynamic size,
+    dynamic label,
+    dynamic animated,
+    dynamic name,
+    dynamic group,
+    dynamic stack,
+    dynamic showarea,
+    dynamic showline,
+    dynamic showpoints,
+  }) {
     data = Data();
     this.x = x;
     this.y = y;
@@ -65,17 +62,13 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
     this.showpoints = showpoints;
   }
 
-  static PieChartSeriesModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static PieChartSeriesModel? fromXml(WidgetModel parent, XmlElement xml) {
     PieChartSeriesModel? model;
-    try
-    {
+    try {
       model = PieChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'chart.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'chart.Model');
       model = null;
     }
     return model;
@@ -83,8 +76,7 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 
@@ -95,23 +87,26 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
     xml = prototypeOf(xml) ?? xml;
 
     // properties
-    x           = Xml.get(node: xml, tag: 'x');
-    y           = Xml.get(node: xml, tag: 'y');
-    color       = Xml.get(node: xml, tag: 'color');
-    stroke      = Xml.get(node: xml, tag: 'stroke');
-    radius      = Xml.get(node: xml, tag: 'radius');
-    size        = Xml.get(node: xml, tag: 'size');
-    type        = Xml.get(node: xml, tag: 'type');
-    label       = Xml.get(node: xml, tag: 'label');
-    name        = Xml.get(node: xml, tag: 'name');
-    group       = Xml.get(node: xml, tag: 'group');
-    stack       = Xml.get(node: xml, tag: 'stack');
-    showarea    = Xml.get(node: xml, tag: 'showarea');
-    showline    = Xml.get(node: xml, tag: 'showline');
-    showpoints  = Xml.get(node: xml, tag: 'showpoints');
+    x = Xml.get(node: xml, tag: 'x');
+    y = Xml.get(node: xml, tag: 'y');
+    color = Xml.get(node: xml, tag: 'color');
+    stroke = Xml.get(node: xml, tag: 'stroke');
+    radius = Xml.get(node: xml, tag: 'radius');
+    size = Xml.get(node: xml, tag: 'size');
+    type = Xml.get(node: xml, tag: 'type');
+    label = Xml.get(node: xml, tag: 'label');
+    name = Xml.get(node: xml, tag: 'name');
+    group = Xml.get(node: xml, tag: 'group');
+    stack = Xml.get(node: xml, tag: 'stack');
+    showarea = Xml.get(node: xml, tag: 'showarea');
+    showline = Xml.get(node: xml, tag: 'showline');
+    showpoints = Xml.get(node: xml, tag: 'showpoints');
 
     // Remove datasource listener. The parent chart will take care of this.
-    if ((datasource != null) && (scope != null) && (scope!.datasources.containsKey(datasource))) scope!.datasources[datasource!]!.remove(this);
+    if ((datasource != null) &&
+        (scope != null) &&
+        (scope!.datasources.containsKey(datasource)))
+      scope!.datasources[datasource!]!.remove(this);
 
     // Setup the Series type and some internal properties for supporting it
     if (type != null) type = type?.trim().toLowerCase();
@@ -139,19 +134,21 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
   //   dataList = null;
   // }
 
-  List<PieChartSectionDataExtended> plotPoints(dynamic dataList)
-  {
+  List<PieChartSectionDataExtended> plotPoints(dynamic dataList) {
     List<PieChartSectionDataExtended> points = [];
-    for (var i=0; i< dataList.length; i++)
-    {
+    for (var i = 0; i < dataList.length; i++) {
       //set the data of the series for databinding
       data = dataList[i];
 
-      PieChartSectionDataExtended point = PieChartSectionDataExtended(this, data, value: toDouble(y) ?? 0, title: x, radius: radius, color: color ?? toColor('random'));
+      PieChartSectionDataExtended point = PieChartSectionDataExtended(
+          this, data,
+          value: toDouble(y) ?? 0,
+          title: x,
+          radius: radius,
+          color: color ?? toColor('random'));
 
       points.add(point);
     }
     return points;
   }
-
 }

@@ -2,8 +2,7 @@
 import 'package:fml/hive/theme.dart';
 import 'package:fml/hive/database.dart';
 
-class CustomTheme
-{
+class CustomTheme {
   final String key;
   final String? background;
   final String? onBackground;
@@ -31,24 +30,74 @@ class CustomTheme
   final String? errorContainer;
   final String? onErrorContainer;
 
-  CustomTheme(this.key, {this.background, this.onBackground, this.shadow, this.outline, this.surface, this.onSurface, this.surfaceVariant, this.onSurfaceVariant, this.inverseSurface, this.onInverseSurface, this.primary, this.onPrimary, this.primaryContainer, this.onPrimaryContainer, this.inversePrimary, this.secondary, this.onSecondary, this.secondaryContainer, this.onSecondaryContainer, this.tertiaryContainer, this.onTertiaryContainer, this.error, this.onError, this.errorContainer, this.onErrorContainer});
+  CustomTheme(this.key,
+      {this.background,
+      this.onBackground,
+      this.shadow,
+      this.outline,
+      this.surface,
+      this.onSurface,
+      this.surfaceVariant,
+      this.onSurfaceVariant,
+      this.inverseSurface,
+      this.onInverseSurface,
+      this.primary,
+      this.onPrimary,
+      this.primaryContainer,
+      this.onPrimaryContainer,
+      this.inversePrimary,
+      this.secondary,
+      this.onSecondary,
+      this.secondaryContainer,
+      this.onSecondaryContainer,
+      this.tertiaryContainer,
+      this.onTertiaryContainer,
+      this.error,
+      this.onError,
+      this.errorContainer,
+      this.onErrorContainer});
 }
 
-class Theme
-{
+class Theme {
   List<CustomTheme> themes = [];
   int size = 5000;
   bool debugging = false;
 
   static final Theme _singleton = Theme._init();
-  factory Theme()
-  {
+  factory Theme() {
     return _singleton;
   }
 
   Theme._init();
 
-  Future<bool> saveTheme(String key, String background, String onBackground, String shadow, String outline, String surface, String onSurface, String surfaceVariant, String onSurfaceVariant, String inverseSurface, String onInverseSurface, String primary, String onPrimary, String primaryContainer, String onPrimaryContainer, String inversePrimary, String secondary, String onSecondary, String secondaryContainer, String onSecondaryContainer, String tertiaryContainer, String onTertiaryContainer, String error, String onError, String errorContainer, String onErrorContainer,) async {
+  Future<bool> saveTheme(
+    String key,
+    String background,
+    String onBackground,
+    String shadow,
+    String outline,
+    String surface,
+    String onSurface,
+    String surfaceVariant,
+    String onSurfaceVariant,
+    String inverseSurface,
+    String onInverseSurface,
+    String primary,
+    String onPrimary,
+    String primaryContainer,
+    String onPrimaryContainer,
+    String inversePrimary,
+    String secondary,
+    String onSecondary,
+    String secondaryContainer,
+    String onSecondaryContainer,
+    String tertiaryContainer,
+    String onTertiaryContainer,
+    String error,
+    String onError,
+    String errorContainer,
+    String onErrorContainer,
+  ) async {
     bool themed = false;
     themed = await ThemeData(
       key: key,
@@ -81,8 +130,7 @@ class Theme
     return themed;
   }
 
-  Future<void> clear()
-  async {
+  Future<void> clear() async {
     await Database().deleteAll('THEME');
     themes.clear();
   }

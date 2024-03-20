@@ -3,15 +3,14 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart'      ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/span/span_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/system.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class SpanModel extends DecoratedWidgetModel 
-{
+class SpanModel extends DecoratedWidgetModel {
   //TODO: make text spans pass properties to text
 
   ///////////
@@ -28,8 +27,7 @@ class SpanModel extends DecoratedWidgetModel
     if (_shadowcolor != null) {
       _shadowcolor!.set(v);
     } else if (v != null) {
-      _shadowcolor = ColorObservable(
-          Binding.toKey(id, 'shadowcolor'), v,
+      _shadowcolor = ColorObservable(Binding.toKey(id, 'shadowcolor'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
@@ -47,6 +45,7 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double get elevation => _elevation?.get() ?? 0;
 
   /// The x offset of the box FROM the shadow. 0,0 is center. This is combined with `elevation` when determining the size.
@@ -60,6 +59,7 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double get shadowx => _shadowx?.get() ?? 2;
 
   /// The x offset of the box FROM the shadow. 0,0 is center. This is combined with `elevation` when determining the size.
@@ -72,21 +72,20 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double get shadowy => _shadowy?.get() ?? 2;
 
   // font
   StringObservable? _font;
-  set font(dynamic v)
-  {
-    if (_font != null)
-    {
+  set font(dynamic v) {
+    if (_font != null) {
       _font!.set(v);
-    }
-    else if (v != null)
-    {
-      _font = StringObservable(Binding.toKey(id, 'font'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _font = StringObservable(Binding.toKey(id, 'font'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get font => _font?.get() ?? System.theme.font;
 
   ////////////
@@ -102,8 +101,8 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
-  double? get weight => _weight?.get();
 
+  double? get weight => _weight?.get();
 
   //////////////////////////////////////////////
   /* If the text is raw or uses special chars */
@@ -117,6 +116,7 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get raw => _raw?.get() ?? false;
 
   // If the text is selectable defaults to false
@@ -129,6 +129,7 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get selectable => _selectable?.get() ?? false;
 
   ///////////////
@@ -144,6 +145,7 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get bold => _bold?.get() ?? false;
 
   /////////////////
@@ -158,6 +160,7 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get italic => _italic?.get() ?? false;
 
   ////////////////
@@ -172,6 +175,7 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get theme => _theme?.get();
 
   ////////////////
@@ -186,6 +190,7 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get style => _style?.get();
 
   /////////////////////
@@ -197,11 +202,11 @@ class SpanModel extends DecoratedWidgetModel
     if (_decoration != null) {
       _decoration!.set(v);
     } else if (v != null) {
-      _decoration = StringObservable(
-          Binding.toKey(id, 'decoration'), v,
+      _decoration = StringObservable(Binding.toKey(id, 'decoration'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get decoration => _decoration?.get();
 
   //////////////////////
@@ -217,6 +222,7 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double? get decorationweight => _decorationweight?.get();
 
   //////////////////////
@@ -233,6 +239,7 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   Color? get decorationcolor => _decorationcolor?.get();
 
   /////////////////////
@@ -248,6 +255,7 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String get decorationstyle => _decorationstyle?.get() ?? 'none';
 
   //////////////////
@@ -262,6 +270,7 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double? get wordspace => _wordspace?.get();
 
   ///////////////////
@@ -272,11 +281,11 @@ class SpanModel extends DecoratedWidgetModel
     if (_letterspace != null) {
       _letterspace!.set(v);
     } else if (v != null) {
-      _letterspace = DoubleObservable(
-          Binding.toKey(id, 'letterspace'), v,
+      _letterspace = DoubleObservable(Binding.toKey(id, 'letterspace'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double get letterspace => _letterspace?.get() ?? 0;
 
   //////////////////
@@ -288,11 +297,11 @@ class SpanModel extends DecoratedWidgetModel
     if (_lineheight != null) {
       _lineheight!.set(v);
     } else if (v != null) {
-      _lineheight = DoubleObservable(
-          Binding.toKey(id, 'lineheight'), v,
+      _lineheight = DoubleObservable(Binding.toKey(id, 'lineheight'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double? get lineheight => _lineheight?.get();
 
   // overrides
@@ -314,41 +323,38 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String get overflow => _overflow?.get() ?? 'wrap';
 
-
   SpanModel(
-      WidgetModel super.parent,
-      super.id,
-      {
-        dynamic value,
-        dynamic color,
-        dynamic elevation,
-        dynamic shadowcolor,
-        dynamic shadowx,
-        dynamic shadowy,
-        dynamic font,
-        dynamic weight,
-        dynamic bold,
-        dynamic italic,
-        dynamic width,
-        dynamic theme,
-        dynamic decoration,
-        dynamic decorationcolor,
-        dynamic decorationstyle,
-        dynamic decorationweight,
-        dynamic wordspace,
-        dynamic letterspace,
-        dynamic lineheight,
-        dynamic raw,
-        dynamic selectable,
-        dynamic valign,
-        dynamic overflow,
-        dynamic halign,
-        dynamic style,
-      }) {
-
-
+    WidgetModel super.parent,
+    super.id, {
+    dynamic value,
+    dynamic color,
+    dynamic elevation,
+    dynamic shadowcolor,
+    dynamic shadowx,
+    dynamic shadowy,
+    dynamic font,
+    dynamic weight,
+    dynamic bold,
+    dynamic italic,
+    dynamic width,
+    dynamic theme,
+    dynamic decoration,
+    dynamic decorationcolor,
+    dynamic decorationstyle,
+    dynamic decorationweight,
+    dynamic wordspace,
+    dynamic letterspace,
+    dynamic lineheight,
+    dynamic raw,
+    dynamic selectable,
+    dynamic valign,
+    dynamic overflow,
+    dynamic halign,
+    dynamic style,
+  }) {
     if (color != null) this.color = color;
     if (elevation != null) this.elevation = elevation;
     if (shadowcolor != null) this.shadowcolor = shadowcolor;
@@ -374,17 +380,13 @@ class SpanModel extends DecoratedWidgetModel
     if (selectable != null) this.selectable = selectable;
   }
 
-  static SpanModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static SpanModel? fromXml(WidgetModel parent, XmlElement xml) {
     SpanModel? model;
-    try
-    {
+    try {
       model = SpanModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'text.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'text.Model');
       model = null;
     }
     return model;
@@ -392,10 +394,8 @@ class SpanModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
-
-    // deserialize 
+  void deserialize(XmlElement xml) {
+    // deserialize
     super.deserialize(xml);
 
     String? textvalue = Xml.get(node: xml, tag: 'value');
@@ -429,7 +429,8 @@ class SpanModel extends DecoratedWidgetModel
     selectable = Xml.get(node: xml, tag: 'selectable');
 
     // build spans
-    List<TextModel> textSpans = findChildrenOfExactType(TextModel).cast<TextModel>();
+    List<TextModel> textSpans =
+        findChildrenOfExactType(TextModel).cast<TextModel>();
     for (var text in textSpans) {
       spanTextValues.add(text);
     }

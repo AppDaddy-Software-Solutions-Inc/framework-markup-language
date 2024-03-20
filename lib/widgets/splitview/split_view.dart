@@ -10,8 +10,7 @@ import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
-class SplitView extends StatefulWidget implements IWidgetView
-{
+class SplitView extends StatefulWidget implements IWidgetView {
   @override
   final SplitModel model;
 
@@ -23,45 +22,36 @@ class SplitView extends StatefulWidget implements IWidgetView
   State<SplitView> createState() => SplitViewState();
 }
 
-class SplitViewState extends WidgetState<SplitView>
-{
+class SplitViewState extends WidgetState<SplitView> {
   ThemeData? theme;
 
   BoxConstraints constraints = const BoxConstraints();
 
-  void onBack(Event event)
-  {
+  void onBack(Event event) {
     event.handled = true;
     String? pages = fromMap(event.parameters, 'until');
     if (!isNullOrEmpty(pages)) NavigationManager().back(pages);
   }
 
-  void onClose(Event event)
-  {
+  void onClose(Event event) {
     event.handled = true;
     NavigationManager().back(-1);
   }
 
-  void _onDrag(DragUpdateDetails details, BoxConstraints constraints)
-  {
+  void _onDrag(DragUpdateDetails details, BoxConstraints constraints) {
     var ratio = widget.model.ratio;
 
     var maxHeight = constraints.hasBoundedHeight ? constraints.maxHeight : 0.0;
-    var maxWidth  = constraints.hasBoundedWidth  ? constraints.maxWidth  : 0.0;
-    if (widget.model.vertical)
-    {
-      if (maxHeight > 0)
-      {
+    var maxWidth = constraints.hasBoundedWidth ? constraints.maxWidth : 0.0;
+    if (widget.model.vertical) {
+      if (maxHeight > 0) {
         var height = (ratio * maxHeight) + details.delta.dy;
-        ratio = height/maxHeight;
+        ratio = height / maxHeight;
       }
-    }
-    else
-    {
-      if (maxWidth > 0)
-      {
+    } else {
+      if (maxWidth > 0) {
         var width = (ratio * maxWidth) + details.delta.dx;
-        ratio = width/maxWidth;
+        ratio = width / maxWidth;
       }
     }
 
@@ -71,23 +61,52 @@ class SplitViewState extends WidgetState<SplitView>
     if (ratio != widget.model.ratio) widget.model.ratio = ratio;
   }
 
-  Widget _buildHandle()
-  {
-    var myDividerColor = widget.model.dividerColor ?? theme?.colorScheme.onInverseSurface;
+  Widget _buildHandle() {
+    var myDividerColor =
+        widget.model.dividerColor ?? theme?.colorScheme.onInverseSurface;
     var myDividerWidth = widget.model.dividerWidth;
 
-    Widget view = widget.model.vertical ?
-    GestureDetector(behavior: HitTestBehavior.opaque, onVerticalDragUpdate:  (DragUpdateDetails details) => _onDrag(details, constraints), child: Container(color: myDividerColor, child: SizedBox(width: constraints.maxWidth, height: myDividerWidth, child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown,     child: Stack(children: [Positioned(top: -10, child: Icon(Icons.drag_handle, color: widget.model.dividerHandleColor))]))))) :
-    GestureDetector(behavior: HitTestBehavior.opaque, onHorizontalDragUpdate: (DragUpdateDetails details) => _onDrag(details, constraints), child: Container(color: myDividerColor, child: SizedBox(width: myDividerWidth, height: constraints.maxHeight, child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: RotationTransition(turns: const AlwaysStoppedAnimation(.25), child: Icon(Icons.drag_handle, color: widget.model.dividerHandleColor))))));
+    Widget view = widget.model.vertical
+        ? GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onVerticalDragUpdate: (DragUpdateDetails details) =>
+                _onDrag(details, constraints),
+            child: Container(
+                color: myDividerColor,
+                child: SizedBox(
+                    width: constraints.maxWidth,
+                    height: myDividerWidth,
+                    child: MouseRegion(
+                        cursor: SystemMouseCursors.resizeUpDown,
+                        child: Stack(children: [
+                          Positioned(
+                              top: -10,
+                              child: Icon(Icons.drag_handle,
+                                  color: widget.model.dividerHandleColor))
+                        ])))))
+        : GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onHorizontalDragUpdate: (DragUpdateDetails details) =>
+                _onDrag(details, constraints),
+            child: Container(
+                color: myDividerColor,
+                child: SizedBox(
+                    width: myDividerWidth,
+                    height: constraints.maxHeight,
+                    child: MouseRegion(
+                        cursor: SystemMouseCursors.resizeLeftRight,
+                        child: RotationTransition(
+                            turns: const AlwaysStoppedAnimation(.25),
+                            child: Icon(Icons.drag_handle,
+                                color: widget.model.dividerHandleColor))))));
 
-    return LayoutBoxChildData(model: BoxModel(null,null,expandDefault: false), child: view);
+    return LayoutBoxChildData(
+        model: BoxModel(null, null, expandDefault: false), child: view);
   }
 
-  Widget _constrainBox(BoxView box, int flex)
-  {
+  Widget _constrainBox(BoxView box, int flex) {
     var direction = widget.model.vertical ? Axis.vertical : Axis.horizontal;
-    switch (direction)
-    {
+    switch (direction) {
       case Axis.horizontal:
         box.model.setFlex(flex);
         break;
@@ -99,14 +118,12 @@ class SplitViewState extends WidgetState<SplitView>
     return LayoutBoxChildData(model: box.model, child: box);
   }
 
-  BoxView get _missingView => BoxView(BoxModel(widget.model,null));
+  BoxView get _missingView => BoxView(BoxModel(widget.model, null));
 
   // called by models inflate
-  List<Widget> inflate()
-  {
+  List<Widget> inflate() {
     // create box views
-    if (widget.boxes.isEmpty)
-    {
+    if (widget.boxes.isEmpty) {
       var views = widget.model.viewableChildren;
 
       Widget? view1;
@@ -144,8 +161,7 @@ class SplitViewState extends WidgetState<SplitView>
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
+  Widget builder(BuildContext context, BoxConstraints constraints) {
     theme = Theme.of(context);
 
     this.constraints = constraints;

@@ -35,7 +35,8 @@ class _EditorViewState extends WidgetState<EditorView> {
     if (mounted) {
       // value changes as user edits the text
       // we don't want to do a set state after every keystroke
-      if (Binding.fromString(property)?.property == 'value' && _controller?.fullText == widget.model.value) return;
+      if (Binding.fromString(property)?.property == 'value' &&
+          _controller?.fullText == widget.model.value) return;
       setState(() {});
     }
   }
@@ -63,16 +64,20 @@ class _EditorViewState extends WidgetState<EditorView> {
     // build the controller
     if (_controller == null || _controller?.language != language) {
       if (_controller != null) _controller!.dispose();
-      _controller = CodeController(text: widget.model.value, language: language);
+      _controller =
+          CodeController(text: widget.model.value, language: language);
       _controller!.readOnlySectionNames = {'readonly'};
     }
 
     // reload the controller text
-    if (_controller?.fullText != widget.model.value) _controller!.fullText = widget.model.value ?? "";
+    if (_controller?.fullText != widget.model.value)
+      _controller!.fullText = widget.model.value ?? "";
 
     // set the editor text theme
     var theme = CodeThemeData(
-        styles: themeMap.containsKey(widget.model.theme) ? themeMap[widget.model.theme] : themeMap.values.first);
+        styles: themeMap.containsKey(widget.model.theme)
+            ? themeMap[widget.model.theme]
+            : themeMap.values.first);
     return CodeTheme(
         data: theme,
         child: CodeField(
@@ -83,6 +88,7 @@ class _EditorViewState extends WidgetState<EditorView> {
           background: Colors.transparent,
           maxLines: null,
           textStyle: const TextStyle(fontSize: 14),
-          gutterStyle: const GutterStyle(width: 80, margin: 0),));
+          gutterStyle: const GutterStyle(width: 80, margin: 0),
+        ));
   }
 }

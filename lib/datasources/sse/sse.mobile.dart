@@ -7,8 +7,7 @@ import 'package:stream_channel/stream_channel.dart';
 
 typedef OnConnected = void Function();
 
-class IOSseChannel extends StreamChannelMixin implements SseChannel
-{
+class IOSseChannel extends StreamChannelMixin implements SseChannel {
   late final StreamController<String?> _controller;
   late final SseTransformer _transformer;
 
@@ -20,17 +19,23 @@ class IOSseChannel extends StreamChannelMixin implements SseChannel
   late final Map<String, String>? headers;
   List<String> events = [];
 
-  IOSseChannel._(this.url, {this.method, this.body, this.headers, List<String>? events})
-  {
+  IOSseChannel._(this.url,
+      {this.method, this.body, this.headers, List<String>? events}) {
     if (events != null) this.events.addAll(events);
     _transformer = SseTransformer();
-    _controller = StreamController<String?>.broadcast(onListen: _onListen, onCancel: _onCancel);
+    _controller = StreamController<String?>.broadcast(
+        onListen: _onListen, onCancel: _onCancel);
   }
 
-  factory IOSseChannel.connect(Uri url, {String? method, String? body, Map<String, String>? headers, List<String>? events}) => IOSseChannel._(url, method: method, body: body, headers: headers, events: events);
+  factory IOSseChannel.connect(Uri url,
+          {String? method,
+          String? body,
+          Map<String, String>? headers,
+          List<String>? events}) =>
+      IOSseChannel._(url,
+          method: method, body: body, headers: headers, events: events);
 
-  _onListen() async
-  {
+  _onListen() async {
     var request = Request(method ?? "GET", url);
 
     request.headers["cache-control"] = "no-cache";
@@ -39,15 +44,11 @@ class IOSseChannel extends StreamChannelMixin implements SseChannel
     request.body = body ?? "";
 
     final client = Client();
-    await client.send(request).then((response)
-    {
-      if (response.statusCode == 200)
-      {
-        response.stream.transform(_transformer).listen((event)
-        {
-          if (!_controller.isClosed)
-          {
-            if (events.contains(event.event))_controller.sink.add(event.data);
+    await client.send(request).then((response) {
+      if (response.statusCode == 200) {
+        response.stream.transform(_transformer).listen((event) {
+          if (!_controller.isClosed) {
+            if (events.contains(event.event)) _controller.sink.add(event.data);
           }
         });
         _onConnected.complete();
@@ -55,14 +56,12 @@ class IOSseChannel extends StreamChannelMixin implements SseChannel
     });
   }
 
-  _onCancel()
-  {
+  _onCancel() {
     _controller.close();
   }
 
   @override
-  void close()
-  {
+  void close() {
     if (!_controller.isClosed) _controller.close();
     _transformer.dispose();
   }

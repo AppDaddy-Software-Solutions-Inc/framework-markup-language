@@ -1,12 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'mqtt_listener_interface.dart';
 import 'mqtt.mobile.dart'
-if (dart.library.io)   'mqtt.mobile.dart'
-if (dart.library.html) 'mqtt.web.dart';
+    if (dart.library.io) 'mqtt.mobile.dart'
+    if (dart.library.html) 'mqtt.web.dart';
 
-abstract class IMqtt
-{
-  static IMqtt? create(String url, IMqttListener listener, {String? username, String? password}) => getMqtt(url, listener, username: username, password: password);
+abstract class IMqtt {
+  static IMqtt? create(String url, IMqttListener listener,
+          {String? username, String? password}) =>
+      getMqtt(url, listener, username: username, password: password);
   Future<bool> connect();
   Future<bool> disconnect();
   Future<bool> publish(String topic, String msg);

@@ -5,7 +5,7 @@ import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/datepicker/datepicker_view.dart';
 import 'package:intl/intl.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -13,8 +13,7 @@ import 'package:fml/helpers/helpers.dart';
 
 enum METHODS { launch }
 
-class DatepickerModel extends DecoratedInputModel implements IFormField
-{
+class DatepickerModel extends DecoratedInputModel implements IFormField {
   DatepickerViewState? datepicker;
 
   bool isPicking = false;
@@ -53,6 +52,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String get type => _type?.get() ?? "date";
 
   /// Mode is the entrymode type of the datepicker. Can be gui, input, bothgui, bothinput.
@@ -66,6 +66,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String get mode => _mode?.get() ?? "bothgui";
 
   /// Newest date available for selection. DATE___ only.
@@ -78,6 +79,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get newest => _newest?.get();
 
   // Oldest date available on selection. DATE___ only.
@@ -91,6 +93,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get oldest => _oldest?.get();
 
   /// Format string expected from the input and output. See https://api.flutter.dev/flutter/intl/DateFormat-class.html.
@@ -104,23 +107,23 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get format => _format?.get();
 
   // Value
   StringObservable? _value;
 
   @override
-  set value(dynamic v)
-  {
-    if (_value != null)
-    {
+  set value(dynamic v) {
+    if (_value != null) {
       _value!.set(v);
-    }
-    else if (v != null || WidgetModel.isBound(this, Binding.toKey(id, 'value')))
-    {
-      _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null ||
+        WidgetModel.isBound(this, Binding.toKey(id, 'value'))) {
+      _value = StringObservable(Binding.toKey(id, 'value'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   @override
   dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
@@ -134,6 +137,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
           scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get clear => _clear?.get() ?? false;
 
   DatepickerModel(
@@ -142,24 +146,21 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
     String? type,
     dynamic format,
     dynamic clear,
-  })
-  {
-    if (type         != null) this.type = type;
-    if (format       != null) this.format = format;
-    if (clear        != null) this.clear = clear;
+  }) {
+    if (type != null) this.type = type;
+    if (format != null) this.format = format;
+    if (clear != null) this.clear = clear;
   }
 
-  static DatepickerModel? fromXml(WidgetModel parent, XmlElement xml, {String? type})
-  {
+  static DatepickerModel? fromXml(WidgetModel parent, XmlElement xml,
+      {String? type}) {
     DatepickerModel? model;
-    try 
-    {
-      model = DatepickerModel(parent, Xml.get(node: xml, tag: 'id'), type: type);
+    try {
+      model =
+          DatepickerModel(parent, Xml.get(node: xml, tag: 'id'), type: type);
       model.deserialize(xml);
-    } 
-    catch(e) 
-    {
-      Log().exception(e,  caller: 'datepicker.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'datepicker.Model');
       model = null;
     }
     return model;
@@ -167,20 +168,19 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 
     // set properties
-    value   = Xml.get(node: xml, tag: 'value') ?? defaultValue ?? "";
-    type    = Xml.get(node: xml, tag: 'type') ?? type;
-    hint    = Xml.get(node: xml, tag: 'hint');
-    view    = Xml.get(node: xml, tag: 'view');
-    oldest  = Xml.get(node: xml, tag: 'oldest');
-    newest  = Xml.get(node: xml, tag: 'newest');
-    format  = Xml.get(node: xml, tag: 'format');
-    mode    = Xml.get(node: xml, tag: 'mode');
+    value = Xml.get(node: xml, tag: 'value') ?? defaultValue ?? "";
+    type = Xml.get(node: xml, tag: 'type') ?? type;
+    hint = Xml.get(node: xml, tag: 'hint');
+    view = Xml.get(node: xml, tag: 'view');
+    oldest = Xml.get(node: xml, tag: 'oldest');
+    newest = Xml.get(node: xml, tag: 'newest');
+    format = Xml.get(node: xml, tag: 'format');
+    mode = Xml.get(node: xml, tag: 'mode');
     borderColor = Xml.get(node: xml, tag: 'bordercolor');
     borderWidth = Xml.get(node: xml, tag: 'borderwidth');
     radius = Xml.get(node: xml, tag: 'radius');
@@ -196,14 +196,14 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
   }
 
   @override
-  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
-  {
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
 
-    switch (function)
-    {
-      case "start": await datepicker?.show();
+    switch (function) {
+      case "start":
+        await datepicker?.show();
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }
@@ -217,27 +217,28 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
     if (type == "date" || type == "year" || type == "range") {
       try {
         if (secondResult != null) {
-          value = "${DateFormat(format).format(result!)} - ${DateFormat(format).format(secondResult)}";
+          value =
+              "${DateFormat(format).format(result!)} - ${DateFormat(format).format(secondResult)}";
         } else {
           value = DateFormat(format, 'en_US').format(result!);
         }
-      } on FormatException catch(e) {
+      } on FormatException catch (e) {
         Log().debug('${e}FORMATTING ERROR!!!!!');
       }
     } else if (type == "time") {
       //if (format == 'yMd') format= 'H:m';
       try {
-        value = DateFormat(format).format(DateTime(now.year, now.month,
-                now.day, timeResult!.hour, timeResult.minute));
-      } on FormatException catch(e) {
+        value = DateFormat(format).format(DateTime(
+            now.year, now.month, now.day, timeResult!.hour, timeResult.minute));
+      } on FormatException catch (e) {
         Log().debug('${e}FORMATTING ERROR!!!!!');
         value = '';
       }
     } else {
       try {
         value = DateFormat(format).format(DateTime(result!.year, result.month,
-                result.day, timeResult!.hour, timeResult.minute));
-      } on FormatException catch(e) {
+            result.day, timeResult!.hour, timeResult.minute));
+      } on FormatException catch (e) {
         Log().debug('${e}FORMATTING ERROR!!!!!');
         value = '';
       }
@@ -245,19 +246,17 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
     onChange(context);
   }
 
-  void setFormat(){
+  void setFormat() {
     if (format != null) return;
     if (type == "date" || type == "year" || type == "range") {
-      format ='y/M/d';
+      format = 'y/M/d';
     } else if (type == "time") {
-      format= 'H:m';
+      format = 'H:m';
     } else {
       format = 'y/M/d H:mm';
     }
-
   }
 
   @override
   Widget getView({Key? key}) => getReactiveView(DatepickerView(this));
-
 }

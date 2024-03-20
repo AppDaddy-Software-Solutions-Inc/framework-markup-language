@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/padding/padding_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class PaddingModel extends ColumnModel
-{
+class PaddingModel extends ColumnModel {
   @override
   bool get expand => false;
 
@@ -16,14 +15,11 @@ class PaddingModel extends ColumnModel
 
   static PaddingModel? fromXml(WidgetModel parent, XmlElement xml) {
     PaddingModel? model;
-    try
-    {
+    try {
       // build model
       model = PaddingModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e, caller: 'padding.Model');
       model = null;
     }
@@ -32,38 +28,36 @@ class PaddingModel extends ColumnModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 
     // properties
-    marginTop    = Xml.get(node: xml, tag: 'top');
-    marginRight  = Xml.get(node: xml, tag: 'right');
+    marginTop = Xml.get(node: xml, tag: 'top');
+    marginRight = Xml.get(node: xml, tag: 'right');
     marginBottom = Xml.get(node: xml, tag: 'bottom');
-    marginLeft   = Xml.get(node: xml, tag: 'left');
+    marginLeft = Xml.get(node: xml, tag: 'left');
 
     var all = Xml.get(node: xml, tag: 'all');
-    if (all != null)
-    {
-      marginTop=all;
-      marginRight=all;
-      marginBottom=all;
-      marginLeft=all;
+    if (all != null) {
+      marginTop = all;
+      marginRight = all;
+      marginBottom = all;
+      marginLeft = all;
     }
 
-    var horizontal = Xml.get(node: xml, tag: 'horizontal') ?? Xml.get(node: xml, tag: 'hor');
-    if (horizontal != null)
-    {
-     marginRight=horizontal;
-     marginLeft=horizontal;
+    var horizontal =
+        Xml.get(node: xml, tag: 'horizontal') ?? Xml.get(node: xml, tag: 'hor');
+    if (horizontal != null) {
+      marginRight = horizontal;
+      marginLeft = horizontal;
     }
 
-    var vertical = Xml.get(node: xml, tag: 'vertical') ?? Xml.get(node: xml, tag: 'ver');
-    if (vertical != null)
-    {
-      marginTop=vertical;
-      marginBottom=vertical;
+    var vertical =
+        Xml.get(node: xml, tag: 'vertical') ?? Xml.get(node: xml, tag: 'ver');
+    if (vertical != null) {
+      marginTop = vertical;
+      marginBottom = vertical;
     }
   }
 

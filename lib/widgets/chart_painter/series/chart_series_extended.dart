@@ -2,33 +2,38 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 
-abstract class IExtendedSeriesInterface
-{
+abstract class IExtendedSeriesInterface {
   dynamic get data;
   ChartPainterSeriesModel get series;
 }
 
-class BarChartGroupDataExtended extends BarChartGroupData implements IExtendedSeriesInterface
-{
+class BarChartGroupDataExtended extends BarChartGroupData
+    implements IExtendedSeriesInterface {
   @override
   final ChartPainterSeriesModel series;
 
   @override
   final dynamic data;
 
-  BarChartGroupDataExtended(this.series, this.data, {required super.x, super.groupVertically, super.barRods, super.barsSpace,
-    super.showingTooltipIndicators});
+  BarChartGroupDataExtended(this.series, this.data,
+      {required super.x,
+      super.groupVertically,
+      super.barRods,
+      super.barsSpace,
+      super.showingTooltipIndicators});
 }
 
-class BarChartRodDataExtended extends BarChartRodData implements IExtendedSeriesInterface
-{
+class BarChartRodDataExtended extends BarChartRodData
+    implements IExtendedSeriesInterface {
   @override
   final ChartPainterSeriesModel series;
 
   @override
   final dynamic data;
 
-  BarChartRodDataExtended(this.series, this.data, {
+  BarChartRodDataExtended(
+    this.series,
+    this.data, {
     super.fromY,
     required super.toY,
     super.color,
@@ -42,34 +47,31 @@ class BarChartRodDataExtended extends BarChartRodData implements IExtendedSeries
   });
 }
 
-class BarChartRodStackItemExtended extends BarChartRodStackItem implements IExtendedSeriesInterface
-{
+class BarChartRodStackItemExtended extends BarChartRodStackItem
+    implements IExtendedSeriesInterface {
   @override
   final ChartPainterSeriesModel series;
 
   @override
   final dynamic data;
 
-  BarChartRodStackItemExtended(this.series, this.data,
-      double fromY,
-      double toY,
-      Color color,
-      [BorderSide border = const BorderSide(width: 0)]) :  super(
-      fromY,
-      toY,
-      color,
-      border);
+  BarChartRodStackItemExtended(
+      this.series, this.data, double fromY, double toY, Color color,
+      [BorderSide border = const BorderSide(width: 0)])
+      : super(fromY, toY, color, border);
 }
 
-class PieChartSectionDataExtended extends PieChartSectionData implements IExtendedSeriesInterface
-{
+class PieChartSectionDataExtended extends PieChartSectionData
+    implements IExtendedSeriesInterface {
   @override
   final ChartPainterSeriesModel series;
 
   @override
   final dynamic data;
 
-  PieChartSectionDataExtended(this.series, this.data, {
+  PieChartSectionDataExtended(
+    this.series,
+    this.data, {
     super.value,
     super.color,
     super.radius,
@@ -83,14 +85,12 @@ class PieChartSectionDataExtended extends PieChartSectionData implements IExtend
   });
 }
 
-class FlSpotExtended extends FlSpot implements IExtendedSeriesInterface
-{
+class FlSpotExtended extends FlSpot implements IExtendedSeriesInterface {
   @override
   final ChartPainterSeriesModel series;
 
   @override
   final dynamic data;
 
-  FlSpotExtended(this.series, this.data, double x, double y) :  super(x,y);
+  FlSpotExtended(this.series, this.data, double x, double y) : super(x, y);
 }
-

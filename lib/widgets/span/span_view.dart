@@ -6,8 +6,7 @@ import 'package:fml/widgets/text/text_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
-class SpanView extends StatefulWidget implements IWidgetView
-{
+class SpanView extends StatefulWidget implements IWidgetView {
   @override
   final SpanModel model;
 
@@ -17,13 +16,11 @@ class SpanView extends StatefulWidget implements IWidgetView
   State<SpanView> createState() => _SpanViewState();
 }
 
-class _SpanViewState extends WidgetState<SpanView>
-{
+class _SpanViewState extends WidgetState<SpanView> {
   List<InlineSpan>? _list;
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
@@ -130,58 +127,59 @@ class _SpanViewState extends WidgetState<SpanView>
     view = SizedBox(
         width: widget.model.width,
         child: widget.model.selectable
-          ? SelectableText.rich(
-              TextSpan(
-                children: _list,
-                style: TextStyle(
-                  wordSpacing: wordSpace,
-                  letterSpacing: letterSpace,
-                  height: lineSpace,
-                  shadows: textShadow,
-                  color: Colors.red,
-                  fontWeight: widget.model.bold ? FontWeight.bold : widget.model.weight as FontWeight?,
-                  //fontStyle: style,
-                  decoration: textDecoration,
-                  decorationStyle: textDecoStyle,
-                  decorationColor: widget.model.decorationcolor,
-                  decorationThickness: widget.model.decorationweight),
-            ),
-            textAlign: textAlign)
-          : RichText(
-            text: TextSpan(
-              children: _list,
-              style: TextStyle(
-                wordSpacing: wordSpace,
-                letterSpacing: letterSpace,
-                height: lineSpace,
-                shadows: textShadow,
-                color: Colors.red,
-                fontWeight: widget.model.bold ? FontWeight.bold : widget.model.weight as FontWeight?,
-                //fontStyle: style,
-                decoration: textDecoration,
-                decorationStyle: textDecoStyle,
-                decorationColor: widget.model.decorationcolor,
-                decorationThickness: widget.model.decorationweight),
-            ),
-            overflow: textOverflow,
-            textAlign: textAlign));
+            ? SelectableText.rich(
+                TextSpan(
+                  children: _list,
+                  style: TextStyle(
+                      wordSpacing: wordSpace,
+                      letterSpacing: letterSpace,
+                      height: lineSpace,
+                      shadows: textShadow,
+                      color: Colors.red,
+                      fontWeight: widget.model.bold
+                          ? FontWeight.bold
+                          : widget.model.weight as FontWeight?,
+                      //fontStyle: style,
+                      decoration: textDecoration,
+                      decorationStyle: textDecoStyle,
+                      decorationColor: widget.model.decorationcolor,
+                      decorationThickness: widget.model.decorationweight),
+                ),
+                textAlign: textAlign)
+            : RichText(
+                text: TextSpan(
+                  children: _list,
+                  style: TextStyle(
+                      wordSpacing: wordSpace,
+                      letterSpacing: letterSpace,
+                      height: lineSpace,
+                      shadows: textShadow,
+                      color: Colors.red,
+                      fontWeight: widget.model.bold
+                          ? FontWeight.bold
+                          : widget.model.weight as FontWeight?,
+                      //fontStyle: style,
+                      decoration: textDecoration,
+                      decorationStyle: textDecoStyle,
+                      decorationColor: widget.model.decorationcolor,
+                      decorationThickness: widget.model.decorationweight),
+                ),
+                overflow: textOverflow,
+                textAlign: textAlign));
 
     // apply user defined constraints
     return applyConstraints(view, widget.model.constraints);
   }
 
-  _buildSpans()
-  {
+  _buildSpans() {
     var model = widget.model;
     _list = [];
     bool first = true;
-    if (model.spanTextValues.isNotEmpty)
-    {
+    if (model.spanTextValues.isNotEmpty) {
       _list!.clear();
-      for (TextModel text in model.spanTextValues)
-      {
-        if(!first) text.addWhitespace = true;
-        var o =  WidgetSpan(child: text.getView());
+      for (TextModel text in model.spanTextValues) {
+        if (!first) text.addWhitespace = true;
+        var o = WidgetSpan(child: text.getView());
         first = false;
         _list!.add(o);
       }

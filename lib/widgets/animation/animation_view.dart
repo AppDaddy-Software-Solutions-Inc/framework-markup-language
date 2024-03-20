@@ -5,15 +5,15 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:fml/widgets/animation/animation_model.dart' as base_animation_model;
+import 'package:fml/widgets/animation/animation_model.dart'
+    as base_animation_model;
 import 'package:fml/event/event.dart';
 import 'package:fml/helpers/helpers.dart';
 
 /// Animation View
 ///
 /// Builds the View from [ANIMATION.AnimationModel] properties
-class AnimationView extends StatefulWidget implements IWidgetView
-{
+class AnimationView extends StatefulWidget implements IWidgetView {
   @override
   final base_animation_model.AnimationModel model;
   final List<Widget> children = [];
@@ -25,90 +25,103 @@ class AnimationView extends StatefulWidget implements IWidgetView
   AnimationViewState createState() => AnimationViewState();
 }
 
-class AnimationViewState extends WidgetState<AnimationView> with TickerProviderStateMixin implements IModelListener
-{
+class AnimationViewState extends WidgetState<AnimationView>
+    with TickerProviderStateMixin
+    implements IModelListener {
   AnimationController? _controller;
   Widget? transitionChild;
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,));
-    if(widget.model.controllerValue == 1 && widget.model.runonce == true) {
-      _controller?.animateTo(widget.model.controllerValue, duration: const Duration());
+    _controller = AnimationController(
+        vsync: this,
+        duration: Duration(milliseconds: widget.model.duration),
+        reverseDuration: Duration(
+          milliseconds: widget.model.reverseduration ?? widget.model.duration,
+        ));
+    if (widget.model.controllerValue == 1 && widget.model.runonce == true) {
+      _controller?.animateTo(widget.model.controllerValue,
+          duration: const Duration());
     }
     _controller?.addStatusListener((status) {
       _animationListener(status);
     });
 
-    if (widget.model.autoplay == true && _controller?.isAnimating != true) start();
+    if (widget.model.autoplay == true && _controller?.isAnimating != true)
+      start();
   }
 
   @override
-  didChangeDependencies()
-  {
+  didChangeDependencies() {
     // register event listeners
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.animate, onAnimate);
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.reset, onReset);
+    EventManager.of(widget.model)
+        ?.registerEventListener(EventTypes.animate, onAnimate);
+    EventManager.of(widget.model)
+        ?.registerEventListener(EventTypes.reset, onReset);
 
     super.didChangeDependencies();
   }
 
   @override
-  void didUpdateWidget(AnimationView oldWidget)
-  {
+  void didUpdateWidget(AnimationView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model))
-    {
+    if ((oldWidget.model != widget.model)) {
       // de-register event listeners
-      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.animate, onAnimate);
-      EventManager.of(widget.model)?.removeEventListener(EventTypes.reset, onReset);
+      EventManager.of(oldWidget.model)
+          ?.removeEventListener(EventTypes.animate, onAnimate);
+      EventManager.of(widget.model)
+          ?.removeEventListener(EventTypes.reset, onReset);
 
       // register event listeners
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.animate, onAnimate);
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.reset, onReset);
+      EventManager.of(widget.model)
+          ?.registerEventListener(EventTypes.animate, onAnimate);
+      EventManager.of(widget.model)
+          ?.registerEventListener(EventTypes.reset, onReset);
 
       _controller!.duration = Duration(milliseconds: widget.model.duration);
-      _controller!.reverseDuration = Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration);
+      _controller!.reverseDuration = Duration(
+          milliseconds: widget.model.reverseduration ?? widget.model.duration);
     }
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     // remove controller
     _controller?.dispose();
 
     // de-register event listeners
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.animate, onAnimate);
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.reset, onReset);
+    EventManager.of(widget.model)
+        ?.removeEventListener(EventTypes.animate, onAnimate);
+    EventManager.of(widget.model)
+        ?.removeEventListener(EventTypes.reset, onReset);
 
     model?.removeListener(this);
 
     super.dispose();
   }
 
-  _buildTransitionChildren()
-  {
+  _buildTransitionChildren() {
     Widget? newChild = widget.child;
 
     if (widget.model.animations != null) {
       for (var transition in widget.model.animations!) {
-      newChild = transition.getAnimatedView(newChild!, controller: _controller);
-    }
+        newChild =
+            transition.getAnimatedView(newChild!, controller: _controller);
+      }
     }
     return newChild;
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (((widget.model.children?.isEmpty ?? true) && widget.child == null)) return const Offstage();
+    if (((widget.model.children?.isEmpty ?? true) && widget.child == null))
+      return const Offstage();
 
-    if (widget.model.animations != null && widget.model.animations!.isNotEmpty && widget.child != null)
-    {
+    if (widget.model.animations != null &&
+        widget.model.animations!.isNotEmpty &&
+        widget.child != null) {
       Widget view = _buildTransitionChildren();
 
       // Start the Controller
@@ -116,7 +129,11 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
       return view;
     }
 
-    var child = widget.children.length == 1 ? widget.children[0] : Column(crossAxisAlignment: CrossAxisAlignment.start, children: widget.children);
+    var child = widget.children.length == 1
+        ? widget.children[0]
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: widget.children);
 
     return child;
   }
@@ -147,8 +164,8 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
 
   void reset() {
     try {
-        _controller!.reset();
-        widget.model.controllerValue = 0;
+      _controller!.reset();
+      widget.model.controllerValue = 0;
     } catch (e) {
       Log().debug('$e');
     }
@@ -156,24 +173,23 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
 
   void start() {
     try {
-        if(widget.model.hasrun) return;
-          if (_controller!.isCompleted) {
-            if(widget.model.runonce) widget.model.hasrun = true;
-            _controller!.reverse();
-            widget.model.controllerValue = 0;
-            widget.model.onStart(context);
-          } else if (_controller!.isDismissed) {
-            _controller!.forward();
-            widget.model.controllerValue = 1;
-            if(widget.model.runonce) widget.model.hasrun = true;
-            widget.model.onStart(context);
-          } else {
-            _controller!.forward();
-            widget.model.controllerValue = 1;
-            if(widget.model.runonce) widget.model.hasrun = true;
-            widget.model.onStart(context);
-          }
-
+      if (widget.model.hasrun) return;
+      if (_controller!.isCompleted) {
+        if (widget.model.runonce) widget.model.hasrun = true;
+        _controller!.reverse();
+        widget.model.controllerValue = 0;
+        widget.model.onStart(context);
+      } else if (_controller!.isDismissed) {
+        _controller!.forward();
+        widget.model.controllerValue = 1;
+        if (widget.model.runonce) widget.model.hasrun = true;
+        widget.model.onStart(context);
+      } else {
+        _controller!.forward();
+        widget.model.controllerValue = 1;
+        if (widget.model.runonce) widget.model.hasrun = true;
+        widget.model.onStart(context);
+      }
     } catch (e) {
       Log().debug('$e');
     }
@@ -181,9 +197,9 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
 
   void stop() {
     try {
-        _controller!.reset();
-        widget.model.controllerValue = 0;
-        _controller!.stop();
+      _controller!.reset();
+      widget.model.controllerValue = 0;
+      _controller!.stop();
     } catch (e) {
       Log().debug('$e');
     }
@@ -193,7 +209,7 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
     if (status == AnimationStatus.completed) {
       widget.model.controllerValue = 1;
       widget.model.onComplete(context);
-    } else if  (status == AnimationStatus.dismissed) {
+    } else if (status == AnimationStatus.dismissed) {
       widget.model.controllerValue = 0;
       widget.model.onDismiss(context);
     }

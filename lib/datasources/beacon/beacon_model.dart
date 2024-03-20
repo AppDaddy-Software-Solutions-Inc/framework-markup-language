@@ -12,71 +12,59 @@ import 'package:fml/helpers/helpers.dart';
 import 'package:xml/xml.dart';
 import 'beacon.dart';
 
-class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListener
-{
+class BeaconModel extends DataSourceModel
+    implements IDataSource, IBeaconListener {
   final HashMap<String, int> firstSeen = HashMap<String, int>();
-  final HashMap<String, int> lastSeen  = HashMap<String, int>();
+  final HashMap<String, int> lastSeen = HashMap<String, int>();
 
   @override
   bool get autoexecute => super.autoexecute ?? true;
 
   // minor
   IntegerObservable? _minor;
-  set minor(dynamic v) 
-  {
-    if (_minor != null) 
-    {
+  set minor(dynamic v) {
+    if (_minor != null) {
       _minor!.set(v);
-    } 
-    else if (v != null) 
-    {
+    } else if (v != null) {
       _minor = IntegerObservable(Binding.toKey(id, 'minor'), v, scope: scope);
     }
   }
+
   int? get minor => _minor?.get();
 
   // major
   IntegerObservable? _major;
-  set major(dynamic v)
-  {
-    if (_major != null)
-    {
+  set major(dynamic v) {
+    if (_major != null) {
       _major!.set(v);
-    }
-    else if (v != null)
-    {
+    } else if (v != null) {
       _major = IntegerObservable(Binding.toKey(id, 'major'), v, scope: scope);
     }
   }
+
   int? get major => _major?.get();
 
   // distance
   IntegerObservable? _distance;
-  set distance(dynamic v)
-  {
-    if (_distance != null)
-    {
+  set distance(dynamic v) {
+    if (_distance != null) {
       _distance!.set(v);
-    }
-    else if (v != null)
-    {
-      _distance = IntegerObservable(Binding.toKey(id, 'distance'), v, scope: scope);
+    } else if (v != null) {
+      _distance =
+          IntegerObservable(Binding.toKey(id, 'distance'), v, scope: scope);
     }
   }
+
   int? get distance => _distance?.get();
-  
+
   BeaconModel(super.parent, super.id);
 
-  static BeaconModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static BeaconModel? fromXml(WidgetModel parent, XmlElement xml) {
     BeaconModel? model;
-    try
-    {
+    try {
       model = BeaconModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e, caller: 'beacon.Model');
       model = null;
     }
@@ -85,49 +73,39 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 
     // properties
-    major    = Xml.get(node: xml, tag: 'major');
-    minor    = Xml.get(node: xml, tag: 'minor');
+    major = Xml.get(node: xml, tag: 'major');
+    minor = Xml.get(node: xml, tag: 'minor');
     distance = toInt(Xml.get(node: xml, tag: 'distance'));
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     Reader().removeListener(this);
     super.dispose();
   }
 
   @override
-  Future<bool> start({bool refresh = false, String? key}) async
-  {
+  Future<bool> start({bool refresh = false, String? key}) async {
     bool ok = true;
-    try
-    {
+    try {
       Reader().registerListener(this);
-    }
-    catch(e)
-    {
+    } catch (e) {
       ok = await onFail(Data(), code: 500, message: e.toString());
     }
     return ok;
   }
 
   @override
-  Future<bool> stop() async
-  {
-    try
-    {
+  Future<bool> stop() async {
+    try {
       Reader().removeListener(this);
       super.stop();
-    }
-    catch(e)
-    {
+    } catch (e) {
       await onFail(Data(), code: 500, message: e.toString());
     }
     return true;
@@ -135,8 +113,7 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
 
   int _beaconsFound = 0;
 
-  void _removeExpired()
-  {
+  void _removeExpired() {
     if (firstSeen.isEmpty && lastSeen.isEmpty) return;
 
     // remove any items that haven't been seen in the past 15 seconds
@@ -146,15 +123,14 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
         expired.add(e.key);
       }
     }
-    if (expired.isNotEmpty)
-    {
+    if (expired.isNotEmpty) {
       firstSeen.removeWhere((key, value) => expired.contains(key));
-      lastSeen.removeWhere((key, value)  => expired.contains(key));
+      lastSeen.removeWhere((key, value) => expired.contains(key));
     }
   }
+
   @override
-  onBeaconData(List<Beacon> beacons)
-  {
+  onBeaconData(List<Beacon> beacons) {
     // enabled?
     if (enabled == false) return;
 
@@ -170,13 +146,12 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
 
     // remove beacons that dont match our criteria
     if (major != null || minor != null || distance != null) {
-      beacons.removeWhere((element)
-    {
-      if (major    != null && element.major != major) return true;
-      if (minor    != null && element.minor != minor) return true;
-      if (distance != null && element.accuracy > distance!) return true;
-      return false;
-    });
+      beacons.removeWhere((element) {
+        if (major != null && element.major != major) return true;
+        if (minor != null && element.minor != minor) return true;
+        if (distance != null && element.accuracy > distance!) return true;
+        return false;
+      });
     }
 
     // sort by distance
@@ -184,32 +159,33 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
       beacons.sort((a, b) => Comparable.compare(a.accuracy, b.accuracy));
     }
 
-    Log().debug('BEACON Scanner -> ${beacons.length} beacons matching your criteria');
+    Log().debug(
+        'BEACON Scanner -> ${beacons.length} beacons matching your criteria');
 
     // Build the Data
     Data data = Data();
     for (var beacon in beacons) {
       // calculate age
       int age = 0;
-      if (beacon.macAddress != null)
-      {
+      if (beacon.macAddress != null) {
         var dt = DateTime.now().millisecondsSinceEpoch;
-        if (!firstSeen.keys.contains(beacon.macAddress!)) firstSeen[beacon.macAddress!] = dt;
+        if (!firstSeen.keys.contains(beacon.macAddress!))
+          firstSeen[beacon.macAddress!] = dt;
         lastSeen[beacon.macAddress!] = dt;
         age = lastSeen[beacon.macAddress!]! - firstSeen[beacon.macAddress!]!;
       }
 
       Map<dynamic, dynamic> map = <dynamic, dynamic>{};
-      map["id"]         = beacon.proximityUUID;
-      map["epoch"]      = "${DateTime.now().millisecondsSinceEpoch}";
-      map["age"]        = "$age";
+      map["id"] = beacon.proximityUUID;
+      map["epoch"] = "${DateTime.now().millisecondsSinceEpoch}";
+      map["age"] = "$age";
       map["macaddress"] = beacon.macAddress;
-      map["rssi"]       = "${beacon.rssi}";
-      map["power"]      = "${beacon.txPower ?? 0.0}";
-      map["minor"]      = "${beacon.minor}";
-      map["major"]      = "${beacon.major}";
-      map["distance"]   = "${beacon.accuracy}";
-      map["proximity"]  = "${beacon.proximity}";
+      map["rssi"] = "${beacon.rssi}";
+      map["power"] = "${beacon.txPower ?? 0.0}";
+      map["minor"] = "${beacon.minor}";
+      map["major"] = "${beacon.major}";
+      map["distance"] = "${beacon.accuracy}";
+      map["proximity"] = "${beacon.proximity}";
       data.add(map);
     }
 

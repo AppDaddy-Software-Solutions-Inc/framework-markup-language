@@ -3,7 +3,6 @@ import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/observable/observables/string.dart';
 
 abstract class IDragDrop {
-
   String get id;
 
   set data(dynamic v);

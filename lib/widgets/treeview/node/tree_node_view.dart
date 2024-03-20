@@ -6,8 +6,7 @@ import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
-class TreeNodeView extends StatefulWidget implements IWidgetView
-{
+class TreeNodeView extends StatefulWidget implements IWidgetView {
   @override
   final TreeNodeModel model;
 
@@ -17,27 +16,20 @@ class TreeNodeView extends StatefulWidget implements IWidgetView
   State<TreeNodeView> createState() => _TreeNodeViewState();
 }
 
-class _TreeNodeViewState extends WidgetState<TreeNodeView>
-{
+class _TreeNodeViewState extends WidgetState<TreeNodeView> {
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
     // build children
     List<Widget> children = [];
-    List<Widget> nodes    = [];
-    if (widget.model.children != null)
-    {
-      for (var model in widget.model.children!)
-      {
-        if (model is TreeNodeModel)
-        {
+    List<Widget> nodes = [];
+    if (widget.model.children != null) {
+      for (var model in widget.model.children!) {
+        if (model is TreeNodeModel) {
           nodes.add(TreeNodeView(model));
-        }
-        else if (model is ViewableWidgetModel)
-        {
+        } else if (model is ViewableWidgetModel) {
           var view = model.getView();
           if (view != null) children.add(view);
         }
@@ -47,28 +39,56 @@ class _TreeNodeViewState extends WidgetState<TreeNodeView>
     //////////
     /* Icon */
     //////////
-    if (children.isEmpty)
-    {
+    if (children.isEmpty) {
       //////////
       /* Icon */
       //////////
-      if (widget.model.expanded!)
-      {
+      if (widget.model.expanded!) {
         if (widget.model.expandedicon != null) {
-          children.insert(0, Padding(padding: const EdgeInsets.only(right: 0), child: Icon(widget.model.expandedicon, color: widget.model.color ?? Theme.of(context).colorScheme.onPrimaryContainer)));
+          children.insert(
+              0,
+              Padding(
+                  padding: const EdgeInsets.only(right: 0),
+                  child: Icon(widget.model.expandedicon,
+                      color: widget.model.color ??
+                          Theme.of(context).colorScheme.onPrimaryContainer)));
         } else if (widget.model.icon != null && widget.model.children != null) {
-          children.insert(0, Padding(padding: const EdgeInsets.only(right: 0), child: Icon(widget.model.icon, color: widget.model.color)));
+          children.insert(
+              0,
+              Padding(
+                  padding: const EdgeInsets.only(right: 0),
+                  child: Icon(widget.model.icon, color: widget.model.color)));
         } else {
-          children.insert(0, Padding(padding: const EdgeInsets.only(top: 10, bottom: 10, right: 24), child: Container()));
+          children.insert(
+              0,
+              Padding(
+                  padding:
+                      const EdgeInsets.only(top: 10, bottom: 10, right: 24),
+                  child: Container()));
         }
-      }
-      else
-      {
+      } else {
         if (widget.model.icon != null && widget.model.children != null) {
-          children.insert(0, Padding(padding: const EdgeInsets.only(right: 0), child: Icon(widget.model.icon, color: widget.model.color ?? Theme.of(context).colorScheme.onPrimaryContainer)));
+          children.insert(
+              0,
+              Padding(
+                  padding: const EdgeInsets.only(right: 0),
+                  child: Icon(widget.model.icon,
+                      color: widget.model.color ??
+                          Theme.of(context).colorScheme.onPrimaryContainer)));
         } else {
-          children.insert(0, Padding(padding: EdgeInsets.only(top: widget.model.selected! ? 4 : 10, bottom: widget.model.selected! ? 4 : 10, right: widget.model.selected! ? 4 : 16, left: 8),
-            child: widget.model.selected! ?  Icon(Icons.horizontal_rule, size: 12, color: Theme.of(context).colorScheme.primary) : Container()));
+          children.insert(
+              0,
+              Padding(
+                  padding: EdgeInsets.only(
+                      top: widget.model.selected! ? 4 : 10,
+                      bottom: widget.model.selected! ? 4 : 10,
+                      right: widget.model.selected! ? 4 : 16,
+                      left: 8),
+                  child: widget.model.selected!
+                      ? Icon(Icons.horizontal_rule,
+                          size: 12,
+                          color: Theme.of(context).colorScheme.primary)
+                      : Container()));
         }
       }
 
@@ -77,47 +97,67 @@ class _TreeNodeViewState extends WidgetState<TreeNodeView>
       //////////
       children.add(Text(widget.model.label,
           style: TextStyle(
-            // decoration: widget.model.selected ? TextDecoration.underline : TextDecoration.none,
-            fontWeight: widget.model.selected! ? FontWeight.normal : FontWeight.normal,
-            color: widget.model.selected! ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onBackground)));
+              // decoration: widget.model.selected ? TextDecoration.underline : TextDecoration.none,
+              fontWeight: widget.model.selected!
+                  ? FontWeight.normal
+                  : FontWeight.normal,
+              color: widget.model.selected!
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.onBackground)));
     }
-
 
     ////////////////////
     /* Build the Tree */
     ////////////////////
-    Widget view = Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: children);
-    if (nodes.isNotEmpty)
-    {
-      if (isNullOrEmpty(widget.model.onclick) && widget.model.children == null) {
-        view = Opacity(opacity: 0.5, child: view); // Disable treeview nav links without onclick properties
+    Widget view = Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: children);
+    if (nodes.isNotEmpty) {
+      if (isNullOrEmpty(widget.model.onclick) &&
+          widget.model.children == null) {
+        view = Opacity(
+            opacity: 0.5,
+            child:
+                view); // Disable treeview nav links without onclick properties
       } else {
-        view = MouseRegion(cursor: SystemMouseCursors.click, child: GestureDetector(child: view, onTap: () => onTap()));
+        view = MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(child: view, onTap: () => onTap()));
       }
-      if (widget.model.expanded!)
-      {
-        Widget child = Padding(padding: const EdgeInsets.only(left: 17), child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: nodes));
-        view = Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [view, child]);
+      if (widget.model.expanded!) {
+        Widget child = Padding(
+            padding: const EdgeInsets.only(left: 17),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: nodes));
+        view = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [view, child]);
       }
-    }
-    else if (widget.model.onclick != null && widget.model.onclick != '') {
-      view = MouseRegion(cursor: SystemMouseCursors.click, child: GestureDetector(child: view, onTap: () => onClick()));
+    } else if (widget.model.onclick != null && widget.model.onclick != '') {
+      view = MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(child: view, onTap: () => onClick()));
     }
 
     if (isNullOrEmpty(widget.model.onclick) && widget.model.children == null) {
-      view = Opacity(opacity: 0.5, child: view); // Disable treeview nav links without onclick properties
+      view = Opacity(
+          opacity: 0.5,
+          child: view); // Disable treeview nav links without onclick properties
     }
     return view;
   }
 
-  onClick() async
-  {
+  onClick() async {
     selectNode(widget.model);
     await widget.model.onClick(context);
   }
 
-  selectNode(TreeNodeModel node)
-  {
+  selectNode(TreeNodeModel node) {
     widget.model.treeview!.focusTreeNode(node);
   }
 

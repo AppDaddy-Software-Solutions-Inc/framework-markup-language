@@ -36,7 +36,7 @@ class _MapViewState extends WidgetState<MapView>
 
   // default center
   // new york city
-  final centerDefault = LatLng(40.712776, -74.005974);
+  final centerDefault = const LatLng(40.712776, -74.005974);
 
    /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
@@ -81,7 +81,7 @@ class _MapViewState extends WidgetState<MapView>
         CameraFit? bounds;
         if (markerBounds != null)
         {
-          bounds = CameraFit.bounds(bounds: markerBounds!, padding: EdgeInsets.all(50));
+          bounds = CameraFit.bounds(bounds: markerBounds!, padding: const EdgeInsets.all(50));
           //var cz = bounds.fit(mapController);
           //centerPoint = cz.center;
           //zoom = cz.zoom;
@@ -95,7 +95,7 @@ class _MapViewState extends WidgetState<MapView>
           initialCameraFit: bounds);
 
         // map
-        var map = FlutterMap(key: ObjectKey(widget.model), mapController: mapController, children: layers, options: options);
+        var map = FlutterMap(key: ObjectKey(widget.model), mapController: mapController, options: options, children: layers);
 
         // center the map
         WidgetsBinding.instance.addPostFrameCallback((_)
@@ -175,7 +175,7 @@ class _MapViewState extends WidgetState<MapView>
     // build the child views
     List<Widget> children = model.inflate();
 
-    Widget child = Icon(Icons.location_on_outlined, color: Colors.red);
+    Widget child = const Icon(Icons.location_on_outlined, color: Colors.red);
     if (children.length == 1) child = children.first;
     if (children.length >  1) child = Column(children: children);
     return child;
@@ -185,7 +185,7 @@ class _MapViewState extends WidgetState<MapView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // get the children
     List<Widget> children = widget.model.inflate();

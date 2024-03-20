@@ -414,7 +414,7 @@ class _TextViewState extends WidgetState<TextView>
           WidgetSpan widgetSpan = WidgetSpan(child: Transform.translate(
             offset: const Offset(2, 4),
             child: Text(text,
-              textScaler: TextScaler.linear(0.7),
+              textScaler: const TextScaler.linear(0.7),
               style: TextStyle(
                 color: widget.model.color ?? Theme.of(context).colorScheme.onSurface,
                 wordSpacing: widget.model.wordspace,
@@ -433,7 +433,7 @@ class _TextViewState extends WidgetState<TextView>
           WidgetSpan widgetSpan = WidgetSpan(child: Transform.translate(
             offset: const Offset(2, -4),
             child: Text(text,
-              textScaler: TextScaler.linear(0.7),
+              textScaler: const TextScaler.linear(0.7),
               style: TextStyle(
                   color: widget.model.color ?? Theme.of(context).colorScheme.onSurface,
                 wordSpacing: widget.model.wordspace,
@@ -491,7 +491,7 @@ class _TextViewState extends WidgetState<TextView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // use this to optimize
     bool textHasChanged = (text != widget.model.value);

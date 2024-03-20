@@ -113,9 +113,9 @@ class PagerViewState extends WidgetState<PagerView>
     if (pager == null && widget.model.pager)
     {
       var model = ViewableWidgetModel(widget.model, null);
-      pager = Container(child: DotsIndicator(controller: _controller!, itemCount: _pages.length, color: widget.model.color ?? Theme.of(context).colorScheme.onBackground,
-          onPageSelected: (int page) => pageTo(page + 1, widget.model.transition)));
-      pager = LayoutBoxChildData(model: model, child: pager!, bottom: 8);
+      pager = DotsIndicator(controller: _controller!, itemCount: _pages.length, color: widget.model.color ?? Theme.of(context).colorScheme.onBackground,
+          onPageSelected: (int page) => pageTo(page + 1, widget.model.transition));
+      pager = LayoutBoxChildData(model: model, bottom: 8, child: pager!);
     }
     if (pager != null)
     {
@@ -139,7 +139,7 @@ class PagerViewState extends WidgetState<PagerView>
 }
 
 class DotsIndicator extends AnimatedWidget {
-  DotsIndicator({
+  const DotsIndicator({super.key,
     required this.controller,
     this.itemCount,
     this.onPageSelected,
@@ -171,13 +171,13 @@ class DotsIndicator extends AnimatedWidget {
 
   Widget _buildDot(int index) {
     double zoom = 1.0 + (_kMaxZoom - 1.0) * (index == (controller.page ?? controller.initialPage) ? 1 : 0);
-    return Container(
+    return SizedBox(
       width: _kDotSpacing,
       child: Center(
         child: Material(
           color: color,
           type: MaterialType.circle,
-          child: Container(
+          child: SizedBox(
             width: _kDotSize * zoom,
             height: _kDotSize * zoom,
             child: InkWell(splashColor: color!.withOpacity(0.5),

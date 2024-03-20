@@ -242,7 +242,7 @@ class ButtonModel extends BoxModel
     if (preventClicking != true)
     {
       if (allowClicking?.isActive ?? false) allowClicking!.cancel();
-      allowClicking = Timer(Duration(milliseconds: 300), () => preventClicking = false);
+      allowClicking = Timer(const Duration(milliseconds: 300), () => preventClicking = false);
       preventClicking = true;
 
       WidgetModel.unfocus();

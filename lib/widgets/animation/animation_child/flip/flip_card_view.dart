@@ -39,7 +39,7 @@ class FlipCardViewState extends State<FlipCardView>
     if (widget.controller == null) {
       _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,));
       if(widget.model.controllerValue == 1 && widget.model.runonce == true) {
-        _controller.animateTo(widget.model.controllerValue, duration: Duration());
+        _controller.animateTo(widget.model.controllerValue, duration: const Duration());
 
         if (widget.model.autoplay == true && _controller.isAnimating != true) start();
       }
@@ -207,12 +207,10 @@ Widget build(BuildContext context)
             transform: Matrix4.identity()
               ..setEntry(3, 2, 0.0015)
               ..rotateX(pi * _animation.value),
-            child: Container(
-              child:  Transform(
-                alignment: FractionalOffset.center,
-                transform:  Matrix4.identity()
-                  ..rotateX(_animation.value <= 0.5 ? 0: pi), child: frontWidget,),
-            ));
+            child: Transform(
+              alignment: FractionalOffset.center,
+              transform:  Matrix4.identity()
+                ..rotateX(_animation.value <= 0.5 ? 0: pi), child: frontWidget,));
 
       }
         return Transform(
@@ -220,12 +218,10 @@ Widget build(BuildContext context)
           transform: Matrix4.identity()
             ..setEntry(3, 2, 0.0015)
             ..rotateY(pi * _animation.value),
-          child: Container(
-          child:  Transform(
+          child: Transform(
           alignment: FractionalOffset.center,
-    transform:  Matrix4.identity()
-    ..rotateY(_animation.value <= 0.5 ? 0: pi), child: frontWidget,),
-        ));
+              transform:  Matrix4.identity()
+              ..rotateY(_animation.value <= 0.5 ? 0: pi), child: frontWidget,));
   }
 
   void onAnimate(Event event) {

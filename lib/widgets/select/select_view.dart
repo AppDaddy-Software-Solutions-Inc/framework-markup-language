@@ -49,8 +49,8 @@ class _SelectViewState extends WidgetState<SelectView>
   Widget addBorders(Widget view)
   {
     // border padding - this need to be changed to check border width
-    var padding = EdgeInsets.only(left: 10, top: 3, right: 0, bottom: 3);
-    if (widget.model.border == "none") padding = EdgeInsets.only(left: 10, top: 4, right: 10, bottom: 4);
+    var padding = const EdgeInsets.only(left: 10, top: 3, right: 0, bottom: 3);
+    if (widget.model.border == "none") padding = const EdgeInsets.only(left: 10, top: 4, right: 10, bottom: 4);
 
     // border radius
     var radius = BorderRadius.circular(widget.model.radius.toDouble());
@@ -87,7 +87,7 @@ class _SelectViewState extends WidgetState<SelectView>
   {
     if (isNullOrEmpty(widget.model.alarmText)) return view;
 
-    Widget? errorText = Padding(padding: EdgeInsets.only(top: 6.0 , bottom: 2.0), child: Text("${widget.model.alarmText}", style: TextStyle(color: Theme.of(context).colorScheme.error)));
+    Widget? errorText = Padding(padding: const EdgeInsets.only(top: 6.0 , bottom: 2.0), child: Text("${widget.model.alarmText}", style: TextStyle(color: Theme.of(context).colorScheme.error)));
     view = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -118,7 +118,7 @@ class _SelectViewState extends WidgetState<SelectView>
         fontSize: widget.model.size);
 
     var decoration = InputDecoration(
-        contentPadding: EdgeInsets.only(bottom:2),
+        contentPadding: const EdgeInsets.only(bottom:2),
         isDense: true,
         hintText: widget.model.hint ?? '',
         hintStyle: hintTextStyle,
@@ -195,7 +195,7 @@ class _SelectViewState extends WidgetState<SelectView>
   Widget build(BuildContext context)
   {
     // check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // build select
     Widget view = buildSelect();

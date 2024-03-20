@@ -155,10 +155,10 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     return;
   }
 
-  Future<void> _ensureVisible() async {
-    // Wait for the keyboard to come into view
-    await Future.any(
-        [Future.delayed(const Duration(milliseconds: 50)), _keyboardToggled()]);
+  Future<void> _ensureVisible() async
+  {
+    // wait for the keyboard to come into view
+    await Future.any([Future.delayed(const Duration(milliseconds: 50)), _keyboardToggled()]);
 
     // No need to go any further if the node has not the focus
     if (!focus.hasFocus) {
@@ -168,8 +168,9 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     // Find the object which has the focus
     RenderAbstractViewport? viewport;
     RenderObject? object;
-    try {
-      object = context.findRenderObject();
+    try
+    {
+      object = mounted ? context.findRenderObject() : null;
       if (object is RenderObject) viewport = RenderAbstractViewport.of(object);
     } catch (e) {
       viewport = null;
@@ -178,29 +179,34 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     if (viewport == null) return;
 
     // Get the Scrollable state (in order to retrieve its offset)
-    ScrollableState scrollableState = Scrollable.of(context);
+    ScrollableState? scrollableState = mounted ? Scrollable.of(context) : null;
+    if (scrollableState == null) return;
 
     // Get its offset
     ScrollPosition position = scrollableState.position;
     double alignment;
 
-    if (position.pixels > viewport.getOffsetToReveal(object!, 0.0).offset) {
-      // Move down to the top of the viewport
+    // Move down to the top of the viewport
+    if (position.pixels > viewport.getOffsetToReveal(object!, 0.0).offset)
+    {
       alignment = 1.0;
-    } else if (position.pixels <
-        (viewport.getOffsetToReveal(object, 1.0).offset +
-            MediaQuery.of(context).viewInsets.bottom)) {
-      // Move up to the bottom of the viewport
+    }
+
+    // Move up to the bottom of the viewport
+    else if (position.pixels < (viewport.getOffsetToReveal(object, 1.0).offset + (mounted ? MediaQuery.of(context).viewInsets.bottom : 0)))
+    {
       alignment = 0.0;
-    } else {
-      // No scrolling is necessary to reveal the child
+    }
+
+    // No scrolling is necessary to reveal the child
+    else {
       return;
     }
 
     position.ensureVisible(
       object,
       alignment: alignment,
-      duration: Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 100),
       curve: Curves.linearToEaseOut,
     );
   }
@@ -276,7 +282,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       await widget.model.answer(value);
 
       // fire the onChange event
-      await widget.model.onChange(context);
+      await widget.model.onChange(mounted ? context : null);
     }
 
     return true;
@@ -289,7 +295,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     if (commitTimer?.isActive ?? false) commitTimer!.cancel();
 
     // reset the timer
-    commitTimer = Timer(Duration(milliseconds: 1000), () async => _commit());
+    commitTimer = Timer(const Duration(milliseconds: 1000), () async => _commit());
   }
 
   void onClear()
@@ -438,7 +444,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       return OutlineInputBorder(
         borderRadius:
         BorderRadius.all(Radius.circular(widget.model.radius)),
-        borderSide: BorderSide(
+        borderSide: const BorderSide(
             color: Colors.transparent,
             width: 2),
       );
@@ -446,7 +452,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         else if (widget.model.border == "bottom" ||
         widget.model.border == "underline"){
         return UnderlineInputBorder(
-      borderRadius: BorderRadius.all(
+      borderRadius: const BorderRadius.all(
           Radius.circular(0)),
       borderSide: BorderSide(
           color: widget.model.editable ? mainColor : secondaryColor,
@@ -509,7 +515,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       paddingBottom = 14;
     }
     var padding = EdgeInsets.only(left: 10, top: paddingTop, right: 10, bottom: paddingBottom);
-    if (widget.model.dense == true) padding = EdgeInsets.only(left: 6, top: 0, right: 6, bottom: 0);
+    if (widget.model.dense == true) padding = const EdgeInsets.only(left: 6, top: 0, right: 6, bottom: 0);
 
     var decoration = InputDecoration(
       isDense: false,
@@ -525,17 +531,17 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         color: widget.model.getErrorHintColor(context, color: hintTextColor),
         shadows: <Shadow>[
           Shadow(
-              offset: Offset(0.0, 0.5),
+              offset: const Offset(0.0, 0.5),
               blurRadius: 2.0,
               color: widget.model.color ?? Colors.transparent
           ),
           Shadow(
-              offset: Offset(0.0, 0.5),
+              offset: const Offset(0.0, 0.5),
               blurRadius: 2.0,
               color: widget.model.color ?? Colors.transparent
           ),
           Shadow(
-              offset: Offset(0.0, 0.5),
+              offset: const Offset(0.0, 0.5),
               blurRadius: 2.0,
               color: widget.model.color ?? Colors.transparent
           ),
@@ -560,17 +566,17 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
       //Icon Attributes
       prefixIcon: widget.model.icon != null ? Padding(
-          padding: EdgeInsets.only(
+          padding: const EdgeInsets.only(
               right: 10,
               left: 10,
               bottom: 0),
           child: Icon(widget.model.icon)) : null,
-      prefixIconConstraints: BoxConstraints(maxHeight: 24),
+      prefixIconConstraints: const BoxConstraints(maxHeight: 24),
       suffixIcon: _getSuffixIcon(hintTextColor),
       suffixIconConstraints: (widget.model.enabled &&
           widget.model.editable &&
           widget.model.clear)
-          ? BoxConstraints(maxHeight: 20)
+          ? const BoxConstraints(maxHeight: 20)
           : null,
 
       //border attributes
@@ -589,7 +595,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // set the text color arrays
     Color? enabledTextColor = widget.model.textcolor;
@@ -643,7 +649,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         onSubmitted: _handleSubmit);
 
     // dense
-    if (widget.model.dense) view = Padding(padding: EdgeInsets.all(4), child: view);
+    if (widget.model.dense) view = Padding(padding: const EdgeInsets.all(4), child: view);
 
     // get the model constraints
     var modelConstraints = widget.model.constraints;

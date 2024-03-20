@@ -31,23 +31,23 @@ class DialogManager
     if (request.type == DialogType.modal)
     {
       // close button
-      dynamic closeButton = Column(crossAxisAlignment: CrossAxisAlignment.end, children: [SizedBox(width: 35, child: IconButton(onPressed: () => Navigator.of(context).pop(), icon: Icon(Icons.cancel, size: 24)))]);
+      dynamic closeButton = Column(crossAxisAlignment: CrossAxisAlignment.end, children: [SizedBox(width: 35, child: IconButton(onPressed: () => Navigator.of(context).pop(), icon: const Icon(Icons.cancel, size: 24)))]);
       if (request.title != null && request.title != '')
       {
         closeButton = Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Expanded(child: Container(child: Text(request.title!, style: TextStyle(fontSize: 16)))),
+          Expanded(child: Text(request.title!, style: const TextStyle(fontSize: 16))),
           closeButton,
         ]);
       }
 
       // title
-      var title = Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: closeButton);
+      var title = Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: closeButton);
 
       // dialog
       AlertDialog dialog = AlertDialog(
           title: title,
           insetPadding: EdgeInsets.symmetric(horizontal: FmlEngine.isMobile ? 10 : 128, vertical: FmlEngine.isMobile ? 64 : 128),
-          titlePadding: EdgeInsets.all(0),
+          titlePadding: const EdgeInsets.all(0),
           content: request.content,
           contentPadding: EdgeInsets.only(top: 0, bottom: 10, left: FmlEngine.isMobile ? 2 : 10, right: FmlEngine.isMobile ? 2 : 10));
 
@@ -61,8 +61,8 @@ class DialogManager
       AlertStyle style = AlertStyle(
         isCloseButton: true,
         isOverlayTapDismiss: buttons.isNotEmpty ? false : true,
-        animationDuration: Duration(milliseconds: 400),
-        alertBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0), side: BorderSide(color: Colors.transparent, width: 0.0)),
+        animationDuration: const Duration(milliseconds: 400),
+        alertBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0), side: const BorderSide(color: Colors.transparent, width: 0.0)),
         backgroundColor: Colors.white,
         alertElevation: 25,
       );

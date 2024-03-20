@@ -15,6 +15,8 @@ enum METHODS { launch }
 
 class DatepickerModel extends DecoratedInputModel implements IFormField
 {
+  DatepickerViewState? datepicker;
+
   bool isPicking = false;
 
   static const timeFormatDefault = "HH:mm";
@@ -201,110 +203,10 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
 
     switch (function)
     {
-      case "start": return await show(context, mode, type, oldest, newest, format);
+      case "start": await datepicker?.show();
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }
-
-  Future show(BuildContext? buildContext, String? mode, String pick,
-      String? oldest, String? newest, String? format) async {
-    TimePickerEntryMode tmode = TimePickerEntryMode.dial;
-    DatePickerEntryMode dmode = DatePickerEntryMode.calendar;
-    switch (mode) {
-      case "gui":
-        {
-          tmode = TimePickerEntryMode.dial;
-          dmode = DatePickerEntryMode.calendarOnly;
-        }
-        break;
-      case "input":
-        {
-          tmode = TimePickerEntryMode.input;
-          dmode = DatePickerEntryMode.inputOnly;
-        }
-        break;
-      case "bothinput":
-        {
-          tmode = TimePickerEntryMode.input;
-          dmode = DatePickerEntryMode.input;
-        }
-        break;
-      case "bothgui":
-        {
-          tmode = TimePickerEntryMode.dial;
-          dmode = DatePickerEntryMode.calendar;
-        }
-        break;
-      default:
-        {
-          tmode = TimePickerEntryMode.dial;
-          dmode = DatePickerEntryMode.calendar;
-        }
-        break;
-    }
-
-    DateTime? result = DateTime.now();
-    DateTimeRange? range;
-    TimeOfDay? timeResult = TimeOfDay.now();
-
-    setFormat();
-
-    if (type == "range") {
-      range = await showDateRangePicker(
-        context: buildContext!,
-        initialEntryMode: dmode,
-        firstDate: toDate(oldest, format: format) ??
-            DateTime(DateTime.now().year - 100),
-        currentDate: DateTime.now(),
-        lastDate: toDate(newest, format: format) ??
-            DateTime(DateTime.now().year + 10),
-      );
-      if (range == null) return;
-      return setValue(range.start, timeResult, format, secondResult: range.end);
-    } else if (type != "time") {
-      result = await (showDatePicker(
-        context: buildContext!,
-        initialDatePickerMode: type == "year" || type == "yeartime"
-            ? DatePickerMode.year
-            : DatePickerMode.day,
-        // selectableDayPredicate: ,
-        initialEntryMode: dmode,
-        firstDate: toDate(oldest, format: format) ??
-            DateTime(DateTime.now().year - 100),
-        initialDate: toDate(value, format: format) ?? DateTime.now(),
-        lastDate: toDate(newest, format: format) ?? DateTime(DateTime.now().year + 10)));
-
-
-      if(type == 'datetime' || type == 'yeartime' || type == 'rangetime') {
-       TimeOfDay time = TimeOfDay.now();
-       timeResult = await showTimePicker(
-           context: buildContext,
-           initialTime: time,
-           initialEntryMode: tmode);
-     }
-
-      setValue(result, timeResult, format);
-      return;
-    } else {
-      TimeOfDay time = TimeOfDay.now();
-      try {
-        time = (TimeOfDay.fromDateTime(toDate(value, format: format)!));
-      } catch(e) {
-        Log().exception(e, caller: 'Datepicker');
-        value = '';
-      }
-      timeResult = await showTimePicker(
-        context: buildContext!,
-        initialTime: time,
-        initialEntryMode: tmode);
-    }
-
-    setValue(result, timeResult, format);
-    return;
-  }
-
-
-
 
   void setValue(DateTime? result, TimeOfDay? timeResult, String? format,
       {DateTime? secondResult}) {

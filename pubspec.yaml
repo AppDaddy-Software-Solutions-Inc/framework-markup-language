@@ -239,12 +239,13 @@ dependencies:
   # Apache 2.0
 
 dev_dependencies:
-  integration_test:
-    sdk: flutter
-  flutter_test:
-    sdk: flutter
-  dependency_validator: ^3.2.2
+
+  # Dart linter
   lints: ^3.0.0
+
+  # Flutter linter
+  flutter_lints: ^3.0.0
+
 
 flutter:
 

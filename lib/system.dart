@@ -32,7 +32,7 @@ if (dart.library.io)   'package:fml/platform/platform.vm.dart'
 if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class System extends WidgetModel implements IEventManager {
-  static final String myId = "SYSTEM";
+  static const String myId = "SYSTEM";
 
   // set to true once done
   static final _completer = Completer();
@@ -137,7 +137,6 @@ class System extends WidgetModel implements IEventManager {
   late String baseUrl;
 
   _initialize() async {
-    print('Initializing FML Engine V${FmlEngine.version} on ${Uri.base}...');
 
     // base URL changes (fragment is dropped) if
     // used past this point
@@ -216,8 +215,12 @@ class System extends WidgetModel implements IEventManager {
     _useragent = StringObservable(Binding.toKey('useragent'), Platform.useragent, scope: scope);
     _version = StringObservable(Binding.toKey('version'), FmlEngine.version, scope: scope);
     _uuid = StringObservable(Binding.toKey('uuid'), newId(), scope: scope, getter: newId);
+
     // this satisfies/eliminates the compiler warning
-    if (_uuid == null) print(_uuid);
+    if (kDebugMode)
+    {
+      print(_uuid);
+    }
 
     // system dates
     _epoch = IntegerObservable(Binding.toKey('epoch'), epoch(),
@@ -273,8 +276,13 @@ class System extends WidgetModel implements IEventManager {
           await Platform.writeFile(filepath, await rootBundle.load(key));
         }
       }
-    } catch (e) {
-      print("Error building application assets. Error is $e");
+    }
+    catch (e)
+    {
+      if (kDebugMode)
+      {
+        print("Error building application assets. Error is $e");
+      }
       ok = false;
     }
     return ok;
@@ -307,8 +315,6 @@ class System extends WidgetModel implements IEventManager {
         }
       }
 
-      print('Startup Domain is $domain');
-
       // set default app
       ApplicationModel app = ApplicationModel(System(), url: domain);
 
@@ -337,7 +343,9 @@ class System extends WidgetModel implements IEventManager {
   {
     // Close the old application if one
     // is running
-    if (_app != null) {
+    if (_app != null)
+    {
+      // closing app
       Log().info("Closing Application ${_app!.url}");
 
       // set the default domain on the Url utilities
@@ -355,6 +363,7 @@ class System extends WidgetModel implements IEventManager {
       _app!.close();
     }
 
+    // opening application
     Log().info("Activating Application (${app.title}) @ ${app.domain}");
 
     // set the default domain on the Url utilities

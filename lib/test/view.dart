@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 
 class TestWidget extends StatefulWidget {
+  const TestWidget({super.key});
+
   @override
   TestWidgetState createState() => TestWidgetState();
 }
@@ -17,8 +19,8 @@ class TestWidgetState extends State<TestWidget> {
 //            Expanded(child:
 //              Container(color: Colors.blue, child:
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Container(color: Colors.deepOrange, child: Icon(Icons.airplanemode_active)),
-                  Icon(Icons.airplanemode_inactive),
+                  Container(color: Colors.deepOrange, child: const Icon(Icons.airplanemode_active)),
+                  const Icon(Icons.airplanemode_inactive),
               ],),//)//)
           ],),)
       ],)

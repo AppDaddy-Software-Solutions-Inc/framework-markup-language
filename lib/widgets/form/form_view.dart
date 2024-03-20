@@ -124,7 +124,7 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // Center
     Widget view = BoxView(widget.model);
@@ -136,7 +136,7 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener
     busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
 
     // stack gets the same size as the view when busy is positioned rather than center
-    view = GoBack(canGoBack: quit, child: Stack(children: [view, Positioned(child: busy!, left: 0, right: 0, top:0, bottom: 0)]));
+    view = GoBack(canGoBack: quit, child: Stack(children: [view, Positioned(left: 0, right: 0, top:0, bottom: 0, child: busy!)]));
 
     // apply user defined constraints
     return view;

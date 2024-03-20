@@ -86,7 +86,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
             child: GestureDetector(
                 onTap: startstop,
                 child: Stack(alignment: Alignment.center, children: [
-                  Icon(Icons.circle, color: Colors.white38, size: 80),
+                  const Icon(Icons.circle, color: Colors.white38, size: 80),
                   playButton!
                 ]))));
     return Positioned(bottom: 0, top: 0, left: 0, right: 0, child: play);
@@ -98,7 +98,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     speedLabelModel.value = '${_controller?.value.playbackSpeed}x';
 
     var label = Stack(alignment: Alignment.center, children: [
-      Icon(Icons.circle, color: Colors.white38, size: 40), speedLabel!]);
+      const Icon(Icons.circle, color: Colors.white38, size: 40), speedLabel!]);
 
     var popup = PopupMenuButton<double>(
         initialValue: _controller?.value.playbackSpeed,
@@ -121,7 +121,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // create the view
     Widget view = Container();
@@ -129,9 +129,9 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     {
       var videoPlayer = VideoPlayer(_controller!);
       var subTitles   = ClosedCaption(text: _controller!.value.caption.text);
-      var progressBar = widget.model.controls ? VideoProgressIndicator(_controller!, allowScrubbing: true) : Offstage();
-      var playButton  = widget.model.controls ? getPlayButton()  : Offstage();
-      var speedButton = widget.model.controls ? getSpeedButton() : Offstage();
+      var progressBar = widget.model.controls ? VideoProgressIndicator(_controller!, allowScrubbing: true) : const Offstage();
+      var playButton  = widget.model.controls ? getPlayButton()  : const Offstage();
+      var speedButton = widget.model.controls ? getSpeedButton() : const Offstage();
       var stack = Stack(alignment: Alignment.bottomCenter, children: <Widget>[videoPlayer,subTitles,speedButton, playButton, progressBar]);
       view = AspectRatio(aspectRatio: _controller!.value.aspectRatio, child: stack);
       view = GestureDetector(onTap: startstop, child: view);

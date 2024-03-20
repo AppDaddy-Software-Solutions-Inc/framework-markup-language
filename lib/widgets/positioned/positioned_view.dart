@@ -25,7 +25,7 @@ class _PositionedViewState extends WidgetState<PositionedView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // build the child views
     List<Widget> children = widget.model.inflate();
@@ -62,7 +62,7 @@ class _PositionedViewState extends WidgetState<PositionedView>
     }
     else
     {
-      view = LayoutBoxChildData(child: view, model: widget.model);
+      view = LayoutBoxChildData(model: widget.model, child: view);
     }
 
     return view;

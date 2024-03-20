@@ -10,7 +10,7 @@ class ColorPickerView
   {
     if (context == null) return;
 
-    var buttons = ColorPickerActionButtons(dialogActionButtons: false);
+    var buttons = const ColorPickerActionButtons(dialogActionButtons: false);
 
     var view = ColorPicker(
         color: toColor(model.value) ?? Colors.transparent,

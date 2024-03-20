@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:fml/datasources/http/http.dart';
 import 'package:fml/helpers/mime.dart';
+import 'package:fml/log/manager.dart';
 import 'package:path/path.dart';
 
 extension URI on Uri
@@ -203,7 +204,7 @@ extension URI on Uri
     }
     catch(e)
     {
-      print("Error in toUriData using $url. Error is $e");
+      Log().info("Error in toUriData using $url. Error is $e");
     }
     return null;
   }

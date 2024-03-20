@@ -201,7 +201,6 @@ Future<void> replaceChild(WidgetModel model, List<dynamic> arguments) async
 
     // check if the list is greater than 0, remove at the final index.
     if (model.children!.isNotEmpty) model.children!.removeAt(model.children!.length - 1);
-    print(index.toString());
   } else if (model.children != null && index != null) {
     // check if index is in range, then dispose of the child at that index.
     if (index >= 0 && model.children!.length > index) {

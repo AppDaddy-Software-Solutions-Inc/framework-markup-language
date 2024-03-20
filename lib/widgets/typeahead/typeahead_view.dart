@@ -77,7 +77,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
 
     if (widget.model.clear)
     {
-      var clear = SizedBox(width: 24, height: 24, child: IconButton(padding: EdgeInsets.zero, splashRadius: 5, icon: Icon(Icons.clear_rounded, size: 12, color: Colors.black), onPressed: () => onChangeOption(null)));
+      var clear = SizedBox(width: 24, height: 24, child: IconButton(padding: EdgeInsets.zero, splashRadius: 5, icon: const Icon(Icons.clear_rounded, size: 12, color: Colors.black), onPressed: () => onChangeOption(null)));
       view = Stack(children: [view, Positioned(top: 0, right: 0, child: clear)]);
     }
     return view;
@@ -107,8 +107,8 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
   Widget addBorders(Widget view)
   {
     // border padding - this need to be changed to check border width
-    var padding = EdgeInsets.only(left: 10, top: 3, right: 0, bottom: 3);
-    if (widget.model.border == "none") padding = EdgeInsets.only(left: 10, top: 4, right: 10, bottom: 4);
+    var padding = const EdgeInsets.only(left: 10, top: 3, right: 0, bottom: 3);
+    if (widget.model.border == "none") padding = const EdgeInsets.only(left: 10, top: 4, right: 10, bottom: 4);
 
     // border radius
     var radius = BorderRadius.circular(widget.model.radius.toDouble());
@@ -148,17 +148,17 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
       color: widget.model.getErrorHintColor(context, color: color),
       shadows: <Shadow>[
         Shadow(
-            offset: Offset(0.0, 0.5),
+            offset: const Offset(0.0, 0.5),
             blurRadius: 2.0,
             color: widget.model.color ?? Colors.transparent
         ),
         Shadow(
-            offset: Offset(0.0, 0.5),
+            offset: const Offset(0.0, 0.5),
             blurRadius: 2.0,
             color: widget.model.color ?? Colors.transparent
         ),
         Shadow(
-            offset: Offset(0.0, 0.5),
+            offset: const Offset(0.0, 0.5),
             blurRadius: 2.0,
             color: widget.model.color ?? Colors.transparent
         ),
@@ -171,7 +171,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
   {
     if (widget.model.icon == null) return null;
     return Padding(
-        padding: EdgeInsets.only(
+        padding: const EdgeInsets.only(
             right: 10,
             left: 10,
             bottom: 0),
@@ -191,7 +191,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
       paddingBottom = widget.model.paddingBottom ?? 14;
     }
     var padding = EdgeInsets.only(left: paddingLeft, top: paddingTop, right: paddingRight, bottom: paddingBottom);
-    if (widget.model.dense == true) padding = EdgeInsets.only(left: 6, top: 0, right: 6, bottom: 0);
+    if (widget.model.dense == true) padding = const EdgeInsets.only(left: 6, top: 0, right: 6, bottom: 0);
 
     return padding;
   }
@@ -231,8 +231,8 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
 
       //Icon Attributes
       prefixIcon: _getPrefixIcon(),
-      prefixIconConstraints: BoxConstraints(maxHeight: 24),
-      suffixIcon: Icon(Icons.arrow_drop_down, size: 25),
+      prefixIconConstraints: const BoxConstraints(maxHeight: 24),
+      suffixIcon: const Icon(Icons.arrow_drop_down, size: 25),
 
       //border attributes
       border: _getBorder(borderColor, null),
@@ -255,7 +255,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
       return OutlineInputBorder(
         borderRadius:
         BorderRadius.all(Radius.circular(widget.model.radius)),
-        borderSide: BorderSide(
+        borderSide: const BorderSide(
             color: Colors.transparent,
             width: 2),
       );
@@ -263,7 +263,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     else if (widget.model.border == "bottom" ||
         widget.model.border == "underline"){
       return UnderlineInputBorder(
-        borderRadius: BorderRadius.all(
+        borderRadius: const BorderRadius.all(
             Radius.circular(0)),
         borderSide: BorderSide(
             color: widget.model.editable ? mainColor : secondaryColor,
@@ -373,7 +373,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // set the controller text
     setControllerText(widget.model.selectedOption?.label);
@@ -397,7 +397,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     if (busy != null) view = Stack(children: [view, Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)]);
 
     // dense
-    if (widget.model.dense) view = Padding(padding: EdgeInsets.all(4), child: view);
+    if (widget.model.dense) view = Padding(padding: const EdgeInsets.all(4), child: view);
 
     // get the model constraints
     var modelConstraints = widget.model.constraints;

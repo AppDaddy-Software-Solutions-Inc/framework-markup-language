@@ -385,7 +385,7 @@ class ModalViewState extends WidgetState<ModalView>
     Color c2 = t.primary;
     Color c3 = widget.model.borderColor;
 
-    var divider = Container(width: headerIconDividerSize, height:1);
+    var divider = SizedBox(width: headerIconDividerSize, height:1);
 
     // window is maximized?
     bool isMaximized = atMaxHeight && atMaxWidth;
@@ -428,7 +428,7 @@ class ModalViewState extends WidgetState<ModalView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // compute size
     if (width == null || height == null)
@@ -473,19 +473,19 @@ class ModalViewState extends WidgetState<ModalView>
     // Non-Minimized View
     if (!minimized)
     {
-      Widget resize        = Icon(Icons.apps, size: 24, color: Colors.transparent);
-      Widget resizeableBR  = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpLeftDownRight, child: resize), onPanUpdate: onResizeBR, onTapDown: onBringToFront);
-      Widget resizeableBL  = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpRightDownLeft, child: resize), onPanUpdate: onResizeBL, onTapDown: onBringToFront);
-      Widget resizeableTL  = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpLeftDownRight, child: resize), onPanUpdate: onResizeTL, onTapDown: onBringToFront);
-      Widget resizeableTR  = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpRightDownLeft, child: resize), onPanUpdate: onResizeTR, onTapDown: onBringToFront);
+      Widget resize        = const Icon(Icons.apps, size: 24, color: Colors.transparent);
+      Widget resizeableBR  = (widget.model.resizeable == false) ? Container() : GestureDetector(onPanUpdate: onResizeBR, onTapDown: onBringToFront, child: MouseRegion(cursor: SystemMouseCursors.resizeUpLeftDownRight, child: resize));
+      Widget resizeableBL  = (widget.model.resizeable == false) ? Container() : GestureDetector(onPanUpdate: onResizeBL, onTapDown: onBringToFront, child: MouseRegion(cursor: SystemMouseCursors.resizeUpRightDownLeft, child: resize));
+      Widget resizeableTL  = (widget.model.resizeable == false) ? Container() : GestureDetector(onPanUpdate: onResizeTL, onTapDown: onBringToFront, child: MouseRegion(cursor: SystemMouseCursors.resizeUpLeftDownRight, child: resize));
+      Widget resizeableTR  = (widget.model.resizeable == false) ? Container() : GestureDetector(onPanUpdate: onResizeTR, onTapDown: onBringToFront, child: MouseRegion(cursor: SystemMouseCursors.resizeUpRightDownLeft, child: resize));
 
-      Widget resize2       = Container(width: FmlEngine.isMobile ? 34 : 24, height: height);
-      Widget resizeableL   = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: resize2), onPanUpdate: onResizeL, onTapDown: onBringToFront);
-      Widget resizeableR   = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: resize2), onPanUpdate: onResizeR, onTapDown: onBringToFront);
+      Widget resize2       = SizedBox(width: FmlEngine.isMobile ? 34 : 24, height: height);
+      Widget resizeableL   = (widget.model.resizeable == false) ? Container() : GestureDetector(onPanUpdate: onResizeL, onTapDown: onBringToFront, child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: resize2));
+      Widget resizeableR   = (widget.model.resizeable == false) ? Container() : GestureDetector(onPanUpdate: onResizeR, onTapDown: onBringToFront, child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: resize2));
 
-      Widget resize3       = Container(width: width, height: FmlEngine.isMobile ? 34 : 24);
-      Widget resizeableT   = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown, child: resize3), onPanUpdate: onResizeT, onTapDown: onBringToFront);
-      Widget resizeableB   = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown, child: resize3), onPanUpdate: onResizeB, onTapDown: onBringToFront);
+      Widget resize3       = SizedBox(width: width, height: FmlEngine.isMobile ? 34 : 24);
+      Widget resizeableT   = (widget.model.resizeable == false) ? Container() : GestureDetector(onPanUpdate: onResizeT, onTapDown: onBringToFront, child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown, child: resize3));
+      Widget resizeableB   = (widget.model.resizeable == false) ? Container() : GestureDetector(onPanUpdate: onResizeB, onTapDown: onBringToFront, child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown, child: resize3));
 
       // Positioned
       dx ??= (maxWidth / 2)  - ((width!  + (padding * 2)) / 2);
@@ -511,22 +511,22 @@ class ModalViewState extends WidgetState<ModalView>
       // View
       Widget content = UnconstrainedBox(child: Container(color: Colors.transparent, height: height! + (padding * 2) + headerHeight, width: width! + (padding * 2),
           child: Stack(children: [
-            Positioned(child: header, top: padding, left: padding),
-            Positioned(child: frame,   top: headerHeight + padding, left: padding),
-            Positioned(child: resizeableL, top: 0, left: 0),
-            Positioned(child: resizeableR, top: 0, right: 0),
-            Positioned(child: resizeableT, top: 0, left: 0),
-            Positioned(child: resizeableB, bottom: 0, left: 0),
-            Positioned(child: resizeableTL, top: 0, left: 0),
-            Positioned(child: resizeableBL, bottom: 0, left: 0),
-            Positioned(child: resizeableBR, bottom: 0, right: 0),
-            Positioned(child: resizeableTR, top: 0, right: 0),
+            Positioned(top: padding, left: padding, child: header),
+            Positioned(top: headerHeight + padding, left: padding, child: frame),
+            Positioned(top: 0, left: 0, child: resizeableL),
+            Positioned(top: 0, right: 0, child: resizeableR),
+            Positioned(top: 0, left: 0, child: resizeableT),
+            Positioned(bottom: 0, left: 0, child: resizeableB),
+            Positioned(top: 0, left: 0, child: resizeableTL),
+            Positioned(bottom: 0, left: 0, child: resizeableBL),
+            Positioned(bottom: 0, right: 0, child: resizeableBR),
+            Positioned(top: 0, right: 0, child: resizeableTR),
           ])));
 
       // Remove from Park
       if (manager != null) manager.model.unpark(widget);
 
-      Widget curtain = GestureDetector(child: content, onDoubleTap: onRestoreTo, onTapDown: onBringToFront, onPanStart: (_) => onBringToFront(null), onPanUpdate: onDrag, onPanEnd: onDragEnd, behavior: HitTestBehavior.deferToChild);
+      Widget curtain = GestureDetector(onDoubleTap: onRestoreTo, onTapDown: onBringToFront, onPanStart: (_) => onBringToFront(null), onPanUpdate: onDrag, onPanEnd: onDragEnd, behavior: HitTestBehavior.deferToChild, child: content);
 
       // Return View
       return Positioned(top: dy, left: dx, child: curtain);
@@ -540,8 +540,8 @@ class ModalViewState extends WidgetState<ModalView>
       if (manager != null) slot = manager.model.park(widget);
 
       // Build View
-      Widget scaled  = Card(margin: EdgeInsets.all(1), child: SizedBox(width: 100, height: 50, child: Padding(child: FittedBox(child: body), padding:EdgeInsets.all(5))), elevation: 5, color: t.secondary.withOpacity(0.5), borderOnForeground: false, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)), side: BorderSide(width: 2, color: t.primary)));
-      Widget curtain = GestureDetector(onTap: onRestore, child: MouseRegion(cursor: SystemMouseCursors.click, child: SizedBox(width: 100, height: 50)));
+      Widget scaled  = Card(margin: const EdgeInsets.all(1), elevation: 5, color: t.secondary.withOpacity(0.5), borderOnForeground: false, shape: RoundedRectangleBorder(borderRadius: const BorderRadius.all(Radius.circular(4.0)), side: BorderSide(width: 2, color: t.primary)), child: SizedBox(width: 100, height: 50, child: Padding(padding:const EdgeInsets.all(5), child: FittedBox(child: body))));
+      Widget curtain = GestureDetector(onTap: onRestore, child: const MouseRegion(cursor: SystemMouseCursors.click, child: SizedBox(width: 100, height: 50)));
       Widget view    = Stack(children: [scaled, curtain]);
 
       // Return View

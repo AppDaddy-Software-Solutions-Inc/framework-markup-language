@@ -15,7 +15,7 @@ class ButtonView extends StatefulWidget implements IWidgetView
   final ButtonModel model;
   final Widget? child;
 
-  ButtonView(this.model, {this.child});
+  const ButtonView(this.model, {super.key, this.child});
 
   @override
   State<ButtonView> createState() => _ButtonViewState();
@@ -121,7 +121,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // build the body
     Widget body = BoxView(widget.model.getContentModel());

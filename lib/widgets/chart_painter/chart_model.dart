@@ -258,5 +258,5 @@ class ChartPainterModel extends BoxModel
   }
 
   @override
-  Widget getView({Key? key})  => Offstage();
+  Widget getView({Key? key})  => const Offstage();
 }

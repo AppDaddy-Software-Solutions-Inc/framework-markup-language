@@ -25,7 +25,7 @@ class _SpanViewState extends WidgetState<SpanView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // var style = widget.model.style;
     var decoration = widget.model.decoration;

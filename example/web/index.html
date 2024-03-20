@@ -129,12 +129,12 @@
     </p>
 
     <script>
+
         // Set Flutter Renderer
         // auto      - automatically chooses which renderer to use. This option chooses the HTML renderer when the app is running in a mobile browser, and CanvasKit renderer when the app is running in a desktop browser.
         // html      - always use the HTML renderer. Uses a combination of HTML elements, CSS, Canvas elements, and SVG elements. This renderer has a smaller download size.
         // canvaskit - always use the CanvasKit renderer. This renderer is fully consistent with Flutter mobile and desktop, has faster performance with higher widget density, but adds about 2MB in download size.
-        
-        let renderer = "canvaskit";
+        let renderer = "auto";
         console.log("Rendering with " + renderer);
 
         // load main.dart.js

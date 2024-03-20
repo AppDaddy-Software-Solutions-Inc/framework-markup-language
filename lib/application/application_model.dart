@@ -20,7 +20,7 @@ import 'package:provider/provider.dart';
 import 'package:fml/theme/theme.dart';
 
 class ApplicationModel extends WidgetModel {
-  static final String myId = "APPLICATION";
+  static const String myId = "APPLICATION";
 
   static String tableName = "APP";
 

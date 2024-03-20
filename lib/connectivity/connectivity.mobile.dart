@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:fml/log/manager.dart';
 
 class Internet

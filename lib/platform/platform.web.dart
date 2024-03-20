@@ -45,7 +45,6 @@ class Platform
       window.document.getElementById("logo")!.style.visibility = "hidden";
     }
     catch(e){
-      print(e.toString());
       Log().debug('$e');
     }
   }
@@ -208,7 +207,7 @@ class Platform
       'from': 'fml',
       'to': 'js'
     };
-    final jsonEncoder = JsonEncoder();
+    const jsonEncoder = JsonEncoder();
     final json = jsonEncoder.convert(data);
     context.callMethod('postMessage', [json, '*']);
   }

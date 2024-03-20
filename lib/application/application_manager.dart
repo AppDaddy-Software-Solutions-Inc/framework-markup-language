@@ -19,7 +19,7 @@ if (dart.library.html) 'package:fml/platform/platform.web.dart';
 class ApplicationManager extends StatefulWidget
 {
   final Widget? child;
-  ApplicationManager({super.key, this.child});
+  const ApplicationManager({super.key, this.child});
   @override
   State<ApplicationManager> createState() => _ApplicationManagerState();
 }

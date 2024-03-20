@@ -11,7 +11,7 @@ class SliderView extends StatefulWidget implements IWidgetView
   @override
   final SliderModel model;
   final dynamic onChangeCallback;
-  SliderView(this.model, {this.onChangeCallback});
+  const SliderView(this.model, {super.key, this.onChangeCallback});
 
   @override
   State<SliderView> createState() => _SliderViewState();
@@ -23,7 +23,7 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     var min   = toDouble(widget.model.minimum) ?? 0;
     var max   = toDouble(widget.model.maximum) ?? 0;
@@ -121,7 +121,7 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
       await widget.model.answer(value);
 
       // fire the onChange event
-      await widget.model.onChange(context);
+      await widget.model.onChange(mounted ? context : null);
     }
   }
 
@@ -139,27 +139,25 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
 
       /* Fire on Change Event */
       await widget.model.answer('${values.start},${values.end}', range: true);
-      if ('${values.start},${values.end}' != old) await widget.model.onChange(context);
+      if ('${values.start},${values.end}' != old)
+      {
+        await widget.model.onChange(mounted ? context : null);
+      }
     }
 
-    ////////////////////////
-    /* End Value Changed? */
-    ////////////////////////
+    // End Value Changed?
     else if (toDouble(value2) != values.end) {
-      ///////////////////////////
       /* Retain Rollback Value */
-      ///////////////////////////
       dynamic old = '$value1,$value2';
 
-      ////////////////
-      /* Set Answer */
-      ////////////////
+      // Set Answer
       await widget.model.answer('${values.start},${values.end}', range: true);
 
-      //////////////////////////
-      /* Fire on Change Event */
-      //////////////////////////
-      if ('${values.start},${values.end}' != old) await widget.model.onChange(context);
+      // Fire on Change Event
+      if ('${values.start},${values.end}' != old)
+      {
+        await widget.model.onChange(mounted ? context : null);
+      }
     }
   }
 }

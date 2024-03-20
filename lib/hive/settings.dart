@@ -3,7 +3,7 @@ import 'package:fml/hive/database.dart';
 
 class Settings
 {
-  static final String tableName = "SETTINGS";
+  static const String tableName = "SETTINGS";
 
   static final Settings _singleton = Settings._initialize();
   Settings._initialize();

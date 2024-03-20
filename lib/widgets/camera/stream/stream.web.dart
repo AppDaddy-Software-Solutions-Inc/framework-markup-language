@@ -195,7 +195,7 @@ class ViewState extends WidgetState<View>
     /***************************/
     /* Schedule Next Detection */
     /***************************/
-    detectionTimer = Timer(Duration(milliseconds: 50), performDetection);
+    detectionTimer = Timer(const Duration(milliseconds: 50), performDetection);
   }
 
   bool doneonce = false;

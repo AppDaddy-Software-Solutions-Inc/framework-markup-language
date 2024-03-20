@@ -47,8 +47,8 @@ class _MapViewState extends WidgetState<MapView>
     /////////////////////
     /* Position Camera */
     /////////////////////
-    Future.delayed(Duration(milliseconds: 500), _showAll);
-    WidgetsBinding.instance.addPostFrameCallback((_) => Future.delayed(Duration(seconds: 1), () => busy = null));
+    Future.delayed(const Duration(milliseconds: 500), _showAll);
+    WidgetsBinding.instance.addPostFrameCallback((_) => Future.delayed(const Duration(seconds: 1), () => busy = null));
   }
 
   final Completer<GoogleMapController> _controller = Completer();
@@ -88,7 +88,7 @@ class _MapViewState extends WidgetState<MapView>
     widget.model.busy = false;
 
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     ///////////////////////
     /* Build the Markers */
@@ -109,17 +109,16 @@ class _MapViewState extends WidgetState<MapView>
     //////////////////
     /* Reset Button */
     //////////////////
-   var reset = FloatingActionButton.extended(onPressed: _showAll, label: Text(phrase.reset), icon: Icon(Icons.zoom_out_map_outlined));
+   var reset = FloatingActionButton.extended(onPressed: _showAll, label: Text(phrase.reset), icon: const Icon(Icons.zoom_out_map_outlined));
 
     //////////
     /* View */
     //////////
-    dynamic view = Container(
-        child: GestureDetector(behavior: HitTestBehavior.opaque, onDoubleTap: () => true, onVerticalDragCancel: () => true, onVerticalDragUpdate: (_) => true, onVerticalDragStart: (_) => true, onVerticalDragDown: (_) => true, onVerticalDragEnd: (_) => true, onHorizontalDragCancel: () => true, onHorizontalDragUpdate: (_) => true, onHorizontalDragStart: (_) => true, onHorizontalDragDown: (_) => true, onHorizontalDragEnd: (_) => true, // block scroll events while writing
-            child: Listener(behavior: HitTestBehavior.opaque, onPointerSignal: (ps) => true,
-                child: SizedBox(width: width, height: height,
-                    child: Stack(fit: StackFit.expand,
-                        children: [map!, Positioned(top: 10, right: 10, child: reset), busy!])))));
+    dynamic view = GestureDetector(behavior: HitTestBehavior.opaque, onDoubleTap: () => true, onVerticalDragCancel: () => true, onVerticalDragUpdate: (_) => true, onVerticalDragStart: (_) => true, onVerticalDragDown: (_) => true, onVerticalDragEnd: (_) => true, onHorizontalDragCancel: () => true, onHorizontalDragUpdate: (_) => true, onHorizontalDragStart: (_) => true, onHorizontalDragDown: (_) => true, onHorizontalDragEnd: (_) => true, // block scroll events while writing
+        child: Listener(behavior: HitTestBehavior.opaque, onPointerSignal: (ps) => true,
+            child: SizedBox(width: width, height: height,
+                child: Stack(fit: StackFit.expand,
+                    children: [map!, Positioned(top: 10, right: 10, child: reset), busy!]))));
 
     // apply user defined constraints
     return applyConstraints(view, widget.model.constraints);
@@ -148,7 +147,7 @@ class _MapViewState extends WidgetState<MapView>
           {
             _controller.complete(controller);
           },
-          initialCameraPosition: CameraPosition(target: LatLng(44.4749157,-76.1394201), bearing: 192.8334901395799, tilt: 59.440717697143555, zoom: widget.model.zoom),
+          initialCameraPosition: CameraPosition(target: const LatLng(44.4749157,-76.1394201), bearing: 192.8334901395799, tilt: 59.440717697143555, zoom: widget.model.zoom),
           compassEnabled: false,
           mapToolbarEnabled: true,
           cameraTargetBounds: CameraTargetBounds.unbounded,

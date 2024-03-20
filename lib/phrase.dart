@@ -9,8 +9,8 @@ class Phrases
   }
   Phrases._init();
 
-  static final String english = 'EN';
-  static final String french  = 'FR';
+  static const String english = 'EN';
+  static const String french  = 'FR';
   List<String> languages = [english, french];
 
   String _language = english;

@@ -225,7 +225,7 @@ class ModalModel extends BoxModel
         // to be a positioned widget and the layout is "stack" (see positioned_view.dart)
         if (view is! PositionedView)
         {
-          view = LayoutBoxChildData(child: view!, model: model);
+          view = LayoutBoxChildData(model: model, child: view!);
         }
 
         if (view != null) views.add(view);
@@ -238,7 +238,7 @@ class ModalModel extends BoxModel
       var view = child;
       if (view is! PositionedView)
       {
-         view = LayoutBoxChildData(child: child!, model: this);
+         view = LayoutBoxChildData(model: this, child: child!);
       }
       views.add(view!);
     }

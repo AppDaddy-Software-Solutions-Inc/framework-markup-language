@@ -592,7 +592,7 @@ class TableModel extends BoxModel implements IForm
     }
     catch(e)
     {
-      print (e);
+      Log().exception(e);
     }
     return true;
   }
@@ -610,7 +610,7 @@ class TableModel extends BoxModel implements IForm
     }
     catch(e)
     {
-      print (e);
+      Log().exception(e);
     }
     return true;
   }
@@ -961,7 +961,7 @@ class TableModel extends BoxModel implements IForm
     }
     catch(e)
     {
-      print (e);
+      Log().exception(e);
     }
   }
 
@@ -977,7 +977,7 @@ class TableModel extends BoxModel implements IForm
     }
     catch(e)
     {
-      print (e);
+      Log().exception(e);
     }
   }
 
@@ -1024,7 +1024,7 @@ class TableModel extends BoxModel implements IForm
     }
     catch(e)
     {
-      print (e);
+      Log().exception(e);
     }
     return true;
   }
@@ -1068,7 +1068,7 @@ class TableModel extends BoxModel implements IForm
     }
     catch(e)
     {
-      print (e);
+      Log().exception(e);
     }
     return true;
   }
@@ -1089,7 +1089,7 @@ class TableModel extends BoxModel implements IForm
     }
     catch(e)
     {
-      print (e);
+      Log().exception(e);
     }
     return true;
   }

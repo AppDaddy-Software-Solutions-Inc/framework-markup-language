@@ -75,7 +75,7 @@ class _RadioViewState extends WidgetState<RadioView>
     // pad icon
     button = Padding(
         padding:
-        EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 3),
+        const EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 3),
         child: button);
 
     // add label
@@ -121,11 +121,11 @@ class _RadioViewState extends WidgetState<RadioView>
     if (widget.model.layout == 'row' && widget.model.wrap)
     {
         return Wrap(
-            children: options,
             direction: Axis.horizontal,
             alignment: alignment.mainWrapAlignment,
             runAlignment: alignment.mainWrapAlignment,
-            crossAxisAlignment: alignment.crossWrapAlignment);
+            crossAxisAlignment: alignment.crossWrapAlignment,
+            children: options);
     }
 
     // row
@@ -142,11 +142,11 @@ class _RadioViewState extends WidgetState<RadioView>
     if (widget.model.wrap)
     {
       return Wrap(
-          children: options,
           direction: Axis.vertical,
           alignment: alignment.mainWrapAlignment,
           runAlignment: alignment.mainWrapAlignment,
-          crossAxisAlignment: alignment.crossWrapAlignment);
+          crossAxisAlignment: alignment.crossWrapAlignment,
+          children: options);
     }
 
     // default - column
@@ -161,7 +161,7 @@ class _RadioViewState extends WidgetState<RadioView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
    // View 
     Widget view = buildView();

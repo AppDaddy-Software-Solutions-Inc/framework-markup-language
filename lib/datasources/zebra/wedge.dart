@@ -28,8 +28,8 @@ class Reader
   {
     try
     {
-      methodChannel ??= MethodChannel('dev.fml.zebra/command');
-      scanChannel ??= EventChannel('dev.fml.zebra/scan');
+      methodChannel ??= const MethodChannel('dev.fml.zebra/command');
+      scanChannel ??= const EventChannel('dev.fml.zebra/scan');
 
       scanChannel!.receiveBroadcastStream().listen(_onEvent, onError: _onError);
       _send("com.symbol.datawedge.api.CREATEPROFILE", "dev.fml.zebra");

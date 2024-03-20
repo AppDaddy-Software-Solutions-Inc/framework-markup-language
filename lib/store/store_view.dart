@@ -20,12 +20,12 @@ import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-final bool enableTestPlayground = false;
+const bool enableTestPlayground = false;
 
 class StoreView extends StatefulWidget
 {
   final MenuModel model = MenuModel(null, 'Applications');
-  StoreView();
+  StoreView({super.key});
 
   @override
   State createState() => _ViewState();
@@ -104,12 +104,12 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
 
         var ttl  = Text(phrase.connectAnApplication, style: style);
         var busy = BusyView(BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, size: 14));
-        var pad  = Padding(padding: EdgeInsets.only(left: 20));
+        var pad  = const Padding(padding: EdgeInsets.only(left: 20));
         var title = Row(children: [ttl, pad, busy]);
 
         return AlertDialog(title: title,
-          content: Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: AppForm()),
-          contentPadding: EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 2.0),
+          content: const Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: AppForm()),
+          contentPadding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 2.0),
           insetPadding: EdgeInsets.zero,
         );
       });
@@ -126,11 +126,11 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
       builder: (BuildContext context) => addAppDialog(context));
   }
 
-  void removeApp(ApplicationModel app) async
+  void removeApp(ApplicationModel app, NavigatorState navigator) async
   {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Removing ${app.title}'), duration: Duration(milliseconds: 1000)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Removing ${app.title}'), duration: const Duration(milliseconds: 1000)));
       await Store().delete(app);
-      Navigator.of(context).pop();
+      navigator.pop();
   }
 
   Widget? _getIcon(ApplicationModel app)
@@ -146,11 +146,11 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     // svg image?
     if (image.mimeType == "image/svg+xml")
     {
-      return Padding(padding: EdgeInsets.all(10), child: SvgPicture.memory(image.contentAsBytes(), width: 48, height: 48));
+      return Padding(padding: const EdgeInsets.all(10), child: SvgPicture.memory(image.contentAsBytes(), width: 48, height: 48));
     }
     else
     {
-      return Padding(padding: EdgeInsets.all(10), child: Image.memory(image.contentAsBytes(), width: 48, height: 48, fit: null));
+      return Padding(padding: const EdgeInsets.all(10), child: Image.memory(image.contentAsBytes(), width: 48, height: 48, fit: null));
     }
   }
 
@@ -165,20 +165,20 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     Widget? appIcon = _getIcon(app);
 
     style = TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 10);
-    var appUrl = Padding(padding: EdgeInsets.only(bottom: 20), child: Text('${app.url}', style: style));
+    var appUrl = Padding(padding: const EdgeInsets.only(bottom: 20), child: Text(app.url, style: style));
 
     style = TextStyle(color: Theme.of(context).colorScheme.primary);
     var cancel = TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(phrase.cancel, style: style));
-    var remove = TextButton(onPressed: () => removeApp(app), child: Text(phrase.remove, style: style));
-    var buttons = Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.center, children: [cancel,Padding(padding: EdgeInsets.only(right: 20)),remove]);
+    var remove = TextButton(onPressed: () => removeApp(app, Navigator.of(context)), child: Text(phrase.remove, style: style));
+    var buttons = Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.center, children: [cancel,const Padding(padding: EdgeInsets.only(right: 20)),remove]);
 
-    var view = Padding(padding: EdgeInsets.all(10), child: Column(children: [appIcon ?? Offstage(), appTitle, appUrl]));
+    var view = Padding(padding: const EdgeInsets.all(10), child: Column(children: [appIcon ?? const Offstage(), appTitle, appUrl]));
 
-    var box = DecoratedBox(decoration: BoxDecoration(border: Border.all(color: Theme.of(context).colorScheme.onBackground), borderRadius: BorderRadius.all(Radius.circular(10))), child: view);
+    var box = DecoratedBox(decoration: BoxDecoration(border: Border.all(color: Theme.of(context).colorScheme.onBackground), borderRadius: const BorderRadius.all(Radius.circular(10))), child: view);
 
-    var content = Container(child: Column(mainAxisSize: MainAxisSize.min, children: [Padding(padding: EdgeInsets.only(bottom:10)), box, Padding(padding: EdgeInsets.only(bottom:25)), buttons, Padding(padding: EdgeInsets.only(bottom:15))]));
+    var content = Column(mainAxisSize: MainAxisSize.min, children: [const Padding(padding: EdgeInsets.only(bottom:10)), box, const Padding(padding: EdgeInsets.only(bottom:25)), buttons, const Padding(padding: EdgeInsets.only(bottom:15))]);
 
-    return AlertDialog(title: title, content: content, contentPadding: EdgeInsets.fromLTRB(4.0, 16.0, 4.0, 2.0), insetPadding: EdgeInsets.zero);
+    return AlertDialog(title: title, content: content, contentPadding: const EdgeInsets.fromLTRB(4.0, 16.0, 4.0, 2.0), insetPadding: EdgeInsets.zero);
   }
 
   Future<void> showRemoveAppDialog(ApplicationModel app) async
@@ -217,7 +217,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
 
     var addButton = FloatingActionButton.extended(
         label: Text(phrase.addApp),
-        icon: Icon(Icons.add),
+        icon: const Icon(Icons.add),
         onPressed: () => showAddAppDialog(),
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
@@ -247,6 +247,6 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     var text = Column(mainAxisSize: MainAxisSize.min, children: [privacyButton,version]);
     var button = Store().busy ? busyButton : addButton;
 
-    return Scaffold(floatingActionButton: button, body: SafeArea(child: Stack(children: [Center(child: store), Positioned(child: text, left: 10, bottom: 10), busy])));
+    return Scaffold(floatingActionButton: button, body: SafeArea(child: Stack(children: [Center(child: store), Positioned(left: 10, bottom: 10, child: text), busy])));
   }
 }

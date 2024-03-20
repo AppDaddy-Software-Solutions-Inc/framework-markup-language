@@ -28,7 +28,6 @@ class HtmlSseChannel extends StreamChannelMixin implements SseChannel
     source.onOpen.listen((_) => _timer?.cancel());
     source.onError.listen((error)
     {
-      print('sse error');
       // By default the SSE client uses keep-alive.
       // Allow for a retry to connect before giving up.
       if (!(_timer?.isActive ?? false)) _timer = Timer(const Duration(seconds: 5), () => _closeWithError(error));
@@ -39,7 +38,6 @@ class HtmlSseChannel extends StreamChannelMixin implements SseChannel
 
   void _onMessage(Event message)
   {
-    print('sse message');
     var msg = (message as MessageEvent).data;
     _controller.add(msg);
   }
@@ -47,14 +45,12 @@ class HtmlSseChannel extends StreamChannelMixin implements SseChannel
   @override
   void close()
   {
-    print('sse closed');
     source.close();
     _controller.close();
   }
 
   void _closeWithError(Object error)
   {
-    print('sse closed with error');
     _controller.addError(error);
     close();
 

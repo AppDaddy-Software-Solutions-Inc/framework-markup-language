@@ -22,8 +22,8 @@ class SseTransformer implements StreamTransformer<List<int>, Event> {
       // single event. So we build events on the fly and broadcast the event as
       // soon as we encounter a double newline, then we start a new one.
       stream
-          .transform(Utf8Decoder())
-          .transform(LineSplitter())
+          .transform(const Utf8Decoder())
+          .transform(const LineSplitter())
           .listen((String line) {
         if (line.isEmpty) {
           // event is done

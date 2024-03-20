@@ -25,7 +25,7 @@ class ImageView extends StatefulWidget implements IWidgetView
   final ImageModel model;
 
   // this is just an empty pixel
-  static Uint8List placeholder = Base64Codec().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGP6LwkAAiABG+faPgsAAAAASUVORK5CYII=");
+  static Uint8List placeholder = const Base64Codec().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGP6LwkAAiABG+faPgsAAAAASUVORK5CYII=");
 
   ImageView(this.model) : super(key: ObjectKey(model));
 
@@ -53,14 +53,14 @@ class ImageView extends StatefulWidget implements IWidgetView
             return getImage(defaultImage, animate, defaultImage: null, fit: fit, width: width, height: height, filter: filter, fade: fade, fadeDuration: fadeDuration);
           }
         }
-        return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
+        return const Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
       }
 
       // error handler
       Widget errorHandler(BuildContext content, Object object, StackTrace? stacktrace)
       {
         Log().debug("Bad image url (${url?.substring(0,min(100,url.length))}. Error is $object", caller: "errorHandler");
-        if (defaultImage == null) return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
+        if (defaultImage == null) return const Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
         if (defaultImage.toLowerCase().trim() == 'none') return Container();
         return getImage(defaultImage, animate, defaultImage: null, fit: fit, width: width, height: height, filter: filter, fade: fade, fadeDuration: fadeDuration);
       }
@@ -191,7 +191,7 @@ class _ImageViewState extends WidgetState<ImageView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     String? url = widget.model.url;
     double? opacity = widget.model.opacity;

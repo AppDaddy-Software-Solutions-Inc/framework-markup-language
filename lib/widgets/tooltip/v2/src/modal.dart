@@ -55,7 +55,7 @@ class OverlayWithCutout extends StatelessWidget
   final Color color;
   final double opacity;
 
-  OverlayWithCutout(this.cutout, this.color, this.opacity);
+  const OverlayWithCutout(this.cutout, this.color, this.opacity, {super.key});
 
   @override
   Widget build(BuildContext context)

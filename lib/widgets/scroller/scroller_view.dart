@@ -85,7 +85,7 @@ class ScrollerViewState extends WidgetState<ScrollerView>
       {
         event.handled = true;
         Scrollable.ensureVisible(child.context,
-            duration: Duration(seconds: 1), alignment: 0.2);
+            duration: const Duration(seconds: 1), alignment: 0.2);
       }
     }
   }
@@ -132,7 +132,7 @@ class ScrollerViewState extends WidgetState<ScrollerView>
                   view,
                   ScrollShadow(controller, 'top', Axis.vertical, widget.model.shadowColor),
                   ScrollShadow(controller, 'bottom', Axis.vertical, widget.model.shadowColor),
-                  SizedBox.expand(),
+                  const SizedBox.expand(),
                 ]));
         break;
 
@@ -146,7 +146,7 @@ class ScrollerViewState extends WidgetState<ScrollerView>
               view,
               ScrollShadow(controller, 'top', Axis.horizontal, widget.model.shadowColor),
               ScrollShadow(controller, 'bottom', Axis.horizontal, widget.model.shadowColor),
-              SizedBox.expand(),
+              const SizedBox.expand(),
             ],
           ),
         );
@@ -167,22 +167,22 @@ class ScrollerViewState extends WidgetState<ScrollerView>
           onRefresh: () => widget.model.onPull(context),
           child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              child: child,
               scrollDirection: direction,
-              controller: controller));
+              controller: controller,
+              child: child));
     }
     else
     {
-      view = SingleChildScrollView(child: child, scrollDirection: direction, controller: controller);
+      view = SingleChildScrollView(scrollDirection: direction, controller: controller, child: child);
     }
 
     // add scroll bar
     if (widget.model.scrollbar)
     {
-      view = Container(child: Scrollbar(controller: controller, thumbVisibility: widget.model.scrollbar, child: view));
+      view = Scrollbar(controller: controller, thumbVisibility: widget.model.scrollbar, child: view);
       view = Listener(behavior: HitTestBehavior.translucent,
         onPointerSignal: (ps) {},
-        child: Stack(fit: StackFit.loose, children: [view, SizedBox.shrink()]));
+        child: Stack(fit: StackFit.loose, children: [view, const SizedBox.shrink()]));
     }
 
     // no scroll bar - add scroll shadow
@@ -215,7 +215,7 @@ class ScrollerViewState extends WidgetState<ScrollerView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // build the body
     var contents = BoxView(widget.model.getContentModel());

@@ -66,7 +66,7 @@ class TooltipView extends StatefulWidget implements IWidgetView
 
     // set tooltip content
     List<Widget> children = model.inflate();
-    content = children.length == 1 ? children[0] : Column(children: children, mainAxisSize: MainAxisSize.min);
+    content = children.length == 1 ? children[0] : Column(mainAxisSize: MainAxisSize.min, children: children);
   }
 
   @override
@@ -301,18 +301,18 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
           {
             if (timer != null) timer!.cancel();
             timer = Timer(Duration(milliseconds: widget.model.timeout > 0 ? widget.model.timeout : 250), () => hideOverlay());
-          },
-          child: widget.child, hitTestBehavior: HitTestBehavior.translucent);
+          }, hitTestBehavior: HitTestBehavior.translucent,
+          child: widget.child);
         break;
 
       // tap
       case OpenMethods.tap:
-        view = GestureDetector(onTap: () => overlayEntry == null ? showOverlay(context) : hideOverlay(), child: widget.child, behavior: HitTestBehavior.translucent);
+        view = GestureDetector(onTap: () => overlayEntry == null ? showOverlay(context) : hideOverlay(), behavior: HitTestBehavior.translucent, child: widget.child);
         break;
 
       // long tap
       case OpenMethods.longpress:
-        view = GestureDetector(onLongPress: () => overlayEntry == null ? showOverlay(context) : hideOverlay(), child: widget.child, behavior: HitTestBehavior.translucent);
+        view = GestureDetector(onLongPress: () => overlayEntry == null ? showOverlay(context) : hideOverlay(), behavior: HitTestBehavior.translucent, child: widget.child);
         break;
 
       // manual

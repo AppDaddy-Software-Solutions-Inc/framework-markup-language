@@ -104,25 +104,25 @@ class _BoxViewState extends WidgetState<BoxView>
               ? BorderSide(
               width: width,
               color: widget.model.borderColor ?? theme.colorScheme.onInverseSurface)
-              : BorderSide(width: 0, color: Colors.transparent),
+              : const BorderSide(width: 0, color: Colors.transparent),
           bottom: (widget.model.border == 'bottom' ||
               widget.model.border == 'vertical')
               ? BorderSide(
               width: width,
               color: widget.model.borderColor ?? theme.colorScheme.onInverseSurface)
-              : BorderSide(width: 0, color: Colors.transparent),
+              : const BorderSide(width: 0, color: Colors.transparent),
           left: (widget.model.border == 'left' ||
               widget.model.border == 'horizontal')
               ? BorderSide(
               width: width,
               color: widget.model.borderColor ?? theme.colorScheme.onInverseSurface)
-              : BorderSide(width: 0, color: Colors.transparent),
+              : const BorderSide(width: 0, color: Colors.transparent),
           right: (widget.model.border == 'right' ||
               widget.model.border == 'horizontal')
               ? BorderSide(
               width: width,
               color: widget.model.borderColor ?? theme.colorScheme.onInverseSurface)
-              : BorderSide(width: 0, color: Colors.transparent),
+              : const BorderSide(width: 0, color: Colors.transparent),
         );
       }
     }
@@ -171,7 +171,7 @@ class _BoxViewState extends WidgetState<BoxView>
     if (opacity == null) return view;
     if (opacity > 1) opacity = 1;
     if (opacity.isNegative) opacity = 0;
-    return Opacity(child: view, opacity: opacity);
+    return Opacity(opacity: opacity, child: view);
   }
 
   Widget _getFrostedView(Widget child, BorderRadius? radius)
@@ -212,7 +212,7 @@ class _BoxViewState extends WidgetState<BoxView>
     if (widget.model.paddingTop != null)
     {
       var inset = EdgeInsets.only(top: widget.model.paddingTop ?? 0, right: widget.model.paddingRight ?? 0, bottom: widget.model.paddingBottom ?? 0, left: widget.model.paddingLeft ?? 0);
-      view = Padding(child: view, padding: inset);
+      view = Padding(padding: inset, child: view);
     }
     return view;
   }
@@ -237,7 +237,7 @@ class _BoxViewState extends WidgetState<BoxView>
       double? heightFactor;
       if (!widget.model.expandVertically) heightFactor = 1;
 
-      view = Align(alignment: alignment, child: view, widthFactor: widthFactor, heightFactor: heightFactor);
+      view = Align(alignment: alignment, widthFactor: widthFactor, heightFactor: heightFactor, child: view);
     }
 
     if (decoration != null)
@@ -264,7 +264,7 @@ class _BoxViewState extends WidgetState<BoxView>
       var box = Container(child: view);
       return LabelledBorderContainer(box,lbl,decoration: BoxDecoration(border: border, borderRadius: radius));
     }
-    return Container(child: view, decoration: BoxDecoration(border: border, borderRadius: radius));
+    return Container(decoration: BoxDecoration(border: border, borderRadius: radius), child: view);
   }
 
   Widget _buildInnerContent(BoxConstraints constraints, WidgetAlignment alignment)
@@ -333,7 +333,7 @@ class _BoxViewState extends WidgetState<BoxView>
     theme = Theme.of(context);
 
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // set system sizing
     onLayout(constraints);

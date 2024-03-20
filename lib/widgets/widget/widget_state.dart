@@ -61,7 +61,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     if (model?.marginTop != null || model?.marginBottom != null || model?.marginRight != null || model?.marginLeft != null)
     {
       var inset = EdgeInsets.only(top: model?.marginTop ?? 0, right: model?.marginRight ?? 0, bottom: model?.marginBottom ?? 0, left: model?.marginLeft ?? 0);
-      view = Padding(child: view, padding: inset);
+      view = Padding(padding: inset, child: view);
     }
     return view;
   }
@@ -88,7 +88,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
         (constraints.maxHeight ?? double.infinity) < double.infinity)
     {
       var box = BoxConstraints(minWidth: constraints.minWidth ?? 0, maxWidth: constraints.maxWidth ?? double.infinity, minHeight: constraints.minHeight ?? 0, maxHeight: constraints.maxHeight ?? double.infinity);
-      view = ConstrainedBox(child: view, constraints: box);
+      view = ConstrainedBox(constraints: box, child: view);
     }
 
     // If a width is specified
@@ -96,7 +96,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     // width and allow existing vertical constraints
     if (constraints.width != null && constraints.height == null)
     {
-      view = UnconstrainedBox(child: SizedBox(child: view, width: constraints.width), constrainedAxis: Axis.vertical);
+      view = UnconstrainedBox(constrainedAxis: Axis.vertical, child: SizedBox(width: constraints.width, child: view));
     }
 
     // If a height is specified
@@ -104,7 +104,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     // height and allow existing horizontal constraints
     else if (constraints.width == null && constraints.height != null)
     {
-      view = UnconstrainedBox(child: SizedBox(child: view, height: constraints.height), constrainedAxis: Axis.horizontal);
+      view = UnconstrainedBox(constrainedAxis: Axis.horizontal, child: SizedBox(height: constraints.height, child: view));
     }
 
 
@@ -113,7 +113,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     // width and height
     else if (constraints.width != null && constraints.height != null)
     {
-      view = UnconstrainedBox(child: SizedBox(child: view, width: constraints.width, height: constraints.height));
+      view = UnconstrainedBox(child: SizedBox(width: constraints.width, height: constraints.height, child: view));
     }
 
     return view;

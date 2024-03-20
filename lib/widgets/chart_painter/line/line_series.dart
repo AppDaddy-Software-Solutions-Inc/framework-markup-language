@@ -158,8 +158,10 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
         x = toDate(x, format: format ?? 'yyyy/MM/dd')?.millisecondsSinceEpoch;
         //plot the point as a point object based on the desired function based on series and chart type.
         plot(this, data);
-      } catch (e) {
-        print('error formatting date to plot point');
+      }
+      catch (e)
+      {
+        Log().exception('error formatting date to plot point');
       }
     }
     dataList = null;

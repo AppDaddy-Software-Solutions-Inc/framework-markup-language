@@ -65,17 +65,17 @@ class _DraggableViewState extends WidgetState<DraggableView>
     var child = widget.view;
     if (width != null && height != null)
     {
-      child = ConstrainedBox(child: widget.view, constraints: BoxConstraints(maxWidth: width!, maxHeight: height!));
+      child = ConstrainedBox(constraints: BoxConstraints(maxWidth: width!, maxHeight: height!), child: widget.view);
     }
 
     // build the draggable
     var draggable = Draggable(
-        child: widget.view,
         feedback: child,
         data: widget.model,
         onDragCompleted: onDragCompleted,
         onDragStarted: onDragStarted,
-        onDragEnd: onDragEnd);
+        onDragEnd: onDragEnd,
+        child: widget.view);
 
     var view = MouseRegion(cursor: cursor, child: draggable);
 
@@ -135,13 +135,13 @@ class _DraggableViewState extends WidgetState<DraggableView>
       if (event.position.dy < topY + detectedRange)
       {
         scroller.scrollUp(pixels);
-        autoscroll = Timer.periodic(Duration(milliseconds: 100), (_) => scroller.scrollUp(detectedRange));
+        autoscroll = Timer.periodic(const Duration(milliseconds: 100), (_) => scroller.scrollUp(detectedRange));
       }
 
       if (event.position.dy > bottomY - detectedRange)
       {
         scroller.scrollDown(pixels);
-        autoscroll = Timer.periodic(Duration(milliseconds: 100), (_) => scroller.scrollDown(detectedRange));
+        autoscroll = Timer.periodic(const Duration(milliseconds: 100), (_) => scroller.scrollDown(detectedRange));
       }
     }
   }

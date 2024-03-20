@@ -33,9 +33,9 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
     ColorScheme t = Theme.of(context).colorScheme;
 
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
-    Widget menuItem = SizedBox.shrink();
+    Widget menuItem = const SizedBox.shrink();
     double borderRadius = widget.model.radius ?? 8.0;
     var shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius));
 
@@ -47,7 +47,8 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
       Widget child = children.length == 1
           ? children[0]
           : Column(
-              children: children, mainAxisAlignment: MainAxisAlignment.center);
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: children);
 
       Widget button = MaterialButton(
           onPressed: onTap,
@@ -71,11 +72,11 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
             width: FmlEngine.isMobile
                 ? 160
                 : 250, // These constraints are more strict than a Material Button's
-            height: FmlEngine.isMobile ? 160 : 250,
-            child: button, // button
+            height: FmlEngine.isMobile ? 160 : 250, // button
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
             ),
+            child: button,
           ));
       menuItem = customButton;
     }
@@ -149,26 +150,26 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
           highlightElevation: 0,
           minWidth: FmlEngine.isMobile ? 160 : 250,
           height: FmlEngine.isMobile ? 160 : 250,
-          child: Padding(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: btn,
-                  mainAxisSize: MainAxisSize.max),
-              padding: EdgeInsets.all(FmlEngine.isMobile ? 0 : 10)),
           color: backgroundImage != null
               ? Colors.white.withOpacity(0.4)
               : t.surface,
           hoverColor: backgroundImage != null
               ? Colors.white.withOpacity(0.2)
               : t.onSecondary,
-          animationDuration: Duration(milliseconds: 200),
+          animationDuration: const Duration(milliseconds: 200),
           onPressed: widget.model.enabled
               ? (widget.model.onTap ?? onTap)
               : null,
           onLongPress: widget.model.enabled
               ? (widget.model.onLongPress)
               : null,
-          shape: shape);
+          shape: shape,
+          child: Padding(
+              padding: EdgeInsets.all(FmlEngine.isMobile ? 0 : 10),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: btn)));
 
       if (widget.model.enabled) {
         button = MouseRegion(cursor: SystemMouseCursors.click, child: button);
@@ -177,12 +178,11 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
       Widget staticButton = Padding(
           padding: EdgeInsets.all(FmlEngine.isMobile ? 0 : 10),
           child: AnimatedContainer(
-            duration: Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 200),
             width: FmlEngine.isMobile
                 ? 160
                 : 250, // These constraints are more strict than a Material Button's
-            height: FmlEngine.isMobile ? 160 : 250,
-            child: button, // button
+            height: FmlEngine.isMobile ? 160 : 250, // button
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
                 // color: Colors.grey[300],
@@ -193,17 +193,18 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
                           color: Theme.of(context).brightness == Brightness.dark
                               ? t.shadow.withOpacity(0.75)
                               : t.shadow.withOpacity(0.25),
-                          offset: Offset(4, 4),
+                          offset: const Offset(4, 4),
                           blurRadius: 10,
                           spreadRadius: 1,
                         ),
                         BoxShadow(
                           color: t.onSecondary.withOpacity(0.75),
-                          offset: Offset(-2, -2),
+                          offset: const Offset(-2, -2),
                           blurRadius: 10,
                           spreadRadius: 1,
                         ),
                       ]),
+            child: button,
           ));
 
       menuItem = FmlEngine.isMobile

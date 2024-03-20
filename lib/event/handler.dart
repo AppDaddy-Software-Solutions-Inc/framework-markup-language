@@ -44,7 +44,7 @@ class EventHandler extends Eval
 
   final WidgetModel model;
 
-  static final ExpressionEvaluator evaluator = const ExpressionEvaluator();
+  static const ExpressionEvaluator evaluator = ExpressionEvaluator();
   bool initialized = false;
 
   /// The String value mapping of all the functions
@@ -258,7 +258,7 @@ class EventHandler extends Eval
 
   static String formatExpression(String expression)
   {
-    final placeholder = "[[;]]";
+    const placeholder = "[[;]]";
 
     // replace unquotes ";" characters with special placeholder
     expression = expression.replaceAll(nonQuotedSemiColons, placeholder);

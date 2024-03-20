@@ -12,7 +12,7 @@ import 'package:fml/widgets/widget/widget_model.dart';
 
 class UserModel extends WidgetModel
 {
-  static final String myId = "USER";
+  static const String myId = "USER";
 
   late Future<bool> initialized;
 

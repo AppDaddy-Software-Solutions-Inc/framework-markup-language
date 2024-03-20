@@ -186,11 +186,11 @@ class TableViewState extends WidgetState<TableView>
     var colIdx = map.containsKey(context.column) ? map[context.column]!.index : -1;
 
     // not found
-    if (rowIdx.isNegative || colIdx.isNegative) return Text("");
+    if (rowIdx.isNegative || colIdx.isNegative) return const Text("");
 
     // get cell model
     TableRowCellModel? model = widget.model.getRowCellModel(rowIdx, colIdx);
-    if (model == null) return Text("");
+    if (model == null) return const Text("");
 
     // return the view
     if (!views.containsKey(model))
@@ -734,7 +734,7 @@ class TableViewState extends WidgetState<TableView>
     }
 
     // generate the report
-    var csv = pluto_grid_export.PlutoGridDefaultCsvExport().export(stateManager!);
+    var csv = const pluto_grid_export.PlutoGridDefaultCsvExport().export(stateManager!);
     return csv;
   }
 
@@ -840,10 +840,10 @@ class TableViewState extends WidgetState<TableView>
     var dark = theme.brightness == Brightness.dark;
 
     // define color scheme
-    var borderColor       = widget.model.borderColor ?? (dark ? Color(0xFFDDE2EB) : Color(0xFFDDE2EB));
+    var borderColor       = widget.model.borderColor ?? (dark ? const Color(0xFFDDE2EB) : const Color(0xFFDDE2EB));
     var textColor         = widget.model.textColor   ?? (dark ? Colors.white      : Colors.black);
-    var backgroundColor   = widget.model.color       ?? (dark ? Color(0xFF111111) : Colors.white);
-    var rowColor          = widget.model.color       ?? (dark ? Color(0xFF111111) : Colors.white);
+    var backgroundColor   = widget.model.color       ?? (dark ? const Color(0xFF111111) : Colors.white);
+    var rowColor          = widget.model.color       ?? (dark ? const Color(0xFF111111) : Colors.white);
     var oddRowColor       = widget.model.color2 != null ? rowColor : null;
     var evenRowColor      = widget.model.color2;
     var checkedColor      = widget.model.color3 != null ? widget.model.color3! : theme.colorScheme.surfaceVariant;
@@ -858,13 +858,13 @@ class TableViewState extends WidgetState<TableView>
     var style = dark ?
 
     PlutoGridStyleConfig.dark(
-        defaultCellPadding: EdgeInsets.all(0),
+        defaultCellPadding: const EdgeInsets.all(0),
         columnHeight: colHeight,
         rowHeight: rowHeight,
         gridBorderRadius: BorderRadius.circular(widget.model.radiusTopRight),
         cellTextStyle: TextStyle(fontSize: widget.model.textSize, color: textColor),
-        columnAscendingIcon: Icon(Icons.arrow_downward_rounded),
-        columnDescendingIcon: Icon(Icons.arrow_upward_rounded),
+        columnAscendingIcon: const Icon(Icons.arrow_downward_rounded),
+        columnDescendingIcon: const Icon(Icons.arrow_upward_rounded),
         enableGridBorderShadow: widget.model.shadow,
         borderColor: borderColor,
         gridBackgroundColor: backgroundColor,
@@ -876,13 +876,13 @@ class TableViewState extends WidgetState<TableView>
         activatedBorderColor: activeBorderColor) :
 
     PlutoGridStyleConfig(
-        defaultCellPadding: EdgeInsets.all(0),
+        defaultCellPadding: const EdgeInsets.all(0),
         columnHeight: colHeight,
         rowHeight: rowHeight,
         gridBorderRadius: BorderRadius.circular(widget.model.radiusTopRight),
         cellTextStyle: TextStyle(fontSize: widget.model.textSize, color: textColor),
-        columnAscendingIcon: Icon(Icons.arrow_downward_rounded),
-        columnDescendingIcon: Icon(Icons.arrow_upward_rounded),
+        columnAscendingIcon: const Icon(Icons.arrow_downward_rounded),
+        columnDescendingIcon: const Icon(Icons.arrow_upward_rounded),
         enableGridBorderShadow: widget.model.shadow,
         borderColor: borderColor,
         gridBackgroundColor: backgroundColor,
@@ -966,7 +966,7 @@ class TableViewState extends WidgetState<TableView>
       children: fields.isNotEmpty ? null : groups.isNotEmpty ? groups : null,
       expandedColumn:  false,
       backgroundColor: model.color,
-      titlePadding: EdgeInsets.all(1),
+      titlePadding: const EdgeInsets.all(1),
     );
 
     return group;
@@ -1003,7 +1003,7 @@ class TableViewState extends WidgetState<TableView>
       var header = WidgetSpan(child:BoxView(cell));
       if (widget.model.header!.cells.length == 1 && (title.trim() == TableModel.dynamicTableValue1 || title.trim() == TableModel.dynamicTableValue2))
       {
-        header = WidgetSpan(child:Text(""));
+        header = const WidgetSpan(child:Text(""));
       }
 
       // field names must be unique across columns
@@ -1055,8 +1055,8 @@ class TableViewState extends WidgetState<TableView>
           enableContextMenu: showMenu,
           enableDropToResize: resizeable,
           readOnly: !editable,
-          titlePadding: EdgeInsets.all(1),
-          cellPadding: EdgeInsets.all(0),
+          titlePadding: const EdgeInsets.all(1),
+          cellPadding: const EdgeInsets.all(0),
           backgroundColor: cell.color,
           width: cell.widthOuter ?? PlutoGridSettings.columnWidth,
           minWidth: PlutoGridSettings.minColumnWidth,
@@ -1086,7 +1086,7 @@ class TableViewState extends WidgetState<TableView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // build style
     if (grid == null)
@@ -1111,7 +1111,7 @@ class TableViewState extends WidgetState<TableView>
           configuration: config,
           columnGroups: groups,
           columns: columns.toList(),
-          rows: [],
+          rows: const [],
           mode: PlutoGridMode.normal,
           onLoaded: onLoadedHandler,
           onSorted: onSortedHandler,

@@ -131,7 +131,7 @@ class StackObject extends MultiChildRenderObjectWidget
   ///
   /// By default, the non-positioned children of the stack are aligned by their
   /// top left corners.
-  StackObject({
+  const StackObject({
     required this.model,
     super.key,
     this.alignment = AlignmentDirectional.topStart,

@@ -43,14 +43,14 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
     InlineFrameModel model = widget.model;
 
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     //This prevents the iframe from rebuilding and hiding the keyboard every time.
     iframe ??= IFrameWidget(model: model);
     Widget view = iframe!;
 
     // basic view
-    view = Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);
+    view = SizedBox(width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height, child: view);
 
     // apply user defined constraints
     view = applyConstraints(view, widget.model.constraints);
@@ -67,9 +67,9 @@ class IFrameWidget extends StatelessWidget implements IModelListener
 
   late final Widget iFrame;
   late final universal_html.IFrameElement iframe;
-  final jsonEncoder = JsonEncoder();
+  final jsonEncoder = const JsonEncoder();
 
-  IFrameWidget({required this.model});
+  IFrameWidget({super.key, required this.model});
 
   @override
   onModelChange(WidgetModel model,{String? property, dynamic value})

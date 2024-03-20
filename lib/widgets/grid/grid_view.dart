@@ -110,7 +110,7 @@ class GridViewState extends WidgetState<GridView> {
       // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
       if ((child != null) && (child.context != null)) {
         Scrollable.ensureVisible(child.context,
-            duration: Duration(seconds: 1), alignment: 0.2);
+            duration: const Duration(seconds: 1), alignment: 0.2);
       }
     }
   }
@@ -150,13 +150,13 @@ class GridViewState extends WidgetState<GridView> {
             double moveToPosition =
                 offset + (direction == 'left' ? -distance : distance);
             sc.animateTo(moveToPosition,
-                duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+                duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
           } else if (direction == 'up' || direction == 'down') {
             double offset = sc!.offset;
             double moveToPosition =
                 offset + (direction == 'up' ? -distance : distance);
             sc.animateTo(moveToPosition,
-                duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+                duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
           }
         }
       }
@@ -197,7 +197,7 @@ class GridViewState extends WidgetState<GridView> {
 
         // wrap for selectable
         view = MouseRegion(cursor: SystemMouseCursors.click, child: view);
-        view = GestureDetector(onTap: () => model.onTap(), child: view, behavior: HitTestBehavior.translucent);
+        view = GestureDetector(onTap: () => model.onTap(), behavior: HitTestBehavior.translucent, child: view);
 
         // add view to child list
         children.add(Expanded(child: SizedBox(width: prototypeWidth, height: prototypeHeight, child: view)));
@@ -211,11 +211,11 @@ class GridViewState extends WidgetState<GridView> {
 
     if (direction == Axis.vertical)
     {
-      return Row(children: children, mainAxisSize: MainAxisSize.min);
+      return Row(mainAxisSize: MainAxisSize.min, children: children);
     }
     else
     {
-      return Column(children: children, mainAxisSize: MainAxisSize.min);
+      return Column(mainAxisSize: MainAxisSize.min, children: children);
     }
   }
 
@@ -269,7 +269,7 @@ class GridViewState extends WidgetState<GridView> {
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // build the prototype
     if (widget.model.size == null || widget.model.items.isEmpty)
@@ -286,7 +286,7 @@ class GridViewState extends WidgetState<GridView> {
       }
       catch (e)
       {
-        prototypeGrid = Text('Error Prototyping GridModel');
+        prototypeGrid = const Text('Error Prototyping GridModel');
       }
       return prototypeGrid;
     }

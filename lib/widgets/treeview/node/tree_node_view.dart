@@ -23,7 +23,7 @@ class _TreeNodeViewState extends WidgetState<TreeNodeView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // build children
     List<Widget> children = [];
@@ -55,17 +55,17 @@ class _TreeNodeViewState extends WidgetState<TreeNodeView>
       if (widget.model.expanded!)
       {
         if (widget.model.expandedicon != null) {
-          children.insert(0, Padding(padding: EdgeInsets.only(right: 0), child: Icon(widget.model.expandedicon, color: widget.model.color ?? Theme.of(context).colorScheme.onPrimaryContainer)));
+          children.insert(0, Padding(padding: const EdgeInsets.only(right: 0), child: Icon(widget.model.expandedicon, color: widget.model.color ?? Theme.of(context).colorScheme.onPrimaryContainer)));
         } else if (widget.model.icon != null && widget.model.children != null) {
-          children.insert(0, Padding(padding: EdgeInsets.only(right: 0), child: Icon(widget.model.icon, color: widget.model.color)));
+          children.insert(0, Padding(padding: const EdgeInsets.only(right: 0), child: Icon(widget.model.icon, color: widget.model.color)));
         } else {
-          children.insert(0, Padding(padding: EdgeInsets.only(top: 10, bottom: 10, right: 24), child: Container()));
+          children.insert(0, Padding(padding: const EdgeInsets.only(top: 10, bottom: 10, right: 24), child: Container()));
         }
       }
       else
       {
         if (widget.model.icon != null && widget.model.children != null) {
-          children.insert(0, Padding(padding: EdgeInsets.only(right: 0), child: Icon(widget.model.icon, color: widget.model.color ?? Theme.of(context).colorScheme.onPrimaryContainer)));
+          children.insert(0, Padding(padding: const EdgeInsets.only(right: 0), child: Icon(widget.model.icon, color: widget.model.color ?? Theme.of(context).colorScheme.onPrimaryContainer)));
         } else {
           children.insert(0, Padding(padding: EdgeInsets.only(top: widget.model.selected! ? 4 : 10, bottom: widget.model.selected! ? 4 : 10, right: widget.model.selected! ? 4 : 16, left: 8),
             child: widget.model.selected! ?  Icon(Icons.horizontal_rule, size: 12, color: Theme.of(context).colorScheme.primary) : Container()));
@@ -86,7 +86,7 @@ class _TreeNodeViewState extends WidgetState<TreeNodeView>
     ////////////////////
     /* Build the Tree */
     ////////////////////
-    Widget view = Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.start, children: children, mainAxisSize: MainAxisSize.min);
+    Widget view = Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: children);
     if (nodes.isNotEmpty)
     {
       if (isNullOrEmpty(widget.model.onclick) && widget.model.children == null) {
@@ -96,7 +96,7 @@ class _TreeNodeViewState extends WidgetState<TreeNodeView>
       }
       if (widget.model.expanded!)
       {
-        Widget child = Padding(padding: EdgeInsets.only(left: 17), child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: nodes));
+        Widget child = Padding(padding: const EdgeInsets.only(left: 17), child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: nodes));
         view = Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [view, child]);
       }
     }

@@ -57,7 +57,7 @@ class _TreeViewState extends WidgetState<TreeView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // View
     Widget view = ClipRect(child:ListView.builder(padding: EdgeInsets.zero, itemCount: widget.model.nodes.length, itemBuilder: (context, index) => TreeNodeView(widget.model.nodes[index])));

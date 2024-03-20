@@ -96,5 +96,5 @@ class ColorpickerModel extends DecoratedInputModel implements IFormField
   }
 
   @override
-  Widget getView({Key? key}) => Offstage();
+  Widget getView({Key? key}) => const Offstage();
 }

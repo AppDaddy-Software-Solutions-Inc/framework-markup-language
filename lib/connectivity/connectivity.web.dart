@@ -1,6 +1,5 @@
-import 'dart:html';
+import 'package:universal_html/html.dart';
 import 'package:fml/log/manager.dart';
-
 class Internet
 {
   static Future<bool> isConnected() async

@@ -16,7 +16,7 @@ class MeasureObject extends RenderProxyBox
   @override
   void performLayout()
   {
-    Size size = Size(0,0);
+    Size size = const Size(0,0);
     if (child != null)
     {
       child!.layout(constraints, parentUsesSize: true);

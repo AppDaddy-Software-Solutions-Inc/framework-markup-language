@@ -56,7 +56,7 @@ class _PieChartViewState extends WidgetState<PieChartView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // Busy / Loading Indicator
     busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
@@ -78,7 +78,7 @@ class _PieChartViewState extends WidgetState<PieChartView>
     catch(e)
     {
       Log().exception(e, caller: 'chart_view builder() ');
-      view = Center(child: Icon(Icons.add_chart));
+      view = const Center(child: Icon(Icons.add_chart));
     }
 
     // Prioritize chart ux interactions
@@ -150,7 +150,7 @@ class _PieChartViewState extends WidgetState<PieChartView>
     // show new tooltip
     if (views.isNotEmpty)
     {
-      tooltip = OverlayEntry(builder: (context) => Positioned(left: x, top: y + 25, child: Column(children: views, mainAxisSize: MainAxisSize.min)));
+      tooltip = OverlayEntry(builder: (context) => Positioned(left: x, top: y + 25, child: Column(mainAxisSize: MainAxisSize.min, children: views)));
       Overlay.of(context).insert(tooltip!);
     }
   }
@@ -165,7 +165,7 @@ class _PieChartViewState extends WidgetState<PieChartView>
     }
     catch(e)
     {
-      print(e);
+      Log().exception(e);
     }
   }
 }

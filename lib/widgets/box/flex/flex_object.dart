@@ -22,7 +22,7 @@ class FlexObject extends MultiChildRenderObjectWidget {
 
   final BoxModel model;
 
-  FlexObject({
+  const FlexObject({super.key,
     required this.model,
     required this.direction,
     this.mainAxisAlignment = MainAxisAlignment.start,

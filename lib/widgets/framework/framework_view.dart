@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/navigation/navigation_manager.dart';
@@ -299,7 +300,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   void onExport(Event event) {
     if (event.parameters!['format'] == 'print') {
       event.handled = true;
-      final snackBar = SnackBar(content: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(phrase.exportingData)]), duration: Duration(milliseconds: 300), behavior: SnackBarBehavior.floating, elevation: 5);
+      final snackBar = SnackBar(content: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(phrase.exportingData)]), duration: const Duration(milliseconds: 300), behavior: SnackBarBehavior.floating, elevation: 5);
       ScaffoldMessenger.of(context).showSnackBar(snackBar).closed.then((_) => Platform.openPrinterDialog());
     }
     else {
@@ -313,7 +314,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   {
     // show debug window
     if (onLongPressTimer != null) onLongPressTimer!.cancel();
-    onLongPressTimer = Timer(Duration(seconds: 1), () => EventHandler(widget.model).executeEvent("DEBUG.open()"));
+    onLongPressTimer = Timer(const Duration(seconds: 1), () => EventHandler(widget.model).executeEvent("DEBUG.open()"));
   }
 
   // on long press end actions
@@ -337,7 +338,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
         curve: Curves.easeInExpo,
         child: CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation<Color>(c2)));
 
-      _wait = Container(width: 32, height: 32, child: spinner);
+      _wait = SizedBox(width: 32, height: 32, child: spinner);
       _wait = Container(color: c1, child: Center(child: _wait));
     }
     return _wait!;
@@ -351,7 +352,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     header.removeAllListeners();
     header.width = header.visible ? constraints.maxWidth : 0;
 
-    return SizedBox(child: header.getView(), width: header.width, height: header.height);
+    return SizedBox(width: header.width, height: header.height, child: header.getView());
   }
 
   Widget _buildFooter(BoxConstraints constraints)
@@ -362,7 +363,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     footer.removeAllListeners();
     footer.width = footer.visible ? constraints.maxWidth : 0;
 
-    return SizedBox(child: footer.getView(), width: footer.width, height: footer.height);
+    return SizedBox(width: footer.width, height: footer.height, child: footer.getView());
   }
 
   Widget _buildBody(BoxConstraints constraints)
@@ -389,7 +390,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     var height = viewportHeight - usedHeight;
     var width = viewportWidth;
 
-    return SizedBox(child: view, width: width, height: height);
+    return SizedBox(width: width, height: height, child: view);
   }
 
   _setDeviceOrientation(String? orientation)
@@ -430,8 +431,8 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
         onHorizontalDragUpdate: (dragUpdateDetails) => drawer.onDragSheet(dragUpdateDetails, 'horizontal', true),
         onVerticalDragEnd: (dragEndDetails) => drawer.onDragEnd(dragEndDetails, 'vertical', false),
         onHorizontalDragEnd: (dragEndDetails) => drawer.onDragEnd(dragEndDetails, 'horizontal', false),
-        onLongPressStart: FmlEngine.kDebugMode ? (_) => onLongPressStart() : null,
-        onLongPressEnd:   FmlEngine.kDebugMode ? (_) => onLongPressEnd()   : null,
+        onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
+        onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
         child: drawer);
   }
 
@@ -449,16 +450,16 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
           onHorizontalDragEnd: onDragEnd,
           onHorizontalDragUpdate: onDragUpdate,
           onTap: onTapHandler,
-          onLongPressStart: FmlEngine.kDebugMode ? (_) => onLongPressStart() : null,
-          onLongPressEnd:   FmlEngine.kDebugMode ? (_) => onLongPressEnd()   : null,
+          onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
+          onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
           child: view);
     }
 
     // standard gesture detector for commit
     return GestureDetector(behavior: HitTestBehavior.translucent,
         onTap: onTapHandler,
-        onLongPressStart: FmlEngine.kDebugMode ? (_) => onLongPressStart() : null,
-        onLongPressEnd:   FmlEngine.kDebugMode ? (_) => onLongPressEnd()   : null,
+        onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
+        onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
         child: view);
   }
 

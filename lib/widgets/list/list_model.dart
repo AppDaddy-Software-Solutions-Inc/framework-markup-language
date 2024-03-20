@@ -641,7 +641,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
     }
     catch(e)
     {
-      print (e);
+      Log().exception(e);
     }
     return true;
   }
@@ -682,7 +682,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
     }
     catch(e)
     {
-      print (e);
+      Log().exception(e);
     }
     return true;
   }
@@ -720,7 +720,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
     }
     catch(e)
     {
-      print (e);
+      Log().exception(e);
     }
     return true;
   }

@@ -14,7 +14,7 @@ import 'package:fml/widgets/box/wrap/wrap_renderer.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 
 // change to false to allow write messages
-final debug = kDebugMode && true;
+const debug = kDebugMode && true;
 
 /// Displays its children in a one-dimensional array.
 ///

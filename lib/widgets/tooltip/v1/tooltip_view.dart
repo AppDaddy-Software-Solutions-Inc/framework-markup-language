@@ -23,12 +23,12 @@ class _TooltipViewState extends WidgetState<TooltipView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // build the child views
     List<Widget> children = widget.model.inflate();
 
-    Widget child = children.length == 1 ? children[0] : Column(children: children, mainAxisSize: MainAxisSize.min);
+    Widget child = children.length == 1 ? children[0] : Column(mainAxisSize: MainAxisSize.min, children: children);
     if (isNullOrEmpty(widget.model.label)) {
       return child;
     }

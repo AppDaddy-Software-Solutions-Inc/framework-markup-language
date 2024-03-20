@@ -9,7 +9,7 @@ import 'package:fml/widgets/busy/busy_model.dart';
 
 class AppForm extends StatefulWidget
 {
-  AppForm();
+  const AppForm({super.key});
 
   @override
   AppFormState createState()
@@ -117,7 +117,7 @@ class AppFormState extends State<AppForm>
       if (app.hasConfig)
       {
         Store().add(app);
-        Navigator.of(context).pop();
+        if (mounted) Navigator.of(context).pop();
       }
       else
       {
@@ -132,8 +132,8 @@ class AppFormState extends State<AppForm>
   Widget build(BuildContext context)
   {
     var nameDecoration = InputDecoration(labelText: phrase.appName,
-        labelStyle: TextStyle(fontSize: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide()));
+        labelStyle: const TextStyle(fontSize: 12),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: const BorderSide()));
 
     var style = TextStyle(color: Theme.of(context).colorScheme.onBackground);
 
@@ -141,21 +141,21 @@ class AppFormState extends State<AppForm>
 
     var addressDecoration = InputDecoration(
         labelText: phrase.appUrl,
-        labelStyle: TextStyle(fontSize: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide()));
+        labelStyle: const TextStyle(fontSize: 12),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: const BorderSide()));
 
     var url = TextFormField(controller: urlController, validator: _validateUrl, keyboardType: TextInputType.url, decoration: addressDecoration, style: style);
 
     var cancel = TextButton(child: Text(phrase.cancel),  onPressed: () => Navigator.of(context).pop());
 
-    var connect =  TextButton(child: Text(phrase.connect), onPressed: _addApp);
+    var connect =  TextButton(onPressed: _addApp, child: Text(phrase.connect));
 
     List<Widget> layout = [];
 
     // form fields
-    layout.add(Padding(padding: EdgeInsets.only(top: 10)));
+    layout.add(const Padding(padding: EdgeInsets.only(top: 10)));
     layout.add(url);
-    layout.add(Padding(padding: EdgeInsets.only(top: 10)));
+    layout.add(const Padding(padding: EdgeInsets.only(top: 10)));
     layout.add(name);
 
     // buttons
@@ -163,7 +163,7 @@ class AppFormState extends State<AppForm>
     layout.add(buttons);
 
     var b = BusyModel(Store(), visible: (busy.get() ?? false), observable: busy, modal: false).getView();
-    var form = Form(key: _formKey, child: Column(children: layout, mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.start));
+    var form = Form(key: _formKey, child: Column(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.start, children: layout));
 
     return Stack(fit: StackFit.passthrough, children: [form,b]);
   }

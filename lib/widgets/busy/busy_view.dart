@@ -26,7 +26,7 @@ class _BusyViewState extends WidgetState<BusyView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // build the child views
     List<Widget> children = widget.model.inflate();
@@ -47,7 +47,7 @@ class _BusyViewState extends WidgetState<BusyView>
     if (modal)
     {
       Size s = MediaQuery.of(context).size;
-      curtain = SizedBox(width: s.width, height: s.height, child: Opacity(child: ModalBarrier(dismissible: false, color: Theme.of(context).colorScheme.background), opacity: .50));
+      curtain = SizedBox(width: s.width, height: s.height, child: Opacity(opacity: .50, child: ModalBarrier(dismissible: false, color: Theme.of(context).colorScheme.background)));
     }
     if (curtain != null) children.add(curtain);
 
@@ -55,7 +55,7 @@ class _BusyViewState extends WidgetState<BusyView>
 
     if (children.isEmpty) children.add(Container());
 
-    view = Container(color: Colors.transparent, child: Stack(alignment: Alignment(0.0, 0.0), children: children));
+    view = Container(color: Colors.transparent, child: Stack(alignment: const Alignment(0.0, 0.0), children: children));
 
     // add margins
     view = addMargins(view);

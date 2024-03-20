@@ -36,7 +36,7 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
     super.initState();
     _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,));
     if(widget.model.controllerValue == 1 && widget.model.runonce == true) {
-      _controller?.animateTo(widget.model.controllerValue, duration: Duration());
+      _controller?.animateTo(widget.model.controllerValue, duration: const Duration());
     }
     _controller?.addStatusListener((status) {
       _animationListener(status);
@@ -105,7 +105,7 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (((widget.model.children?.isEmpty ?? true) && widget.child == null)) return Offstage();
+    if (((widget.model.children?.isEmpty ?? true) && widget.child == null)) return const Offstage();
 
     if (widget.model.animations != null && widget.model.animations!.isNotEmpty && widget.child != null)
     {
@@ -116,7 +116,7 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
       return view;
     }
 
-    var child = widget.children.length == 1 ? widget.children[0] : Column(children: widget.children, crossAxisAlignment: CrossAxisAlignment.start);
+    var child = widget.children.length == 1 ? widget.children[0] : Column(crossAxisAlignment: CrossAxisAlignment.start, children: widget.children);
 
     return child;
   }

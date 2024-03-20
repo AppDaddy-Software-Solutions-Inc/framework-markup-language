@@ -64,8 +64,10 @@ class _LineChartViewState extends WidgetState<LineChartView>
         text = DateFormat(widget.model.xaxis.format ?? 'yyyy/MM/dd')
             .format(DateTime.fromMillisecondsSinceEpoch(value.toInt()))
             .toString();
-      } catch(e){
-        print('Error formatting date when creating bottom titles widget');
+      }
+      catch(e)
+      {
+        Log().exception('Error formatting date when creating bottom titles widget');
       }
     } else if (widget.model.xaxis.type == 'category' || widget.model.xaxis.type == 'raw'){
       text = value.toInt() <= widget.model.uniqueValues.length && widget.model.uniqueValues.isNotEmpty ? widget.model.uniqueValues.elementAt(value.toInt()).toString(): value.toString();
@@ -76,8 +78,8 @@ class _LineChartViewState extends WidgetState<LineChartView>
       return SideTitleWidget(
         axisSide: meta.axisSide,
         fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
-        child: Text(text, style: style),
         angle: 0.30,
+        child: Text(text, style: style),
       );
     }
 
@@ -114,10 +116,10 @@ class _LineChartViewState extends WidgetState<LineChartView>
           show: true,
         ),
         titlesData: FlTitlesData(
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false), axisNameWidget: !isNullOrEmpty(widget.model.title) ? Text(widget.model.title!, style: TextStyle(fontSize: 12),): null,),
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: AxisTitles(sideTitles: const SideTitles(showTitles: false), axisNameWidget: !isNullOrEmpty(widget.model.title) ? Text(widget.model.title!, style: const TextStyle(fontSize: 12),): null,),
+          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           leftTitles: AxisTitles(
-              axisNameWidget: !isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title!, style: TextStyle(fontSize: 12),): null,
+              axisNameWidget: !isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title!, style: const TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
                 interval: toDouble(widget.model.yaxis.interval),
                 reservedSize: widget.model.yaxis.padding ?? 22,
@@ -126,7 +128,7 @@ class _LineChartViewState extends WidgetState<LineChartView>
               )
           ),
           bottomTitles: AxisTitles(
-            axisNameWidget: !isNullOrEmpty(widget.model.xaxis.title) ? Text(widget.model.xaxis.title!, style: TextStyle(fontSize: 12),): null,
+            axisNameWidget: !isNullOrEmpty(widget.model.xaxis.title) ? Text(widget.model.xaxis.title!, style: const TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
                 interval: widget.model.xaxis.type == 'category' || widget.model.xaxis.type == 'raw' ? 1 : toDouble(widget.model.xaxis.interval),
                 showTitles: true,
@@ -192,7 +194,7 @@ class _LineChartViewState extends WidgetState<LineChartView>
       var mySpot = spot.bar.spots[spot.spotIndex];
       if (mySpot is FlSpotExtended && mySpot.series.tooltips) showTips = true;
 
-      tooltips.add(LineTooltipItem("${spot.y}", TextStyle()));
+      tooltips.add(LineTooltipItem("${spot.y}", const TextStyle()));
     }
     if (!showTips) tooltips.clear();
     return tooltips;
@@ -206,7 +208,7 @@ class _LineChartViewState extends WidgetState<LineChartView>
     // show new tooltip
     if (views.isNotEmpty)
     {
-      tooltip = OverlayEntry(builder: (context) => Positioned(left: x, top: y + 25, child: Column(children: views, mainAxisSize: MainAxisSize.min)));
+      tooltip = OverlayEntry(builder: (context) => Positioned(left: x, top: y + 25, child: Column(mainAxisSize: MainAxisSize.min, children: views)));
       Overlay.of(context).insert(tooltip!);
     }
   }
@@ -221,7 +223,7 @@ class _LineChartViewState extends WidgetState<LineChartView>
     }
     catch(e)
     {
-      print(e);
+      Log().exception(e);
     }
   }
 
@@ -229,7 +231,7 @@ class _LineChartViewState extends WidgetState<LineChartView>
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // Busy / Loading Indicator
     busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
@@ -243,7 +245,7 @@ class _LineChartViewState extends WidgetState<LineChartView>
         view = buildLineChart(widget.model.series);
     } catch(e) {
       Log().exception(e, caller: 'chart_view builder() ');
-      view = Center(child: Icon(Icons.add_chart));
+      view = const Center(child: Icon(Icons.add_chart));
     }
 
     // Prioritize chart ux interactions

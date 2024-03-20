@@ -28,7 +28,7 @@ class FilePickerView implements FilePicker {
       /// We want to delay this to give time for the completer to finish
       /// If it did not finish by selecting a file then we pass this check
       /// and we know the file selector was closed with selection
-      Future.delayed(Duration(milliseconds: 500)).then((value) {
+      Future.delayed(const Duration(milliseconds: 500)).then((value) {
         if (hasSelectedFile == false) {
           dart_html.window.removeEventListener('focus', cancelledButtonListener);
           completer.complete(null);

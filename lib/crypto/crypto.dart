@@ -35,7 +35,7 @@ class Cryptography
     cipher.init(true, PaddedBlockCipherParameters<CipherParameters, CipherParameters>(ParametersWithIV<KeyParameter>(KeyParameter(key), iv), null));
     Uint8List cipherText = cipher.process(plainText);
 
-    Base64Encoder encoder = Base64Encoder.urlSafe();
+    Base64Encoder encoder = const Base64Encoder.urlSafe();
     return encoder.convert(cipherText);
   }
 

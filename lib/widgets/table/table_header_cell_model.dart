@@ -202,10 +202,11 @@ class TableHeaderCellModel extends BoxModel {
 
     // properties
     title = Xml.get(node: xml, tag: 'title');
-    if (_title == null)
+    if (_title == null) {
       title = Xml.get(node: xml, tag: 'sort')
           ?.split(",")[0]
           .replaceFirst(RegExp('data.', caseSensitive: false), "");
+    }
     if (_title == null) {
       TextModel? text = findChildOfExactType(TextModel);
       title = text?.value;

@@ -129,8 +129,9 @@ class ChartLabelModel extends WidgetModel {
     // Remove datasource listener. The parent chart will take care of this.
     if ((datasource != null) &&
         (scope != null) &&
-        (scope!.datasources.containsKey(datasource)))
+        (scope!.datasources.containsKey(datasource))) {
       scope!.datasources[datasource!]!.remove(this);
+    }
   }
 
   /// The [ChartLabel] background color

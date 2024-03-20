@@ -325,8 +325,9 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
 
       // register late scope
       var alias = Xml.attribute(node: xml, tag: "id");
-      if (scope != null && alias != null)
+      if (scope != null && alias != null) {
         System.app?.scopeManager.add(scope!, alias: alias);
+      }
 
       // set template name
       templateName = uri.replace(queryParameters: null).toString();
@@ -362,8 +363,9 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
 
       // register late scope
       var alias = Xml.attribute(node: xml, tag: "id");
-      if (scope != null && alias != null)
+      if (scope != null && alias != null) {
         System.app?.scopeManager.add(scope!, alias: alias);
+      }
 
       // set template name
       templateName = template.name ?? 'js2fml';
@@ -439,8 +441,9 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
     // build drawers
     List<XmlElement>? nodes;
     nodes = Xml.getChildElements(node: xml, tag: "DRAWER");
-    if (nodes != null && nodes.isNotEmpty)
+    if (nodes != null && nodes.isNotEmpty) {
       drawer = DrawerModel.fromXmlList(this, nodes);
+    }
 
     // create shortcuts
     var shortcuts =
@@ -462,9 +465,10 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
   @override
   // framework level dispose can happen asynchronously
   void dispose() async {
-    if (disposed)
+    if (disposed) {
       Log().debug(
           'Framework model has already been disposed => <FML name="$templateName" url="$url"/>');
+    }
     Log().debug(
         'Dispose called on framework model => <FML name="$templateName" url="$url"/>');
 
@@ -494,8 +498,9 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
   void onPush(Map<String?, String>? parameters) {
     if (parameters != null) {
       // set variables from return parameters
-      if ((scope != null))
+      if ((scope != null)) {
         parameters.forEach((key, value) => scope!.setObservable(key, value));
+      }
 
       // fire OnReturn event
       if (!isNullOrEmpty(onreturn)) EventHandler(this).execute(_onreturn);

@@ -228,10 +228,12 @@ class _BoxViewState extends WidgetState<BoxView> {
 
     // set expand
     var expand = widget.model.expand;
-    if (widget.model.expandHorizontally && !constraints.hasBoundedWidth)
+    if (widget.model.expandHorizontally && !constraints.hasBoundedWidth) {
       expand = false;
-    if (widget.model.expandVertically && !constraints.hasBoundedHeight)
+    }
+    if (widget.model.expandVertically && !constraints.hasBoundedHeight) {
       expand = false;
+    }
     if (alignment != null && expand) {
       // a width factor of 1 forces the container alignment to fit the child's width
       // rather than expand to fill its parent
@@ -389,8 +391,9 @@ class _BoxViewState extends WidgetState<BoxView> {
     if (widget.model.opacity != null) view = _getFadedView(view);
 
     // blur the view - white10 = Blur (This creates mirrored/frosted effect overtop of something else)
-    if (widget.model.color == Colors.white10)
+    if (widget.model.color == Colors.white10) {
       view = _getFrostedView(view, radius);
+    }
 
     // apply constraints
     view = applyConstraints(view, widget.model.constraints);

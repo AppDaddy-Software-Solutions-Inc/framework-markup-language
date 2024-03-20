@@ -95,8 +95,9 @@ class Json {
   }
 
   static dynamic read(dynamic data, String? tag) {
-    if (data == null || (data is List && data.isEmpty) || tag == null)
+    if (data == null || (data is List && data.isEmpty) || tag == null) {
       return null;
+    }
 
     // Get Dot Notation
     DotNotation? dotNotation = DotNotation.fromString(tag);
@@ -129,8 +130,9 @@ class Json {
               break;
             }
             data = data[property.offset];
-            if ((data is Map) && (data.containsKey(property.name)))
+            if ((data is Map) && (data.containsKey(property.name))) {
               data = data[property.name];
+            }
           } else {
             data = null;
             break;
@@ -168,8 +170,9 @@ class Json {
           data = null;
           break;
         }
-        if (property.offset < data.length && property.offset >= 0)
+        if (property.offset < data.length && property.offset >= 0) {
           data = data[property.offset];
+        }
       }
     }
 

@@ -253,8 +253,9 @@ class Scope {
     // Create the Observable
     if (observable == null) {
       Scope? scope = this;
-      if (binding.scope != null)
+      if (binding.scope != null) {
         scope = System.app?.scopeManager.of(binding.scope);
+      }
       if (scope != null) {
         var observable = StringObservable(binding.key, value, scope: this);
         scope.register(observable);
@@ -271,8 +272,9 @@ class Scope {
         var data = observable.first;
         if (binding.offset != null &&
             binding.offset! > 0 &&
-            binding.offset! < observable.length)
+            binding.offset! < observable.length) {
           data = observable[binding.offset!];
+        }
 
         // write to the data list
         Data.write(
@@ -287,8 +289,9 @@ class Scope {
 
   Observable? getObservable(Binding binding, {Observable? requestor}) {
     // look up the scope tree
-    if (binding.scope == null)
+    if (binding.scope == null) {
       return System.app?.scopeManager.findObservable(this, binding.key);
+    }
 
     // named scope
     return System.app?.scopeManager

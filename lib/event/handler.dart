@@ -63,8 +63,9 @@ class EventHandler extends Eval {
     if (isNullOrEmpty(expression)) return ok;
 
     // replace 'this' pointer with the parent model id
-    if (expression!.contains(thisDot))
+    if (expression!.contains(thisDot)) {
       expression = expression.replaceAll(thisDot, "${model.id}.");
+    }
 
     // get variables from observable
     Map<String, dynamic> variables = observable.getVariables();
@@ -456,9 +457,10 @@ class EventHandler extends Eval {
       System.app?.logon(jwt);
 
       // refresh the framework
-      if (toBool(refresh) != false)
+      if (toBool(refresh) != false) {
         EventManager.of(model)?.broadcastEvent(
             model, Event(EventTypes.refresh, parameters: null, model: model));
+      }
 
       return true;
     } else {
@@ -472,9 +474,10 @@ class EventHandler extends Eval {
     bool ok = await System.app?.logoff() ?? true;
 
     // Refresh the Framework
-    if ((ok) && (toBool(refresh) != false))
+    if ((ok) && (toBool(refresh) != false)) {
       EventManager.of(model)?.broadcastEvent(
           model, Event(EventTypes.refresh, parameters: null, model: model));
+    }
 
     return ok;
   }
@@ -593,9 +596,10 @@ class EventHandler extends Eval {
     parameters['transition'] = toStr(transition);
     parameters['replace'] = toStr(replace);
     parameters['replaceall'] = toStr(replaceall);
-    if (url != null && url != '')
+    if (url != null && url != '') {
       EventManager.of(model)?.broadcastEvent(
           model, Event(EventTypes.open, parameters: parameters, model: model));
+    }
     return true;
   }
 
@@ -604,11 +608,12 @@ class EventHandler extends Eval {
     Map<String, String?> parameters = {};
 
     parameters['templ8'] = toStr(templ8);
-    if (templ8 != null && templ8 != '')
+    if (templ8 != null && templ8 != '') {
       EventManager.of(model)?.broadcastEvent(
           model,
           Event(EventTypes.openjstemplate,
               parameters: parameters, model: model));
+    }
     return true;
   }
 
@@ -618,9 +623,10 @@ class EventHandler extends Eval {
     parameters['url'] = toStr(url);
     parameters['transition'] = toStr(transition);
     parameters['replace'] = "true";
-    if (url != null && url != '')
+    if (url != null && url != '') {
       EventManager.of(model)?.broadcastEvent(
           model, Event(EventTypes.open, parameters: parameters, model: model));
+    }
     return true;
   }
 
@@ -822,8 +828,9 @@ class EventHandler extends Eval {
     // stash clear?
     // this hack is necessary since stash isn't a model
     // and adding another function seems overkill
-    if (id == "STASH" && function.toLowerCase() == "clear")
+    if (id == "STASH" && function.toLowerCase() == "clear") {
       return await System.app?.clearStash() ?? true;
+    }
 
     // model not found
     Log().debug("Widget Model $id not found", caller: "_handleEventExecute");

@@ -25,8 +25,9 @@ class _SplashState extends State<Splash> {
     await System().installed;
 
     // return
-    if (widget.onInitializationComplete != null)
+    if (widget.onInitializationComplete != null) {
       widget.onInitializationComplete!();
+    }
   }
 
   @override
@@ -51,11 +52,12 @@ class _SplashState extends State<Splash> {
     var portrait = (constraints.maxWidth < constraints.maxHeight);
     double? width =
         constraints.maxWidth - (constraints.maxWidth / (portrait ? 3 : 1.5));
-    if (width > 400)
+    if (width > 400) {
       image = Container(
           constraints:
               BoxConstraints(maxWidth: width, maxHeight: constraints.maxHeight),
           child: image);
+    }
 
     return image;
   }

@@ -26,8 +26,9 @@ class Platform {
   static Future<String?> get path async {
     // initialize the app root folder
     if (FmlEngine.isWeb) return null;
-    if (FmlEngine.isMobile || (FmlEngine.isDesktop && useragent == "macos"))
+    if (FmlEngine.isMobile || (FmlEngine.isDesktop && useragent == "macos")) {
       return (await getApplicationDocumentsDirectory()).path;
+    }
     return dirname(io.Platform.resolvedExecutable);
   }
 
@@ -175,8 +176,9 @@ class Platform {
 
       // write the file
       if (folder != null) {
-        if (content is ByteData)
+        if (content is ByteData) {
           await File(filepath).writeAsBytes(content.buffer.asUint8List());
+        }
         if (content is Uint8List) await File(filepath).writeAsBytes(content);
         if (content is String) await File(filepath).writeAsString(content);
       }

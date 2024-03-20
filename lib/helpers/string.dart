@@ -104,10 +104,12 @@ Color? toColor(dynamic s) {
   if (s == null) return null;
   if (s is String) return ColorHelper.toColor(s);
   if (s is Color) return s;
-  if (s is MaterialColor)
+  if (s is MaterialColor) {
     return Color.fromRGBO(s.red, s.green, s.blue, s.opacity);
-  if (s is MaterialAccentColor)
+  }
+  if (s is MaterialAccentColor) {
     return Color.fromRGBO(s.red, s.green, s.blue, s.opacity);
+  }
   return null;
 }
 

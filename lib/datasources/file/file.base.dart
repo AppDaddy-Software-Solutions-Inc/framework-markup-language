@@ -23,10 +23,11 @@ class FileBase implements File {
   }
 
   set bytes(Uint8List? value) {
-    if (value != null)
+    if (value != null) {
       _uri = UriData.fromBytes(value,
           mimeType: mimeType!,
           parameters: {'name': name, 'bytes': size.toString()});
+    }
   }
 
   @override

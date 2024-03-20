@@ -117,8 +117,9 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
   Widget addBorders(Widget view) {
     // border padding - this need to be changed to check border width
     var padding = const EdgeInsets.only(left: 10, top: 3, right: 0, bottom: 3);
-    if (widget.model.border == "none")
+    if (widget.model.border == "none") {
       padding = const EdgeInsets.only(left: 10, top: 4, right: 10, bottom: 4);
+    }
 
     // border radius
     var radius = BorderRadius.circular(widget.model.radius.toDouble());
@@ -126,8 +127,9 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
     // border color
     var color =
         widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
-    if (widget.model.alarming)
+    if (widget.model.alarming) {
       color = widget.model.getBorderColor(context, widget.model.borderColor);
+    }
     if (!widget.model.enabled) color = Theme.of(context).disabledColor;
 
     // border width
@@ -197,8 +199,9 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
         top: paddingTop,
         right: paddingRight,
         bottom: paddingBottom);
-    if (widget.model.dense == true)
+    if (widget.model.dense == true) {
       padding = const EdgeInsets.only(left: 6, top: 0, right: 6, bottom: 0);
+    }
 
     return padding;
   }
@@ -344,9 +347,10 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
     setControllerText(widget.model.selectedOption?.label);
 
     // select all
-    if (focus.hasFocus && widget.model.editable)
+    if (focus.hasFocus && widget.model.editable) {
       controller.selection =
           TextSelection(baseOffset: 0, extentOffset: controller.text.length);
+    }
   }
 
   Widget? buildBusy() {
@@ -387,22 +391,25 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
 
     // display busy
     Widget? busy = buildBusy();
-    if (busy != null)
+    if (busy != null) {
       view = Stack(children: [
         view,
         Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)
       ]);
+    }
 
     // dense
-    if (widget.model.dense)
+    if (widget.model.dense) {
       view = Padding(padding: const EdgeInsets.all(4), child: view);
+    }
 
     // get the model constraints
     var modelConstraints = widget.model.constraints;
 
     // constrain the input to 200 pixels if not constrained by the model
-    if (!modelConstraints.hasHorizontalExpansionConstraints)
+    if (!modelConstraints.hasHorizontalExpansionConstraints) {
       modelConstraints.width = 200;
+    }
 
     // add margins
     view = addMargins(view);

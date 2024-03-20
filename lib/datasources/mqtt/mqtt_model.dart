@@ -227,16 +227,18 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener {
     var subscriptions = Xml.get(node: xml, tag: 'subscriptions')?.split(",");
     subscriptions?.forEach((subscription) {
       if (!isNullOrEmpty(subscription) &&
-          !this.subscriptions.contains(subscription.trim()))
+          !this.subscriptions.contains(subscription.trim())) {
         this.subscriptions.add(subscription.trim());
+      }
     });
   }
 
   @override
   Future<bool> start({bool refresh = false, String? key}) async {
     bool ok = true;
-    if (mqtt == null && url != null)
+    if (mqtt == null && url != null) {
       mqtt = IMqtt.create(url!, this, username: username, password: password);
+    }
     if (mqtt != null) {
       ok = await mqtt!.connect();
       connected = ok;
@@ -264,8 +266,9 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener {
       case "publish":
         String? topic = toStr(elementAt(arguments, 0));
         String? message = toStr(elementAt(arguments, 1));
-        if (mqtt != null && topic != null && message != null)
+        if (mqtt != null && topic != null && message != null) {
           mqtt!.publish(topic, message);
+        }
         return true;
 
       case "read":
@@ -308,8 +311,9 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener {
     // if the message didn't deserialize (length 0)
     // so create a simple map with topic and message bindables <id>.data.topic and <id>.data.message
     // otherwise the data is the deserialized message payload
-    if (data.isEmpty)
+    if (data.isEmpty) {
       data.insert(0, {'topic': payload.topic, 'message': payload.message});
+    }
 
     // fire the onresponse
     onSuccess(data, code: HttpStatus.ok, onSuccessOverride: _onmessage);

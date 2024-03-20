@@ -178,8 +178,9 @@ class FmlEngine {
         caller: 'ErrorWidget() : main.dart');
 
     // in debug mode shows the normal red screen  error
-    if (kDebugMode)
+    if (kDebugMode) {
       return ErrorWidget("${details.exception}\n${details.stack.toString()}");
+    }
 
     var style = const TextStyle(color: Colors.black);
     var text = Text('⚠️\n${Phrases().somethingWentWrong}',

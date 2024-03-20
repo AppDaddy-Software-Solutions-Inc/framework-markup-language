@@ -42,16 +42,18 @@ class EventManager {
     if (!listeners.containsKey(type)) listeners[type] = [];
     int i = listeners[type]!.length;
     if ((priority != null) && (priority >= 0) && (priority <= i)) i = priority;
-    if (!listeners[type]!.contains(callback))
+    if (!listeners[type]!.contains(callback)) {
       listeners[type]!.insert(i, callback);
+    }
   }
 
   /// Remove a listener on an event type
   ///
   /// If you register a listener in a _ViewState you must remove it in the dispose()
   void remove(EventTypes type, OnEventCallback callback) {
-    if (listeners.containsKey(type) && listeners[type]!.contains(callback))
+    if (listeners.containsKey(type) && listeners[type]!.contains(callback)) {
       listeners[type]!.remove(callback);
+    }
   }
 
   /// Executes and Event

@@ -115,8 +115,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
       var page = pages.last;
       if (page is CustomMaterialPage && page.child is ModalManagerView) {
         var manager = page.child as ModalManagerView;
-        if (manager.model.child is FrameworkView)
+        if (manager.model.child is FrameworkView) {
           return manager.model.child as FrameworkView;
+        }
       }
     }
     return null;
@@ -184,8 +185,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
       var configuration = _pages.last.arguments as PageConfiguration;
       if (configuration.route != null) {
         var route = configuration.route!;
-        if (route.popDisposition == RoutePopDisposition.doNotPop)
+        if (route.popDisposition == RoutePopDisposition.doNotPop) {
           canPop = false;
+        }
         if (!canPop) route.onPopInvoked(canPop);
       }
     }
@@ -312,12 +314,14 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
       Page? page;
 
       var route = ModalRoute.of(context);
-      if ((route?.settings != null) && (route!.settings is Page))
+      if ((route?.settings != null) && (route!.settings is Page)) {
         page = (route.settings as Page);
+      }
 
       // position 0 implies top of stack, 1 page before, ... etc
-      if (page != null && _pages.contains(page))
+      if (page != null && _pages.contains(page)) {
         index = (_pages.length - _pages.indexOf(page) - 1).abs();
+      }
     } catch (e) {
       Log().debug('$e');
     }
@@ -331,8 +335,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
     Page? page;
     try {
       var route = ModalRoute.of(context);
-      if ((route?.settings != null) && (route!.settings is Page))
+      if ((route?.settings != null) && (route!.settings is Page)) {
         page = (route.settings as Page);
+      }
     } catch (e) {
       Log().debug('$e');
     }
@@ -475,8 +480,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
           String name = page.name ?? '';
           return name.split('?')[0] == until;
         });
-        if ((page != null) && (_pages.last != page))
+        if ((page != null) && (_pages.last != page)) {
           pages = _pages.length - _pages.indexOf(page) - 1;
+        }
       }
     }
 
@@ -581,8 +587,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
   void setPageTitle(BuildContext context, String? title) {
     if (!isNullOrEmpty(title)) {
       Page? page = getPage(context);
-      if ((page is CustomMaterialPage) && (page.arguments is PageConfiguration))
+      if ((page is CustomMaterialPage) && (page.arguments is PageConfiguration)) {
         (page.arguments as PageConfiguration).title = title;
+      }
     }
   }
 }

@@ -218,8 +218,9 @@ class SocketModel extends DataSourceModel
       if (size == 0) return ok;
 
       // replace file references
-      if (scope != null)
+      if (scope != null) {
         message = await scope!.replaceFileReferences(message) ?? "";
+      }
 
       // send message in parts?
       if (maxPartSize != null &&
@@ -407,8 +408,9 @@ class SocketModel extends DataSourceModel
         String? message = toStr(elementAt(arguments, 0)) ?? body;
         bool? asBinary = toBool(elementAt(arguments, 1));
         int? maxPartSize = toInt(elementAt(arguments, 2));
-        if (!isNullOrEmpty(message))
+        if (!isNullOrEmpty(message)) {
           send(message!, asBinary: asBinary, maxPartSize: maxPartSize);
+        }
         return true;
 
       case "read":
@@ -423,7 +425,8 @@ class SocketModel extends DataSourceModel
 
   onUrlChange(Observable observable) async {
     // reconnect if the url changes
-    if ((initialized == true) && (autoexecute == true) && (enabled != false))
+    if ((initialized == true) && (autoexecute == true) && (enabled != false)) {
       await socket?.reconnect(url);
+    }
   }
 }

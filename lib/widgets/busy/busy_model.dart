@@ -130,8 +130,9 @@ class BusyModel extends DecoratedWidgetModel {
 
     // expand="false" is same as adding attribute shrink
     var expand = Xml.get(node: xml, tag: 'expand');
-    if (expand == null && Xml.hasAttribute(node: xml, tag: 'shrink'))
+    if (expand == null && Xml.hasAttribute(node: xml, tag: 'shrink')) {
       expand = 'false';
+    }
     this.expand = expand;
   }
 

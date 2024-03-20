@@ -37,8 +37,9 @@ class Template {
       String? xml = template.document.toString();
 
       // Replace Bindings in Xml
-      if (parameters != null)
+      if (parameters != null) {
         xml = Binding.applyMap(xml, parameters, caseSensitive: false);
+      }
 
       // Replace query parameters
       xml = Binding.applyMap(xml, System.app?.queryParameters,
@@ -73,8 +74,9 @@ class Template {
       String? xml = template.document.toString();
 
       // Replace Bindings in Xml
-      if (parameters != null)
+      if (parameters != null) {
         xml = Binding.applyMap(xml, parameters, caseSensitive: false);
+      }
 
       // Replace query parameters
       xml = Binding.applyMap(xml, System.app?.queryParameters,

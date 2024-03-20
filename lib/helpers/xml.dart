@@ -56,8 +56,9 @@ class Xml {
   /// Returns an empty String if invalid characters are present in either String
   static String toAttribute(String name, String value) {
     String xml = "";
-    if ((!hasIllegalCharacters(name)) && (!hasIllegalCharacters(value)))
+    if ((!hasIllegalCharacters(name)) && (!hasIllegalCharacters(value))) {
       xml = " $name=\"$value\"";
+    }
     return xml;
   }
 
@@ -126,8 +127,9 @@ class Xml {
     while (firstElement(node: parent) != null) {
       parent = firstElement(node: parent)!;
     }
-    if ((parent.parent != null) && (parent.parent is XmlElement))
+    if ((parent.parent != null) && (parent.parent is XmlElement)) {
       return parent.parent as XmlElement?;
+    }
     return parent as XmlElement?;
   }
 

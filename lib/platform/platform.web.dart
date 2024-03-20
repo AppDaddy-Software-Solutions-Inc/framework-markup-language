@@ -131,8 +131,9 @@ class Platform {
   static String get title {
     String? title;
     var e = window.document.getElementsByName("description");
-    if (e.isNotEmpty && e.first is MetaElement)
+    if (e.isNotEmpty && e.first is MetaElement) {
       title = (e.first as MetaElement).content;
+    }
     return title ?? FmlEngine.title;
   }
 

@@ -461,10 +461,12 @@ class ConstraintModel extends WidgetModel {
   Constraints get tightest => constraints;
   Constraints get tightestOrDefault {
     var constraints = tightest;
-    if (constraints.height == null && constraints.maxHeight == null)
+    if (constraints.height == null && constraints.maxHeight == null) {
       constraints.maxHeight = System().screenheight.toDouble();
-    if (constraints.width == null && constraints.maxWidth == null)
+    }
+    if (constraints.width == null && constraints.maxWidth == null) {
       constraints.maxWidth = System().screenwidth.toDouble();
+    }
     return constraints;
   }
 
@@ -479,42 +481,49 @@ class ConstraintModel extends WidgetModel {
   /// the first system non-null minWidth value
   double get myMinWidth {
     if (system.minWidth != null) return system.minWidth!;
-    if (parent is ViewableWidgetModel)
+    if (parent is ViewableWidgetModel) {
       return (parent as ViewableWidgetModel).myMinWidth;
+    }
     return 0;
   }
 
   /// walks up the model tree looking for
   /// the first system non-null maxHeight value
   double get myMaxWidth {
-    if (system.maxWidth != null && system.maxWidth != double.infinity)
+    if (system.maxWidth != null && system.maxWidth != double.infinity) {
       return system.maxWidth!;
+    }
     if (width != null) return width!;
     if (maxWidth != null) return maxWidth!;
-    if (parent is ViewableWidgetModel)
+    if (parent is ViewableWidgetModel) {
       return (parent as ViewableWidgetModel).myMaxWidth;
+    }
     return 0;
   }
 
   /// walks up the model tree looking for
   /// the first system non-null minHeight value
   double get myMinHeight {
-    if (system.minHeight != null && system.minHeight != double.infinity)
+    if (system.minHeight != null && system.minHeight != double.infinity) {
       return system.minHeight!;
-    if (parent is ViewableWidgetModel)
+    }
+    if (parent is ViewableWidgetModel) {
       return (parent as ViewableWidgetModel).myMinHeight;
+    }
     return 0;
   }
 
   /// walks up the model tree looking for
   /// the first system non-null maxHeight value
   double get myMaxHeight {
-    if (system.maxHeight != null && system.maxHeight != double.infinity)
+    if (system.maxHeight != null && system.maxHeight != double.infinity) {
       return system.maxHeight!;
+    }
     if (height != null) return height!;
     if (maxHeight != null) return maxHeight!;
-    if (parent is ViewableWidgetModel)
+    if (parent is ViewableWidgetModel) {
       return (parent as ViewableWidgetModel).myMaxHeight;
+    }
     return 0;
   }
 
@@ -535,24 +544,30 @@ class ConstraintModel extends WidgetModel {
   // if the widgets own constraints specify a maxWidth then that is used
   // otherwise it gets the maxWidth from its parent walking up the model tree
   double get myMaxWidthForPercentage {
-    if (system.maxWidth != null && system.maxWidth != double.infinity)
+    if (system.maxWidth != null && system.maxWidth != double.infinity) {
       return system.maxWidth!;
-    if (parent is ViewableWidgetModel)
+    }
+    if (parent is ViewableWidgetModel) {
       return (parent as ViewableWidgetModel).myMaxWidth;
-    if (maxWidth == null || maxWidth == double.infinity)
+    }
+    if (maxWidth == null || maxWidth == double.infinity) {
       maxWidth = System().screenwidth.toDouble();
+    }
     return maxWidth!;
   }
 
   // if the widgets own constraints specify a maxWidth then that is used
   // otherwise it gets the maxWidth from its parent walking up the model tree
   double get calculatedMaxHeightForPercentage {
-    if (system.maxHeight != null && maxHeight != double.infinity)
+    if (system.maxHeight != null && maxHeight != double.infinity) {
       return system.maxHeight!;
-    if (parent is ViewableWidgetModel)
+    }
+    if (parent is ViewableWidgetModel) {
       return (parent as ViewableWidgetModel).myMaxHeight;
-    if (maxHeight == null || maxHeight == double.infinity)
+    }
+    if (maxHeight == null || maxHeight == double.infinity) {
       return System().screenheight.toDouble();
+    }
     return maxHeight!;
   }
 }

@@ -408,8 +408,9 @@ class _InputViewState extends WidgetState<InputView>
     }
 
     var inputType = TextInputType.text;
-    if (keyboardType != null && keyboardTypes.containsKey(keyboardType))
+    if (keyboardType != null && keyboardTypes.containsKey(keyboardType)) {
       inputType = keyboardTypes[keyboardType]!;
+    }
     return inputType;
   }
 
@@ -486,8 +487,9 @@ class _InputViewState extends WidgetState<InputView>
     }
     var padding = EdgeInsets.only(
         left: 10, top: paddingTop, right: 10, bottom: paddingBottom);
-    if (widget.model.dense == true)
+    if (widget.model.dense == true) {
       padding = const EdgeInsets.only(left: 6, top: 0, right: 6, bottom: 0);
+    }
 
     var decoration = InputDecoration(
       isDense: false,
@@ -623,15 +625,17 @@ class _InputViewState extends WidgetState<InputView>
         onSubmitted: _handleSubmit);
 
     // dense
-    if (widget.model.dense)
+    if (widget.model.dense) {
       view = Padding(padding: const EdgeInsets.all(4), child: view);
+    }
 
     // get the model constraints
     var modelConstraints = widget.model.constraints;
 
     // constrain the input to 200 pixels if not constrained by the model
-    if (!modelConstraints.hasHorizontalExpansionConstraints)
+    if (!modelConstraints.hasHorizontalExpansionConstraints) {
       modelConstraints.width = 200;
+    }
 
     // add margins
     view = addMargins(view);

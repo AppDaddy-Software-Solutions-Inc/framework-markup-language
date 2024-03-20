@@ -67,6 +67,47 @@
 
         </activity>
 
+        <!-- client icons -->
+
+        <!-- appdaddy -->
+        <activity-alias
+            android:name=".appdaddy"
+            android:enabled="false"
+            android:icon="@mipmap/appdaddy"
+            android:label="AppDaddy Software"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+
+        <!-- goodyear -->
+        <activity-alias
+            android:name=".goodyear"
+            android:enabled="false"
+            android:icon="@mipmap/goodyear"
+            android:label="Goodyear Inc."
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+
+        <!-- rocketfunds -->
+        <activity-alias
+            android:name=".rocketfunds"
+            android:enabled="false"
+            android:icon="@mipmap/rocketfunds"
+            android:label="Rocket Funds"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />

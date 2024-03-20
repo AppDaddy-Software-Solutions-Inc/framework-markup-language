@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'package:changeicon/changeicon.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/application/application_model.dart';
@@ -11,6 +12,9 @@ import 'package:fml/widgets/widget/widget_model.dart';
 
 class Store extends WidgetModel implements IModelListener {
   final List<ApplicationModel> _apps = [];
+
+  // changes the app icon on the desktop
+  Changeicon? _changeiconPlugin;
 
   List<ApplicationModel> getApps() => _apps.toList();
 
@@ -82,6 +86,8 @@ class Store extends WidgetModel implements IModelListener {
     // get the home page
     var page = app.homePage;
 
+    changeIcon(app);
+
     // set the system app
     app.started = false;
     System().launchApplication(app, true);
@@ -93,6 +99,31 @@ class Store extends WidgetModel implements IModelListener {
     NavigationManager().setNewRoutePath(
         PageConfiguration(uri: Uri.tryParse(page), title: "Store"),
         source: "store");
+  }
+
+  void changeIcon(ApplicationModel app)
+  {
+    if (_changeiconPlugin == null) {
+      Changeicon.initialize(
+        classNames: ['MainActivity', 'appdaddy', 'goodyear', 'rocketfunds']);
+
+      _changeiconPlugin = Changeicon();
+    }
+
+    if (app.url.toLowerCase().contains('goodyear'))
+    {
+      _changeiconPlugin?.switchIconTo(classNames: ['goodyear']);
+    }
+
+    if (app.url.toLowerCase().contains('rocketfunds'))
+    {
+      _changeiconPlugin?.switchIconTo(classNames: ['rocketfunds']);
+    }
+
+    if (app.url.toLowerCase().contains('appdaddy'))
+    {
+      _changeiconPlugin?.switchIconTo(classNames: ['appdaddy']);
+    }
   }
 
   @override

@@ -329,9 +329,10 @@ class StackRenderer extends RenderBox
       if (!childData.isPositioned) {
         // get child constraints
         var childConstraints = myConstraints;
-        if (childData.model != null)
+        if (childData.model != null) {
           childConstraints =
               getChildLayoutConstraints(constraints, child, childData.model!);
+        }
 
         // calculate the child's size by performing
         // a dry layout. We use LocalBoxConstraints in order to

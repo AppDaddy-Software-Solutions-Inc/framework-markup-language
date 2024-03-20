@@ -40,12 +40,13 @@ class _LinkViewState extends WidgetState<LinkView> {
     Widget view = BoxView(widget.model);
 
     // wrap in gesture detector
-    if (widget.model.enabled)
+    if (widget.model.enabled) {
       view = GestureDetector(
           onTap: onTap,
           onLongPress: onLongPress,
           onDoubleTap: onDoubleTap,
           child: MouseRegion(cursor: SystemMouseCursors.click, child: view));
+    }
 
     // build the child views
     return view;

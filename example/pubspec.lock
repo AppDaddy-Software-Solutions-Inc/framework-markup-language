@@ -193,6 +193,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1+9"
+  changeicon:
+    dependency: transitive
+    description:
+      name: changeicon
+      sha256: "391b539b1b016463106ab92089ceec331b616b4c4ca9f294e43806c682e8e956"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   characters:
     dependency: transitive
     description:

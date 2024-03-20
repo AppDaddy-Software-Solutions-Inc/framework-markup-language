@@ -51,7 +51,7 @@ class User {
 
   static User? _fromMap(dynamic map) {
     User? user;
-    if (map is Map<String, dynamic>)
+    if (map is Map<String, dynamic>) {
       user = User(
           key: fromMap(map, "key"),
           username: fromMap(map, "username"),
@@ -59,6 +59,7 @@ class User {
           language: fromMap(map, "language"),
           rights: fromMapAsInt(map, "rights"),
           map: map);
+    }
     return user;
   }
 

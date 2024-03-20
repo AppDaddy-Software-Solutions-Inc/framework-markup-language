@@ -291,8 +291,9 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
     if (!caseSensitive) pattern = pattern.toLowerCase();
 
     // return visible options
-    if (isNullOrEmpty(pattern))
+    if (isNullOrEmpty(pattern)) {
       return options.where((option) => option.visible).toList();
+    }
 
     // matching options at top of list
     return options

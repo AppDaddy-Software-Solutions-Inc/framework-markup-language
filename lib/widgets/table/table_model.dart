@@ -796,10 +796,11 @@ class TableModel extends BoxModel implements IForm {
       if (ok) ok = await header?.onChangeHandler() ?? true;
 
       // fire the table's change handler
-      if (ok)
+      if (ok) {
         ok = _onChange != null
             ? await EventHandler(this).execute(_onChange)
             : true;
+      }
 
       // on fail, restore old value
       if (!ok) {

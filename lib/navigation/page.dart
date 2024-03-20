@@ -156,12 +156,15 @@ class CustomPageBasedMaterialPageRoute<T> extends PageRoute<T>
         PageTransitionsBuilder builder = const ZoomPageTransitionsBuilder();
 
         var platform = Theme.of(context).platform;
-        if (platform == TargetPlatform.iOS)
+        if (platform == TargetPlatform.iOS) {
           builder = const CupertinoPageTransitionsBuilder();
-        if (platform == TargetPlatform.linux)
+        }
+        if (platform == TargetPlatform.linux) {
           builder = const OpenUpwardsPageTransitionsBuilder();
-        if (platform == TargetPlatform.macOS)
+        }
+        if (platform == TargetPlatform.macOS) {
           builder = const FadeUpwardsPageTransitionsBuilder();
+        }
 
         return builder.buildTransitions(
             this, context, animation, secondaryAnimation, child);

@@ -46,8 +46,9 @@ class IconObservable extends Observable {
     IconData? icon;
     if (libraryLoader?.isCompleted ?? false) {
       name = name.toLowerCase();
-      if (icons.Graphics.icons.containsKey(name))
+      if (icons.Graphics.icons.containsKey(name)) {
         icon = icons.Graphics.icons[name];
+      }
     } else {
       _pendingIcon = name;
       icon = Icons.horizontal_rule;

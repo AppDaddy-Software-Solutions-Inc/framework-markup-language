@@ -93,8 +93,9 @@ class Phrases {
   }
 
   String get unauthorizedAccess {
-    if (language == french)
+    if (language == french) {
       return '(FR) You are not authorized to access this page';
+    }
     return 'You are not authorized to access this page';
   }
 
@@ -149,8 +150,9 @@ class Phrases {
   }
 
   String get continueQuitting {
-    if (language == french)
+    if (language == french) {
       return '(FR) You have unsaved changes. Continue quitting?';
+    }
     return 'You have unsaved changes. Continue quitting?';
   }
 
@@ -160,8 +162,9 @@ class Phrases {
   }
 
   String get confirmExit {
-    if (language == french)
+    if (language == french) {
       return '(FR) Are you sure you want to exit the app?';
+    }
     return 'Are you sure you want to exit the app?';
   }
 
@@ -186,8 +189,9 @@ class Phrases {
   }
 
   String get appUrl {
-    if (language == french)
+    if (language == french) {
       return '(FR) Application URL (https://yoursite.com)';
+    }
     return 'Application URL (https://yoursite.com)';
   }
 
@@ -227,8 +231,9 @@ class Phrases {
   }
 
   String get clickToConnect {
-    if (language == french)
+    if (language == french) {
       return "(FR) Click the + button to connect an application";
+    }
     return "Click the + button to connect an application";
   }
 
@@ -253,8 +258,9 @@ class Phrases {
   }
 
   String get somethingWentWrong {
-    if (language == french)
+    if (language == french) {
       return '(FR) Something went wrong.\n Try going back or restarting the application.\n If this problem persists please contact us.';
+    }
     return 'Something went wrong.\n Try going back or restarting the application.\n If this problem persists please contact us.';
   }
 

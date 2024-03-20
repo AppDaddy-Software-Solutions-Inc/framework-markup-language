@@ -154,9 +154,10 @@ class Eval {
           (myParsedResult is Success) ? myParsedResult.value : null;
 
       // failed parse?
-      if (myParsedExpression == null)
+      if (myParsedExpression == null) {
         throw (Exception(
             'Failed to parse $myExpression. Error is ${myParsedResult.message}'));
+      }
 
       // required to replace quoted string observables
       myParsedExpression = replaceInLiterals(myParsedExpression, myVariables);
@@ -242,8 +243,9 @@ class Eval {
     DateTime? result;
 
     if (inputFormat is String) inputFormat = inputFormat.replaceAll('Y', 'y');
-    if (outputFormat is String)
+    if (outputFormat is String) {
       outputFormat = outputFormat.replaceAll('Y', 'y');
+    }
 
     if (isNumeric(datetime)) {
       result = DateTime.fromMillisecondsSinceEpoch(toNum(datetime) as int);
@@ -523,8 +525,9 @@ class Eval {
     double? lat2 = toDouble(latitude2);
     double? lon2 = toDouble(longitude2);
 
-    if (lat1 == null || lon1 == null || lat2 == null || lon2 == null)
+    if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) {
       return null;
+    }
 
     var earthRadius = 6378137.0;
 
@@ -674,9 +677,10 @@ class Eval {
       dynamic v9,
       dynamic r9]) {
     // legacy k1, v2, k2, v2 ... up to 10 values
-    if (v0 is! List)
+    if (v0 is! List) {
       return _case(value, [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9],
           [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9]);
+    }
 
     if (r0 is! List) {
       var list = v0;
@@ -752,8 +756,9 @@ class Eval {
   static int _indexOf(dynamic object, dynamic list) {
     if (list is List) {
       if (list.contains(object)) return list.indexOf(object);
-      if (object is List && object.isNotEmpty && list.contains(object.first))
+      if (object is List && object.isNotEmpty && list.contains(object.first)) {
         return list.indexOf(object.first);
+      }
     }
     if (list != null && list == object) return 0;
     return -1;
@@ -841,8 +846,9 @@ class Eval {
   /// Takes in 2 DateTime Strings and returns true if the first is after the second
   /// otherwise it returns false except, when an input is an invalid format it will return null.
   static bool? _isAfter(dynamic dts1, dynamic dts2) {
-    if (dts1 == null || dts1 is! String || dts2 == null || dts2 is! String)
+    if (dts1 == null || dts1 is! String || dts2 == null || dts2 is! String) {
       return null;
+    }
     DateTime? dt1 = toDate(dts1);
     DateTime? dt2 = toDate(dts2);
     if (dt1 == null || dt2 == null) return null;
@@ -852,8 +858,9 @@ class Eval {
   /// Takes in 2 DateTime Strings and returns true if the first is before the second
   /// otherwise it returns false, except when an input is an invalid format it will return null.
   static bool? _isBefore(dynamic dts1, dynamic dts2) {
-    if (dts1 == null || dts1 is! String || dts2 == null || dts2 is! String)
+    if (dts1 == null || dts1 is! String || dts2 == null || dts2 is! String) {
       return null;
+    }
     DateTime? dt1 = toDate(dts1);
     DateTime? dt2 = toDate(dts2);
     if (dt1 == null || dt2 == null) return null;
@@ -863,8 +870,9 @@ class Eval {
   /// Takes in 2 DateTime Strings and returns a human readable string describing the time between.
   /// When either input is an invalid format it will return null.
   static String? _timeBetween(dynamic dts1, dynamic dts2) {
-    if (dts1 == null || dts1 is! String || dts2 == null || dts2 is! String)
+    if (dts1 == null || dts1 is! String || dts2 == null || dts2 is! String) {
       return null;
+    }
     DateTime? dt1 = toDate(dts1);
     DateTime? dt2 = toDate(dts2);
     if (dt1 == null || dt2 == null) return null;
@@ -874,8 +882,9 @@ class Eval {
   /// Takes in a plain language time value String and adds it to a DateTime String.
   /// Plain language time values ie: `500ms`, `1 year`, `3 weeks`, for more see [TimeUnitDuration]
   static String? _addTime(dynamic add, dynamic dts) {
-    if (add == null || add is! String || dts == null || dts is! String)
+    if (add == null || add is! String || dts == null || dts is! String) {
       return null;
+    }
     TimeUnitDuration addTUD = TimeUnitDuration.fromString(add);
     if (addTUD.amount == 0) return null;
     DateTime? dt = toDate(dts);

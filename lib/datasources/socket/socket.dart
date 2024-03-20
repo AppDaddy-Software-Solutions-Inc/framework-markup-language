@@ -163,8 +163,9 @@ class Socket {
       await connect();
 
       // send the message
-      if (connected && message != null && _socket != null)
+      if (connected && message != null && _socket != null) {
         _socket!.sink.add(message);
+      }
     } catch (e) {
       ok = false;
       Log().error('SOCKET:: Error sending message to $url');

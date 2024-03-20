@@ -200,8 +200,9 @@ class MqttMobile implements IMqtt {
 
     final builder = MqttClientPayloadBuilder();
     builder.addString(msg);
-    if (builder.payload != null)
+    if (builder.payload != null) {
       client.publishMessage(topic, MqttQos.atMostOnce, builder.payload!);
+    }
 
     return true;
   }

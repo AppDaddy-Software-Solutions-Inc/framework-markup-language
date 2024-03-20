@@ -150,8 +150,9 @@ class FrameworkViewState extends State<FrameworkView>
 
     // framework is top level model?
     // cleanup the model
-    if (widget.model.findAncestorOfExactType(FrameworkModel) == null)
+    if (widget.model.findAncestorOfExactType(FrameworkModel) == null) {
       widget.model.dispose();
+    }
 
     // remove event listeners
     widget.model.removeEventListener(EventTypes.home, onHome);
@@ -194,14 +195,16 @@ class FrameworkViewState extends State<FrameworkView>
   @override
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
     var b = Binding.fromString(property);
-    if (mounted && widget.model.initialized && b?.property != 'busy')
+    if (mounted && widget.model.initialized && b?.property != 'busy') {
       setState(() {});
+    }
   }
 
   bool onScroll(ScrollNotification notification) {
     if ((notification.metrics.axisDirection == AxisDirection.left) ||
-        (notification.metrics.axisDirection == AxisDirection.right))
+        (notification.metrics.axisDirection == AxisDirection.right)) {
       return false;
+    }
 
     double maxHeight = widget.model.header?.height ??
         widget.model.header?.constraints.maxHeight ??
@@ -268,8 +271,9 @@ class FrameworkViewState extends State<FrameworkView>
   void onDragEnd(DragEndDetails details) {
     double velocity = details.velocity.pixelsPerSecond.dx.abs();
     double distance = (last - start);
-    if ((swiping) && (distance > 50) && (velocity > 100))
+    if ((swiping) && (distance > 50) && (velocity > 100)) {
       NavigationManager().back(1);
+    }
     swiping = false;
     start = 0;
     last = 0;
@@ -390,9 +394,10 @@ class FrameworkViewState extends State<FrameworkView>
 
     // listen to scroll events if the body
     // is wrapped in a Scroller
-    if (body.findChildOfExactType(ScrollerModel) != null)
+    if (body.findChildOfExactType(ScrollerModel) != null) {
       view = NotificationListener<ScrollNotification>(
           onNotification: onScroll, child: view);
+    }
 
     var height = viewportHeight - usedHeight;
     var width = viewportWidth;
@@ -503,8 +508,9 @@ class FrameworkViewState extends State<FrameworkView>
     /// Pages on Navigator stack rebuild when a new page is pushed
     /// https://github.com/flutter/flutter/issues/11655
     /// This hack prevents rebuiling the page that is being navigated away from.
-    if (NavigationManager().positionInStack(context) != 0)
+    if (NavigationManager().positionInStack(context) != 0) {
       return view ?? _buildWait();
+    }
 
     // model has initialized. show framework
     return LayoutBuilder(builder: builder);

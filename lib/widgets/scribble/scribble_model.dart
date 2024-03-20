@@ -20,9 +20,10 @@ class ScribbleModel extends FormFieldModel implements IFormField {
       _value!.set(v);
     } else {
       if ((v != null) ||
-          (WidgetModel.isBound(this, Binding.toKey(id, 'value'))))
+          (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) {
         _value = StringObservable(Binding.toKey(id, 'value'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
 

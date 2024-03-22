@@ -35,8 +35,16 @@ class Splash extends StatefulWidget {
     // wait for system apps to load
     await System.appsLoaded.future;
 
+    var delay = toInt(System.defaultApp?.splashDelay) ?? defaultDelay;
+
+    // skip the splash image
+    if (delay <= 0) return onInitializationComplete?.call();
+
+    // build image
+    var image = _getSplashImage();
+
     // set splash image
-    image.complete(_getSplashImage());
+    this.image.complete(image);
 
     // wait for the system to initialize
     await System.initialized.future;
@@ -48,8 +56,6 @@ class Splash extends StatefulWidget {
     var elapsed = ((ended - started)/1000).ceil();
 
     // splash screen display time (seconds)
-    var app = System.defaultApp;
-    var delay = toInt(app?.splashDelay) ?? defaultDelay;
     delay = min(delay,maxDelay);
 
     // pause start to show display screen just a little longer?
@@ -92,6 +98,13 @@ class Splash extends StatefulWidget {
 
 class _SplashState extends State<Splash> {
 
+  Widget _getWaitScreen()
+  {
+    Widget view =  SizedBox(width: 50, height: 50, child: CircularProgressIndicator.adaptive());
+    view = Container(child: Center(child: view));
+    return view;
+  }
+
   Widget _getSplashScreen(BoxConstraints constraints, Widget image)
   {
     Widget view = image;
@@ -125,9 +138,7 @@ class _SplashState extends State<Splash> {
     var view = FutureBuilder(
         future: widget.image.future,
         builder: (context, snapshot) =>
-        snapshot.hasData ?
-        _getSplashScreen(constraints, snapshot.data!) :
-        Container());
+        snapshot.hasData ? _getSplashScreen(constraints, snapshot.data!) : _getWaitScreen());
 
     return MaterialApp(home: view);
   }

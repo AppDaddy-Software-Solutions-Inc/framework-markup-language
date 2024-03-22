@@ -217,7 +217,7 @@ class DatepickerViewState extends WidgetState<DatepickerView> {
             initialEntryMode: tmode);
       }
     }
-    if (date == null || time == null) return;
+    if (date == null) return;
 
     // set the value
     widget.model.setValue(date, time, format);

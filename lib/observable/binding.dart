@@ -70,8 +70,9 @@ class Binding {
       // remove braces
       binding = binding.trim();
       if (binding.startsWith("{")) binding = binding.substring(1);
-      if (binding.endsWith("}"))
+      if (binding.endsWith("}")) {
         binding = binding.substring(0, binding.length - 1);
+      }
 
       String? scope;
       String? source;
@@ -83,9 +84,9 @@ class Binding {
 
       // scoped?
       var myScope = parts[0].trim();
-      if (System.app != null &&
+      if (System.currentApp != null &&
           parts.length > 1 &&
-          System.app!.scopeManager.hasScope(myScope)) {
+          System.currentApp!.scopeManager.hasScope(myScope)) {
         scope = myScope;
         parts.removeAt(0);
       }
@@ -126,7 +127,7 @@ class Binding {
       if (isNullOrEmpty(property)) property = 'value';
 
       // create the bindable
-      if (source!.isNotEmpty)
+      if (source!.isNotEmpty) {
         return Binding(
             scope: scope,
             signature: signature,
@@ -134,6 +135,7 @@ class Binding {
             property: property!,
             dotnotation: subproperties,
             offset: offset);
+      }
     } catch (e) {
       return null;
     }
@@ -152,8 +154,9 @@ class Binding {
 
       // parse
       if (v is List) {
-        if ((offset != null) && (offset! >= 0) && (v.length > offset!))
+        if ((offset != null) && (offset! >= 0) && (v.length > offset!)) {
           v = v[offset!];
+        }
         if (dotnotation != null) v = Data.read(v, dotnotation?.signature);
       }
 
@@ -222,8 +225,9 @@ class Binding {
         String oldValue =
             "{${isNullOrEmpty(prefix) ? (isNullOrEmpty(source) ? '' : '${source!}.') : prefix!}$key}";
         String? newValue = (value ?? '').toString();
-        if ((encode) && (Xml.hasIllegalCharacters(newValue)))
+        if ((encode) && (Xml.hasIllegalCharacters(newValue))) {
           newValue = Xml.encodeIllegalCharacters(newValue);
+        }
 
         if (caseSensitive) {
           xml = xml!.replaceAll(oldValue, newValue!);

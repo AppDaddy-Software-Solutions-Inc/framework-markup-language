@@ -18,7 +18,7 @@ class MqttWeb implements IMqtt {
   final String? username;
   final String? password;
   final String identifier =
-      "${System.app?.user.claim('name') ?? 'unknown'} : ${newId()}";
+      "${System.currentApp?.user.claim('name') ?? 'unknown'} : ${newId()}";
   final int keepalive = 60;
 
   bool connected = false;
@@ -198,8 +198,9 @@ class MqttWeb implements IMqtt {
 
     final builder = MqttClientPayloadBuilder();
     builder.addString(msg);
-    if (builder.payload != null)
+    if (builder.payload != null) {
       client.publishMessage(topic, MqttQos.atMostOnce, builder.payload!);
+    }
 
     return true;
   }

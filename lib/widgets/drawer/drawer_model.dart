@@ -130,9 +130,10 @@ class DrawerModel extends DecoratedWidgetModel {
           // add attributes
           for (var attribute in node.attributes) {
             var name = attribute.localName.toLowerCase();
-            if (name != "width" && name != "height" && name != "side")
+            if (name != "width" && name != "height" && name != "side") {
               drawer.attributes
                   .add(XmlAttribute(XmlName(name), attribute.value));
+            }
           }
 
           // Assign ids
@@ -168,8 +169,9 @@ class DrawerModel extends DecoratedWidgetModel {
 
           List<XmlElement> nodes = [];
           for (var node in node.children) {
-            if (node.nodeType == XmlNodeType.ELEMENT)
+            if (node.nodeType == XmlNodeType.ELEMENT) {
               nodes.add(node.copy() as XmlElement);
+            }
           }
 
           drawer.children.addAll(nodes);
@@ -216,20 +218,24 @@ class DrawerModel extends DecoratedWidgetModel {
 
     // This grabs the deserializes xml generated from fromXmlList()
     element = Xml.getChildElement(node: xml, tag: "TOP");
-    if (element != null)
+    if (element != null) {
       top = DrawerItemModel.fromXml(this, element, DrawerPositions.top);
+    }
 
     element = Xml.getChildElement(node: xml, tag: "BOTTOM");
-    if (element != null)
+    if (element != null) {
       bottom = DrawerItemModel.fromXml(this, element, DrawerPositions.bottom);
+    }
 
     element = Xml.getChildElement(node: xml, tag: "LEFT");
-    if (element != null)
+    if (element != null) {
       left = DrawerItemModel.fromXml(this, element, DrawerPositions.left);
+    }
 
     element = Xml.getChildElement(node: xml, tag: "RIGHT");
-    if (element != null)
+    if (element != null) {
       right = DrawerItemModel.fromXml(this, element, DrawerPositions.right);
+    }
 
     // properties
     side = Xml.get(node: xml, tag: 'side');

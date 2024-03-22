@@ -90,8 +90,9 @@ class _PopoverViewState extends WidgetState<PopoverView> {
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible || widget.model.items.isEmpty)
+    if (!widget.model.visible || widget.model.items.isEmpty) {
       return const Offstage();
+    }
 
     // build the view
     Widget view = _buildPopover();

@@ -174,9 +174,10 @@ class TabModel extends BoxModel {
     if (nodes != null) {
       for (XmlElement node in nodes) {
         FrameworkModel? model = FrameworkModel.fromXml(this, node);
-        if (model != null)
+        if (model != null) {
           views[Xml.attribute(node: node, tag: "id") ?? i.toString()] =
               model.getView() as FrameworkView;
+        }
         i++;
       }
     }

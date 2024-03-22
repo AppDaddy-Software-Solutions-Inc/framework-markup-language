@@ -48,13 +48,14 @@ class Log {
 
   static Log? _fromMap(dynamic map) {
     Log? log;
-    if (map is Map)
+    if (map is Map) {
       log = Log(
           key: fromMap(map, "key"),
           type: fromMap(map, "type"),
           epoch: fromMapAsInt(map, "epoch"),
           message: fromMap(map, "message"),
           caller: fromMap(map, "caller"));
+    }
     return log;
   }
 

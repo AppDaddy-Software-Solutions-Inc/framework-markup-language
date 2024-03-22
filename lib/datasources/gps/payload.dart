@@ -25,33 +25,43 @@ class Payload {
       this.username});
 
   serialize(XmlElement node) {
-    if (accuracy != null)
+    if (accuracy != null) {
       node.attributes
           .add(XmlAttribute(XmlName('accuracy'), accuracy.toString()));
-    if (latitude != null)
+    }
+    if (latitude != null) {
       node.attributes
           .add(XmlAttribute(XmlName('latitude'), latitude.toString()));
-    if (longitude != null)
+    }
+    if (longitude != null) {
       node.attributes
           .add(XmlAttribute(XmlName('longitude'), longitude.toString()));
-    if (altitude != null)
+    }
+    if (altitude != null) {
       node.attributes
           .add(XmlAttribute(XmlName('altitude'), altitude.toString()));
-    if (speed != null)
+    }
+    if (speed != null) {
       node.attributes
           .add(XmlAttribute(XmlName('altitude'), altitude.toString()));
-    if (speedaccuracy != null)
+    }
+    if (speedaccuracy != null) {
       node.attributes.add(XmlAttribute(XmlName('speed'), speed.toString()));
-    if (heading != null)
+    }
+    if (heading != null) {
       node.attributes.add(XmlAttribute(XmlName('heading'), heading.toString()));
-    if (epoch != null)
+    }
+    if (epoch != null) {
       node.attributes.add(XmlAttribute(XmlName('epoch'), epoch.toString()));
-    if (epoch != null)
+    }
+    if (epoch != null) {
       node.attributes.add(XmlAttribute(XmlName('time'),
           DateTime.fromMillisecondsSinceEpoch(epoch!).toLocal().toString()));
+    }
     if (user != null) node.attributes.add(XmlAttribute(XmlName('user'), user!));
-    if (username != null)
+    if (username != null) {
       node.attributes.add(XmlAttribute(XmlName('username'), username!));
+    }
   }
 
   Map<String, String> get map {

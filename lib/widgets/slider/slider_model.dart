@@ -102,9 +102,7 @@ class SliderModel extends FormFieldModel implements IFormField {
     bool ok = true;
     touched = true;
     if (value != v) {
-      ///////////////
-      /* Old Value */
-      ///////////////
+      // Old Value
       var oldValue = value;
       if (range != true) {
         value = v.round();
@@ -118,34 +116,26 @@ class SliderModel extends FormFieldModel implements IFormField {
         value = '${value1.round()},${value2.round()}';
       }
 
-      /////////////////
-      /* Old GeoCode */
-      /////////////////
+      // Old GeoCode
       var oldGeocode = geocode;
       geocode = Payload(
           latitude: System().currentLocation?.latitude,
           longitude: System().currentLocation?.longitude,
           altitude: System().currentLocation?.altitude,
           epoch: DateTime.now().millisecondsSinceEpoch,
-          user: System.app?.user.claim('key'),
-          username: System.app?.user.claim('name'));
+          user: System.currentApp?.user.claim('key'),
+          username: System.currentApp?.user.claim('name'));
 
-      //////////
-      /* Save */
-      //////////
+      // Save
       //ok = await save();
 
-      /////////////////
-      /* Save Failed */
-      /////////////////
+      // Save Failed
       if (ok == false) {
         value = oldValue;
         geocode = oldGeocode;
       }
 
-      //////////////////
-      /* Save Success */
-      //////////////////
+      // Save Success
       else {
         dirty = true;
       }
@@ -154,9 +144,7 @@ class SliderModel extends FormFieldModel implements IFormField {
     return ok;
   }
 
-  ///////////
-  /* Range */
-  ///////////
+  // Range
   BooleanObservable? _range;
   set range(dynamic v) {
     if (_range != null) {

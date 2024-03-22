@@ -37,15 +37,16 @@ class Template {
       String? xml = template.document.toString();
 
       // Replace Bindings in Xml
-      if (parameters != null)
+      if (parameters != null) {
         xml = Binding.applyMap(xml, parameters, caseSensitive: false);
+      }
 
       // Replace query parameters
-      xml = Binding.applyMap(xml, System.app?.queryParameters,
+      xml = Binding.applyMap(xml, System.currentApp?.queryParameters,
           caseSensitive: false);
 
       // Replace config parameters
-      xml = Binding.applyMap(xml, System.app?.configParameters,
+      xml = Binding.applyMap(xml, System.currentApp?.configParameters,
           caseSensitive: false);
 
       // Replace System Uuid
@@ -73,15 +74,16 @@ class Template {
       String? xml = template.document.toString();
 
       // Replace Bindings in Xml
-      if (parameters != null)
+      if (parameters != null) {
         xml = Binding.applyMap(xml, parameters, caseSensitive: false);
+      }
 
       // Replace query parameters
-      xml = Binding.applyMap(xml, System.app?.queryParameters,
+      xml = Binding.applyMap(xml, System.currentApp?.queryParameters,
           caseSensitive: false);
 
       // Replace config parameters
-      xml = Binding.applyMap(xml, System.app?.configParameters,
+      xml = Binding.applyMap(xml, System.currentApp?.configParameters,
           caseSensitive: false);
 
       // Replace System Uuid

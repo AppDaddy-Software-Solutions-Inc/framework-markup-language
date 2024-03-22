@@ -599,14 +599,18 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop {
     // we only create the observable if its bound to in the template
     // otherwise we just store the value in a simple double variable
     String? key;
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewwidth')))
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewwidth'))) {
       _viewWidthObservable = DoubleObservable(key, null, scope: scope);
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewheight')))
+    }
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewheight'))) {
       _viewHeightObservable = DoubleObservable(key, null, scope: scope);
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewx')))
+    }
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewx'))) {
       _viewXObservable = DoubleObservable(key, null, scope: scope);
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewy')))
+    }
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewy'))) {
       _viewYObservable = DoubleObservable(key, null, scope: scope);
+    }
 
     // view requires a VisibilityDetector if either onstage or offstage is set or
     // someone is bound to my visibility
@@ -661,8 +665,9 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop {
     });
 
     // remove animations from child list
-    if (animations != null)
+    if (animations != null) {
       children?.removeWhere((element) => animations!.contains(element));
+    }
   }
 
   AnimationModel? getAnimationModel(String id) {
@@ -727,11 +732,12 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop {
 
   Widget getReactiveView(Widget view) {
     // wrap in visibility detector?
-    if (needsVisibilityDetector)
+    if (needsVisibilityDetector) {
       view = VisibilityDetector(
           key: ObjectKey(this),
           onVisibilityChanged: onVisibilityChanged,
           child: view);
+    }
 
     // wrap in tooltip?
     if (tipModel != null) view = TooltipView(tipModel!, view);

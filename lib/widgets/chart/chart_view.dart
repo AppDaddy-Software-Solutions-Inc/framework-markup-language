@@ -1390,9 +1390,10 @@ class _ChartViewState extends WidgetState<ChartView> {
 
     List<RangeAnnotationSegment<dynamic>>? labelBehaviors = [];
     labelBehaviors = getLabels<dynamic>();
-    if (labelBehaviors.isNotEmpty)
+    if (labelBehaviors.isNotEmpty) {
       behaviors.add(charts_flutter.RangeAnnotation<T>(
           labelBehaviors.cast<AnnotationSegment<Object>>()));
+    }
 
     return behaviors;
   }

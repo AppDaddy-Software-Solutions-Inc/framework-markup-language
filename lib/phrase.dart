@@ -93,8 +93,9 @@ class Phrases {
   }
 
   String get unauthorizedAccess {
-    if (language == french)
+    if (language == french) {
       return '(FR) You are not authorized to access this page';
+    }
     return 'You are not authorized to access this page';
   }
 
@@ -149,8 +150,9 @@ class Phrases {
   }
 
   String get continueQuitting {
-    if (language == french)
+    if (language == french) {
       return '(FR) You have unsaved changes. Continue quitting?';
+    }
     return 'You have unsaved changes. Continue quitting?';
   }
 
@@ -160,8 +162,9 @@ class Phrases {
   }
 
   String get confirmExit {
-    if (language == french)
+    if (language == french) {
       return '(FR) Are you sure you want to exit the app?';
+    }
     return 'Are you sure you want to exit the app?';
   }
 
@@ -175,6 +178,26 @@ class Phrases {
     return 'Load App';
   }
 
+  String get makeDefaultApp {
+    if (language == french) return '(FR) Make this the default application?';
+    return 'Make this the default application?';
+  }
+
+  String get removeDefaultApp {
+    if (language == french) return '(FR) Remove the default application?';
+    return 'Remove the default application?';
+  }
+
+  String get defaultAppRemoved {
+    if (language == french) return '(FR) The default application has been removed. Restart the program.';
+    return 'The default application has been removed. Restart the program.';
+  }
+
+  String get makeDefaultAppDisclaimer {
+    if (language == french) return '(FR) Warning! This option sets the default startup application.';
+    return 'Warning! This option sets the default startup application.';
+  }
+
   String get removeApp {
     if (language == french) return '(FR) Remove App?';
     return 'Remove App?';
@@ -186,8 +209,9 @@ class Phrases {
   }
 
   String get appUrl {
-    if (language == french)
+    if (language == french) {
       return '(FR) Application URL (https://yoursite.com)';
+    }
     return 'Application URL (https://yoursite.com)';
   }
 
@@ -227,8 +251,9 @@ class Phrases {
   }
 
   String get clickToConnect {
-    if (language == french)
+    if (language == french) {
       return "(FR) Click the + button to connect an application";
+    }
     return "Click the + button to connect an application";
   }
 
@@ -253,8 +278,9 @@ class Phrases {
   }
 
   String get somethingWentWrong {
-    if (language == french)
+    if (language == french) {
       return '(FR) Something went wrong.\n Try going back or restarting the application.\n If this problem persists please contact us.';
+    }
     return 'Something went wrong.\n Try going back or restarting the application.\n If this problem persists please contact us.';
   }
 

@@ -33,10 +33,11 @@ class TimerModel extends WidgetModel {
     if (frequency is String) {
       frequency = frequency.trim().toLowerCase();
       if (frequency.endsWith('s')) factor = 1000;
-      if (factor > 1)
+      if (factor > 1) {
         frequency = (frequency.length > 1)
             ? frequency.substring(0, frequency.length - 1)
             : null;
+      }
     }
 
     if (isNumeric(frequency)) {
@@ -105,8 +106,9 @@ class TimerModel extends WidgetModel {
   // start the timer
   void start() {
     started = true;
-    if (frequency > 0 && enabled && (timer == null || !timer!.isActive))
+    if (frequency > 0 && enabled && (timer == null || !timer!.isActive)) {
       timer = Timer(Duration(milliseconds: frequency), onTimer);
+    }
   }
 
   // stop the timer

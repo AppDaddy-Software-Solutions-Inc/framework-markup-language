@@ -73,8 +73,9 @@ class _ButtonViewState extends WidgetState<ButtonView> {
         (!isNullOrEmpty(model.color) && model.buttontype != 'elevated')
             ? MaterialStateProperty.resolveWith<Color?>(
                 (Set<MaterialState> states) {
-                if (states.contains(MaterialState.disabled))
+                if (states.contains(MaterialState.disabled)) {
                   return Theme.of(context).colorScheme.surfaceVariant;
+                }
                 return model
                     .color; // not sure if this is the correct color scheme for text.
               })
@@ -84,13 +85,16 @@ class _ButtonViewState extends WidgetState<ButtonView> {
         (!isNullOrEmpty(model.color) && model.buttontype == 'elevated')
             ? MaterialStateProperty.resolveWith<Color?>(
                 (Set<MaterialState> states) {
-                if (states.contains(MaterialState.hovered))
+                if (states.contains(MaterialState.hovered)) {
                   return model.color!.withOpacity(0.85);
+                }
                 if (states.contains(MaterialState.focused) ||
-                    states.contains(MaterialState.pressed))
+                    states.contains(MaterialState.pressed)) {
                   return model.color!.withOpacity(0.2);
-                if (states.contains(MaterialState.disabled))
+                }
+                if (states.contains(MaterialState.disabled)) {
                   return Theme.of(context).colorScheme.shadow;
+                }
                 return model.color;
               })
             : null; // Defer to the widget
@@ -132,8 +136,9 @@ class _ButtonViewState extends WidgetState<ButtonView> {
     }
 
     // If onclick is null or enabled is false we fade the button
-    if (widget.model.onclick == null || !widget.model.enabled)
+    if (widget.model.onclick == null || !widget.model.enabled) {
       view = Opacity(opacity: 0.9, child: view); // Disabled
+    }
 
     return view;
   }

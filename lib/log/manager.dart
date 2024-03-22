@@ -42,8 +42,9 @@ class Log {
       // if (kDebugMode) DialogService().show(type: DialogType.error, title: phrase.error, description: 'Exception: $exception Routine: $caller');
 
       // print in debug mode only
-      if (kDebugMode)
+      if (kDebugMode) {
         print('Exception: $exception${caller != null ? ' -> $caller' : ''}');
+      }
 
       // add the entry
       hive_log.Log e = hive_log.Log(
@@ -58,8 +59,9 @@ class Log {
   Future<void> error(String message, {String? caller}) async {
     try {
       // print in debug mode only
-      if (kDebugMode)
+      if (kDebugMode) {
         print('Error: $message${caller != null ? ' -> $caller' : ''}');
+      }
 
       // add the entry
       hive_log.Log e =
@@ -74,8 +76,9 @@ class Log {
   Future<void> warning(String message, {String? caller}) async {
     try {
       // print in debug mode only
-      if (kDebugMode)
+      if (kDebugMode) {
         print('Warning: $message${caller != null ? ' -> $caller' : ''}');
+      }
 
       // add the entry
       hive_log.Log e =
@@ -90,8 +93,9 @@ class Log {
   Future<void> info(String message, {String? caller}) async {
     try {
       // print in debug mode only
-      if (kDebugMode)
+      if (kDebugMode) {
         print('Info: $message${caller != null ? ' -> $caller' : ''}');
+      }
 
       // add the entry
       hive_log.Log e =
@@ -127,8 +131,9 @@ class Log {
 
     if (filter.contains(wildcard)) {
       String comparator = value.replaceAll(wildcard, '');
-      if ((filter.startsWith(wildcard)) && (filter.endsWith(wildcard)))
+      if ((filter.startsWith(wildcard)) && (filter.endsWith(wildcard))) {
         return (value.contains(comparator));
+      }
       if (filter.startsWith(wildcard)) return (value.endsWith(comparator));
       if (filter.endsWith(wildcard)) return (value.startsWith(comparator));
       return (value.contains(comparator));

@@ -318,8 +318,9 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable {
 
   ListItemModel? getItemModel(int index) {
     // fixed list?
-    if (isNullOrEmpty(datasource))
+    if (isNullOrEmpty(datasource)) {
       return (index < items.length) ? items[index] : null;
+    }
 
     // item model exists?
     if (_dataset == null) return null;
@@ -342,8 +343,9 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable {
       }
 
       // register listener to dirty field
-      if (model.dirtyObservable != null)
+      if (model.dirtyObservable != null) {
         model.dirtyObservable!.registerListener(onDirtyListener);
+      }
 
       // save model
       items[index] = model;

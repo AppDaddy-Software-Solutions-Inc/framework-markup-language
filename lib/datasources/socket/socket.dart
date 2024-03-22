@@ -11,7 +11,7 @@ class Socket {
   Uri? _uri;
   set uri(dynamic url) {
     if (url is String) {
-      var scheme = (System.app?.secure ?? false) ? "wss" : "ws";
+      var scheme = (System.currentApp?.secure ?? false) ? "wss" : "ws";
       _uri = URI.parse(url)?.replace(scheme: scheme);
     } else if (url is Uri) {
       _uri = url;
@@ -163,8 +163,9 @@ class Socket {
       await connect();
 
       // send the message
-      if (connected && message != null && _socket != null)
+      if (connected && message != null && _socket != null) {
         _socket!.sink.add(message);
+      }
     } catch (e) {
       ok = false;
       Log().error('SOCKET:: Error sending message to $url');

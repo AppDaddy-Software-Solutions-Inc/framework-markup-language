@@ -167,9 +167,10 @@ class Calc extends TransformModel implements ITransform {
               (cnt.containsKey(group)) &&
               (cnt[group] != 0)) {
             results[group] = sum[group]! / cnt[group]!;
-            if (precision != null && toInt(precision) != null)
+            if (precision != null && toInt(precision) != null) {
               results[group] = fml_eval.Eval.evaluate(
                   "round(${results[group]}, ${precision!})");
+            }
           }
         }
       }
@@ -184,8 +185,9 @@ class Calc extends TransformModel implements ITransform {
     if (map != null) {
       for (var row in list) {
         String? group = _getGroup(row);
-        if ((_inGroup(row, group)) && (map.containsKey(group)))
+        if ((_inGroup(row, group)) && (map.containsKey(group))) {
           Data.write(row, target, map[group!]);
+        }
       }
     }
   }
@@ -197,8 +199,9 @@ class Calc extends TransformModel implements ITransform {
     if (map != null) {
       for (var row in list) {
         String? group = _getGroup(row);
-        if ((_inGroup(row, group)) && (map.containsKey(group)))
+        if ((_inGroup(row, group)) && (map.containsKey(group))) {
           Data.write(row, target, map[group!]);
+        }
       }
     }
   }
@@ -210,8 +213,9 @@ class Calc extends TransformModel implements ITransform {
     if (map != null) {
       for (var row in list) {
         String? group = _getGroup(row);
-        if ((_inGroup(row, group)) && (map.containsKey(group)))
+        if ((_inGroup(row, group)) && (map.containsKey(group))) {
           Data.write(row, target, toInt(map[group!]));
+        }
       }
     }
   }
@@ -239,8 +243,9 @@ class Calc extends TransformModel implements ITransform {
     if (map != null) {
       for (var row in list) {
         String? group = _getGroup(row);
-        if ((_inGroup(row, group)) && (map.containsKey(group)))
+        if ((_inGroup(row, group)) && (map.containsKey(group))) {
           Data.write(row, target, map[group!]);
+        }
       }
     }
   }
@@ -277,8 +282,9 @@ class Calc extends TransformModel implements ITransform {
     if (map != null) {
       for (var row in list) {
         String? group = _getGroup(row);
-        if ((_inGroup(row, group)) && (map.containsKey(group)))
+        if ((_inGroup(row, group)) && (map.containsKey(group))) {
           Data.write(row, target, map[group!]);
+        }
       }
     }
   }

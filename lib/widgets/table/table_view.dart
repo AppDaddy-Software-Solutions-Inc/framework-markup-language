@@ -762,15 +762,17 @@ class TableViewState extends WidgetState<TableView> {
         widget.model.halign, widget.model.valign);
     if (align.aligned == Alignment.topCenter ||
         align.aligned == Alignment.center ||
-        align.aligned == Alignment.bottomCenter)
+        align.aligned == Alignment.bottomCenter) {
       return PlutoColumnTextAlign.center;
+    }
     if (align.aligned == Alignment.topLeft ||
         align.aligned == Alignment.centerLeft ||
         align.aligned == Alignment.bottomLeft) return PlutoColumnTextAlign.left;
     if (align.aligned == Alignment.topRight ||
         align.aligned == Alignment.centerRight ||
-        align.aligned == Alignment.bottomRight)
+        align.aligned == Alignment.bottomRight) {
       return PlutoColumnTextAlign.right;
+    }
     return PlutoColumnTextAlign.center;
   }
 
@@ -866,8 +868,9 @@ class TableViewState extends WidgetState<TableView> {
     bool boundedWidth = false;
     if (widget.model.header != null) {
       for (var header in widget.model.header!.cells) {
-        if (header.widthOuter != null || header.widthPercentage != null)
+        if (header.widthOuter != null || header.widthPercentage != null) {
           boundedWidth = true;
+        }
       }
     }
 

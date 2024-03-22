@@ -22,8 +22,9 @@ class Constraints {
   set width(double? v) => _width = v;
   double? get width {
     if (_width == null) return null;
-    if (_width == double.infinity || _width == double.negativeInfinity)
+    if (_width == double.infinity || _width == double.negativeInfinity) {
       return null;
+    }
     if (_width!.isNegative) return null;
     return _width;
   }
@@ -32,8 +33,9 @@ class Constraints {
   set minWidth(double? v) => _minWidth = v;
   double? get minWidth {
     if (_minWidth == null) return null;
-    if (_minWidth == double.infinity || _minWidth == double.negativeInfinity)
+    if (_minWidth == double.infinity || _minWidth == double.negativeInfinity) {
       return null;
+    }
     if (_minWidth!.isNegative) return null;
     return _minWidth;
   }
@@ -42,8 +44,9 @@ class Constraints {
   set maxWidth(double? v) => _maxWidth = v;
   double? get maxWidth {
     if (_maxWidth == null) return null;
-    if (_maxWidth == double.infinity || _maxWidth == double.negativeInfinity)
+    if (_maxWidth == double.infinity || _maxWidth == double.negativeInfinity) {
       return null;
+    }
     if (_maxWidth!.isNegative) return null;
     return _maxWidth;
   }
@@ -53,8 +56,9 @@ class Constraints {
   set height(double? v) => _height = v;
   double? get height {
     if (_height == null) return null;
-    if (_height == double.infinity || _height == double.negativeInfinity)
+    if (_height == double.infinity || _height == double.negativeInfinity) {
       return null;
+    }
     if (_height!.isNegative) return null;
     return _height;
   }
@@ -63,8 +67,9 @@ class Constraints {
   set minHeight(double? v) => _minHeight = v;
   double? get minHeight {
     if (_minHeight == null) return null;
-    if (_minHeight == double.infinity || _minHeight == double.negativeInfinity)
+    if (_minHeight == double.infinity || _minHeight == double.negativeInfinity) {
       return null;
+    }
     if (_minHeight!.isNegative) return null;
     return _minHeight;
   }
@@ -73,8 +78,9 @@ class Constraints {
   set maxHeight(double? v) => _maxHeight = v;
   double? get maxHeight {
     if (_maxHeight == null) return null;
-    if (_maxHeight == double.infinity || _maxHeight == double.negativeInfinity)
+    if (_maxHeight == double.infinity || _maxHeight == double.negativeInfinity) {
       return null;
+    }
     if (_maxHeight!.isNegative) return null;
     return _maxHeight;
   }
@@ -126,8 +132,9 @@ class Constraints {
 
     constraints.minWidth = max(constraints1.minWidth ?? double.negativeInfinity,
         constraints2.minWidth ?? double.negativeInfinity);
-    if (constraints.minWidth == double.negativeInfinity)
+    if (constraints.minWidth == double.negativeInfinity) {
       constraints.minWidth = null;
+    }
 
     constraints.maxWidth = max(constraints1.maxWidth ?? double.negativeInfinity,
         constraints2.maxWidth ?? double.negativeInfinity);
@@ -140,8 +147,9 @@ class Constraints {
     constraints.minHeight = max(
         constraints1.minHeight ?? double.negativeInfinity,
         constraints2.minHeight ?? double.negativeInfinity);
-    if (constraints.minHeight == double.negativeInfinity)
+    if (constraints.minHeight == double.negativeInfinity) {
       constraints.minHeight = null;
+    }
 
     constraints.maxHeight = max(
         constraints1.maxHeight ?? double.negativeInfinity,

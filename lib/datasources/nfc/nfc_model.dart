@@ -305,9 +305,10 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener {
     // if the message didn't deserialize (length 0)
     // create a simple map with topic and message bindables <id>.data.topic and <id>.data.message
     // otherwise the data is the deserialized message payload
-    if (data.isEmpty)
+    if (data.isEmpty) {
       data.insert(0,
           {'id': payload.id, 'serial': payload.id, 'payload': payload.message});
+    }
 
     // fire the onresponse
     onSuccess(data, code: 200);

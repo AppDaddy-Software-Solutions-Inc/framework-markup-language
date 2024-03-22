@@ -104,8 +104,9 @@ class ShortcutModel extends WidgetModel {
             if (k.keyLabel.toUpperCase() == keyLabel.toUpperCase()) return true;
             for (var s in k.synonyms) {
               if (s.keyLabel == keyLabel) return true;
-              if (s.keyLabel.toUpperCase() == keyLabel.toUpperCase())
+              if (s.keyLabel.toUpperCase() == keyLabel.toUpperCase()) {
                 return true;
+              }
             }
             return false;
           });
@@ -129,8 +130,9 @@ class ShortcutModel extends WidgetModel {
   bool isMatch(
       List<LogicalKeyboardKey> keysPressed, bool ctrl, bool alt, bool shift) {
     // key set sizes don't match
-    if (keySequence.isEmpty || keySequence.length != keysPressed.length)
+    if (keySequence.isEmpty || keySequence.length != keysPressed.length) {
       return false;
+    }
 
     // control keys don't match
     if ((ctrlPressed && !ctrl) ||
@@ -289,6 +291,7 @@ class ShortcutHandler {
       defaultShortcuts.add(ShortcutModel(System(), "1", key: "CTRL-ALT-R"));
       defaultShortcuts.add(ShortcutModel(System(), "2", key: "CTRL-ALT-L"));
       defaultShortcuts.add(ShortcutModel(System(), "3", key: "CTRL-ALT-T"));
+      defaultShortcuts.add(ShortcutModel(System(), "4", key: "CTRL-ALT-X"));
     }
 
     // find shortcut from keysPressed
@@ -308,6 +311,11 @@ class ShortcutHandler {
         // show template
         case "3":
           framework?.showTemplate();
+          break;
+
+        // show template
+        case "4":
+          System.clearDefaultApplication();
           break;
       }
     }

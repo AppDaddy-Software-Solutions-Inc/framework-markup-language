@@ -122,8 +122,9 @@ class NavigationObserver extends NavigatorObserver {
       BuildContext context = listener.getNavigatorContext();
 
       Route? listenerRoute = ModalRoute.of(context);
-      if ((route == listenerRoute) && (listener.runtimeType == T))
+      if ((route == listenerRoute) && (listener.runtimeType == T)) {
         return listener;
+      }
     }
     return null;
   }

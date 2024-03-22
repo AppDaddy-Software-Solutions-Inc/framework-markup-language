@@ -110,8 +110,8 @@ class CheckboxModel extends FormFieldModel implements IFormField {
             longitude: System().currentLocation?.longitude,
             altitude: System().currentLocation?.altitude,
             epoch: DateTime.now().millisecondsSinceEpoch,
-            user: System.app?.user.claim('key'),
-            username: System.app?.user.claim('name'));
+            user: System.currentApp?.user.claim('key'),
+            username: System.currentApp?.user.claim('name'));
 
         // save the value
         //ok = await save();
@@ -141,8 +141,8 @@ class CheckboxModel extends FormFieldModel implements IFormField {
           longitude: System().currentLocation?.longitude,
           altitude: System().currentLocation?.altitude,
           epoch: DateTime.now().millisecondsSinceEpoch,
-          user: System.app?.user.claim('key'),
-          username: System.app?.user.claim('name'));
+          user: System.currentApp?.user.claim('key'),
+          username: System.currentApp?.user.claim('name'));
 
       // save the value
       // ok = await save();
@@ -172,8 +172,8 @@ class CheckboxModel extends FormFieldModel implements IFormField {
           longitude: System().currentLocation?.longitude,
           altitude: System().currentLocation?.altitude,
           epoch: DateTime.now().millisecondsSinceEpoch,
-          user: System.app?.user.claim('key'),
-          username: System.app?.user.claim('name'));
+          user: System.currentApp?.user.claim('key'),
+          username: System.currentApp?.user.claim('name'));
 
       // Remove Value
       value.remove(v);

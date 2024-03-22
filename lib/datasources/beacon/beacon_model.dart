@@ -169,8 +169,9 @@ class BeaconModel extends DataSourceModel
       int age = 0;
       if (beacon.macAddress != null) {
         var dt = DateTime.now().millisecondsSinceEpoch;
-        if (!firstSeen.keys.contains(beacon.macAddress!))
+        if (!firstSeen.keys.contains(beacon.macAddress!)) {
           firstSeen[beacon.macAddress!] = dt;
+        }
         lastSeen[beacon.macAddress!] = dt;
         age = lastSeen[beacon.macAddress!]! - firstSeen[beacon.macAddress!]!;
       }

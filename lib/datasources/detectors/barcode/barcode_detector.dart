@@ -67,8 +67,9 @@ class Payload {
       map["display"] = barcode.display;
       map["format"] = barcode.format;
       map["type"] = barcode.type != null ? barcode.type.toString() : "";
-      if (barcode.parameters != null)
+      if (barcode.parameters != null) {
         barcode.parameters!.forEach((key, value) => map[key] = value);
+      }
       data.add(map);
     }
     return data;

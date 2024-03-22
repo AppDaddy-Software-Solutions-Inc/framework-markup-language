@@ -391,15 +391,17 @@ class DatepickerViewState extends WidgetState<DatepickerView> {
       ),
     );
 
-    if (widget.model.dense)
+    if (widget.model.dense) {
       view = Padding(padding: const EdgeInsets.all(4), child: view);
+    }
 
     // get the model constraints
     var modelConstraints = widget.model.constraints;
 
     // constrain the input to 200 pixels if not constrained by the model
-    if (!modelConstraints.hasHorizontalExpansionConstraints)
+    if (!modelConstraints.hasHorizontalExpansionConstraints) {
       modelConstraints.width = 200;
+    }
 
     // add margins
     view = addMargins(view);

@@ -28,8 +28,9 @@ class _PaddingViewState extends WidgetState<PaddingView> {
     double pRight = max(widget.model.marginRight ?? 0, 0);
 
     // simple empty box
-    if (widget.model.children == null || widget.model.children!.isEmpty)
+    if (widget.model.children == null || widget.model.children!.isEmpty) {
       return SizedBox(width: pLeft + pRight, height: pTop + pBottom);
+    }
 
     // box view
     Widget view = BoxView(widget.model);

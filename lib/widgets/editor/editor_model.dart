@@ -15,9 +15,10 @@ class EditorModel extends DecoratedWidgetModel {
     if (_theme != null) {
       _theme!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         _theme = StringObservable(Binding.toKey(id, 'theme'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
 
@@ -29,9 +30,10 @@ class EditorModel extends DecoratedWidgetModel {
     if (_value != null) {
       _value!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         _value = StringObservable(Binding.toKey(id, 'value'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
 
@@ -43,9 +45,10 @@ class EditorModel extends DecoratedWidgetModel {
     if (_language != null) {
       _language!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         _language = StringObservable(Binding.toKey(id, 'language'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
 

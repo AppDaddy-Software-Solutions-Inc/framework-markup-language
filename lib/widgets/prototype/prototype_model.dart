@@ -79,8 +79,9 @@ class PrototypeModel extends BoxModel {
 
   @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async {
-    if (prototype == null || source.id != datasource)
+    if (prototype == null || source.id != datasource) {
       return super.onDataSourceSuccess(source, list);
+    }
 
     // save pointer to data source
     myDataSource = source;

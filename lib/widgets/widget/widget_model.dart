@@ -7,7 +7,9 @@ import 'package:fml/datasources/datasource_listener_interface.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/camera/camera_model.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -146,8 +148,9 @@ class WidgetModel implements IDataSourceListener {
     if (kDebugMode) {
       prefix = "$runtimeType";
       prefix = prefix.replaceAll(onlyAlpha, '');
-      if (prefix.endsWith('model'))
+      if (prefix.endsWith('model')) {
         prefix = prefix.substring(0, prefix.lastIndexOf('model'));
+      }
     }
     return newId(prefix: prefix);
   }
@@ -226,7 +229,11 @@ class WidgetModel implements IDataSourceListener {
 
       // add model to the datasource list
       if (model is IDataSource) {
-        (datasources ??= []).add(model as IDataSource);
+        //this line is a temp fix until datasource can be refactored as a mixin
+        if(model is CameraModel){
+          (children ??= []).add(model);
+         }else (datasources ??= []).add(model as IDataSource);
+
       }
 
       // add model to the child list
@@ -346,20 +353,23 @@ class WidgetModel implements IDataSourceListener {
     var list = [];
 
     // evaluate me
-    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id)))
+    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id))) {
       list.add(this);
+    }
 
     // evaluate my siblings
     if (includeSiblings) {
       children?.forEach((child) {
-        if (child.runtimeType == T && child.id == (id ?? child.id))
+        if (child.runtimeType == T && child.id == (id ?? child.id)) {
           list.add(child);
+        }
       });
     }
 
     // evaluate my ancestors
-    if (parent != null)
+    if (parent != null) {
       list.addAll(parent!._findAncestorsOfExactType(T, id, includeSiblings));
+    }
 
     return list;
   }
@@ -375,8 +385,9 @@ class WidgetModel implements IDataSourceListener {
       {String? id, Type? breakOn}) {
     var list = [];
     children?.forEach((child) {
-      if (child.runtimeType != breakOn)
+      if (child.runtimeType != breakOn) {
         list.addAll(child._findDescendantsOfExactType(T, id));
+      }
     });
     return list;
   }
@@ -385,8 +396,9 @@ class WidgetModel implements IDataSourceListener {
     var list = [];
 
     // evaluate me
-    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id)))
+    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id))) {
       list.add(this);
+    }
 
     // evaluate my children
     children?.forEach(
@@ -409,8 +421,9 @@ class WidgetModel implements IDataSourceListener {
   List<dynamic> findChildrenOfExactType(Type T, {String? id}) {
     var list = [];
     children?.forEach((child) {
-      if (child.runtimeType == (T) && child.id == (id ?? child.id))
+      if (child.runtimeType == (T) && child.id == (id ?? child.id)) {
         list.add(child);
+      }
     });
     return list;
   }

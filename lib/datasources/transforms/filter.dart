@@ -100,8 +100,9 @@ class Filter extends TransformModel implements ITransform {
     // force parent to rebuild
     // we may want to not notify if the parent
     // is re-querying
-    if (data != null && parent is IDataSource)
+    if (data != null && parent is IDataSource) {
       (parent as IDataSource).onSuccess(data);
+    }
   }
 
   @override

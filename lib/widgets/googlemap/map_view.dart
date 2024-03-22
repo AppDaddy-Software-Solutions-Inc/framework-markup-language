@@ -239,8 +239,9 @@ class _MapViewState extends WidgetState<MapView> {
           //////////
           BitmapDescriptor icon = BitmapDescriptor.defaultMarker;
           if (!icons.containsKey(location.marker)) {
-            if (location.icon != null)
+            if (location.icon != null) {
               icon = BitmapDescriptor.fromBytes(location.icon!);
+            }
             icons[location.marker] = icon;
           }
 
@@ -330,17 +331,21 @@ class _MapViewState extends WidgetState<MapView> {
   void _setMarkerBounds(Marker? marker) {
     if (widget.model.showAll == true) {
       if (latitudeLowerBound == null ||
-          marker!.position.latitude < latitudeLowerBound!)
+          marker!.position.latitude < latitudeLowerBound!) {
         latitudeLowerBound = marker!.position.latitude;
+      }
       if (latitudeUpperBound == null ||
-          marker.position.latitude > latitudeUpperBound!)
+          marker.position.latitude > latitudeUpperBound!) {
         latitudeUpperBound = marker.position.latitude;
+      }
       if (longitudeLowerBound == null ||
-          marker.position.longitude < longitudeLowerBound!)
+          marker.position.longitude < longitudeLowerBound!) {
         longitudeLowerBound = marker.position.longitude;
+      }
       if (longitudeUpperBound == null ||
-          marker.position.longitude > longitudeUpperBound!)
+          marker.position.longitude > longitudeUpperBound!) {
         longitudeUpperBound = marker.position.longitude;
+      }
     } else {
       latitudeUpperBound = marker!.position.latitude;
       latitudeLowerBound = marker.position.latitude;

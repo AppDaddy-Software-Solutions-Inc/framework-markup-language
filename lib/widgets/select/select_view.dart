@@ -46,8 +46,9 @@ class _SelectViewState extends WidgetState<SelectView> {
   Widget addBorders(Widget view) {
     // border padding - this need to be changed to check border width
     var padding = const EdgeInsets.only(left: 10, top: 3, right: 0, bottom: 3);
-    if (widget.model.border == "none")
+    if (widget.model.border == "none") {
       padding = const EdgeInsets.only(left: 10, top: 4, right: 10, bottom: 4);
+    }
 
     // border radius
     var radius = BorderRadius.circular(widget.model.radius.toDouble());
@@ -55,8 +56,9 @@ class _SelectViewState extends WidgetState<SelectView> {
     // border color
     var color =
         widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
-    if (widget.model.alarming)
+    if (widget.model.alarming) {
       color = widget.model.getBorderColor(context, widget.model.borderColor);
+    }
     if (!widget.model.enabled) color = Theme.of(context).disabledColor;
 
     // border width
@@ -149,12 +151,13 @@ class _SelectViewState extends WidgetState<SelectView> {
 
     // widget is enabled?
     var enabled = (widget.model.enabled && !widget.model.busy);
-    if (!enabled)
+    if (!enabled) {
       return widget.model.selectedOption?.getView() ??
           Container(
               alignment: Alignment.centerLeft,
               height: defaultHeight,
               child: hint);
+    }
 
     // build options
     List<DropdownMenuItem<OptionModel>> options = [];
@@ -217,11 +220,12 @@ class _SelectViewState extends WidgetState<SelectView> {
 
     // display busy
     Widget? busy = buildBusy();
-    if (busy != null)
+    if (busy != null) {
       view = Stack(children: [
         view,
         Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)
       ]);
+    }
 
     // add alarm text
     view = addAlarmText(view);
@@ -230,8 +234,9 @@ class _SelectViewState extends WidgetState<SelectView> {
     var modelConstraints = widget.model.constraints;
 
     // constrain the input to 200 pixels if not constrained by the model
-    if (!modelConstraints.hasHorizontalExpansionConstraints)
+    if (!modelConstraints.hasHorizontalExpansionConstraints) {
       modelConstraints.width = 200;
+    }
 
     // add margins
     view = addMargins(view);

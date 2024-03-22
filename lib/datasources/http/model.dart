@@ -131,15 +131,17 @@ class HttpModel extends DataSourceModel implements IDataSource {
         if (this.headers == null) this.headers = <String, String>{};
         String? key = Xml.get(node: node, tag: 'key');
         String? value = Xml.get(node: node, tag: 'value');
-        if (!isNullOrEmpty(key) && !isNullOrEmpty(value))
+        if (!isNullOrEmpty(key) && !isNullOrEmpty(value)) {
           this.headers![key!] = value!;
+        }
       }
     }
   }
 
   onUrlChange(Observable observable) {
-    if ((initialized == true) && (autoexecute == true) && (enabled != false))
+    if ((initialized == true) && (autoexecute == true) && (enabled != false)) {
       start(refresh: refresh);
+    }
   }
 
   @override
@@ -164,9 +166,10 @@ class HttpModel extends DataSourceModel implements IDataSource {
 
     // lookup data in hive cache
     var cached = await super.fromHive(url, refresh);
-    if (cached != null)
+    if (cached != null) {
       return await super
           .onSuccess(Data.from(cached, root: root), code: HttpStatus.ok);
+    }
 
     // determine posting type
     Types type = Types.foreground;
@@ -245,10 +248,11 @@ class HttpModel extends DataSourceModel implements IDataSource {
     // changed by olajos - January 28, 2023
     String? msg = response.statusMessage;
     if (data.isEmpty && response.body is String) msg = response.body;
-    if (isNullOrEmpty(msg))
+    if (isNullOrEmpty(msg)) {
       msg = (response.statusCode == HttpStatus.ok)
           ? "ok"
           : "error #${response.statusCode ?? 0}";
+    }
 
     // save response data to the hive cache
     if (response.statusCode == HttpStatus.ok) toHive(url, response.body);

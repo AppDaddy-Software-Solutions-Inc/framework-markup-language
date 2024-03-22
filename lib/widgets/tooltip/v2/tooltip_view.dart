@@ -223,9 +223,10 @@ class TooltipViewState extends WidgetState<TooltipView>
     List<Widget> children = [];
 
     // modal curtain
-    if (widget.model.modal)
+    if (widget.model.modal) {
       children
           .add(Modal(visible: widget.model.modal, onTap: () => hideOverlay()));
+    }
 
     // bubble
     var bubble = Positioned(
@@ -266,11 +267,12 @@ class TooltipViewState extends WidgetState<TooltipView>
     overlayState.insert(overlayEntry!);
 
     // Add timeout for the tooltip to disappear after a few seconds
-    if (widget.model.timeout > 0 && opener != OpenMethods.hover)
+    if (widget.model.timeout > 0 && opener != OpenMethods.hover) {
       await Future.delayed(Duration(
               milliseconds:
                   widget.model.timeout > 0 ? widget.model.timeout : 3000))
           .whenComplete(() => hideOverlay());
+    }
   }
 
   /// Method to hide the tooltip

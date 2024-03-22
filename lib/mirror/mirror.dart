@@ -43,15 +43,17 @@ class Mirror {
               var modified = await file.lastModified();
               var epoch = modified.millisecondsSinceEpoch;
               if (epoch >= (asset.epoch ?? 0)) downloadRequired = false;
-              if (downloadRequired)
+              if (downloadRequired) {
                 Log().debug('File on disk is out of date [${asset.name}]',
                     caller: "Mirror");
+              }
             }
           }
 
           // get the asset from the server
-          if (downloadRequired && filepath != null && !abort)
+          if (downloadRequired && filepath != null && !abort) {
             await _copyAssetFromServer(asset, filepath);
+          }
         }
       }
     }

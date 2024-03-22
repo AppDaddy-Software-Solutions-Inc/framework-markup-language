@@ -48,8 +48,9 @@ class AnimationViewState extends WidgetState<AnimationView>
       _animationListener(status);
     });
 
-    if (widget.model.autoplay == true && _controller?.isAnimating != true)
+    if (widget.model.autoplay == true && _controller?.isAnimating != true) {
       start();
+    }
   }
 
   @override
@@ -116,8 +117,9 @@ class AnimationViewState extends WidgetState<AnimationView>
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (((widget.model.children?.isEmpty ?? true) && widget.child == null))
+    if (((widget.model.children?.isEmpty ?? true) && widget.child == null)) {
       return const Offstage();
+    }
 
     if (widget.model.animations != null &&
         widget.model.animations!.isNotEmpty &&

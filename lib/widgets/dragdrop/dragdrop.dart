@@ -116,7 +116,7 @@ class DragDrop {
       }
 
       // find the observable
-      var observable = System.app?.scopeManager.findObservable(scope, key);
+      var observable = System.currentApp?.scopeManager.findObservable(scope, key);
 
       // add to the list
       variables[binding.toString()] = observable?.get();

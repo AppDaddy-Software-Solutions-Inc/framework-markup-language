@@ -120,8 +120,9 @@ void extractStyles(String value, List<String> styleList) {
       value.indexOf(code),
     ];
 
-    if (leastIndex.isNotEmpty)
+    if (leastIndex.isNotEmpty) {
       leastIndex.removeWhere((element) => element == -1);
+    }
     if (leastIndex.isNotEmpty) i = leastIndex.reduce(min);
 
     if (leastIndex.isEmpty) {

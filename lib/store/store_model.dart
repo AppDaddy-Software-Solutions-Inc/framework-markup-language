@@ -1,22 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:changeicon/changeicon.dart';
-import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
 import 'package:fml/application/application_model.dart';
-import 'package:fml/navigation/navigation_manager.dart';
-import 'package:fml/navigation/page.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
 class Store extends WidgetModel implements IModelListener {
-  final List<ApplicationModel> _apps = [];
-
-  // changes the app icon on the desktop
-  Changeicon? _changeiconPlugin;
-
-  List<ApplicationModel> getApps() => _apps.toList();
 
   bool initialized = false;
 
@@ -27,103 +16,54 @@ class Store extends WidgetModel implements IModelListener {
   }
 
   init() async {
-    initialized = await _load();
+    initialized = await _initialize();
   }
 
-  Future<bool> _load() async {
+  Future<bool> _initialize() async {
+
     busy = true;
 
-    var apps = await ApplicationModel.loadAll();
-
-    _apps.clear();
-    for (ApplicationModel app in apps) {
+    // register a listener to each app
+    for (var app in System.apps) {
       app.registerListener(this);
-      _apps.add(app);
     }
 
-    // sort by position
-    //_apps.sort();
-
     busy = false;
-
     return true;
   }
 
-  Future add(ApplicationModel app) async {
+  Future addApp(ApplicationModel app) async {
     busy = true;
 
-    // insert into the hive
-    bool ok = await app.insert();
+    // add the application
+    bool ok = await System.addApplication(app);
 
-    // add to the list
-    if (ok) _apps.add(app);
+    // notify
+    if (!ok) System.toast('Failed to add the application');
 
     busy = false;
   }
 
-  ApplicationModel? find({String? url}) {
-    // query hive
-    ApplicationModel? app = _apps.firstWhereOrNull((app) => app.url == url);
+  Future deleteApp(ApplicationModel app) async {
+    busy = true;
 
-    return app;
+    // delete the application
+    bool ok = await System.deleteApplication(app);
+
+    // notify
+    if (!ok) System.toast('Failed to delete the application');
+
+    busy = false;
   }
 
-  delete(ApplicationModel? app) async {
-    if (app != null) {
-      busy = true;
+  ApplicationModel? findApp({String? url}) {
 
-      // delete from the hive
-      bool ok = await app.delete();
-
-      // remove from the list
-      if (ok && _apps.contains(app)) _apps.remove(app);
-
-      busy = false;
-    }
-  }
-
-  launch(ApplicationModel app, BuildContext context) async {
-    // get the home page
-    var page = app.homePage;
-
-    changeIcon(app);
-
-    // set the system app
-    app.started = false;
-    System().launchApplication(app, true);
-
-    // refresh the app
-    app.refresh();
-
-    // launch the page
-    NavigationManager().setNewRoutePath(
-        PageConfiguration(uri: Uri.tryParse(page), title: "Store"),
-        source: "store");
-  }
-
-  void changeIcon(ApplicationModel app)
-  {
-    if (_changeiconPlugin == null) {
-      Changeicon.initialize(
-        classNames: ['MainActivity', 'appdaddy', 'goodyear', 'rocketfunds']);
-
-      _changeiconPlugin = Changeicon();
-    }
-
-    if (app.url.toLowerCase().contains('goodyear'))
+    // find app with matching url
+    for (var app in System.apps)
     {
-      _changeiconPlugin?.switchIconTo(classNames: ['goodyear']);
+      if (app.url == url) return app;
     }
-
-    if (app.url.toLowerCase().contains('rocketfunds'))
-    {
-      _changeiconPlugin?.switchIconTo(classNames: ['rocketfunds']);
-    }
-
-    if (app.url.toLowerCase().contains('appdaddy'))
-    {
-      _changeiconPlugin?.switchIconTo(classNames: ['appdaddy']);
-    }
+    return null;
   }
 
   @override

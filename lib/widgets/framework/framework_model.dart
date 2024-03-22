@@ -300,14 +300,14 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
       // template requires rights?
       int? requiredRights = toInt(Xml.attribute(node: xml, tag: 'rights'));
       if (requiredRights != null) {
-        int myrights = System.app?.user.rights ?? 0;
-        bool connected = System.app?.user.connected ?? false;
+        int myrights = System.currentApp?.user.rights ?? 0;
+        bool connected = System.currentApp?.user.connected ?? false;
 
         // logged on?
         if (!connected) {
           // fetch logon template
           template = await TemplateManager().fetch(
-              url: System.app?.loginPage ?? "login.xml", refresh: refresh);
+              url: System.currentApp?.loginPage ?? "login.xml", refresh: refresh);
           xml = template.document!.rootElement;
         }
 
@@ -326,7 +326,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
       // register late scope
       var alias = Xml.attribute(node: xml, tag: "id");
       if (scope != null && alias != null) {
-        System.app?.scopeManager.add(scope!, alias: alias);
+        System.currentApp?.scopeManager.add(scope!, alias: alias);
       }
 
       // set template name
@@ -348,7 +348,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
   }
 
   static FrameworkModel fromJs(String templ8) {
-    FrameworkModel model = FrameworkModel(System.app!, 'js2fml');
+    FrameworkModel model = FrameworkModel(System.currentApp!, 'js2fml');
     model._loadjs2fml(templ8);
     return model;
   }
@@ -364,7 +364,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
       // register late scope
       var alias = Xml.attribute(node: xml, tag: "id");
       if (scope != null && alias != null) {
-        System.app?.scopeManager.add(scope!, alias: alias);
+        System.currentApp?.scopeManager.add(scope!, alias: alias);
       }
 
       // set template name
@@ -533,7 +533,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
 
   void onTitleChange(BuildContext? context) {
     // set tab title
-    if (index == 0) System().setApplicationTitle(title);
+    if (index == 0) System.setApplicationTitle(title);
 
     // update page title
     if (context != null) NavigationManager().setPageTitle(context, title);

@@ -54,8 +54,9 @@ class UserModel extends WidgetModel {
   // initializes the app
   @override
   Future<bool> initialize() async {
+
     // wait for the system to initialize
-    await System.initialized;
+    await System.initialized.future;
 
     _connected =
         BooleanObservable(Binding.toKey("connected"), false, scope: scope);

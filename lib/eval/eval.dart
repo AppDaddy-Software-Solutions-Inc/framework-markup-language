@@ -616,7 +616,7 @@ class Eval {
 
   /// Hash a String
   static String? _hash(dynamic s, [dynamic key]) {
-    key ??= System.app?.settings("HASHKEY");
+    key ??= System.currentApp?.hashKey;
     if (key == null) return null;
     key = toStr(key);
     try {

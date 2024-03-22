@@ -178,6 +178,26 @@ class Phrases {
     return 'Load App';
   }
 
+  String get makeDefaultApp {
+    if (language == french) return '(FR) Make this the default application?';
+    return 'Make this the default application?';
+  }
+
+  String get removeDefaultApp {
+    if (language == french) return '(FR) Remove the default application?';
+    return 'Remove the default application?';
+  }
+
+  String get defaultAppRemoved {
+    if (language == french) return '(FR) The default application has been removed. Restart the program.';
+    return 'The default application has been removed. Restart the program.';
+  }
+
+  String get makeDefaultAppDisclaimer {
+    if (language == french) return '(FR) Warning! This option sets the default startup application.';
+    return 'Warning! This option sets the default startup application.';
+  }
+
   String get removeApp {
     if (language == french) return '(FR) Remove App?';
     return 'Remove App?';

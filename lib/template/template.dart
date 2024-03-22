@@ -42,11 +42,11 @@ class Template {
       }
 
       // Replace query parameters
-      xml = Binding.applyMap(xml, System.app?.queryParameters,
+      xml = Binding.applyMap(xml, System.currentApp?.queryParameters,
           caseSensitive: false);
 
       // Replace config parameters
-      xml = Binding.applyMap(xml, System.app?.configParameters,
+      xml = Binding.applyMap(xml, System.currentApp?.configParameters,
           caseSensitive: false);
 
       // Replace System Uuid
@@ -79,11 +79,11 @@ class Template {
       }
 
       // Replace query parameters
-      xml = Binding.applyMap(xml, System.app?.queryParameters,
+      xml = Binding.applyMap(xml, System.currentApp?.queryParameters,
           caseSensitive: false);
 
       // Replace config parameters
-      xml = Binding.applyMap(xml, System.app?.configParameters,
+      xml = Binding.applyMap(xml, System.currentApp?.configParameters,
           caseSensitive: false);
 
       // Replace System Uuid

@@ -236,9 +236,9 @@ class Http {
       myHeaders[HttpHeaders.ageHeader] = '0';
       myHeaders[HttpHeaders.contentEncodingHeader] = 'utf8';
       myHeaders[HttpHeaders.contentTypeHeader] = "application/xml";
-      if (System.app?.jwt?.token != null) {
+      if (System.currentApp?.jwt?.token != null) {
         myHeaders[HttpHeaders.authorizationHeader] =
-            "Bearer ${System.app!.jwt!.token}";
+            "Bearer ${System.currentApp!.jwt!.token}";
       }
     } else {
       headers.forEach((key, value) => myHeaders[key] = value);
@@ -259,7 +259,7 @@ class Http {
 
     // decode token
     Jwt jwt = Jwt.decode(token);
-    if (jwt.valid) System.app?.logon(jwt);
+    if (jwt.valid) System.currentApp?.logon(jwt);
   }
 }
 

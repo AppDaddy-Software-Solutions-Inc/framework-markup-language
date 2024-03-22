@@ -36,7 +36,7 @@ class Stash {
   }
 
   static Future<Stash> getStash() async {
-    String domain = System().domain ?? '';
+    String domain = System.domain ?? '';
     Map<String, dynamic> entries =
         await Database().find(tableName, domain) ?? {};
     return Stash(domain, entries);

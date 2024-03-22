@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:async';
+
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:fml/fml.dart';
@@ -25,17 +27,18 @@ import 'package:fml/platform/platform.web.dart'
 
 class NavigationManager extends RouterDelegate<PageConfiguration>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<PageConfiguration> {
-  GlobalKey<NavigatorState> _key = GlobalKey<NavigatorState>();
+
+  final key = GlobalKey<NavigatorState>();
 
   @override
-  GlobalKey<NavigatorState> get navigatorKey => _key;
+  GlobalKey<NavigatorState> get navigatorKey => key;
 
   // singleton
   static final NavigationManager _singleton = NavigationManager._internal();
-  factory NavigationManager({GlobalKey<NavigatorState>? key}) {
-    //if (key != null) _singleton._key = key;
-    return _singleton;
-  }
+  factory NavigationManager({GlobalKey<NavigatorState>? key}) => _singleton;
+
+  static final initialized  = Completer<bool>();
+  static final initializing = Completer<bool>();
 
   // holds the navigation stack
   final _pages = <Page>[];
@@ -47,20 +50,21 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
     _addPage(dummyPage!);
   }
 
-  void setKey() {
-    _key = GlobalKey<NavigatorState>();
-  }
+  Future<void> initialize() async {
 
-  Future<void> _initialize() async {
+    // already initialized?
+    if (initialized.isCompleted || initializing.isCompleted) return;
+    initializing.complete(true);
+
     // clear all pages
     _pages.clear();
 
     // get home page
-    String? homePage = System.app?.homePage ?? "store";
+    String? homePage = System.currentApp?.homePage ?? "store";
     if (!FmlEngine.isWeb && FmlEngine.isMultiApp) homePage = "store";
 
     // get start page
-    String startPage = System.app?.startPage ?? homePage;
+    String startPage = System.currentApp?.startPage ?? homePage;
 
     // start page is different than home page?
     if (homePage.split("?")[0].toLowerCase() !=
@@ -73,33 +77,34 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
       // default - if singlePageApplication then false, otherwise true
       bool linkable = toBool(Xml.attribute(
               node: template.document!.rootElement, tag: "linkable")) ??
-          System.app?.singlePage ??
+          System.currentApp?.singlePage ??
           false;
 
       // set start page = home page if not linkable
       if (!linkable) startPage = homePage;
 
       // single page applications always load the home page
-      if (System.app?.singlePage ?? true) startPage = homePage;
+      if (System.currentApp?.singlePage ?? true) startPage = homePage;
     }
-
-    //  web browser - user hit refresh?
-    //if ((System().getNavigationType() == 1) && (!System().singlePageApplication)) page = System().requestedPage;
 
     // open the page
     setNewRoutePath(PageConfiguration(uri: Uri.tryParse(startPage)),
         source: "splash");
+
+    // set initialized
+    initialized.complete(true);
   }
 
   Future<void> onPageLoaded() async {
     // open the requested page
-    if (System.app?.startPage != null && System.app?.started == false) {
+    if (System.currentApp?.startPage != null && System.currentApp?.started == false) {
+
       // open the requested page
-      _open(System.app?.startPage);
+      _open(System.currentApp?.startPage);
 
       // clear requested page so we don't continually
       // open the same page on refresh or reload
-      System.app?.started = true;
+      System.currentApp?.started = true;
     }
   }
 
@@ -126,8 +131,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
   @override
   Future<void> setNewRoutePath(PageConfiguration configuration,
       {String source = "system"}) async {
+
     // initialize
-    if (pages.isNotEmpty && pages.first == dummyPage) return _initialize();
+    if (pages.isNotEmpty && pages.first == dummyPage) return initialize();
 
     // deeplink specified
     String? url = configuration.uri?.toString();
@@ -364,7 +370,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
     if (uri == null) return false;
 
     var d1 = uri.host.toLowerCase();
-    var d2 = System.app?.host?.toLowerCase();
+    var d2 = System.currentApp?.host?.toLowerCase();
 
     bool sameDomain = d1 == d2;
     bool xmlFile = uri.pageExtension == "xml";
@@ -430,7 +436,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
 
       default:
         view = ModalManagerView(ModalManagerModel(FrameworkModel.fromUrl(
-                System.app!, url,
+                System.currentApp!, url,
                 refresh: refresh, dependency: dependency)
             .getView()));
         break;

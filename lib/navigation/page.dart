@@ -76,7 +76,7 @@ class CustomPageBasedMaterialPageRoute<T> extends PageRoute<T>
       transition = toEnum(args.transition?.split(",")[0].toLowerCase().trim(),
           PageTransitions.values);
     }
-    return transition ?? System.app?.transition ?? FmlEngine.defaultTransition;
+    return transition ?? System.currentApp?.transition ?? FmlEngine.defaultTransition;
   }
 
   int? get duration {

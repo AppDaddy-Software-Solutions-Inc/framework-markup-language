@@ -12,6 +12,7 @@ enum EventTypes {
   back,
   build,
   clear,
+  cleardefaultapp,
   close,
   closeroute,
   complete,

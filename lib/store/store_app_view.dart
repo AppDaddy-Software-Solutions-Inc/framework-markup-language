@@ -7,21 +7,24 @@ import 'package:fml/store/store_model.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 
-class AppForm extends StatefulWidget {
-  const AppForm({super.key});
+class StoreApp extends StatefulWidget {
+
+  final bool showMakeDefaultOption;
+  const StoreApp({super.key, required this.showMakeDefaultOption});
 
   @override
-  AppFormState createState() {
-    return AppFormState();
+  StoreAppState createState() {
+    return StoreAppState();
   }
 }
 
-class AppFormState extends State<AppForm> {
+class StoreAppState extends State<StoreApp> {
   final _formKey = GlobalKey<FormState>();
   String errorText = '';
   String? title;
   String? url;
   bool unreachable = false;
+  bool isDefaultAppChecked = false;
 
   var urlController = TextEditingController();
 
@@ -81,7 +84,7 @@ class AppFormState extends State<AppForm> {
     }
 
     // already defined
-    if (Store().find(url: uri.toString()) != null) {
+    if (Store().findApp(url: uri.toString()) != null) {
       errorText = 'You are already connected to this application';
       return errorText;
     }
@@ -93,23 +96,59 @@ class AppFormState extends State<AppForm> {
   }
 
   Future _addApp() async {
+
+    // set busy
+    busy.set(true);
+
     // validate the form
     unreachable = false;
-    busy.set(true);
-    bool ok = _formKey.currentState!.validate();
-    if (ok) {
-      ApplicationModel app =
-          ApplicationModel(System(), url: url!, title: title);
-      await app.initialized;
-      if (app.hasConfig) {
-        Store().add(app);
-        if (mounted) Navigator.of(context).pop();
-      } else {
-        unreachable = true;
-        _formKey.currentState!.validate();
-      }
+
+    // supplied data valid?
+    if (!(_formKey.currentState?.validate() ?? true)) {
+
+      // site unreachable
+      unreachable = true;
+
+      // force form validation to show errors
+      _formKey.currentState!.validate();
+
+      // clear busy
+      busy.set(false);
+
+      return;
     }
+
+    // create application
+    ApplicationModel app = ApplicationModel(System(), url: url!, title: title, isDefault: isDefaultAppChecked);
+
+    // wait for it to initialize
+    await app.initialized.future;
+
+    // site is reachable?
+    unreachable = app.config == null;
+
+    // app reachable?
+    if (!unreachable) {
+
+      // pop the dialog
+      if (mounted) Navigator.of(context).pop();
+
+      // add the app - if default, we need to wait until it is added
+      app.isDefault ? await Store().addApp(app) : Store().addApp(app);
+
+      // launch the app if default
+      if (app.isDefault) System.launchApplication(app);
+    }
+
+    // clear busy
     busy.set(false);
+  }
+
+  _onSetDefaultApplication(bool? checked)
+  {
+    setState(() {
+      isDefaultAppChecked = checked!;
+    });
   }
 
   @override
@@ -153,6 +192,19 @@ class AppFormState extends State<AppForm> {
     layout.add(url);
     layout.add(const Padding(padding: EdgeInsets.only(top: 10)));
     layout.add(name);
+
+    // show make default app?
+    if (widget.showMakeDefaultOption){
+
+      var tx = Text(phrase.makeDefaultApp, style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 16));
+      var cb = Checkbox(value: isDefaultAppChecked, onChanged: _onSetDefaultApplication);
+      var note = isDefaultAppChecked ? SizedBox(width: 300, child: Text(softWrap: true, phrase.makeDefaultAppDisclaimer, style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 12))) : null;
+
+      layout.add(const Padding(padding: EdgeInsets.only(top: 10)));
+      layout.add(Row(mainAxisSize: MainAxisSize.min, children: [tx,cb]));
+      if (note != null) layout.add(note);
+      layout.add(const Padding(padding: EdgeInsets.only(top: 10)));
+    }
 
     // buttons
     var buttons = Padding(

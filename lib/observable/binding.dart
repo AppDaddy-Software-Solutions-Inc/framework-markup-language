@@ -84,9 +84,9 @@ class Binding {
 
       // scoped?
       var myScope = parts[0].trim();
-      if (System.app != null &&
+      if (System.currentApp != null &&
           parts.length > 1 &&
-          System.app!.scopeManager.hasScope(myScope)) {
+          System.currentApp!.scopeManager.hasScope(myScope)) {
         scope = myScope;
         parts.removeAt(0);
       }

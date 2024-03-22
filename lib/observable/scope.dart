@@ -45,7 +45,7 @@ class Scope {
     parent?.addChild(this);
 
     // add me to my applications scope manager
-    System.app?.scopeManager.add(this);
+    System.currentApp?.scopeManager.add(this);
   }
 
   static Scope? of(WidgetModel? model) {
@@ -62,7 +62,7 @@ class Scope {
     bind(observable);
 
     // Register
-    System.app?.scopeManager.register(observable);
+    System.currentApp?.scopeManager.register(observable);
 
     return true;
   }
@@ -120,7 +120,7 @@ class Scope {
     // named scope reference?
     if (id.contains(".")) {
       var parts = id.split(".");
-      var myScope = System.app?.scopeManager.of(parts.first.trim());
+      var myScope = System.currentApp?.scopeManager.of(parts.first.trim());
       if (myScope != null) {
         scope = myScope;
         parts.removeAt(0);
@@ -144,10 +144,10 @@ class Scope {
         // Find Bind Source
         Observable? source;
         if (binding.scope != null) {
-          source = System.app?.scopeManager
+          source = System.currentApp?.scopeManager
               .findObservableInScope(target, binding.scope, binding.key);
         } else {
-          source = System.app?.scopeManager.findObservable(this, binding.key);
+          source = System.currentApp?.scopeManager.findObservable(this, binding.key);
         }
 
         // resolved
@@ -221,7 +221,7 @@ class Scope {
     parent?.removeChild(this);
 
     // Unregister with Scope Manager
-    System.app?.scopeManager.remove(this);
+    System.currentApp?.scopeManager.remove(this);
   }
 
   void addChild(Scope child) {
@@ -254,7 +254,7 @@ class Scope {
     if (observable == null) {
       Scope? scope = this;
       if (binding.scope != null) {
-        scope = System.app?.scopeManager.of(binding.scope);
+        scope = System.currentApp?.scopeManager.of(binding.scope);
       }
       if (scope != null) {
         var observable = StringObservable(binding.key, value, scope: this);
@@ -290,11 +290,11 @@ class Scope {
   Observable? getObservable(Binding binding, {Observable? requestor}) {
     // look up the scope tree
     if (binding.scope == null) {
-      return System.app?.scopeManager.findObservable(this, binding.key);
+      return System.currentApp?.scopeManager.findObservable(this, binding.key);
     }
 
     // named scope
-    return System.app?.scopeManager
+    return System.currentApp?.scopeManager
         .findObservableInScope(requestor, binding.scope, binding.key);
   }
 

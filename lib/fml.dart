@@ -1,5 +1,7 @@
 library fml;
 
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/application/application_view.dart';
@@ -31,6 +33,9 @@ class FmlEngine {
   // used in context lookup
   static var key = GlobalKey();
 
+  // if the engine has been initialized
+  static final initialized = Completer<bool>();
+
   // platform
   static String get platform => isWeb
       ? "web"
@@ -59,11 +64,9 @@ class FmlEngine {
 
   // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
   static late _ApplicationTypes _type;
-  static bool get isMultiApp => _type == _ApplicationTypes.multiApp;
+  static bool get isMultiApp =>  _type == _ApplicationTypes.multiApp;
   static bool get isSingleApp => _type == _ApplicationTypes.singleApp;
-
-  // if the engine has been initialized
-  static bool _initialized = false;
+  static set singleApp(bool value) => _type = value ? _ApplicationTypes.singleApp : _ApplicationTypes.multiApp;
 
   static late String _font;
   static String get defaultFont => _font;
@@ -115,7 +118,9 @@ class FmlEngine {
     /// splash screen background color
     Color? splashBackgroundColor,
   }) {
-    if (FmlEngine._initialized) return _singleton;
+
+    // already initialized?
+    if (FmlEngine.initialized.isCompleted) return _singleton;
 
     // initialize the engine
     FmlEngine._domain = domain;
@@ -131,7 +136,7 @@ class FmlEngine {
     FmlEngine._splashBackgroundColor = splashBackgroundColor;
 
     // mark initialized
-    FmlEngine._initialized = true;
+    FmlEngine.initialized.complete(true);
 
     return _singleton;
   }
@@ -142,6 +147,9 @@ class FmlEngine {
 
     // hides all render flex exceptions
     FlutterError.onError = _showError;
+
+    // initialize the system
+    System().initialize();
   }
 
   Widget launch() {

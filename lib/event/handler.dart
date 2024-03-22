@@ -125,7 +125,7 @@ class EventHandler extends Eval {
       }
 
       // find the observable
-      var observable = System.app?.scopeManager.findObservable(scope, key);
+      var observable = System.currentApp?.scopeManager.findObservable(scope, key);
 
       // add to the list
       variables[binding.signature] = binding.translate(observable?.get());
@@ -151,6 +151,7 @@ class EventHandler extends Eval {
       functions[fromEnum(EventTypes.animate)] = _handleEventAnimate;
       functions[fromEnum(EventTypes.back)] = _handleEventBack;
       functions[fromEnum(EventTypes.build)] = _handleEventBuild;
+      functions[fromEnum(EventTypes.cleardefaultapp)] = _handleEventClearDefaultApp;
       functions[fromEnum(EventTypes.close)] = _handleEventClose;
       functions[fromEnum(EventTypes.cont)] = _handleEventContinue;
       functions['continue'] = _handleEventContinue;
@@ -323,7 +324,7 @@ class EventHandler extends Eval {
 
   /// Sets a Hive Value and Creates and [Observable] by the same name
   Future<bool> _handleEventStash(dynamic key, dynamic value) async =>
-      await System.app?.stashValue(key, value) ?? true;
+      await System.currentApp?.stashValue(key, value) ?? true;
 
   /// Creates an alert dialog
   Future<bool> _handleEventAlert(
@@ -420,6 +421,12 @@ class EventHandler extends Eval {
     return true;
   }
 
+  // clears the default app setting
+  Future<bool> _handleEventClearDefaultApp() async {
+    System.clearDefaultApplication();
+    return true;
+  }
+
   /// Login attempt
   ///
   /// Sets the user credentials on the client side to generate a secure token and attempts a login to the server side via databroker
@@ -454,7 +461,7 @@ class EventHandler extends Eval {
         validateSignature: validateSignature ?? false);
     if (jwt.valid) {
       // logon
-      System.app?.logon(jwt);
+      System.currentApp?.logon(jwt);
 
       // refresh the framework
       if (toBool(refresh) != false) {
@@ -464,14 +471,14 @@ class EventHandler extends Eval {
 
       return true;
     } else {
-      System.app?.logoff();
+      System.currentApp?.logoff();
       return false;
     }
   }
 
   /// Logs a user off
   Future<bool> _handleEventLogoff([dynamic refresh]) async {
-    bool ok = await System.app?.logoff() ?? true;
+    bool ok = await System.currentApp?.logoff() ?? true;
 
     // Refresh the Framework
     if ((ok) && (toBool(refresh) != false)) {
@@ -483,9 +490,9 @@ class EventHandler extends Eval {
   }
 
   Future<bool> _firebaseInit() async {
-    if (System.app?.firebase == null) {
-      String apiKey = System.app?.settings("FIREBASE_API_KEY") ?? '0000000000';
-      String? authDomain = System.app?.settings("FIREBASE_AUTH_DOMAIN");
+    if (System.currentApp?.firebase == null) {
+      String apiKey = System.currentApp?.firebaseApiKey ?? '0000000000';
+      String? authDomain = System.currentApp?.firebaseAuthDomain;
 
       await fbauth.loadLibrary();
       await fbcore.loadLibrary();
@@ -496,7 +503,7 @@ class EventHandler extends Eval {
           projectId: "FML",
           apiKey: apiKey,
           authDomain: authDomain);
-      System.app?.firebase =
+      System.currentApp?.firebase =
           await fbcore.Firebase.initializeApp(options: options);
     }
     return true;
@@ -829,7 +836,7 @@ class EventHandler extends Eval {
     // this hack is necessary since stash isn't a model
     // and adding another function seems overkill
     if (id == "STASH" && function.toLowerCase() == "clear") {
-      return await System.app?.clearStash() ?? true;
+      return await System.currentApp?.clearStash() ?? true;
     }
 
     // model not found

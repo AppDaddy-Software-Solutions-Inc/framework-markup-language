@@ -25,9 +25,9 @@ class ThemeNotifier with ChangeNotifier {
     if (!libraryLoader!.isCompleted) {
       // set the theme
       libraryLoader!.future.whenComplete(() {
-        var brightness = System.app?.brightness ?? FmlEngine.defaultBrightness;
-        var color = System.app?.color ?? FmlEngine.defaultColor;
-        var font = System.app?.font ?? FmlEngine.defaultFont;
+        var brightness = System.currentApp?.brightness ?? FmlEngine.defaultBrightness;
+        var color = System.currentApp?.color ?? FmlEngine.defaultColor;
+        var font = System.currentApp?.font ?? FmlEngine.defaultFont;
         setTheme(brightness: brightness, color: color, font: font);
       });
     }
@@ -49,8 +49,7 @@ class ThemeNotifier with ChangeNotifier {
   void setTheme(
       {required Brightness brightness,
       required Color color,
-      required String font,
-      bool notify = true}) async {
+      required String font}) async {
     // set brightness
     var sameBrightness = brightness ==
         (System.theme.brightness == 'dark'
@@ -81,7 +80,7 @@ class ThemeNotifier with ChangeNotifier {
       _setSystemBindables(brightness: brightness, color: color, font: font);
 
       // notify
-      if (notify) notifyListeners();
+      notifyListeners();
     }
   }
 

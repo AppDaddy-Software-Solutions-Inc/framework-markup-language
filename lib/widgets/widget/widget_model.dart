@@ -7,7 +7,9 @@ import 'package:fml/datasources/datasource_listener_interface.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/camera/camera_model.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -227,7 +229,11 @@ class WidgetModel implements IDataSourceListener {
 
       // add model to the datasource list
       if (model is IDataSource) {
-        (datasources ??= []).add(model as IDataSource);
+        //this line is a temp fix until datasource can be refactored as a mixin
+        if(model is CameraModel){
+          (children ??= []).add(model);
+         }else (datasources ??= []).add(model as IDataSource);
+
       }
 
       // add model to the child list

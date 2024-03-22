@@ -224,8 +224,9 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource {
       if (ttl.endsWith('m')) factor = 1000 * 60;
       if (ttl.endsWith('h')) factor = 1000 * 60 * 60;
       if (ttl.endsWith('d')) factor = 1000 * 60 * 60 * 24;
-      if (factor > 1)
+      if (factor > 1) {
         ttl = (ttl.length > 1) ? ttl.substring(0, ttl.length - 1) : null;
+      }
     }
 
     if (isNumeric(ttl)) {
@@ -317,8 +318,9 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource {
 
         // the setter will have already fired if the value (v) is an eval
         // or contains bindings, so no need to refire the setter.
-        if ((_value?.bindings?.isEmpty ?? true) || !(_value?.isEval ?? false))
+        if ((_value?.bindings?.isEmpty ?? true) || !(_value?.isEval ?? false)) {
           _value!.set(v);
+        }
       }
     }
   }
@@ -428,10 +430,10 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource {
       _bodyIsCustom = true;
 
       // set the data
-      this.data = Data.from(body, root: root);
+      data = Data.from(body, root: root);
     }
     // ensure future bodies that contain bindables don't bind
-    if (_body == null) this.body = "";
+    if (_body == null) body = "";
 
     // register the datasource with the scope manager
     if (scope != null) scope!.registerDataSource(this);
@@ -439,8 +441,9 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource {
     // disable in background
     enabledInBackground =
         toBool(Xml.get(node: xml, tag: 'background')) ?? enabledInBackground;
-    if (!enabledInBackground)
+    if (!enabledInBackground) {
       framework?.indexObservable?.registerListener(onIndexChange);
+    }
   }
 
   String? _getBody(XmlElement xml) {
@@ -469,8 +472,9 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource {
     if (xml.childElements.length > 1) return null;
 
     // single non-textual element
-    if (xml.childElements.length == 1)
+    if (xml.childElements.length == 1) {
       return xml.childElements.first.toXmlString();
+    }
 
     // find cdata node
     var cdata = xml.children.firstWhereOrNull((child) => child is XmlCDATA);
@@ -861,8 +865,9 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource {
 
       // expired?
       bool expired = true;
-      if ((row?.expires ?? 0) >= DateTime.now().millisecondsSinceEpoch)
+      if ((row?.expires ?? 0) >= DateTime.now().millisecondsSinceEpoch) {
         expired = false;
+      }
 
       // Return Cached Data
       if (!expired) return row!.value;

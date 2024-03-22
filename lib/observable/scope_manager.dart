@@ -20,8 +20,9 @@ class ScopeManager {
 
   remove(Scope scope) {
     if ((directory.containsKey(scope.id)) &&
-        (directory[scope.id]!.contains(scope)))
+        (directory[scope.id]!.contains(scope))) {
       directory[scope.id]!.remove(scope);
+    }
     if (unresolved != null) {
       unresolved!.removeWhere((scopeId, observable) => scopeId == scope.id);
       if (unresolved!.isEmpty) unresolved = null;
@@ -35,8 +36,9 @@ class ScopeManager {
   }
 
   register(Observable observable) {
-    if ((isNullOrEmpty(observable.key)) || (observable.scope == null))
+    if ((isNullOrEmpty(observable.key)) || (observable.scope == null)) {
       return null;
+    }
 
     // Notify
     _notifyDescendants(observable.scope!, observable);
@@ -84,10 +86,11 @@ class ScopeManager {
 
     // Find Observable in Scope
     Observable? observable;
-    if (scope != null)
+    if (scope != null) {
       observable = scope.observables.containsKey(observableKey)
           ? scope.observables[observableKey]
           : null;
+    }
 
     // Not Found
     if ((observable == null) && (target != null) && (target.scope != null)) {
@@ -98,8 +101,9 @@ class ScopeManager {
       if (!unresolved!.containsKey(scopeId)) unresolved![scopeId] = [];
 
       // Create New Unresolved Scope Target
-      if (!unresolved![scopeId]!.contains(target))
+      if (!unresolved![scopeId]!.contains(target)) {
         unresolved![scopeId]!.add(target);
+      }
     }
 
     return observable;

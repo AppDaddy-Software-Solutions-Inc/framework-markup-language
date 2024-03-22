@@ -232,10 +232,11 @@ class CameraViewState extends WidgetState<CameraView> {
         ResolutionPreset resolution =
             toEnum(widget.model.resolution, ResolutionPreset.values) ??
                 ResolutionPreset.medium;
-        if (widget.model.stream)
+        if (widget.model.stream) {
           resolution = (FmlEngine.isWeb)
               ? ResolutionPreset.medium
               : ResolutionPreset.low;
+        }
 
         // build the controller
         controller = CameraController(camera, resolution,
@@ -243,10 +244,11 @@ class CameraViewState extends WidgetState<CameraView> {
 
         if (controller != null) {
           controller!.addListener(() {
-            if (controller!.value.hasError)
+            if (controller!.value.hasError) {
               Log().debug(
                   'Camera Controller error ${controller!.value.errorDescription}',
                   caller: 'camera/camera_view.dart => initialize()');
+            }
           });
         } else {
           Log().debug('Camera Controller is null',
@@ -638,9 +640,10 @@ class CameraViewState extends WidgetState<CameraView> {
         var frame = await codec.getNextFrame();
         var data =
             await frame.image.toByteData(format: ImageByteFormat.rawRgba);
-        if (data != null)
+        if (data != null) {
           detectable = DetectableImage.fromRgba(
               data.buffer.asUint8List(), frame.image.width, frame.image.height);
+        }
       }
 
       // blob image - created in mobile

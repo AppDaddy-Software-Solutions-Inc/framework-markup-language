@@ -76,7 +76,7 @@ class CustomPageBasedMaterialPageRoute<T> extends PageRoute<T>
       transition = toEnum(args.transition?.split(",")[0].toLowerCase().trim(),
           PageTransitions.values);
     }
-    return transition ?? System.app?.transition ?? FmlEngine.defaultTransition;
+    return transition ?? System.currentApp?.transition ?? FmlEngine.defaultTransition;
   }
 
   int? get duration {
@@ -156,12 +156,15 @@ class CustomPageBasedMaterialPageRoute<T> extends PageRoute<T>
         PageTransitionsBuilder builder = const ZoomPageTransitionsBuilder();
 
         var platform = Theme.of(context).platform;
-        if (platform == TargetPlatform.iOS)
+        if (platform == TargetPlatform.iOS) {
           builder = const CupertinoPageTransitionsBuilder();
-        if (platform == TargetPlatform.linux)
+        }
+        if (platform == TargetPlatform.linux) {
           builder = const OpenUpwardsPageTransitionsBuilder();
-        if (platform == TargetPlatform.macOS)
+        }
+        if (platform == TargetPlatform.macOS) {
           builder = const FadeUpwardsPageTransitionsBuilder();
+        }
 
         return builder.buildTransitions(
             this, context, animation, secondaryAnimation, child);

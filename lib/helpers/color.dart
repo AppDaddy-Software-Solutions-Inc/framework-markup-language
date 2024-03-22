@@ -25,27 +25,32 @@ class ColorHelper {
       if (colors.containsKey(color)) return colors[color.toLowerCase()];
 
       // random color
-      if (color == 'random')
+      if (color == 'random') {
         return colors[colors.keys.elementAt(Random().nextInt(colors.length))];
+      }
 
       // # hex color w/out alpha
-      if (color.startsWith('#') && color.length == 7)
+      if (color.startsWith('#') && color.length == 7) {
         return Color(int.parse(color.substring(1, 7), radix: 16) + 0xFF000000);
+      }
 
       // # hex color w/ alpha
-      if (color.startsWith('#') && color.length == 9)
+      if (color.startsWith('#') && color.length == 9) {
         return Color(int.parse(
                 '${color.substring(7, 9)}${color.substring(1, 7)}',
                 radix: 16) +
             0x00000000);
+      }
 
       // 0x hex color w/out alpha
-      if (color.startsWith('0x') && color.length == 8)
+      if (color.startsWith('0x') && color.length == 8) {
         return Color(int.parse(color.substring(2, 8), radix: 16) + 0xFF000000);
+      }
 
       // 0x hex color w/ alpha
-      if (color.startsWith('0x') && color.length == 10)
+      if (color.startsWith('0x') && color.length == 10) {
         return Color(int.parse(color.substring(2, 10), radix: 16) + 0x00000000);
+      }
     }
 
     // ignore: empty_catches

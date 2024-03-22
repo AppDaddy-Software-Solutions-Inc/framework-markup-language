@@ -18,8 +18,9 @@ class Data {
     key ??= newId();
 
     // encrypted key
-    if (key.length > 256)
+    if (key.length > 256) {
       key = Cryptography.hash(key: _cacheHashKey, text: key);
+    }
 
     _map["key"] = key;
     _map["value"] = value ?? "";
@@ -38,18 +39,20 @@ class Data {
 
   static Data? _fromMap(dynamic map) {
     Data? data;
-    if (map is Map<String, dynamic>)
+    if (map is Map<String, dynamic>) {
       data = Data(
           key: fromMap(map, "key"),
           value: fromMap(map, "value"),
           expires: fromMapAsInt(map, "expires"));
+    }
     return data;
   }
 
   static Future<Data?> find(String key) async {
     // encrypted key
-    if (key.length > 256)
+    if (key.length > 256) {
       key = Cryptography.hash(key: _cacheHashKey, text: key);
+    }
 
     Map<String, dynamic>? entry = await Database().find(tableName, key);
     Data? data = _fromMap(entry);

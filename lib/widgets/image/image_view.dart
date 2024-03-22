@@ -75,9 +75,10 @@ class ImageView extends StatefulWidget implements IWidgetView {
         Log().debug(
             "Bad image url (${url?.substring(0, min(100, url.length))}. Error is $object",
             caller: "errorHandler");
-        if (defaultImage == null)
+        if (defaultImage == null) {
           return const Icon(Icons.broken_image_outlined,
               size: 36, color: Colors.grey);
+        }
         if (defaultImage.toLowerCase().trim() == 'none') return Container();
         return getImage(defaultImage, animate,
             defaultImage: null,
@@ -93,7 +94,7 @@ class ImageView extends StatefulWidget implements IWidgetView {
       switch (uri.scheme) {
         /// data uri
         case "data":
-          if (uri.data != null)
+          if (uri.data != null) {
             image = FadeInImage(
                 placeholder: MemoryImage(placeholder),
                 image: MemoryImage(uri.data!.contentAsBytes()),
@@ -102,6 +103,7 @@ class ImageView extends StatefulWidget implements IWidgetView {
                 height: height,
                 fadeInDuration: Duration(milliseconds: fadeDuration ?? 300),
                 imageErrorBuilder: errorHandler);
+          }
           break;
 
         /// blob image from camera or file picker

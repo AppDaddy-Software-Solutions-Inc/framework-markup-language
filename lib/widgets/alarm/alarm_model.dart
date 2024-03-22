@@ -72,9 +72,10 @@ class AlarmModel extends WidgetModel {
       : super(parent, id) {
     // set type
     this.type = AlarmType.generic;
-    if (type is String)
+    if (type is String) {
       this.type = toEnum(type.trim().toLowerCase(), AlarmType.values) ??
           AlarmType.generic;
+    }
     if (type is AlarmType) this.type = type;
 
     if (text != null) this.text = text;

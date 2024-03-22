@@ -40,8 +40,8 @@ class Gps {
                 speedaccuracy: position?.speedAccuracy,
                 heading: position?.heading,
                 epoch: DateTime.now().millisecondsSinceEpoch,
-                user: System.app?.user.claim('key'),
-                username: System.app?.user.claim('name'));
+                user: System.currentApp?.user.claim('key'),
+                username: System.currentApp?.user.claim('name'));
             await notifyListeners(last);
           } catch (e) {
             Log().debug('GPD Data Point');

@@ -28,12 +28,17 @@ class ApplicationModel extends WidgetModel {
   // the HIVE database.
   late String _dbKey;
 
-  late Future<bool> initialized;
+  final initialized = Completer<bool>();
+  bool get isInitialized => initialized.isCompleted;
+
   bool started = false;
 
   // Active user
   late UserModel _user;
   UserModel get user => _user;
+
+  // Jwt
+  Jwt? get jwt => _user.jwt;
 
   // used for social media
   FirebaseApp? firebase;
@@ -48,49 +53,82 @@ class ApplicationModel extends WidgetModel {
   bool get secure => scheme == "https" || scheme == "wss";
 
   // forces pages to repaint every visit
-  bool get autoRefresh => toBool(settings("REFRESH")) ?? false;
-  bool get singlePage => toBool(settings('SINGLE_PAGE_APPLICATION')) ?? false;
+  bool get refresh => toBool(setting("REFRESH")) ?? false;
+
+  // single page application?
+  // single page applications restrict navigation to sub pages
+  bool get singlePage => toBool(setting('SINGLE_PAGE_APPLICATION')) ?? false;
 
   late String url;
 
   // application title
   String? title;
 
-  // application icon
-  String? icon;
-  String? iconLight;
-  String? iconDark;
+  // default page transition
+  bool isDefault = false;
 
-  // theme settings
+  // company name
+  String? get company =>  toStr(setting("COMPANY"));
+
+  // company logo
+  String? get logo =>  toStr(setting("LOGO"));
+
+  // application name
+  String? get name =>  toStr(setting("NAME"));
+
+  // application icon
+  String? _icon;
+  String? get icon => _icon;
+
+  String? _iconLight;
+  String? get iconLight => _iconLight;
+
+  String? _iconDark;
+  String? get iconDark => _iconDark;
+
+  // splash
+  String? _splash;
+  String? get splash => _splash;
+
+  // splash background color
+  String? get splashBackground =>  toStr(setting("SPLASH_BACKGROUND"));
+
+  // splash display duration
+  String? get splashDelay =>  toStr(setting("SPLASH_DELAY"));
+
+  // hash key - used by encryption event
+  String? get hashKey => setting("HASHKEY");
+
+  // theme - brightness
   Brightness get brightness =>
-      toEnum(settings('BRIGHTNESS')?.toLowerCase().trim(), Brightness.values) ??
+      toEnum(setting('BRIGHTNESS')?.toLowerCase().trim(), Brightness.values) ??
       FmlEngine.defaultBrightness;
-  Color get color =>
-      toColor(settings('COLOR') ??
-          settings('PRIMARY_COLOR') ??
-          settings('COLOR_SCHEME')) ??
-      FmlEngine.defaultColor;
-  String get font => settings('FONT') ?? FmlEngine.defaultFont;
+
+  // theme - color
+  Color get color => toColor(setting('COLOR')) ?? FmlEngine.defaultColor;
+
+  // theme - font
+  String get font => setting('FONT')?.trim() ?? FmlEngine.defaultFont;
+
+  // firebase settings
+  String? get firebaseApiKey => setting("FIREBASE_API_KEY");
+  String? get firebaseAuthDomain => setting("FIREBASE_AUTH_DOMAIN");
 
   // default page transition
-  PageTransitions? transition;
+  PageTransitions? get transition => toEnum(setting("TRANSITION"), PageTransitions.values);
 
   // application icons position
   // on the store display (future use for multi-page and ordering)
-  String? page;
+  int? page;
   int? order;
 
   // config
-  String? config;
-  ConfigModel? _config;
-  bool get hasConfig => _config != null;
+  ConfigModel? config;
+  String? setting(String key) => (config?.settings.containsKey(key) ?? false) ? config?.settings[key] : null;
 
   // application stash
   late Stash _stash;
   late Scope stash;
-
-  // jwt - json web token
-  Jwt? get jwt => _user.jwt;
 
   String? _scheme;
   String? get scheme => _scheme;
@@ -108,26 +146,24 @@ class ApplicationModel extends WidgetModel {
   Map<String, String>? get queryParameters => _queryParameters;
 
   // fml version support
-  int? fmlVersion;
+  int? get fmlVersion => toVersionNumber(setting("FML_VERSION"));
 
-  String get homePage => settings("HOME_PAGE") ?? "main.xml";
-  String? get loginPage => settings("LOGIN_PAGE");
-  String? get errorPage => settings("ERROR_PAGE");
+  String get homePage => setting("HOME_PAGE") ?? "main.xml";
+  String? get loginPage => setting("LOGIN_PAGE");
+  String? get errorPage => setting("ERROR_PAGE");
 
-  Map<String, String?>? get configParameters => _config?.parameters;
+  Map<String, String?>? get configParameters => config?.parameters;
 
   ApplicationModel(WidgetModel parent,
       {String? key,
-      required this.url,
-      this.title,
-      this.icon,
-      this.iconLight,
-      this.iconDark,
-      this.transition,
-      this.page,
-      this.order,
-      String? jwt})
+        required this.url,
+        this.title,
+        this.page,
+        this.order,
+        this.isDefault = false,
+        Map<String,dynamic>? settings})
       : super(parent, myId, scope: Scope(id: myId)) {
+
     // parse to url into its parts
     Uri? uri = Uri.tryParse(url);
     if (uri == null) return;
@@ -162,16 +198,24 @@ class ApplicationModel extends WidgetModel {
         .removeEmptySegments()
         .url;
 
-    // active user
+    // initialize the config
+    if (settings != null) config = ConfigModel.fromMap(settings);
+
+    // set active user
+    var jwt = setting("jwt");
     _user = UserModel(this, jwt: jwt);
 
     // load the config
-    initialized = initialize();
+    initialize();
   }
 
   // initializes the app
   @override
   Future<bool> initialize() async {
+
+    // already initialized?
+    if (isInitialized) return true;
+
     // build stash
     stash = Scope(id: 'STASH');
     if (domain != null) _stash = await Stash.get(domain!);
@@ -194,9 +238,8 @@ class ApplicationModel extends WidgetModel {
     // add GLOBAL alias to this scope
     scopeManager.add(scope!, alias: "GLOBAL");
 
-    // build config
-    var config = await _getConfig(true);
-    if (config != null) _config = config;
+    // load config file from remote
+    await _loadConfig();
 
     // get global template
     // get global.xml
@@ -207,24 +250,15 @@ class ApplicationModel extends WidgetModel {
             await TemplateManager().fetch(url: uri.url, refresh: true);
 
         // deserialize the returned template
-        if (template.document != null && !template.isAutoGeneratedErrorPage)
+        if (template.document != null && !template.isAutoGeneratedErrorPage) {
           deserialize(template.document!.rootElement);
+        }
       }
     }
 
-    return true;
-  }
+    // mark initialized
+    initialized.complete(true);
 
-  String? settings(String key) {
-    if (_config == null) return null;
-    if (_config!.settings.containsKey(key)) return _config!.settings[key];
-    return null;
-  }
-
-  // refreshes the config file settings
-  Future<bool> refresh() async {
-    var model = await _getConfig(true);
-    if (model != null) _config = model;
     return true;
   }
 
@@ -244,37 +278,32 @@ class ApplicationModel extends WidgetModel {
   }
 
   // loads the config
-  Future<ConfigModel?> _getConfig(bool refresh) async {
+  bool isLoading = false;
+
+  Future<void> _loadConfig() async {
+
+    // loading in progress
+    if (isLoading) return;
+
     ConfigModel? model;
 
-    /// parse the config
-    if (config != null) {
-      var e = Xml.tryParse(config);
-      if (e != null) model = await ConfigModel.fromXml(null, e.rootElement);
-    }
-
-    // get config from url
-    if (domain != null && (refresh || model == null)) {
-      model = await ConfigModel.fromUrl(null, domain!);
+    // get the config file from the domain
+    if (domain != null) {
+      model = await ConfigModel.fromUrl(domain!);
     }
 
     // model created?
     if (model != null) {
-      // set fml version support level
-      fmlVersion = toVersionNumber(model.settings["FML_VERSION"]);
 
       // get the icon
-      icon =
-          await _getIcon(model.settings["APP_ICON"] ?? model.settings["ICON"]);
-      iconLight = await _getIcon(
-          model.settings["APP_ICON_LIGHT"] ?? model.settings["ICON_LIGHT"]);
-      iconDark = await _getIcon(
-          model.settings["APP_ICON_DARK"] ?? model.settings["ICON_DARK"]);
+      _icon = await _getIcon(model.settings["ICON"]);
+      _iconLight = await _getIcon(model.settings["ICON_LIGHT"]);
+      _iconDark  = await _getIcon(model.settings["ICON_DARK"]);
 
-      // default transition
-      transition = toEnum(model.settings["TRANSITION"], PageTransitions.values);
+      // get the splash image
+      _splash = await _getIcon(model.settings["SPLASH"]);
 
-      // mirror?
+      // start the mirror?
       var mirrorApi = model.settings["MIRROR_API"];
       if (mirrorApi != null && !FmlEngine.isWeb && scheme != "file") {
         Uri? uri = URI.parse(mirrorApi, domain: domain);
@@ -285,14 +314,17 @@ class ApplicationModel extends WidgetModel {
       }
 
       // set the config
-      _config = model;
+      config = model;
 
-      // save to hive
+      // save the application to hive
       await upsert();
 
+      // notify listeners that the config has changed
       notifyListeners("config", null);
     }
-    return model;
+
+    // clear loading flag
+    isLoading = false;
   }
 
   Future<String?> _getIcon(String? icon) async {
@@ -315,8 +347,9 @@ class ApplicationModel extends WidgetModel {
         _stash.map.remove(key);
         _stash.upsert();
         Binding? binding = Binding.fromString('$key.value');
-        if (binding != null)
+        if (binding != null) {
           stash.observables.remove(stash.getObservable(binding)?.key);
+        }
         return ok;
       }
 
@@ -350,7 +383,17 @@ class ApplicationModel extends WidgetModel {
     return ok;
   }
 
-  void launch(bool notifyOnThemeChange) {
+  void setActive()
+  {
+    // set active
+    started = true;
+
+    // force an app refresh
+    _loadConfig();
+
+    // set credentials
+    logon(jwt);
+
     // set stash values
     for (var entry in _stash.map.entries) {
       stash.setObservable(entry.key, entry.value);
@@ -372,8 +415,7 @@ class ApplicationModel extends WidgetModel {
       notifier.setTheme(
           brightness: brightness,
           color: color,
-          font: font,
-          notify: notifyOnThemeChange);
+          font: font);
     }
   }
 
@@ -399,34 +441,34 @@ class ApplicationModel extends WidgetModel {
     Map<String, dynamic> map = {};
     map["key"] = _dbKey;
     map["url"] = url;
+    map["default"] = isDefault;
+    map["name"] = name;
     map["title"] = title;
+    map["logo"] = logo;
     map["icon"] = icon;
     map["icon_light"] = iconLight;
     map["icon_dark"] = iconDark;
+    map["splash"] = splash;
     map["transition"] = fromEnum(transition);
     map["page"] = page;
     map["order"] = order;
-    map["config"] = _config?.xml;
-    map["jwt"] = jwt;
+    map["jwt"] = jwt?.token;
     return map;
   }
 
   static Future<ApplicationModel?> _fromMap(dynamic map) async {
     ApplicationModel? app;
     if (map is Map<String, dynamic>) {
+
+      // create the application
       app = ApplicationModel(System(),
           key: fromMap(map, "key"),
           url: fromMap(map, "url"),
           title: fromMap(map, "title"),
-          icon: fromMap(map, "icon"),
-          iconLight: fromMap(map, "icon_light"),
-          iconDark: fromMap(map, "icon_dark"),
-          transition:
-              toEnum(fromMap(map, "transition"), PageTransitions.values),
-          page: fromMap(map, "page"),
+          page: fromMapAsInt(map, "page"),
           order: fromMapAsInt(map, "order"),
-          jwt: fromMap(map, "jwt"));
-      await app.initialized;
+          isDefault: fromMapAsBool(map, "default") ?? false,
+          settings: map);
     }
     return app;
   }

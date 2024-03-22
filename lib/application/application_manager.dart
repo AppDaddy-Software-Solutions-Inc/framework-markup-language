@@ -66,8 +66,9 @@ class _ApplicationManagerState extends State<ApplicationManager> {
       if (source?.data?.isNotEmpty ?? false) {
         source?.data?[0].forEach((key, value) {
           var id = Binding.toKey("${source.id}.${'data'}", key);
-          if (value is String && id != null)
+          if (value is String && id != null) {
             parameters[id] = source.data?[0][key];
+          }
         });
       }
       parameters.remove('data');

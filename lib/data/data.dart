@@ -109,8 +109,9 @@ class Data with ListMixin<dynamic> {
               break;
             }
             myData = myData[property.offset];
-            if ((myData is Map) && (myData.containsKey(property.name)))
+            if ((myData is Map) && (myData.containsKey(property.name))) {
               myData = myData[property.name];
+            }
           } else {
             myData = null;
             break;

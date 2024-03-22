@@ -73,10 +73,11 @@ class Reader {
 
     // to start ranging beacons
     bool ok = await _initialized.future;
-    if (_detector == null && ok)
+    if (_detector == null && ok) {
       _detector = flutterBeacon
           .ranging(_regions)
           .listen(_onData, onError: _onError, onDone: _onDone);
+    }
   }
 
   void stop() {

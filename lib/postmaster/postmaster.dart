@@ -128,9 +128,10 @@ class PostMaster {
     int pending = posts.length;
 
     // Notify
-    if (pending > 0)
+    if (pending > 0) {
       System.toast(
           phrase.postmasterPhrase002.replaceAll("{jobs}", pending.toString()));
+    }
 
     // Clear Alert
     alert = false;
@@ -148,8 +149,9 @@ class PostMaster {
         // Error?
         post.attempts = (post.attempts ?? 0) + 1;
         if (!response.ok) {
-          if ((post.attempts ?? 0) > maxattempts)
+          if ((post.attempts ?? 0) > maxattempts) {
             post.status = hive_pack.Post.statusERROR;
+          }
           post.info = response.statusMessage;
           // bool ok   = (await post.update() == null);
 

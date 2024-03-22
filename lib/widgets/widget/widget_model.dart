@@ -146,8 +146,9 @@ class WidgetModel implements IDataSourceListener {
     if (kDebugMode) {
       prefix = "$runtimeType";
       prefix = prefix.replaceAll(onlyAlpha, '');
-      if (prefix.endsWith('model'))
+      if (prefix.endsWith('model')) {
         prefix = prefix.substring(0, prefix.lastIndexOf('model'));
+      }
     }
     return newId(prefix: prefix);
   }
@@ -346,20 +347,23 @@ class WidgetModel implements IDataSourceListener {
     var list = [];
 
     // evaluate me
-    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id)))
+    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id))) {
       list.add(this);
+    }
 
     // evaluate my siblings
     if (includeSiblings) {
       children?.forEach((child) {
-        if (child.runtimeType == T && child.id == (id ?? child.id))
+        if (child.runtimeType == T && child.id == (id ?? child.id)) {
           list.add(child);
+        }
       });
     }
 
     // evaluate my ancestors
-    if (parent != null)
+    if (parent != null) {
       list.addAll(parent!._findAncestorsOfExactType(T, id, includeSiblings));
+    }
 
     return list;
   }
@@ -375,8 +379,9 @@ class WidgetModel implements IDataSourceListener {
       {String? id, Type? breakOn}) {
     var list = [];
     children?.forEach((child) {
-      if (child.runtimeType != breakOn)
+      if (child.runtimeType != breakOn) {
         list.addAll(child._findDescendantsOfExactType(T, id));
+      }
     });
     return list;
   }
@@ -385,8 +390,9 @@ class WidgetModel implements IDataSourceListener {
     var list = [];
 
     // evaluate me
-    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id)))
+    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id))) {
       list.add(this);
+    }
 
     // evaluate my children
     children?.forEach(
@@ -409,8 +415,9 @@ class WidgetModel implements IDataSourceListener {
   List<dynamic> findChildrenOfExactType(Type T, {String? id}) {
     var list = [];
     children?.forEach((child) {
-      if (child.runtimeType == (T) && child.id == (id ?? child.id))
+      if (child.runtimeType == (T) && child.id == (id ?? child.id)) {
         list.add(child);
+      }
     });
     return list;
   }

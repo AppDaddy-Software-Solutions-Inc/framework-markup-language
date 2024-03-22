@@ -52,8 +52,9 @@ class TransformViewState extends State<TransformView>
         _controller.animateTo(widget.model.controllerValue,
             duration: const Duration());
 
-        if (widget.model.autoplay == true && _controller.isAnimating != true)
+        if (widget.model.autoplay == true && _controller.isAnimating != true) {
           start();
+        }
       }
       _controller.addStatusListener((status) {
         _animationListener(status);

@@ -214,8 +214,9 @@ class TableRowModel extends BoxModel {
         this.fields!.add(field);
 
         // Register Listener
-        if (field.dirtyObservable != null)
+        if (field.dirtyObservable != null) {
           field.dirtyObservable!.registerListener(onDirtyListener);
+        }
       }
     }
   }

@@ -99,16 +99,19 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin {
   void onOpen(Event event) async {
     // url
     String? url;
-    if (event.parameters != null && event.parameters!.containsKey('url'))
+    if (event.parameters != null && event.parameters!.containsKey('url')) {
       url = event.parameters!['url'];
+    }
 
     // modal
     bool? modal = false;
-    if ((event.parameters != null) && (event.parameters!.containsKey('modal')))
+    if ((event.parameters != null) && (event.parameters!.containsKey('modal'))) {
       modal = toBool(event.parameters!['modal']);
-    if ((modal != true) && (event.model != null))
+    }
+    if ((modal != true) && (event.model != null)) {
       modal =
           (event.model!.findDescendantOfExactType(ModalModel, id: url) != null);
+    }
 
     // allow framework to handle open if fully qualified
     if (url != null) {

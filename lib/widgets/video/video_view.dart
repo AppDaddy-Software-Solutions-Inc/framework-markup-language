@@ -169,8 +169,9 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer {
   Future<bool> startstop() async {
     if (_controller == null) return false;
     if (_controller!.value.isPlaying) return await pause();
-    if (_controller!.value.position == _controller!.value.duration)
+    if (_controller!.value.position == _controller!.value.duration) {
       return await start();
+    }
     return await resume();
   }
 
@@ -232,8 +233,9 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer {
   @override
   Future<bool> seek(int seconds) async {
     if (_controller == null) return false;
-    if (_controller!.value.isInitialized)
+    if (_controller!.value.isInitialized) {
       await _controller!.seekTo(Duration(seconds: seconds));
+    }
     return true;
   }
 }

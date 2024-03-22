@@ -33,14 +33,18 @@ class BarcodeDetector implements IBarcodeDetector {
         //set barcode format
         formats ??= [];
         if (formats.length == 1) {
-          if (formats.contains(BarcodeFormats.code39))
+          if (formats.contains(BarcodeFormats.code39)) {
             result = await _code39(detectable.image, tryharder, invert);
-          if (formats.contains(BarcodeFormats.pdf417))
+          }
+          if (formats.contains(BarcodeFormats.pdf417)) {
             result = await _pdf417(detectable.image, tryharder, invert);
-          if (formats.contains(BarcodeFormats.ondl))
+          }
+          if (formats.contains(BarcodeFormats.ondl)) {
             result = await _ondl(detectable.image, tryharder, invert);
-          if (formats.contains(BarcodeFormats.qrcode))
+          }
+          if (formats.contains(BarcodeFormats.qrcode)) {
             result = await _qrcode(detectable.image, tryharder, invert);
+          }
         }
         //default barcode format
         else {

@@ -34,8 +34,9 @@ class HttpResponse {
   factory HttpResponse.factory(String url, dart_http.Response response) {
     // content type
     String? contentType;
-    if (response.headers.containsKey(HttpHeaders.contentTypeHeader))
+    if (response.headers.containsKey(HttpHeaders.contentTypeHeader)) {
       contentType = response.headers[HttpHeaders.contentTypeHeader];
+    }
 
     dynamic body;
     try {
@@ -84,9 +85,10 @@ class Http {
       var msg = e.toString();
 
       // endpoint not found or unreachable
-      if ((msg.toLowerCase().startsWith('xmlhttp')))
+      if ((msg.toLowerCase().startsWith('xmlhttp'))) {
         return HttpResponse(url,
             statusCode: HttpStatus.notFound, statusMessage: "Not Found: $msg");
+      }
 
       return HttpResponse(url,
           statusCode: HttpStatus.internalServerError, statusMessage: msg);
@@ -234,9 +236,10 @@ class Http {
       myHeaders[HttpHeaders.ageHeader] = '0';
       myHeaders[HttpHeaders.contentEncodingHeader] = 'utf8';
       myHeaders[HttpHeaders.contentTypeHeader] = "application/xml";
-      if (System.app?.jwt?.token != null)
+      if (System.currentApp?.jwt?.token != null) {
         myHeaders[HttpHeaders.authorizationHeader] =
-            "Bearer ${System.app!.jwt!.token}";
+            "Bearer ${System.currentApp!.jwt!.token}";
+      }
     } else {
       headers.forEach((key, value) => myHeaders[key] = value);
     }
@@ -256,7 +259,7 @@ class Http {
 
     // decode token
     Jwt jwt = Jwt.decode(token);
-    if (jwt.valid) System.app?.logon(jwt);
+    if (jwt.valid) System.currentApp?.logon(jwt);
   }
 }
 

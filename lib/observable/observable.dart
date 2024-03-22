@@ -81,8 +81,9 @@ class Observable {
       this.lazyEvaluation = false}) {
     if (value is String) {
       // bindings?
-      if (this is! BlobObservable)
+      if (this is! BlobObservable) {
         bindings = Binding.getBindings(value, scope: scope);
+      }
       if (bindings != null) {
         // replace the "this" and "parent" operators
         value = replaceReferences(this, scope, value);
@@ -128,8 +129,9 @@ class Observable {
 
   static String replaceReferences(
       Observable observable, Scope? scope, String value) {
-    if (scope == null || observable.key == null || observable.bindings == null)
+    if (scope == null || observable.key == null || observable.bindings == null) {
       return value;
+    }
 
     bool requery = false;
     for (Binding binding in observable.bindings!) {
@@ -150,8 +152,9 @@ class Observable {
 
         // build signature
         var signature = sourceId;
-        if (binding.property != "parent")
+        if (binding.property != "parent") {
           signature = "$sourceId.${binding.property}";
+        }
         if (binding.dotnotation != null) {
           int i = 0;
 
@@ -340,9 +343,10 @@ class Observable {
     if (bindings != null) {
       for (var binding in bindings!) {
         Observable? source;
-        if (sources != null)
+        if (sources != null) {
           source = sources!
               .firstWhereOrNull((observable) => observable.key == binding.key);
+        }
         variables[binding.signature] = binding.translate(source?.get());
       }
     }

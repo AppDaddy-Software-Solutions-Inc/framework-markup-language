@@ -60,8 +60,9 @@ class Reader {
               '\nTransceive Result:\n$result');
 
           // format result
-          if (result.contains("text="))
+          if (result.contains("text=")) {
             result = result.substring(result.indexOf('text=') + 5);
+          }
 
           // notify
           notifyListeners(Payload(id: tag.id, message: result));
@@ -174,8 +175,9 @@ class Writer {
       return false;
     } on PlatformException catch (e) {
       // throw a custom exception on timeout with a message.
-      if (e.code == "408")
+      if (e.code == "408") {
         throw const CustomException(code: 408, message: 'Poll Timed Out');
+      }
       if (e.code == "405") {
         throw const CustomException(
             code: 405, message: 'NFC Tag Not Writeable');

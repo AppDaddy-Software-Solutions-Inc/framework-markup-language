@@ -26,9 +26,10 @@ class HtmlSseChannel extends StreamChannelMixin implements SseChannel {
     source.onError.listen((error) {
       // By default the SSE client uses keep-alive.
       // Allow for a retry to connect before giving up.
-      if (!(_timer?.isActive ?? false))
+      if (!(_timer?.isActive ?? false)) {
         _timer =
             Timer(const Duration(seconds: 5), () => _closeWithError(error));
+      }
     });
   }
 

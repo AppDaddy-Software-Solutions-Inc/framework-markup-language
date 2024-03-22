@@ -70,8 +70,9 @@ class _EditorViewState extends WidgetState<EditorView> {
     }
 
     // reload the controller text
-    if (_controller?.fullText != widget.model.value)
+    if (_controller?.fullText != widget.model.value) {
       _controller!.fullText = widget.model.value ?? "";
+    }
 
     // set the editor text theme
     var theme = CodeThemeData(

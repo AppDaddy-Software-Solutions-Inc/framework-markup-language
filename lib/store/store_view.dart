@@ -4,6 +4,7 @@ import 'package:fml/application/application_model.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/store/store_app_view.dart';
+import 'package:fml/system.dart';
 import 'package:fml/theme/theme.dart';
 import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
@@ -109,10 +110,11 @@ class _ViewState extends State<StoreView>
       var pad = const Padding(padding: EdgeInsets.only(left: 20));
       var title = Row(children: [ttl, pad, busy]);
 
+      var store = StoreApp(showMakeDefaultOption: widget.model.items.isEmpty);
+
       return AlertDialog(
         title: title,
-        content: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8), child: AppForm()),
+        content: Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: store),
         contentPadding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 2.0),
         insetPadding: EdgeInsets.zero,
       );
@@ -130,20 +132,23 @@ class _ViewState extends State<StoreView>
   }
 
   void removeApp(ApplicationModel app, NavigatorState navigator) async {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Removing ${app.title}'),
-        duration: const Duration(milliseconds: 1000)));
-    await Store().delete(app);
+
+    // delete the app
+    await Store().deleteApp(app);
+
+    // slose the window
     navigator.pop();
   }
 
   Widget? _getIcon(ApplicationModel app) {
     var icon = app.icon;
     if (icon == null) return null;
-    if (Theme.of(context).brightness == Brightness.light)
+    if (Theme.of(context).brightness == Brightness.light) {
       icon = app.iconLight ?? icon;
-    if (Theme.of(context).brightness == Brightness.dark)
+    }
+    if (Theme.of(context).brightness == Brightness.dark) {
       icon = app.iconDark ?? icon;
+    }
 
     var image = toDataUri(icon);
     if (image == null) return null;
@@ -236,19 +241,23 @@ class _ViewState extends State<StoreView>
   Widget build(BuildContext context) {
     // build menu items
     widget.model.items = [];
-    for (var app in Store().getApps()) {
+
+    // traverse list of apps
+    for (var app in System.apps) {
       var icon = app.icon;
-      if (Theme.of(context).brightness == Brightness.light)
+      if (Theme.of(context).brightness == Brightness.light) {
         icon = app.iconLight ?? icon;
-      if (Theme.of(context).brightness == Brightness.dark)
+      }
+      if (Theme.of(context).brightness == Brightness.dark) {
         icon = app.iconDark ?? icon;
+      }
 
       var item = MenuItemModel(widget.model, app.id,
           url: app.url,
           title: app.title,
           icon: icon == null ? 'appdaddy' : null,
           image: icon,
-          onTap: () => Store().launch(app, context),
+          onTap: () => System.launchApplication(app),
           onLongPress: () => showRemoveAppDialog(app));
 
       widget.model.items.add(item);

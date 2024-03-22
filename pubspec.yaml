@@ -45,6 +45,9 @@ dependencies:
   camera_windows: ^0.2.1+9
   # BSD-3-Clause
 
+  changeicon: ^1.0.0
+  # MIT
+
   collection: ^1.18.0
   # BSD-3-Clause
 

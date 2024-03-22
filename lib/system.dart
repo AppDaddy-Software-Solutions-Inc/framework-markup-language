@@ -1,14 +1,19 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'dart:core';
+import 'package:changeicon/changeicon.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/connectivity/connectivity.dart';
 import 'package:fml/datasources/log/log_model.dart';
+import 'package:fml/dialog/manager.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
+import 'package:fml/navigation/page.dart';
+import 'package:fml/phrase.dart';
 import 'package:fml/postmaster/postmaster.dart';
 import 'package:fml/janitor/janitor.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +31,8 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'fml.dart';
 import 'widgets/framework/framework_model.dart';
+import 'dart:io' as io show Platform;
+
 // platform
 import 'package:fml/platform/platform.web.dart'
     if (dart.library.io) 'package:fml/platform/platform.vm.dart'
@@ -34,23 +41,31 @@ import 'package:fml/platform/platform.web.dart'
 class System extends WidgetModel implements IEventManager {
   static const String myId = "SYSTEM";
 
-  // set to true once done
-  static final _completer = Completer();
-  static get initialized => _completer.future;
-
-  // this get called once by Splash
-  Future get installed => _completer.future;
+  static final initialized  = Completer<bool>();
+  static final initializing = Completer<bool>();
 
   static final System _singleton = System._initialize();
   factory System() => _singleton;
-  System._initialize() : super(null, myId, scope: Scope(id: myId)) {
-    _initialize();
-    Platform.fml2js(version: FmlEngine.version);
-  }
+  System._initialize() : super(null, myId, scope: Scope(id: myId));
 
-  // current application
-  static ApplicationModel? _app;
-  static ApplicationModel? get app => _app;
+  // companies are used for defaultApp's in multiApp mode
+  // on launch, if the user configures a single app in the store and
+  // specified it as the "default" app, the icon on the mobile desktop
+  // if changed to that same icon defined in the res images (android) or plist (ios)
+  // this requires the client to add those images and recompile
+  static final List<String> companies = ['appdaddy', 'goodyear', 'rocketfunds'];
+
+  // application list
+  static List<ApplicationModel> _apps = [];
+
+  // sorted list of applications
+  static List<ApplicationModel> get apps => _apps..sort((a, b) => Comparable.compare(a.order ?? 99999, b.order ?? 99999))..toList();
+
+  // current app
+  static ApplicationModel? get currentApp => _apps.isNotEmpty ? _apps.first : null;
+
+  // returns the default app
+  static ApplicationModel? get defaultApp => (_apps.length == 1 && _apps.first.isDefault) ? _apps.first : null;
 
   // current theme
   static late ThemeModel _theme;
@@ -71,15 +86,15 @@ class System extends WidgetModel implements IEventManager {
   String? get rootpath => _rootpath?.get();
 
   // current domain
-  StringObservable? _domain;
-  String? get domain => _domain?.get();
+  static StringObservable? _domain;
+  static String? get domain => _domain?.get();
 
-  StringObservable? _scheme;
-  String? get scheme => _scheme?.get();
+  static StringObservable? _scheme;
+  static String? get scheme => _scheme?.get();
 
   // current host
-  StringObservable? _host;
-  String? get host => _host?.get();
+  static StringObservable? _host;
+  static String? get host => _host?.get();
 
   /// Global System Observable
   StringObservable? _userplatform;
@@ -134,17 +149,23 @@ class System extends WidgetModel implements IEventManager {
   Gps gps = Gps();
   Payload? currentLocation;
 
-  late String baseUrl;
+  static late String baseUrl;
 
-  _initialize() async {
+  @override
+  Future<void> initialize() async {
+
+    // initialize should only run once
+    if (initialized.isCompleted || initializing.isCompleted) return;
+
+    // signal initializing in progress
+    initializing.complete(true);
+
     // base URL changes (fragment is dropped) if
     // used past this point
     baseUrl = Uri.base.toString();
 
-    // the mouse isn't always detected at startup
-    // not until the moves it or clicks
-    // this routine traps that
-    RendererBinding.instance.mouseTracker.addListener(onMouseDetected);
+    // initialize folders
+    await _initFolders();
 
     // initialize platform
     await Platform.init();
@@ -152,29 +173,39 @@ class System extends WidgetModel implements IEventManager {
     // initialize System Globals
     await _initBindables();
 
-    // initialize Hive
-    await _initDatabase();
-
     // initialize connectivity
+    // this needs to be done ahead of initializing apps
+    // since they use the template manager
     await Connectivity(_connected!).initialize();
 
-    // create empty applications folder
-    if (!FmlEngine.isWeb) await _initFolders();
+    // initialize the database (Hive)
+    await _initDatabase();
 
-    // set initial route
-    await _initRoute();
+    // load apps
+    await _loadApps();
 
     // start the Post Master
-    await postmaster.start();
+    postmaster.start();
 
     // start the Janitor
-    await janitor.start();
-
-    // signal complete
-    _completer.complete(true);
+    janitor.start();
 
     // add keyboard listener
     ServicesBinding.instance.keyboard.addHandler(onShortcutHandler);
+
+    // the mouse isn't always detected at startup
+    // not until the moves it or clicks
+    // this routine traps that
+    RendererBinding.instance.mouseTracker.addListener(onMouseDetected);
+
+    // set fml2js
+    Platform.fml2js(version: FmlEngine.version);
+
+    // signal complete
+    initialized.complete(true);
+
+    // launch the default application?
+    if (defaultApp != null) launchApplication(defaultApp!);
   }
 
   onMouseDetected() {
@@ -249,7 +280,8 @@ class System extends WidgetModel implements IEventManager {
     return true;
   }
 
-  Future<bool> _initDatabase() async {
+  static Future<bool> _initDatabase() async {
+
     // create the hive folder
     var folder = normalize(join(URI.rootPath, "hive"));
     String? hiveFolder = await Platform.createFolder(folder);
@@ -260,10 +292,10 @@ class System extends WidgetModel implements IEventManager {
     return true;
   }
 
-  Future<bool> _initFolders() async {
+  static Future<bool> _initFolders() async {
     bool ok = true;
-
     if (FmlEngine.isWeb) return ok;
+
     try {
       // create applications folder
       String? folderpath = normalize(join(URI.rootPath, "applications"));
@@ -304,95 +336,268 @@ class System extends WidgetModel implements IEventManager {
     }
   }
 
-  Future _initRoute() async {
+  static var appsLoaded = Completer<bool>();
+  static Future _loadApps() async {
+
+    // load the apps from the database
+    _apps = FmlEngine.isWeb ? [] : await ApplicationModel.loadAll();
+
+    var reorder = _apps.length > 1 && (_apps.firstWhereOrNull((app) => app.order == null) != null);
+    if (reorder) await _resequenceApps();
+
     // set default app
     if (FmlEngine.isWeb || FmlEngine.isSingleApp) {
+
+      // set the domain
       var domain = FmlEngine.domain;
 
       // replace default for testing
       if (FmlEngine.isWeb) {
+
+        // parse the site domain url
         var uri = Uri.tryParse(baseUrl);
+
+        // if web, we use the browser url unless its localhost
         if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) {
           domain = uri.url;
         }
       }
 
-      // set default app
-      ApplicationModel app = ApplicationModel(System(), url: domain);
-
-      // wait for it to initialize
-      await app.initialized;
-
-      // start the app
-      System().launchApplication(app, false);
+      // add the app to the apps list
+      _apps.insert(0, ApplicationModel(System(), url: domain, isDefault: true, page: 0, order: 0));
     }
+
+    // if only one app installed and set to default
+    // set the system app and modify the fml engine to
+    // single app mode
+    if (defaultApp != null)
+    {
+      // set single app mode
+      FmlEngine.singleApp = true;
+
+      // wait for the default app to initialize
+      if (!defaultApp!.isInitialized) {
+        await defaultApp!.initialized.future;
+      }
+    }
+
+    // signal complete - used in splash
+    appsLoaded.complete(true);
   }
 
-  void setApplicationTitle(String? title) async {
-    title = title ?? app?.settings("APPLICATION_NAME");
+  static String get title => Platform.title;
+
+  static void setApplicationTitle(String? title) async {
+    title = title ?? currentApp?.name;
     if (!isNullOrEmpty(title)) {
-      // print('setting title to $title');
       SystemChrome.setApplicationSwitcherDescription(
           ApplicationSwitcherDescription(
               label: title, primaryColor: Colors.blue.value));
     }
   }
 
-  static String get title => Platform.title;
+  /// changes the desktop icon
+  static const mainIcon = 'MainActivity';
+  static Changeicon? _changeIconPlugin;
+  static void _setDefaultIcon(String icon)
+  {
+    // set the default mobile icon - only supported in IOS and Android
+    if (io.Platform.isIOS || io.Platform.isAndroid)
+    {
+      // no clients defined
+      if (companies.isEmpty) return;
+
+      // initialize the plugin
+      if (_changeIconPlugin == null) {
+        Changeicon.initialize(classNames: [mainIcon, ...companies]);
+        _changeIconPlugin = Changeicon();
+      }
+
+      // trim icon
+      icon = icon.toLowerCase().trim();
+
+      // change the icon
+      if (companies.contains(icon))
+      {
+        _changeIconPlugin?.switchIconTo(classNames: [icon]);
+      }
+      else
+      {
+        _changeIconPlugin?.switchIconTo(classNames: [mainIcon]);
+      }
+    }
+  }
+
+  static Future<bool> _confirmClearDefaultApp() async
+  {
+    var context = NavigationManager().navigatorKey.currentContext;
+    if (context != null)
+    {
+      var no = Text(phrase.no,
+          style:
+          const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w500));
+      var yes = Text(phrase.yes,
+          style:
+          const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w500));
+
+      var response = await DialogManager.show(context,
+          type: DialogType.warning,
+          title: phrase.removeDefaultApp,
+          buttons: [no, yes]);
+
+      return response == 1;
+    }
+    return false;
+  }
+
+  static void clearDefaultApplication() async
+  {
+    var app = defaultApp;
+
+    // do nothing if in web or no default application
+    if (FmlEngine.isWeb || app == null) return;
+
+    // show dialog to confirm
+    bool ok = await _confirmClearDefaultApp();
+    if (!ok) return;
+
+    // reset default icon
+    _setDefaultIcon(mainIcon);
+
+    // set its default flag
+    app.isDefault = false;
+
+    // update the application in the database
+    await app.upsert();
+
+    // notify the user
+    toast(phrase.defaultAppRemoved);
+  }
+
+  static _closeCurrentApplication()
+  {
+    var app = currentApp;
+    if (app == null) return;
+
+    // closing app
+    Log().info("Closing Application ${app.url}");
+
+    // set the default domain on the Url utilities
+    URI.rootHost = "";
+
+    // logoff
+    app.logoff();
+
+    // update application level bindables
+    _domain?.set(null);
+    _scheme?.set(null);
+    _host?.set(null);
+
+    // close application
+    app.close();
+  }
 
   // launches the application
-  launchApplication(ApplicationModel app, bool notifyOnThemeChange) {
-    // Close the old application if one
-    // is running
-    if (_app != null) {
-      // closing app
-      Log().info("Closing Application ${_app!.url}");
+  static launchApplication(ApplicationModel app) {
 
-      // set the default domain on the Url utilities
-      URI.rootHost = "";
+    // close the current application
+    if (currentApp != app) _closeCurrentApplication();
 
-      // logoff
-      _app?.logoff();
-
-      // update application level bindables
-      _domain?.set(null);
-      _scheme?.set(null);
-      _host?.set(null);
-
-      // close application
-      _app!.close();
-    }
-
-    // opening application
-    Log().info("Activating Application (${app.title}) @ ${app.domain}");
+    // open new application
+    Log().info("Launching Application (${app.title}) @ ${app.domain}");
 
     // set the default domain on the Url utilities
     URI.rootHost = app.domain ?? "";
 
     // set the current application
-    _app = app;
+    if (_apps.contains(app) && _apps.indexOf(app) != 0)
+    {
+      _apps.remove(app);
+      _apps.insert(0, app);
+    }
 
-    // launch the application
-    app.launch(notifyOnThemeChange);
-
-    // set credentials
-    if (app.jwt != null) _app?.logon(app.jwt);
+    // set default icon
+    if (defaultApp != null) _setDefaultIcon(defaultApp?.company ?? mainIcon);
 
     // update application level bindables
     _domain?.set(app.domain);
     _scheme?.set(app.scheme);
     _host?.set(app.host);
+
+    //  activate the appl
+    app.setActive();
+
+    // page
+    var page = PageConfiguration(uri: Uri.tryParse(app.homePage), title: app.title);
+
+    // launch the page
+    NavigationManager().setNewRoutePath(page, source: "store");
+  }
+
+  static Future<bool> addApplication(ApplicationModel app) async {
+
+    bool ok = true;
+
+    // set page
+    app.page ??= 0;
+
+    // set ordering
+    app.order ??= _apps.length;
+
+    // insert into the hive
+    ok = await app.upsert();
+
+    // add to the list
+    if (!_apps.contains(app)) _apps.add(app);
+
+    return ok;
+  }
+
+  static Future<bool> deleteApplication(ApplicationModel app) async {
+
+    bool ok = true;
+
+    // delete app from the database
+    ok = await app.delete();
+
+    // add to the list
+    if (_apps.contains(app)) _apps.remove(app);
+
+    // re-sequence the apps
+    await _resequenceApps();
+
+    return ok;
+  }
+
+  static Future<bool> _resequenceApps() async {
+
+    bool ok = true;
+
+    // get system apps
+    var apps = _apps;
+
+    // sort the list by app ordering
+    _apps.sort((a, b) => Comparable.compare(a.order ?? 99999, b.order ?? 99999));
+
+    int i = 0;
+    for (var app in apps) {
+      // set the application ordering
+      app.order = i++;
+
+      // insert into the hive
+      ok = await app.upsert();
+    }
+
+    return ok;
   }
 
   // sets the active framework
-  FrameworkModel? activeFramework;
-  void setActiveFramework(FrameworkModel model) {
-    activeFramework = model;
-  }
+  FrameworkModel? _activeFramework;
+  void setActiveFramework(FrameworkModel model) => _activeFramework = model;
 
   // handle key press
   bool onShortcutHandler(KeyEvent event) =>
-      ShortcutHandler.handleKeyPress(event, activeFramework);
+      ShortcutHandler.handleKeyPress(event, _activeFramework);
 
   /// Event Manager Host
   final EventManager manager = EventManager();

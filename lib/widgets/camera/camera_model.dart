@@ -319,8 +319,9 @@ class CameraModel extends CameraImageModel {
     if (detectors == null) return true;
     for (var detector in detectors!) {
       if ((detector.source == DetectorSources.stream) ||
-          (detector.source == DetectorSources.any))
+          (detector.source == DetectorSources.any)) {
         detector.detect(image, true);
+      }
     }
     return true;
   }
@@ -329,8 +330,9 @@ class CameraModel extends CameraImageModel {
     if (detectors == null) return true;
     for (var detector in detectors!) {
       if ((detector.source == DetectorSources.image) ||
-          (detector.source == DetectorSources.any))
+          (detector.source == DetectorSources.any)) {
         detector.detect(image, false);
+      }
     }
     return true;
   }

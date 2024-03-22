@@ -50,8 +50,9 @@ class FileModel extends DataSourceModel implements IDataSource {
     busy = true;
 
     // save file reference
-    if ((scope?.files != null) && (file.url != null))
+    if ((scope?.files != null) && (file.url != null)) {
       scope!.files[file.url!] = file;
+    }
 
     // build the data
     Data data = Data();

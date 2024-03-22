@@ -138,8 +138,9 @@ class MapModel extends BoxModel {
     for (var model in markers) {
       // data driven prototype location
       if (!isNullOrEmpty(model.datasource)) {
-        if (!prototypes.containsKey(model.datasource))
+        if (!prototypes.containsKey(model.datasource)) {
           prototypes[model.datasource] = [];
+        }
 
         // build prototype
         var prototype = prototypeOf(model.element) ?? model.element;

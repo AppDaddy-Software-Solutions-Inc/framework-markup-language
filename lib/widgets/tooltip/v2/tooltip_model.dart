@@ -159,8 +159,9 @@ class TooltipModel extends ViewableWidgetModel {
 
       case "close":
         var view = findListenerOfExactType(TooltipViewState);
-        if (view is TooltipViewState && view.overlayEntry != null)
+        if (view is TooltipViewState && view.overlayEntry != null) {
           view.hideOverlay();
+        }
         return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);

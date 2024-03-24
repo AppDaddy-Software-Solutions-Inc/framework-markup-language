@@ -12,17 +12,14 @@ import 'package:fml/helpers/helpers.dart';
 
 class SpanModel extends DecoratedWidgetModel {
   //TODO: make text spans pass properties to text
-
-  ///////////
-  /* Value */
-  ///////////
+  
+  // Value 
   List<TextModel> spanTextValues = [];
 
   /// shadow attributes
   ///
   /// the color of the elevation shadow, defaults to black26
   ColorObservable? _shadowcolor;
-
   set shadowcolor(dynamic v) {
     if (_shadowcolor != null) {
       _shadowcolor!.set(v);
@@ -31,12 +28,10 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   Color? get shadowcolor => _shadowcolor?.get();
 
   /// the elevation of the box. The blur radius is 2* the elevation. This is combined with the offsets when constraining the size.
   DoubleObservable? _elevation;
-
   set elevation(dynamic v) {
     if (_elevation != null) {
       _elevation!.set(v);
@@ -45,7 +40,6 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double get elevation => _elevation?.get() ?? 0;
 
   /// The x offset of the box FROM the shadow. 0,0 is center. This is combined with `elevation` when determining the size.
@@ -59,7 +53,6 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double get shadowx => _shadowx?.get() ?? 2;
 
   /// The x offset of the box FROM the shadow. 0,0 is center. This is combined with `elevation` when determining the size.
@@ -72,7 +65,6 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double get shadowy => _shadowy?.get() ?? 2;
 
   // font
@@ -85,14 +77,10 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get font => _font?.get() ?? System.theme.font;
-
-  ////////////
-  /* Weight */
-  ////////////
+  
+  // Weight 
   DoubleObservable? _weight;
-
   set weight(dynamic v) {
     if (_weight != null) {
       _weight!.set(v);
@@ -101,12 +89,9 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get weight => _weight?.get();
-
-  //////////////////////////////////////////////
-  /* If the text is raw or uses special chars */
-  //////////////////////////////////////////////
+  
+  // If the text is raw or uses special chars 
   BooleanObservable? _raw;
   set raw(dynamic v) {
     if (_raw != null) {
@@ -116,7 +101,6 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get raw => _raw?.get() ?? false;
 
   // If the text is selectable defaults to false
@@ -129,12 +113,9 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get selectable => _selectable?.get() ?? false;
-
-  ///////////////
-  /* bold font */
-  ///////////////
+  
+  // bold font 
   BooleanObservable? _bold;
 
   set bold(dynamic v) {
@@ -145,12 +126,9 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get bold => _bold?.get() ?? false;
-
-  /////////////////
-  /* italic font */
-  /////////////////
+  
+  // italic font 
   BooleanObservable? _italic;
   set italic(dynamic v) {
     if (_italic != null) {
@@ -160,12 +138,9 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get italic => _italic?.get() ?? false;
-
-  ////////////////
-  /* font theme */
-  ////////////////
+  
+  // font theme 
   StringObservable? _theme;
   set theme(dynamic v) {
     if (_theme != null) {
@@ -175,12 +150,9 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get theme => _theme?.get();
-
-  ////////////////
-  /* font style */
-  ////////////////
+  
+  // font style 
   StringObservable? _style;
   set style(dynamic v) {
     if (_style != null) {
@@ -193,9 +165,7 @@ class SpanModel extends DecoratedWidgetModel {
 
   String? get style => _style?.get();
 
-  /////////////////////
-  /* font decoration */
-  /////////////////////
+  // font decoration //
   StringObservable? _decoration;
 
   set decoration(dynamic v) {
@@ -206,12 +176,9 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get decoration => _decoration?.get();
-
-  //////////////////////
-  /* decorationweight */
-  //////////////////////
+  
+  // decoration weight
   DoubleObservable? _decorationweight;
   set decorationweight(dynamic v) {
     if (_decorationweight != null) {
@@ -222,12 +189,9 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get decorationweight => _decorationweight?.get();
-
-  //////////////////////
-  /* decoration color */
-  //////////////////////
+  
+  // decoration color 
   ColorObservable? _decorationcolor;
 
   set decorationcolor(dynamic v) {
@@ -239,12 +203,10 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   Color? get decorationcolor => _decorationcolor?.get();
 
-  /////////////////////
-  /* decorationstyle */
-  /////////////////////
+
+  // decoration style
   StringObservable? _decorationstyle;
   set decorationstyle(dynamic v) {
     if (_decorationstyle != null) {
@@ -255,12 +217,9 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String get decorationstyle => _decorationstyle?.get() ?? 'none';
 
-  //////////////////
-  /*  wordspacing */
-  //////////////////
+  //  word spacing
   DoubleObservable? _wordspace;
   set wordspace(dynamic v) {
     if (_wordspace != null) {
@@ -270,12 +229,9 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get wordspace => _wordspace?.get();
 
-  ///////////////////
-  /* letterspacing */
-  ///////////////////
+  // letter spacing
   DoubleObservable? _letterspace;
   set letterspace(dynamic v) {
     if (_letterspace != null) {
@@ -285,14 +241,10 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double get letterspace => _letterspace?.get() ?? 0;
 
-  //////////////////
-  /*  lineheight  */
-  //////////////////
+  //  line height
   DoubleObservable? _lineheight;
-
   set lineheight(dynamic v) {
     if (_lineheight != null) {
       _lineheight!.set(v);
@@ -301,7 +253,6 @@ class SpanModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get lineheight => _lineheight?.get();
 
   // overrides
@@ -309,12 +260,9 @@ class SpanModel extends DecoratedWidgetModel {
   String get halign => super.halign ?? 'start'; //left right center justify
   @override
   String get valign => super.valign ?? 'start';
-
-  ////////////////////
-  /*     overflow   */
-  ////////////////////
+  
+  // overflow
   StringObservable? _overflow;
-
   set overflow(dynamic v) {
     if (_overflow != null) {
       _overflow!.set(v);

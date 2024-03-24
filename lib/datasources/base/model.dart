@@ -11,7 +11,6 @@ import 'package:fml/hive/data.dart' as hive;
 import 'package:fml/datasources/data/model.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:xml/xml.dart';
@@ -20,7 +19,7 @@ import 'package:fml/helpers/helpers.dart';
 
 enum ListTypes { replace, lifo, fifo, append, prepend }
 
-class DataSourceModel extends ViewableWidgetModel implements IDataSource {
+class DataSourceModel extends WidgetModel implements IDataSource {
   // data override
   @override
   Data? get data {
@@ -57,7 +56,6 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource {
 
   // enabled
   BooleanObservable? _enabled;
-  @override
   set enabled(dynamic v) {
     if (_enabled != null) {
       _enabled!.set(v);
@@ -67,7 +65,6 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource {
     }
   }
 
-  @override
   bool get enabled {
     if (!enabledInBackground && _isInBackground) return false;
     return _enabled?.get() ?? true;

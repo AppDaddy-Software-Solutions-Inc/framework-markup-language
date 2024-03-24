@@ -1,13 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class DroppableView extends StatefulWidget implements IWidgetView {
   @override
-  final ViewableWidgetModel model;
+  final ViewableWidgetMixin model;
   final Widget view;
 
   DroppableView(this.model, this.view) : super(key: ObjectKey(model));

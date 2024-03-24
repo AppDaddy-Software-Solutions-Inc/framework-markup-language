@@ -3,7 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/box/box_constraints.dart';
 import 'package:fml/widgets/box/box_data.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
 
 mixin BoxMixin {
   // lays out the child
@@ -69,7 +69,7 @@ mixin BoxMixin {
   }
 
   BoxConstraints getChildLayoutConstraints(
-      BoxConstraints constraints, RenderBox child, ViewableWidgetModel model) {
+      BoxConstraints constraints, RenderBox child, ViewableWidgetMixin model) {
     // get the child's width from the model
     // and tighten the child's width constraint
     var parentWidth = widthOf(child.parent);

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
 
 enum FlexType { shrinking, fixed, expanding }
 
 /// Parent data for use with [BoxRenderer].
 class BoxData extends ContainerBoxParentData<RenderBox> {
-  ViewableWidgetModel? model;
+  ViewableWidgetMixin? model;
 
   Size? parentSize;
 
@@ -53,7 +53,7 @@ class BoxData extends ContainerBoxParentData<RenderBox> {
 }
 
 class LayoutBoxChildData extends ParentDataWidget<BoxData> {
-  final ViewableWidgetModel model;
+  final ViewableWidgetMixin model;
 
   /// The distance by which the child's top edge is inset from the top of the stack.
   final double? top;

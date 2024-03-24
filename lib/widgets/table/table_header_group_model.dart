@@ -6,7 +6,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -152,9 +152,9 @@ class TableHeaderGroupModel extends BoxModel {
   }
 
   @override
-  List<ViewableWidgetModel> get viewableChildren {
+  List<ViewableWidgetMixin> get viewableChildren {
     // we dont want to render TD and TG cells in the table group header
-    List<ViewableWidgetModel> list = super.viewableChildren;
+    List<ViewableWidgetMixin> list = super.viewableChildren;
     list.removeWhere((child) =>
         child is TableHeaderCellModel || child is TableHeaderGroupModel);
     return list;

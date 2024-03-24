@@ -100,8 +100,8 @@ class _SplashState extends State<Splash> {
 
   Widget _getWaitScreen()
   {
-    Widget view =  SizedBox(width: 50, height: 50, child: CircularProgressIndicator.adaptive());
-    view = Container(child: Center(child: view));
+    Widget view =  const SizedBox(width: 50, height: 50, child: CircularProgressIndicator.adaptive());
+    view = Center(child: view);
     return view;
   }
 

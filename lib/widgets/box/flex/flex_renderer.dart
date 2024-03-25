@@ -11,7 +11,7 @@ import 'package:fml/widgets/box/box_mixin.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/stack/stack_renderer.dart';
 import 'package:fml/widgets/box/wrap/wrap_renderer.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
 
 // change to false to allow write messages
 const debug = kDebugMode && true;
@@ -573,7 +573,7 @@ class FlexRenderer extends RenderBox
   }
 
   BoxConstraints _getChildLayoutConstraints(
-      RenderBox child, ViewableWidgetModel model, double maxExtent) {
+      RenderBox child, ViewableWidgetMixin model, double maxExtent) {
     BoxConstraints constraints = BoxConstraints(
         maxHeight: this.constraints.maxHeight,
         maxWidth: this.constraints.maxWidth);
@@ -594,7 +594,7 @@ class FlexRenderer extends RenderBox
     return getChildLayoutConstraints(constraints, child, model);
   }
 
-  void _setChildFlex(BoxData data, ViewableWidgetModel model) {
+  void _setChildFlex(BoxData data, ViewableWidgetMixin model) {
     data.flex = null;
     data.fit = null;
     switch (_direction) {

@@ -7,9 +7,8 @@ import 'package:fml/datasources/datasource_listener_interface.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/camera/camera_model.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -227,18 +226,19 @@ class WidgetModel implements IDataSourceListener {
       // deserialize the model
       var model = WidgetModel.fromXml(this, element);
 
-      // add model to the datasource list
-      if (model is IDataSource) {
-        //this line is a temp fix until datasource can be refactored as a mixin
-        if(model is CameraModel){
+      if (model != null)
+      {
+        // add model to the datasource list
+        if (model is IDataSource) {
+          (datasources ??= []).add(model as IDataSource);
+        }
+
+        // add model to the child list
+        // in cases like camera, it is both a viewable widget as well
+        // as a data source.
+        if (model is! IDataSource || model is ViewableWidgetMixin) {
           (children ??= []).add(model);
-         }else (datasources ??= []).add(model as IDataSource);
-
-      }
-
-      // add model to the child list
-      else if (model != null) {
-        (children ??= []).add(model);
+        }
       }
     }
 

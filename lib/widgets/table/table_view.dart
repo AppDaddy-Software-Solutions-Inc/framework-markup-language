@@ -1080,6 +1080,9 @@ class TableViewState extends WidgetState<TableView> {
       // paged grid
       paged = widget.model.pageSize > 0;
 
+      // Initial empty row set
+      List<PlutoRow> rows = [];
+
       // build the grid
       // UniqueKey() is necessary otherwise the grid will not recreate itself on header changes
       grid = PlutoGrid(
@@ -1087,7 +1090,7 @@ class TableViewState extends WidgetState<TableView> {
           configuration: config,
           columnGroups: groups,
           columns: columns.toList(),
-          rows: const [],
+          rows: rows,
           mode: PlutoGridMode.normal,
           onLoaded: onLoadedHandler,
           onSorted: onSortedHandler,

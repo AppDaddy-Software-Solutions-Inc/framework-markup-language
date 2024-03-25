@@ -19,8 +19,6 @@ class Splash extends StatefulWidget {
   // await on image
   final Completer<Widget> image = Completer<Widget>();
 
-  BoxConstraints? constraints;
-
   Splash({super.key, this.onInitializationComplete})
   {
     initialize();

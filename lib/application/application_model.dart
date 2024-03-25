@@ -93,6 +93,10 @@ class ApplicationModel extends WidgetModel {
   // splash background color
   String? get splashBackground =>  toStr(setting("SPLASH_BACKGROUND"));
 
+  // splash max width & height percent
+  int? get splashMaxWidth  =>  toInt(setting("SPLASH_WIDTH"));
+  int? get splashMaxHeight =>  toInt(setting("SPLASH_HEIGHT"));
+
   // splash display duration
   String? get splashDelay =>  toStr(setting("SPLASH_DELAY"));
 

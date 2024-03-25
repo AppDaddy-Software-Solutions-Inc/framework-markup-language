@@ -10,9 +10,8 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class DrawerModel extends DecoratedWidgetModel {
-  //////////
-  /* Side */
-  //////////
+
+  // Side
   StringObservable? _side;
   set side(dynamic v) {
     if (_side != null) {
@@ -25,9 +24,7 @@ class DrawerModel extends DecoratedWidgetModel {
 
   String? get side => _side?.get();
 
-  //////////////////
-  /* Curved Edges */
-  //////////////////
+  // Curved Edges
   BooleanObservable? _rounded;
   set rounded(dynamic v) {
     if (_rounded != null) {
@@ -40,9 +37,7 @@ class DrawerModel extends DecoratedWidgetModel {
 
   bool get rounded => _rounded?.get() ?? false;
 
-  //////////////////
-  /* Edge Handles */
-  //////////////////
+  // Edge Handles
   BooleanObservable? _handle;
   set handle(dynamic v) {
     if (_handle != null) {

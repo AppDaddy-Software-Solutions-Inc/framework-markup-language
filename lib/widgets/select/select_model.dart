@@ -90,10 +90,14 @@ class SelectModel extends DecoratedInputModel implements IFormField {
 
     // set properties
     value = Xml.get(node: xml, tag: 'value');
-    addempty = toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
 
     // build select options
     _buildOptions();
+
+    // automatically add an empty widget to the list?
+    var addempty = toBool(Xml.get(node: xml, tag: 'addempty'));
+    if (addempty == null && emptyOption != null) addempty = true;
+    this.addempty = addempty ?? true;
 
     // set the default selected option
     if (datasource == null) _setSelectedOption();
@@ -137,33 +141,56 @@ class SelectModel extends DecoratedInputModel implements IFormField {
 
     // strip out special options
     for (var option in options.toList()) {
-      var type = option.type?.toLowerCase().trim();
-      switch (type) {
-        case "nodata":
+      switch (option.type) {
+
+      // no data
+        case OptionType.nodata:
+          noDataOption?.dispose();
           noDataOption = option;
           children?.remove(option);
           options.remove(option);
           break;
 
-        case "empty":
+      // empty
+        case OptionType.empty:
+          emptyOption?.dispose();
           emptyOption = option;
           children?.remove(option);
           options.remove(option);
           break;
 
-        case "nomatch":
+      // no match
+        case OptionType.nomatch:
+          noMatchOption?.dispose();
           noMatchOption = option;
           children?.remove(option);
           options.remove(option);
           break;
+
+      // no match
+        case OptionType.prototype:
+          if (!isNullOrEmpty(this.datasource))
+          {
+            prototype = prototypeOf(option.element);
+            option.dispose();
+            children?.remove(option);
+            options.remove(option);
+          }
+          break;
+
+        default:
+          break;
       }
     }
 
-    // set prototype
-    if (!isNullOrEmpty(this.datasource) && options.isNotEmpty) {
-      prototype = prototypeOf(options.first.element);
-      options.first.dispose();
-      options.removeAt(0);
+    // set prototype if not already defined
+    // prototype is the first element in the options list
+    if (!isNullOrEmpty(this.datasource) && options.isNotEmpty && prototype == null) {
+      var option = options.first;
+      prototype = prototypeOf(option.element);
+      option.dispose();
+      children?.remove(option);
+      options.remove(option);
     }
 
     // add empty option to list

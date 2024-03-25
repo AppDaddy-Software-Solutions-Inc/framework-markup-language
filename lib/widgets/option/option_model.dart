@@ -9,6 +9,9 @@ import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
+
+enum OptionType {empty, nomatch, nodata, prototype}
+
 class OptionModel extends RowModel {
   @override
   bool get expand => false;
@@ -16,17 +19,9 @@ class OptionModel extends RowModel {
   @override
   String? get valign => super.valign ?? "center";
 
-  // type
-  StringObservable? _type;
-  set type(dynamic v) {
-    if (_type != null) {
-      _type!.set(v);
-    } else if (v != null) {
-      _type = StringObservable(null, v, scope: scope);
-    }
-  }
-
-  String? get type => _type?.get();
+  // option type
+  String? _type;
+  OptionType? get type => toEnum(_type, OptionType.values);
 
   // label
   StringObservable? _label;
@@ -130,7 +125,10 @@ class OptionModel extends RowModel {
     // label specified but not value
     if (value == null && label != null) value = label;
 
-    type = Xml.get(node: xml, tag: 'type');
+    // set option type
+    _type = Xml.get(node: xml, tag: 'type')?.toLowerCase().trim();
+
+    // set label and value
     this.label = label;
     this.value = value;
   }

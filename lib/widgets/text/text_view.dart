@@ -68,13 +68,6 @@ class _TextViewState extends WidgetState<TextView> {
     }
   }
 
-  Color _getTextColor() {
-    if (widget.model.color != null) return widget.model.color!;
-    return Theme.of(context).brightness == Brightness.dark
-        ? Colors.white
-        : Colors.black;
-  }
-
   Widget _getRichTextView({required bool rebuild}) {
     // re-parse the text
     if (rebuild) _parseText(widget.model.value);
@@ -85,7 +78,7 @@ class _TextViewState extends WidgetState<TextView> {
 
     var style = TextStyle(
         fontSize: widget.model.size ?? _getTextStyle()!.fontSize,
-        color: _getTextColor(),
+        color: widget.model.color ?? Theme.of(context).colorScheme.onSurface,
         fontWeight: getTextWeight(),
         fontStyle:
             widget.model.italic ? FontStyle.italic : _getTextStyle()!.fontStyle,
@@ -109,7 +102,7 @@ class _TextViewState extends WidgetState<TextView> {
     TextStyle? textStyle;
     if (widget.model.font != null && (libraryLoader?.isCompleted ?? false)) {
       textStyle = fonts.GoogleFonts.getFont(
-          color: _getTextColor(),
+          color: widget.model.color ?? Theme.of(context).colorScheme.onSurface,
           widget.model.font!,
           fontSize: widget.model.size ?? _getTextStyle()?.fontSize,
           wordSpacing: widget.model.wordspace,
@@ -124,7 +117,7 @@ class _TextViewState extends WidgetState<TextView> {
           decorationThickness: widget.model.decorationweight);
     } else {
       textStyle = TextStyle(
-          color: _getTextColor(),
+          color: widget.model.color ?? Theme.of(context).colorScheme.onSurface,
           wordSpacing: widget.model.wordspace,
           letterSpacing: widget.model.letterspace,
           height: widget.model.lineheight,

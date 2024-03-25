@@ -94,14 +94,13 @@ class ApplicationModel extends WidgetModel {
   String? get splashBackground =>  toStr(setting("SPLASH_BACKGROUND"));
 
   // splash max width & height percent
-  int? get splashMaxWidth  =>  toInt(setting("SPLASH_WIDTH"));
-  int? get splashMaxHeight =>  toInt(setting("SPLASH_HEIGHT"));
+  String? get splashWidth => toStr(setting("SPLASH_WIDTH"));
 
   // splash display duration
   String? get splashDelay =>  toStr(setting("SPLASH_DELAY"));
 
   // hash key - used by encryption event
-  String? get hashKey => setting("HASHKEY");
+  String? get hashKey => toStr(setting("HASHKEY"));
 
   // theme - brightness
   Brightness get brightness =>
@@ -112,11 +111,11 @@ class ApplicationModel extends WidgetModel {
   Color get color => toColor(setting('COLOR')) ?? FmlEngine.defaultColor;
 
   // theme - font
-  String get font => setting('FONT')?.trim() ?? FmlEngine.defaultFont;
+  String get font => toStr(setting('FONT'))?.trim() ?? FmlEngine.defaultFont;
 
   // firebase settings
-  String? get firebaseApiKey => setting("FIREBASE_API_KEY");
-  String? get firebaseAuthDomain => setting("FIREBASE_AUTH_DOMAIN");
+  String? get firebaseApiKey => toStr(setting("FIREBASE_API_KEY"));
+  String? get firebaseAuthDomain => toStr(setting("FIREBASE_AUTH_DOMAIN"));
 
   // default page transition
   PageTransitions? get transition => toEnum(setting("TRANSITION"), PageTransitions.values);

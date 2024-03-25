@@ -17,7 +17,7 @@ class Splash extends StatefulWidget {
   static int maxDelay = 10;
 
   // await on image
-  final Completer<Widget> image = Completer<Widget>();
+  final Completer<bool> initialized = Completer<bool>();
 
   Splash({super.key, this.onInitializationComplete})
   {
@@ -40,11 +40,8 @@ class Splash extends StatefulWidget {
     // skip the splash image
     if (delay <= 0) return onInitializationComplete?.call();
 
-    // build image
-    var image = _getSplashImage();
-
-    // set splash image
-    this.image.complete(image);
+    // signal default app loaded
+    initialized.complete(true);
 
     // wait for the system to initialize
     await System.initialized.future;
@@ -64,67 +61,73 @@ class Splash extends StatefulWidget {
     // done
     onInitializationComplete?.call();
   }
-
-  Widget _getSplashImage()
-  {
-    Widget? view;
-
-    // default apps change the custom splash image
-    if (System.defaultApp?.splash != null)
-    {
-      // convert data uri
-      var image = toDataUri(System.defaultApp?.splash);
-      if (image != null)
-      {
-        // svg image?
-        if (image.mimeType == "image/svg+xml")
-        {
-          view = SvgPicture.memory(image.contentAsBytes(), width: 480, height: 480);
-        }
-        else
-        {
-          view = Image.memory(image.contentAsBytes(), width: 480, height: 480, fit: null);
-        }
-      }
-    }
-
-    view ??= Image.asset("assets/images/splash.gif",
-        errorBuilder: (a,b,c) =>
-            SvgPicture.asset("assets/images/splash.svg"));
-
-    return view;
-  }
 }
 
 class _SplashState extends State<Splash> {
 
-  Widget _getWaitScreen()
+  Widget waitScreen()
   {
     Widget view =  const SizedBox(width: 50, height: 50, child: CircularProgressIndicator.adaptive());
     view = Center(child: view);
     return view;
   }
 
-  Widget _getSplashScreen(BoxConstraints constraints, Widget image)
+  Widget splashScreen(BoxConstraints constraints)
   {
-    Widget view = image;
+    // get image width
+    double? imageWidth;
 
-    // constrain the image to 400 pixels in width
-    var portrait = (constraints.maxWidth < constraints.maxHeight);
-    double? width = constraints.maxWidth - (constraints.maxWidth / (portrait ? 3 : 1.5));
-    if (width > 400)
-    {
-      view = Container(
-          constraints:
-          BoxConstraints(maxWidth: width, maxHeight: constraints.maxHeight),
-          child: view);
+    // percent size?
+    if (isPercent(System.defaultApp?.splashWidth)) {
+      var v = toDouble(System.defaultApp?.splashWidth?.split("%")[0]);
+      if (v != null)
+      {
+        v = max(min(v,100),0);
+        imageWidth = constraints.maxWidth * (v/100);
+      }
     }
 
-    // splash screen background color
-    final Color? color = toColor(System.defaultApp?.splashBackground) ?? FmlEngine.splashBackgroundColor;
+    // fixed size?
+    if (imageWidth == null && isNumeric(System.defaultApp?.splashWidth)) {
+      var v = toDouble(System.defaultApp?.splashWidth);
+      if (v != null)
+      {
+        v = max(min(v,constraints.maxWidth),0);
+        imageWidth = v;
+      }
+    }
+
+    // undefined size? use default
+    imageWidth ??= constraints.maxWidth/4;
+
+    // round up
+    imageWidth = imageWidth.ceilToDouble();
+
+    // zero size image? return offstage
+    if (imageWidth <= 0) return const Offstage();
+
+    // get image
+    Widget? image;
+    if (System.defaultApp?.splash != null)
+    {
+      // convert data uri
+      var uri = toDataUri(System.defaultApp?.splash);
+      if (uri != null)
+      {
+        image = uri.mimeType == "image/svg+xml" ?
+        SvgPicture.memory(uri.contentAsBytes(), width: imageWidth) :
+        Image.memory(uri.contentAsBytes(), width: imageWidth);
+      }
+    }
+    image ??= Image.asset("assets/images/splash.gif",
+        width: imageWidth,
+        errorBuilder: (a,b,c) =>
+            SvgPicture.asset("assets/images/splash.svg", width: imageWidth));
 
     // return wrapped centered image
-    return Container(color: color, child: Center(child: view));
+    return Container(
+        color: toColor(System.defaultApp?.splashBackground) ?? FmlEngine.splashBackgroundColor,
+        child: Center(child: SizedBox(width: imageWidth, child: image)));
   }
 
   @override
@@ -136,9 +139,9 @@ class _SplashState extends State<Splash> {
 
     // future view requires image
     var view = FutureBuilder(
-        future: widget.image.future,
+        future: widget.initialized.future,
         builder: (context, snapshot) =>
-        snapshot.hasData ? _getSplashScreen(constraints, snapshot.data!) : _getWaitScreen());
+        snapshot.hasData ? splashScreen(constraints) : waitScreen());
 
     return MaterialApp(home: view);
   }

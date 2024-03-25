@@ -185,7 +185,8 @@ class _SelectViewState extends WidgetState<SelectView> {
             Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.15));
 
     // defeat focus colors
-    view = Theme(data: ThemeData(hoverColor: Colors.transparent), child: view);
+    //var theme = Theme.of(context).copyWith(hoverColor: Colors.transparent);
+    //view = Theme(data: theme, child: view);
 
     // show hand cursor
     view = MouseRegion(cursor: SystemMouseCursors.click, child: view);

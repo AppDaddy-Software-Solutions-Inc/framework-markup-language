@@ -401,30 +401,39 @@ class System extends WidgetModel implements IEventManager {
   static Changeicon? _changeIconPlugin;
   static void _setDefaultIcon(String icon)
   {
-    // set the default mobile icon - only supported in IOS and Android
-    if (io.Platform.isIOS || io.Platform.isAndroid)
+    //if (kIsWeb) return;
+
+    bool canSet = false;
+    try
     {
-      // no clients defined
-      if (companies.isEmpty) return;
+      canSet = io.Platform.isIOS || io.Platform.isAndroid;
+    }
+    catch(e)
+    {
+      canSet = false;
+    }
+    if (!canSet) return;
 
-      // initialize the plugin
-      if (_changeIconPlugin == null) {
-        Changeicon.initialize(classNames: [mainIcon, ...companies]);
-        _changeIconPlugin = Changeicon();
-      }
+    // no clients defined
+    if (companies.isEmpty) return;
 
-      // trim icon
-      icon = icon.toLowerCase().trim();
+    // initialize the plugin
+    if (_changeIconPlugin == null) {
+      Changeicon.initialize(classNames: [mainIcon, ...companies]);
+      _changeIconPlugin = Changeicon();
+    }
 
-      // change the icon
-      if (companies.contains(icon))
-      {
-        _changeIconPlugin?.switchIconTo(classNames: [icon]);
-      }
-      else
-      {
-        _changeIconPlugin?.switchIconTo(classNames: [mainIcon]);
-      }
+    // trim icon
+    icon = icon.toLowerCase().trim();
+
+    // change the icon
+    if (companies.contains(icon))
+    {
+      _changeIconPlugin?.switchIconTo(classNames: [icon]);
+    }
+    else
+    {
+      _changeIconPlugin?.switchIconTo(classNames: [mainIcon]);
     }
   }
 

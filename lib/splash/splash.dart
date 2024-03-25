@@ -19,6 +19,8 @@ class Splash extends StatefulWidget {
   // await on image
   final Completer<Widget> image = Completer<Widget>();
 
+  BoxConstraints? constraints;
+
   Splash({super.key, this.onInitializationComplete})
   {
     initialize();
@@ -79,11 +81,11 @@ class Splash extends StatefulWidget {
         // svg image?
         if (image.mimeType == "image/svg+xml")
         {
-          view = SvgPicture.memory(image.contentAsBytes(), width: 48, height: 48);
+          view = SvgPicture.memory(image.contentAsBytes(), width: 480, height: 480);
         }
         else
         {
-          view = Image.memory(image.contentAsBytes(), width: 48, height: 48, fit: null);
+          view = Image.memory(image.contentAsBytes(), width: 480, height: 480, fit: null);
         }
       }
     }

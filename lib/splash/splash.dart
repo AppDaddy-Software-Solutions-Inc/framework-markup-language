@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
@@ -126,7 +125,7 @@ class _SplashState extends State<Splash> {
 
     // return wrapped centered image
     return Container(
-        color: toColor(System.defaultApp?.splashBackground) ?? FmlEngine.splashBackgroundColor,
+        color: toColor(System.defaultApp?.splashBackground) ?? Colors.black,
         child: Center(child: SizedBox(width: imageWidth, child: image)));
   }
 

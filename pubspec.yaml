@@ -36,7 +36,7 @@ dependencies:
 
   expressions: 0.2.5+1
 
-  audioplayers: ^5.2.1
+  audioplayers: ^6.0.0
   # MIT
 
   camera: ^0.10.3
@@ -72,12 +72,12 @@ dependencies:
   # Apache-2.0
 
   # file picker with extension support
-  file_picker: ^6.2.0
+  file_picker: ^8.0.0+1
   # MIT
 
   # Microsoft Logon - Newer versions of these packages require web < 0.5.0
-  firebase_auth: ^4.9.0
-  firebase_core: ^2.15.1
+  firebase_auth: ^4.18.0
+  firebase_core: ^2.27.2
   # firebase_core_platform_interface: ^4.8.0
   # BSD-3-Clause
 
@@ -235,7 +235,7 @@ dependencies:
   xml: ^6.5.0
   # MIT
 
-  xml2json: ^6.2.2
+  xml2json: ^6.2.3
   # MIT
 
   zxing_lib: ^1.1.2

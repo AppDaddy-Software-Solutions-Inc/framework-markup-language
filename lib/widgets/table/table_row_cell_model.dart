@@ -57,8 +57,19 @@ class TableRowCellModel extends BoxModel {
       _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope);
     }
   }
-
   String? get value => _value?.get();
+
+  // editable
+  BooleanObservable? _editable;
+  set editable(dynamic v) {
+    if (_editable != null) {
+      _editable!.set(v);
+    } else if (v != null) {
+      _editable = BooleanObservable(Binding.toKey(id, 'editable'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool? get editable => _editable?.get() ?? row?.editable;
 
   // selected
   BooleanObservable? _selected;
@@ -70,7 +81,6 @@ class TableRowCellModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get selected => _selected?.get() ?? false;
 
   // onChange - only used for simple data grid
@@ -83,7 +93,6 @@ class TableRowCellModel extends BoxModel {
           StringObservable(Binding.toKey(id, 'onchange'), v, scope: scope);
     }
   }
-
   String? get onChange => _onChange?.get();
 
   TableRowCellModel(WidgetModel super.parent, super.id);
@@ -113,6 +122,7 @@ class TableRowCellModel extends BoxModel {
       var txt = findChildOfExactType(TextModel);
       if (txt is TextModel) value = txt.value;
     }
+    editable = Xml.get(node: xml, tag: 'editable');
   }
 
   // on change handler - fired on cell edit

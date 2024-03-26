@@ -122,7 +122,6 @@ class TableHeaderCellModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get editable => _editable?.get() ?? hdr?.editable ?? false;
 
   // allow filtering

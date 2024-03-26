@@ -20,7 +20,7 @@ import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 import 'package:pluto_grid_plus_export/pluto_grid_plus_export.dart'
-    as pluto_grid_export;
+as pluto_grid_export;
 
 enum Toggle { on, off }
 
@@ -58,10 +58,10 @@ class TableViewState extends WidgetState<TableView> {
   // maps PlutoColumn -> TableHeaderModel
   // this is necessary since PlutoColumns can be re-ordered
   final HashMap<PlutoColumn, TableHeaderCellModel> map =
-      HashMap<PlutoColumn, TableHeaderCellModel>();
+  HashMap<PlutoColumn, TableHeaderCellModel>();
 
   final HashMap<TableRowCellModel, Widget> views =
-      HashMap<TableRowCellModel, Widget>();
+  HashMap<TableRowCellModel, Widget>();
 
   // hold a pointer to the last selected cell;
   PlutoCell? _lastSelectedCell;
@@ -168,7 +168,7 @@ class TableViewState extends WidgetState<TableView> {
     // get row and column indexes
     var rowIdx = rows.indexOf(context.row);
     var colIdx =
-        map.containsKey(context.column) ? map[context.column]!.index : -1;
+    map.containsKey(context.column) ? map[context.column]!.index : -1;
 
     // not found
     if (rowIdx.isNegative || colIdx.isNegative) return const Text("");
@@ -197,9 +197,9 @@ class TableViewState extends WidgetState<TableView> {
     // enterable fields
     return hasEnterableFields
         ? FocusScope(
-            child: cell,
-            onKeyEvent: (FocusNode focusNode, KeyEvent event) =>
-                KeyEventResult.skipRemainingHandlers)
+        child: cell,
+        onKeyEvent: (FocusNode focusNode, KeyEvent event) =>
+        KeyEventResult.skipRemainingHandlers)
         : cell;
   }
 
@@ -281,7 +281,7 @@ class TableViewState extends WidgetState<TableView> {
     // You can convert it using [PlutoRow.fromJson].
     // In the example, PlutoRow is already created, so it is not created separately.
     Iterable<PlutoRow> fetchedRows = tempList.skipWhile(
-        (row) => request.lastRow != null && row.key != request.lastRow!.key);
+            (row) => request.lastRow != null && row.key != request.lastRow!.key);
 
     if (request.lastRow == null) {
       fetchedRows = fetchedRows.take(fetchSize);
@@ -359,7 +359,7 @@ class TableViewState extends WidgetState<TableView> {
 
     // get list of rows
     var fetchedRows =
-        tempList.getRange(max(0, start), min(tempList.length, end)).toList();
+    tempList.getRange(max(0, start), min(tempList.length, end)).toList();
 
     return Future.value(
         PlutoLazyPaginationResponse(totalPage: pages, rows: fetchedRows));
@@ -413,10 +413,14 @@ class TableViewState extends WidgetState<TableView> {
   // called when a field changes via edit.
   // only applies to simple grid
   void onChangedHandler(final PlutoGridOnChangedEvent event) async {
+
     var rowIdx = rows.indexOf(event.row);
     var colIdx = map.containsKey(event.column) ? map[event.column]!.index : -1;
-    await widget.model
-        .onChangeHandler(rowIdx, colIdx, event.value, event.oldValue);
+    var cell   = event.row.cells.values.toList()[event.columnIdx];
+
+    // fire change handler
+    bool ok = await widget.model.onChangeHandler(rowIdx, colIdx, event.value, event.oldValue);
+    if (!ok) cell.value = event.oldValue;
     onSelectedHandler(force: true);
   }
 
@@ -447,48 +451,74 @@ class TableViewState extends WidgetState<TableView> {
     _lastSelectedCell = null;
   }
 
+  bool isEditable(PlutoColumn col, PlutoRow row)
+  {
+    var rowIdx = rows.indexOf(row);
+    var colIdx = map.containsKey(col) ? map[col]!.index : -1;
+    var hdr  = map.containsKey(col) ? map[col] : null;
+    var cell = widget.model.getRowCellModel(rowIdx, colIdx);
+    var editable = cell?.editable ?? hdr?.editable ?? false;
+    return editable;
+  }
+
   void onSelectedHandler({bool force = false}) {
-    if (stateManager == null ||
-        stateManager!.currentRow == null ||
-        stateManager!.currentCell == null) return;
 
-    // deselect
-    if (stateManager!.currentCell == _lastSelectedCell && !force) return;
+    if (stateManager?.currentRow == null ||
+        stateManager?.currentColumn == null ||
+        stateManager?.currentCell == null) return;
 
-    // remember last cell selected
-    _lastSelectedCell = stateManager!.currentCell!;
+    var mgr  = stateManager!;
+    var row  = mgr.currentRow!;
+    var col  = mgr.currentColumn!;
+    var cell = mgr.currentCell!;
+
+    // ignore this call
+    if (cell == _lastSelectedCell && !force) return;
+    var sameColumn = cell.column == _lastSelectedCell?.column;
+    _lastSelectedCell = cell;
 
     // check/uncheck rows
-    for (var row in stateManager!.checkedRows) {
-      if (row != stateManager!.currentRow) {
-        stateManager!.setRowChecked(row, false);
+    for (var row in mgr.checkedRows) {
+      if (row != mgr.currentRow) {
+        mgr.setRowChecked(row, false);
       }
     }
 
     // check this row
-    if (stateManager!.currentRow!.checked != true) {
-      stateManager!.setRowChecked(stateManager!.currentRow!, true);
+    if (row.checked != true) {
+      mgr.setRowChecked(row, true);
     }
 
     // get row index
-    var rowIdx = rows.indexOf(stateManager!.currentRow!);
+    var rowIdx = rows.indexOf(row);
 
     // get column index
-    var colIdx = map.containsKey(stateManager!.currentCell!.column)
-        ? map[stateManager!.currentCell!.column]!.index
+    var colIdx = map.containsKey(cell.column)
+        ? map[cell.column]!.index
         : -1;
 
     // set model selection
     widget.model.onSelect(rowIdx, colIdx);
 
-    // remember last cell selected
-    _lastSelectedCell = stateManager!.currentCell!;
+    // cell is editable?
+    bool editable = isEditable(col, row);
+
+    // Editing a cell, then clicking another cell in the same column
+    // that isn't editable, won't fire the onchange() method.
+    // By clearing the _lastSelectedCell, editable will be set to false
+    // on the next subsequent call to this routine.
+    if (!editable && sameColumn)
+    {
+      _lastSelectedCell = null;
+    }
+    else
+    {
+      col.enableEditingMode = editable;
+    }
   }
 
   // called when a field sort operation happens
-  void onSortedHandler(PlutoGridOnSortedEvent event) async {
-    views.clear();
-  }
+  void onSortedHandler(PlutoGridOnSortedEvent event) async => views.clear();
 
   void rebuild() {
     grid = null;
@@ -827,43 +857,43 @@ class TableViewState extends WidgetState<TableView> {
     // style
     var style = dark
         ? PlutoGridStyleConfig.dark(
-            defaultCellPadding: const EdgeInsets.all(0),
-            columnHeight: colHeight,
-            rowHeight: rowHeight,
-            gridBorderRadius:
-                BorderRadius.circular(widget.model.radiusTopRight),
-            cellTextStyle:
-                TextStyle(fontSize: widget.model.textSize, color: textColor),
-            columnAscendingIcon: const Icon(Icons.arrow_downward_rounded),
-            columnDescendingIcon: const Icon(Icons.arrow_upward_rounded),
-            enableGridBorderShadow: widget.model.shadow,
-            borderColor: borderColor,
-            gridBackgroundColor: backgroundColor,
-            rowColor: rowColor,
-            oddRowColor: oddRowColor,
-            evenRowColor: evenRowColor,
-            checkedColor: checkedColor,
-            activatedColor: activeColor,
-            activatedBorderColor: activeBorderColor)
+        defaultCellPadding: const EdgeInsets.all(0),
+        columnHeight: colHeight,
+        rowHeight: rowHeight,
+        gridBorderRadius:
+        BorderRadius.circular(widget.model.radiusTopRight),
+        cellTextStyle:
+        TextStyle(fontSize: widget.model.textSize, color: textColor),
+        columnAscendingIcon: const Icon(Icons.arrow_downward_rounded),
+        columnDescendingIcon: const Icon(Icons.arrow_upward_rounded),
+        enableGridBorderShadow: widget.model.shadow,
+        borderColor: borderColor,
+        gridBackgroundColor: backgroundColor,
+        rowColor: rowColor,
+        oddRowColor: oddRowColor,
+        evenRowColor: evenRowColor,
+        checkedColor: checkedColor,
+        activatedColor: activeColor,
+        activatedBorderColor: activeBorderColor)
         : PlutoGridStyleConfig(
-            defaultCellPadding: const EdgeInsets.all(0),
-            columnHeight: colHeight,
-            rowHeight: rowHeight,
-            gridBorderRadius:
-                BorderRadius.circular(widget.model.radiusTopRight),
-            cellTextStyle:
-                TextStyle(fontSize: widget.model.textSize, color: textColor),
-            columnAscendingIcon: const Icon(Icons.arrow_downward_rounded),
-            columnDescendingIcon: const Icon(Icons.arrow_upward_rounded),
-            enableGridBorderShadow: widget.model.shadow,
-            borderColor: borderColor,
-            gridBackgroundColor: backgroundColor,
-            rowColor: rowColor,
-            oddRowColor: oddRowColor,
-            evenRowColor: evenRowColor,
-            checkedColor: checkedColor,
-            activatedColor: activeColor,
-            activatedBorderColor: activeBorderColor);
+        defaultCellPadding: const EdgeInsets.all(0),
+        columnHeight: colHeight,
+        rowHeight: rowHeight,
+        gridBorderRadius:
+        BorderRadius.circular(widget.model.radiusTopRight),
+        cellTextStyle:
+        TextStyle(fontSize: widget.model.textSize, color: textColor),
+        columnAscendingIcon: const Icon(Icons.arrow_downward_rounded),
+        columnDescendingIcon: const Icon(Icons.arrow_upward_rounded),
+        enableGridBorderShadow: widget.model.shadow,
+        borderColor: borderColor,
+        gridBackgroundColor: backgroundColor,
+        rowColor: rowColor,
+        oddRowColor: oddRowColor,
+        evenRowColor: evenRowColor,
+        checkedColor: checkedColor,
+        activatedColor: activeColor,
+        activatedBorderColor: activeBorderColor);
 
     bool boundedWidth = false;
     if (widget.model.header != null) {
@@ -935,8 +965,8 @@ class TableViewState extends WidgetState<TableView> {
       children: fields.isNotEmpty
           ? null
           : groups.isNotEmpty
-              ? groups
-              : null,
+          ? groups
+          : null,
       expandedColumn: false,
       backgroundColor: model.color,
       titlePadding: const EdgeInsets.all(1),
@@ -990,11 +1020,8 @@ class TableViewState extends WidgetState<TableView> {
       // table rows can be rendered much quicker
       var builder = cell.usesRenderer
           ? (rendererContext) =>
-              cellBuilder(rendererContext, cell.hasEnterableFields)
+          cellBuilder(rendererContext, cell.hasEnterableFields)
           : null;
-
-      // cell is editable
-      var editable = !cell.usesRenderer && cell.editable;
 
       // cell is resizeable
       var resizeable = cell.resizeable;
@@ -1014,7 +1041,7 @@ class TableViewState extends WidgetState<TableView> {
       }
       var footerBuilder = footer != null
           ? (PlutoColumnFooterRendererContext context) =>
-              _footerBuilder(context, footer!)
+          _footerBuilder(context, footer!)
           : null;
 
       // build the column
@@ -1027,11 +1054,10 @@ class TableViewState extends WidgetState<TableView> {
           textAlign: alignment,
           enableSorting: cell.sortable,
           enableFilterMenuItem: cell.filter,
-          enableEditingMode: editable,
           enableAutoEditing: false,
           enableContextMenu: showMenu,
           enableDropToResize: resizeable,
-          readOnly: !editable,
+          enableEditingMode: false,
           titlePadding: const EdgeInsets.all(1),
           cellPadding: const EdgeInsets.all(0),
           backgroundColor: cell.color,
@@ -1072,8 +1098,8 @@ class TableViewState extends WidgetState<TableView> {
       // Busy / Loading Indicator
       if (widget.model.showBusy) {
         busy ??= BusyModel(widget.model,
-                visible: widget.model.busy,
-                observable: widget.model.busyObservable)
+            visible: widget.model.busy,
+            observable: widget.model.busyObservable)
             .getView();
       }
 

@@ -26,11 +26,11 @@ class Connectivity {
       connection = cp.Connectivity();
 
       // check connectivity
-      cp.ConnectivityResult connectionType =
+      List<cp.ConnectivityResult> connections =
           await connection.checkConnectivity();
 
       // check internet access
-      if (connectionType != cp.ConnectivityResult.none) {
+      if (connections.isNotEmpty && connections.first != cp.ConnectivityResult.none) {
         var isConnected = await Internet.isConnected();
         connected.set(isConnected);
       } else {
@@ -38,17 +38,18 @@ class Connectivity {
       }
 
       // Add connection listener to determine connection
-      connection.onConnectivityChanged.listen((connectionType) async {
-        if (connectionType != cp.ConnectivityResult.none) {
-          Log().info("Connection status changed: $connectionType");
+      connection.onConnectivityChanged.listen((connections) async {
+        if (connections.isNotEmpty && connections.first != cp.ConnectivityResult.none)
+        {
+          Log().info("Connection status changed: $connections");
           var isConnected = await Internet.isConnected();
           connected.set(isConnected);
-        } else {
+        }
+        else
+        {
           connected.set(false);
         }
-
-        Log().info(
-            "Connection status changed. Connection type: $connectionType. Internet is ${(connected.get() == true) ? 'connected' : 'disconnected'}");
+        Log().info("Connection status changed. Internet is ${(connected.get() == true) ? 'connected' : 'disconnected'}");
       });
 
       Log().debug('initConnectivity status: $connected');

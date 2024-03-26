@@ -59,7 +59,7 @@ dependencies:
   community_charts_common: ^1.0.1
   # Apache-2.0
 
-  connectivity_plus: ^5.0.2
+  connectivity_plus: ^6.0.1
   # BSD-3-Clause
 
   cross_file: ^0.3.3+1

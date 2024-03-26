@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     String example1 = 'http://10.69.4.245:81/';
     //String example1 = 'https://test.appdaddy.co';
+    //String example1 = 'https://fml.dev';
     //String example2 = 'file://fmlpad';
     //String example3 = 'file://example';
 
@@ -27,8 +28,7 @@ class MyApp extends StatelessWidget {
             color: Colors.lightBlue,
             brightness: Brightness.light,
             font: 'Roboto',
-            transition: PageTransitions.platform,
-            splashBackgroundColor: Colors.black)
+            transition: PageTransitions.platform)
         .launch();
   }
 }

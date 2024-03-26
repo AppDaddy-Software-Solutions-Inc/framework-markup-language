@@ -80,9 +80,6 @@ class FmlEngine {
   static late Color _color;
   static Color get defaultColor => _color;
 
-  static late Color? _splashBackgroundColor;
-  static Color? get splashBackgroundColor => _splashBackgroundColor;
-
   static final FmlEngine _singleton = FmlEngine._init();
 
   /// This is the main entry point for the FML
@@ -114,9 +111,6 @@ class FmlEngine {
 
     /// default page transition
     PageTransitions transition = PageTransitions.platform,
-
-    /// splash screen background color
-    Color? splashBackgroundColor,
   }) {
 
     // already initialized?
@@ -133,7 +127,6 @@ class FmlEngine {
     FmlEngine._transition = transition;
     FmlEngine._color = color;
     FmlEngine._brightness = brightness;
-    FmlEngine._splashBackgroundColor = splashBackgroundColor;
 
     // mark initialized
     FmlEngine.initialized.complete(true);

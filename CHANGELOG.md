@@ -1,3 +1,8 @@
+3.0.0+16
+- Attempt to resolve anaysis issue for "unknown platforms"
+- Added Icon Change Option 
+- Updated packages
+
 3.0.0+15
 - Attempt to resolve anaysis issue for "unknown platforms"
 

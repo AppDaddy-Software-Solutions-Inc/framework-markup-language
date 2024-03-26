@@ -131,13 +131,19 @@ class OptionModel extends RowModel {
     // set label and value
     this.label = label;
     this.value = value;
+
+    // add text model
+    if (viewableChildren.isEmpty)
+    {
+      children ??= [];
+      children!.add(TextModel(this,null,value: value));
+    }
   }
 
   Widget? cachedView;
 
   @override
   Widget getView({Key? key}) {
-    if (viewableChildren.isEmpty) return Text(label ?? "");
     cachedView ??= super.getView();
     return cachedView!;
   }

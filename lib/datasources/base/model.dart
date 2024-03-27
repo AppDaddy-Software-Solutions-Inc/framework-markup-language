@@ -419,6 +419,7 @@ class DataSourceModel extends WidgetModel implements IDataSource {
     root = Xml.attribute(node: xml, tag: 'root');
     value = Xml.get(node: xml, tag: 'value');
     template = Xml.get(node: xml, tag: 'template');
+    enabled = Xml.get(node: xml, tag: 'enabled');
 
     // set the body
     body = _getBody(xml);

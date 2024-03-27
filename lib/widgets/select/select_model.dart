@@ -91,13 +91,13 @@ class SelectModel extends DecoratedInputModel implements IFormField {
     // set properties
     value = Xml.get(node: xml, tag: 'value');
 
-    // build select options
-    _buildOptions();
-
     // automatically add an empty widget to the list?
     var addempty = toBool(Xml.get(node: xml, tag: 'addempty'));
     if (addempty == null && emptyOption != null) addempty = true;
     this.addempty = addempty ?? true;
+
+    // build select options
+    _buildOptions();
 
     // set the default selected option
     if (datasource == null) _setSelectedOption();
@@ -194,7 +194,7 @@ class SelectModel extends DecoratedInputModel implements IFormField {
     }
 
     // add empty option to list
-    if (addempty) {
+    if (addempty && options.isEmpty) {
       OptionModel model = emptyOption ?? OptionModel(this, "$id-0", value: '');
       options.insert(0, model);
     }
@@ -229,7 +229,9 @@ class SelectModel extends DecoratedInputModel implements IFormField {
       }
 
       // add nodata option
-      if (noDataOption != null && options.isEmpty) options.add(noDataOption!);
+      if (noDataOption != null && options.isEmpty) {
+        options.add(noDataOption!);
+      }
 
       // set selected option
       _setSelectedOption();
@@ -241,7 +243,9 @@ class SelectModel extends DecoratedInputModel implements IFormField {
 
   void _clearOptions() {
     for (var option in options) {
-      option.dispose();
+      if (option != emptyOption && option != noDataOption && option != noMatchOption) {
+        option.dispose();
+      }
     }
     options.clear();
     selectedOption = null;

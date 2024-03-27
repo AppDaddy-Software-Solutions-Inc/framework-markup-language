@@ -162,13 +162,13 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
     readonly = Xml.get(node: xml, tag: 'readonly');
     clear = Xml.get(node: xml, tag: 'clear');
 
-    // build select options
-    _buildOptions();
-
     // automatically add an empty widget to the list?
     var addempty = toBool(Xml.get(node: xml, tag: 'addempty'));
     if (addempty == null && emptyOption != null) addempty = true;
     this.addempty = addempty ?? true;
+
+    // build select options
+    _buildOptions();
 
     // set the default selected option
     if (datasource == null) _setSelectedOption();
@@ -265,7 +265,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
     }
 
     // add empty option to list
-    if (addempty) {
+    if (addempty && options.isEmpty) {
       OptionModel model = emptyOption ?? OptionModel(this, "$id-0", value: '');
       options.insert(0, model);
     }
@@ -280,7 +280,9 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
 
   void _clearOptions() {
     for (var option in options) {
-      option.dispose();
+      if (option != emptyOption && option != noDataOption && option != noMatchOption) {
+        option.dispose();
+      }
     }
     options.clear();
     selectedOption = null;
@@ -380,7 +382,9 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
       }
 
       // add nodata option
-      if (noDataOption != null && options.isEmpty) options.add(noDataOption!);
+      if (noDataOption != null && options.isEmpty) {
+        options.add(noDataOption!);
+      }
 
       // set selected option
       _setSelectedOption();

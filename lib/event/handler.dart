@@ -89,8 +89,12 @@ class EventHandler extends Eval {
     // process each event
     if (events != null) {
       for (String event in events) {
-        dynamic ok = await executeEvent(event.trim(), variables: variables);
-        if (ok == false) break;
+        dynamic result = await executeEvent(event.trim(), variables: variables);
+        if (result is bool && !result)
+        {
+          ok = false;
+          break;
+        }
       }
     }
 

@@ -49,6 +49,18 @@ class TableRowModel extends BoxModel {
   // Editable Fields
   List<IFormField>? fields;
 
+  // editable - used on non row prototype only
+  BooleanObservable? _editable;
+  set editable(dynamic v) {
+    if (_editable != null) {
+      _editable!.set(v);
+    } else if (v != null) {
+      _editable = BooleanObservable(Binding.toKey(id, 'editable'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool? get editable => _editable?.get();
+
   // posting source source
   List<String>? _postbrokers;
   set postbrokers(dynamic v) {
@@ -60,7 +72,6 @@ class TableRowModel extends BoxModel {
       }
     }
   }
-
   List<String>? get postbrokers => _postbrokers;
 
   // selected
@@ -73,7 +84,6 @@ class TableRowModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get selected => _selected?.get() ?? false;
 
   // onclick
@@ -86,7 +96,6 @@ class TableRowModel extends BoxModel {
           scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
-
   String? get onclick => _onClick?.get();
 
   // onComplete
@@ -99,7 +108,6 @@ class TableRowModel extends BoxModel {
           scope: scope, lazyEval: true);
     }
   }
-
   String? get oncomplete => _onComplete?.get();
 
   // onInsert
@@ -112,7 +120,6 @@ class TableRowModel extends BoxModel {
           scope: scope, lazyEval: true);
     }
   }
-
   String? get onInsert => _onInsert?.get();
 
   // onDelete
@@ -125,7 +132,6 @@ class TableRowModel extends BoxModel {
           scope: scope, lazyEval: true);
     }
   }
-
   String? get onDelete => _onDelete?.get();
 
   // onChange - only used for simple data grid
@@ -138,7 +144,6 @@ class TableRowModel extends BoxModel {
           StringObservable(Binding.toKey(id, 'onchange'), v, scope: scope);
     }
   }
-
   String? get onChange => _onChange?.get();
 
   // dirty
@@ -151,7 +156,6 @@ class TableRowModel extends BoxModel {
       _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
     }
   }
-
   bool get dirty => _dirty?.get() ?? false;
 
   void onDirtyListener(Observable property) {
@@ -194,6 +198,7 @@ class TableRowModel extends BoxModel {
     super.deserialize(xml);
 
     // properties
+    editable = Xml.get(node: xml, tag: 'editable');
     oncomplete = Xml.get(node: xml, tag: 'oncomplete');
     onclick = Xml.get(node: xml, tag: 'onclick');
     postbrokers = Xml.attribute(node: xml, tag: 'postbroker');

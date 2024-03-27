@@ -1,7 +1,7 @@
 library fml;
+export 'fml.dart' show FmlEngine;
 
 import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/application/application_view.dart';

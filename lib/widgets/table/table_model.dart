@@ -763,6 +763,7 @@ class TableModel extends BoxModel implements IForm {
 
   Future<bool> onChangeHandler(
       int rowIdx, int colIdx, dynamic value, dynamic oldValue) async {
+
     var row = (rowIdx >= 0 && rowIdx < rows.length) ? rows[rowIdx] : null;
     var rowCell = row?.cell(colIdx);
     var colCell = header?.cell(colIdx);
@@ -781,7 +782,7 @@ class TableModel extends BoxModel implements IForm {
       selected = data;
 
       // fire column change handler
-      bool ok = true;
+      ok = true;
 
       // fire the row's cell change handler
       if (ok) ok = await rowCell?.onChangeHandler() ?? true;

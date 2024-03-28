@@ -146,6 +146,7 @@ class FmlEngine {
   }
 
   Widget launch() {
+
     // fml engine
     var engine = ChangeNotifierProvider<ThemeNotifier>(
         child: Application(key: FmlEngine.key),

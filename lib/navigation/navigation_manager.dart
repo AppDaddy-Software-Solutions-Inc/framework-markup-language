@@ -4,7 +4,6 @@ import 'dart:async';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:fml/fml.dart';
-import 'package:fml/template/template_manager.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/modal/modal_manager_model.dart';
 import 'package:fml/widgets/modal/modal_manager_view.dart';
@@ -20,6 +19,7 @@ import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/store/store_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/helpers/helpers.dart';
+
 // platform
 import 'package:fml/platform/platform.web.dart'
     if (dart.library.io) 'package:fml/platform/platform.vm.dart'
@@ -28,31 +28,22 @@ import 'package:fml/platform/platform.web.dart'
 class NavigationManager extends RouterDelegate<PageConfiguration>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<PageConfiguration> {
 
-  late GlobalKey<NavigatorState> key;
-
   @override
-  GlobalKey<NavigatorState> get navigatorKey => key;
-
-  static final initialized = Completer<bool>();
-
-  // singleton
-  static final NavigationManager _singleton = NavigationManager._init();
-
-  factory NavigationManager({GlobalKey<NavigatorState>? key}) {
-
-    var mgr = _singleton;
-    if (key != null && key != mgr.key) mgr.key = key;
-    return mgr;
-  }
-
-  NavigationManager._init() {
-    key = GlobalKey<NavigatorState>();
-  }
+  GlobalKey<NavigatorState> get navigatorKey => GlobalKey<NavigatorState>();
 
   // holds the navigation stack
   final _pages = <Page>[];
   List<Page> get pages => List.unmodifiable(_pages);
   CustomMaterialPage? dummyPage;
+
+  // singleton
+  static final _singleton = NavigationManager._init();
+  factory NavigationManager() => _singleton;
+  NavigationManager._init()
+  {
+    dummyPage = _buildPage("/", child: const Offstage());
+    _addPage(dummyPage!);
+  }
 
   Future<void> onPageLoaded() async {
     // open the requested page
@@ -90,6 +81,12 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
   @override
   Future<void> setNewRoutePath(PageConfiguration configuration,
       {String source = "system"}) async {
+
+    // initialize
+    if (pages.isNotEmpty && pages.first == dummyPage) {
+      _pages.clear();
+      return;
+    }
 
     // deeplink specified
     String? url = configuration.uri?.toString();

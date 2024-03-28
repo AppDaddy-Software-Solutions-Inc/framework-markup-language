@@ -5,7 +5,7 @@ import 'package:changeicon/changeicon.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
-import 'package:fml/connectivity/connectivity.dart';
+import 'package:fml/connection/connection.dart';
 import 'package:fml/datasources/log/log_model.dart';
 import 'package:fml/dialog/manager.dart';
 import 'package:fml/event/event.dart';
@@ -42,7 +42,7 @@ class System extends WidgetModel implements IEventManager {
   static const String myId = "SYSTEM";
 
   static final initialized  = Completer<bool>();
-  static final initializing = Completer<bool>();
+  static final _initializing = Completer<bool>();
 
   static final System _singleton = System._initialize();
   factory System() => _singleton;
@@ -62,10 +62,12 @@ class System extends WidgetModel implements IEventManager {
   static List<ApplicationModel> get apps => _apps..sort((a, b) => Comparable.compare(a.order ?? 99999, b.order ?? 99999))..toList();
 
   // current app
-  static ApplicationModel? get currentApp => _apps.isNotEmpty ? _apps.first : null;
+  static ApplicationModel? _app;
+  static ApplicationModel? get currentApp => brandedApp ?? _app;
+  static set currentApp (ApplicationModel? app) => _app = app;
 
   // returns the default app
-  static ApplicationModel? get defaultApp => (_apps.length == 1 && _apps.first.isDefault) ? _apps.first : null;
+  static ApplicationModel? get brandedApp => (FmlEngine.type == ApplicationType.branded && _apps.isNotEmpty) ? _apps.first : null;
 
   // current theme
   static late ThemeModel _theme;
@@ -155,10 +157,10 @@ class System extends WidgetModel implements IEventManager {
   Future<void> initialize() async {
 
     // initialize should only run once
-    if (initialized.isCompleted || initializing.isCompleted) return;
+    if (initialized.isCompleted || _initializing.isCompleted) return;
 
     // signal initializing in progress
-    initializing.complete(true);
+    _initializing.complete(true);
 
     // base URL changes (fragment is dropped) if
     // used past this point
@@ -173,10 +175,10 @@ class System extends WidgetModel implements IEventManager {
     // initialize System Globals
     await _initBindables();
 
-    // initialize connectivity
+    // initialize connection monitor
     // this needs to be done ahead of initializing apps
     // since they use the template manager
-    await Connectivity(_connected!).initialize();
+    await Connection.initialize(_connected);
 
     // initialize the database (Hive)
     await _initDatabase();
@@ -204,8 +206,8 @@ class System extends WidgetModel implements IEventManager {
     // signal complete
     initialized.complete(true);
 
-    // launch the default application?
-    if (defaultApp != null) launchApplication(defaultApp!);
+    // launch the application?
+    launchApplication(currentApp);
   }
 
   onMouseDetected() {
@@ -287,9 +289,7 @@ class System extends WidgetModel implements IEventManager {
     String? hiveFolder = await Platform.createFolder(folder);
 
     // initialize hive
-    await Database().initialize(hiveFolder);
-
-    return true;
+    return await Database.initialize(hiveFolder);
   }
 
   static Future<bool> _initFolders() async {
@@ -342,11 +342,21 @@ class System extends WidgetModel implements IEventManager {
     // load the apps from the database
     _apps = FmlEngine.isWeb ? [] : await ApplicationModel.loadAll();
 
+    // remove redundant apps if branded
+    if (FmlEngine.type == ApplicationType.branded) {
+      while (apps.length > 1) {
+        var app = apps.last;
+        await app.delete();
+        apps.removeLast();
+      }
+    }
+
+    // reorder apps by index
     var reorder = _apps.length > 1 && (_apps.firstWhereOrNull((app) => app.order == null) != null);
     if (reorder) await _resequenceApps();
 
     // set default app
-    if (FmlEngine.isWeb || FmlEngine.isSingleApp) {
+    if (kIsWeb || FmlEngine.type == ApplicationType.single) {
 
       // set the domain
       var domain = FmlEngine.domain;
@@ -363,22 +373,13 @@ class System extends WidgetModel implements IEventManager {
         }
       }
 
+      var app = ApplicationModel(System(), url: domain, page: 0, order: 0);
+
       // add the app to the apps list
-      _apps.insert(0, ApplicationModel(System(), url: domain, isDefault: true, page: 0, order: 0));
-    }
+      _apps.insert(0, app);
 
-    // if only one app installed and set to default
-    // set the system app and modify the fml engine to
-    // single app mode
-    if (defaultApp != null)
-    {
-      // set single app mode
-      FmlEngine.singleApp = true;
-
-      // wait for the default app to initialize
-      if (!defaultApp!.isInitialized) {
-        await defaultApp!.initialized.future;
-      }
+      // set current
+      System.currentApp = app;
     }
 
     // signal complete - used in splash
@@ -399,7 +400,7 @@ class System extends WidgetModel implements IEventManager {
   /// changes the desktop icon
   static const mainIcon = 'MainActivity';
   static Changeicon? _changeIconPlugin;
-  static void _setDefaultIcon(String icon)
+  static void _setBranding(String icon)
   {
     //if (kIsWeb) return;
 
@@ -437,7 +438,7 @@ class System extends WidgetModel implements IEventManager {
     }
   }
 
-  static Future<bool> _confirmClearDefaultApp() async
+  static Future<bool> _confirmClearBranding() async
   {
     var context = NavigationManager().navigatorKey.currentContext;
     if (context != null)
@@ -459,43 +460,37 @@ class System extends WidgetModel implements IEventManager {
     return false;
   }
 
-  static void clearDefaultApplication() async
+  static void clearBranding() async
   {
-    var app = defaultApp;
-
     // do nothing if in web or no default application
-    if (FmlEngine.isWeb || app == null) return;
+    if (FmlEngine.isWeb || brandedApp == null) return;
 
     // show dialog to confirm
-    bool ok = await _confirmClearDefaultApp();
+    bool ok = await _confirmClearBranding();
     if (!ok) return;
 
     // reset default icon
-    _setDefaultIcon(mainIcon);
+    _setBranding(mainIcon);
 
-    // set its default flag
-    app.isDefault = false;
-
-    // update the application in the database
-    await app.upsert();
+    // delete the application
+    ok = await brandedApp!.delete();
 
     // notify the user
-    toast(phrase.defaultAppRemoved);
+    ok ? toast(phrase.defaultAppRemoved) : toast(phrase.defaultAppRemovedProblem);
   }
 
-  static _closeCurrentApplication()
+  static _closeCurrentApp()
   {
-    var app = currentApp;
-    if (app == null) return;
+    if (currentApp == null) return;
 
     // closing app
-    Log().info("Closing Application ${app.url}");
+    Log().info("Closing Application ${currentApp?.url}");
 
     // set the default domain on the Url utilities
     URI.rootHost = "";
 
     // logoff
-    app.logoff();
+    currentApp?.logoff();
 
     // update application level bindables
     _domain?.set(null);
@@ -503,30 +498,28 @@ class System extends WidgetModel implements IEventManager {
     _host?.set(null);
 
     // close application
-    app.close();
+    currentApp?.close();
   }
 
   // launches the application
-  static launchApplication(ApplicationModel app) {
+  static Future launchApplication(ApplicationModel? app) async {
+
+    if (app == null) return;
 
     // close the current application
-    if (currentApp != app) _closeCurrentApplication();
+    if (app != currentApp) _closeCurrentApp();
+
+    // set the default domain for url conversion
+    URI.rootHost = app.domain ?? "";
 
     // open new application
     Log().info("Launching Application (${app.title}) @ ${app.domain}");
 
-    // set the default domain on the Url utilities
-    URI.rootHost = app.domain ?? "";
+    // wait for app to initialize
+    await app.initialized;
 
-    // set the current application
-    if (_apps.contains(app) && _apps.indexOf(app) != 0)
-    {
-      _apps.remove(app);
-      _apps.insert(0, app);
-    }
-
-    // set default icon
-    if (defaultApp != null) _setDefaultIcon(defaultApp?.company ?? mainIcon);
+    // set branding
+    if (brandedApp != null) _setBranding(brandedApp?.company ?? mainIcon);
 
     // update application level bindables
     _domain?.set(app.domain);
@@ -534,7 +527,7 @@ class System extends WidgetModel implements IEventManager {
     _host?.set(app.host);
 
     //  activate the appl
-    app.setActive();
+    await app.setActive();
 
     // page
     var page = PageConfiguration(uri: Uri.tryParse(app.homePage), title: app.title);

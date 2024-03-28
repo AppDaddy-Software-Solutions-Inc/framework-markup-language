@@ -28,8 +28,10 @@ class ApplicationModel extends WidgetModel {
   // the HIVE database.
   late String _dbKey;
 
-  final initialized = Completer<bool>();
-  bool get isInitialized => initialized.isCompleted;
+  /// initialization info
+  final _initialized  = Completer<bool>();
+  final _initializing = Completer<bool>();
+  Future<bool> get initialized => _initialized.future;
 
   bool started = false;
 
@@ -64,9 +66,6 @@ class ApplicationModel extends WidgetModel {
   // application title
   String? title;
 
-  // default page transition
-  bool isDefault = false;
-
   // company name
   String? get company =>  toStr(setting("COMPANY"));
 
@@ -74,7 +73,7 @@ class ApplicationModel extends WidgetModel {
   String? get logo =>  toStr(setting("LOGO"));
 
   // application name
-  String? get name =>  toStr(setting("NAME"));
+  String? get name =>  toStr(setting("NAME") ?? setting("APPLICATION_NAME"));
 
   // application icon
   String? _icon;
@@ -126,12 +125,12 @@ class ApplicationModel extends WidgetModel {
   int? order;
 
   // config
-  ConfigModel? config;
-  String? setting(String key) => (config?.settings.containsKey(key) ?? false) ? config?.settings[key] : null;
+  ConfigModel? _config;
+  String? setting(String key) => (_config?.settings.containsKey(key) ?? false) ? _config?.settings[key] : null;
+  bool get configured => _config != null;
 
   // application stash
-  late Stash _stash;
-  late Scope stash;
+  Stash? _stash;
 
   String? _scheme;
   String? get scheme => _scheme;
@@ -155,7 +154,7 @@ class ApplicationModel extends WidgetModel {
   String? get loginPage => setting("LOGIN_PAGE");
   String? get errorPage => setting("ERROR_PAGE");
 
-  Map<String, String?>? get configParameters => config?.parameters;
+  Map<String, String?>? get configParameters => _config?.parameters;
 
   ApplicationModel(WidgetModel parent,
       {String? key,
@@ -163,7 +162,6 @@ class ApplicationModel extends WidgetModel {
         this.title,
         this.page,
         this.order,
-        this.isDefault = false,
         Map<String,dynamic>? settings})
       : super(parent, myId, scope: Scope(id: myId)) {
 
@@ -202,7 +200,7 @@ class ApplicationModel extends WidgetModel {
         .url;
 
     // initialize the config
-    if (settings != null) config = ConfigModel.fromMap(settings);
+    if (settings != null) _config = ConfigModel.fromMap(settings);
 
     // set active user
     var jwt = setting("jwt");
@@ -214,16 +212,30 @@ class ApplicationModel extends WidgetModel {
 
   // initializes the app
   @override
-  Future<bool> initialize() async {
+  Future<void> initialize() async {
 
-    // already initialized?
-    if (isInitialized) return true;
+    // initialize should only run once
+    if (_initialized.isCompleted || _initializing.isCompleted) return;
+
+    // signal initializing in progress
+    _initializing.complete(true);
 
     // build stash
-    stash = Scope(id: 'STASH');
-    if (domain != null) _stash = await Stash.get(domain!);
-    for (var entry in _stash.map.entries) {
-      stash.setObservable(entry.key, entry.value);
+    if (domain != null) {
+
+      // initialize stash scope
+      var scope = Scope(id: 'STASH');
+
+      // initialize the stash
+      _stash = await Stash.get(domain!, scope: scope);
+
+      // set stash observables
+      for (var entry in _stash!.map.entries) {
+        _stash!.scope!.setObservable(entry.key, entry.value);
+      }
+
+      // add STASH scope
+      scopeManager.add(scope);
     }
 
     // add SYSTEM scope
@@ -231,9 +243,6 @@ class ApplicationModel extends WidgetModel {
 
     // add THEME scope
     scopeManager.add(System.theme.scope!);
-
-    // add STASH scope
-    scopeManager.add(stash);
 
     // add USER scope
     scopeManager.add(_user.scope!);
@@ -260,9 +269,7 @@ class ApplicationModel extends WidgetModel {
     }
 
     // mark initialized
-    initialized.complete(true);
-
-    return true;
+    _initialized.complete(true);
   }
 
   // converts versions of 0.0.0 to a number
@@ -299,25 +306,21 @@ class ApplicationModel extends WidgetModel {
     if (model != null) {
 
       // get the icon
-      _icon = await _getIcon(model.settings["ICON"]);
+      _icon = await _getIcon(model.settings["ICON"] ?? model.settings["APP_ICON"]);
       _iconLight = await _getIcon(model.settings["ICON_LIGHT"]);
       _iconDark  = await _getIcon(model.settings["ICON_DARK"]);
 
       // get the splash image
       _splash = await _getIcon(model.settings["SPLASH"]);
 
-      // start the mirror?
-      var mirrorApi = model.settings["MIRROR_API"];
-      if (mirrorApi != null && !FmlEngine.isWeb && scheme != "file") {
-        Uri? uri = URI.parse(mirrorApi, domain: domain);
-        if (uri != null) {
-          mirror = Mirror(uri.url);
-          mirror!.execute();
-        }
+      // mirror
+      if (model.settings["MIRROR_API"] != null && !FmlEngine.isWeb && scheme != "file") {
+        Uri? uri = URI.parse(model.settings["MIRROR_API"], domain: domain);
+        if (uri != null) mirror = Mirror(uri.url)..execute();
       }
 
       // set the config
-      config = model;
+      _config = model;
 
       // save the application to hive
       await upsert();
@@ -342,28 +345,30 @@ class ApplicationModel extends WidgetModel {
 
   Future<bool> stashValue(String key, dynamic value) async {
     bool ok = true;
+    if (_stash == null) return ok;
+
     try {
       // key must be supplied
       if (isNullOrEmpty(key)) return ok;
 
       if (value == null) {
-        _stash.map.remove(key);
-        _stash.upsert();
+        _stash!.map.remove(key);
+        _stash!.upsert();
         Binding? binding = Binding.fromString('$key.value');
         if (binding != null) {
-          stash.observables.remove(stash.getObservable(binding)?.key);
+          _stash!.scope?.observables.remove(_stash!.scope?.getObservable(binding)?.key);
         }
         return ok;
       }
 
       // write application stash entry
-      _stash.map[key] = value;
+      _stash!.map[key] = value;
 
       // save to the hive
-      await _stash.upsert();
+      await _stash!.upsert();
 
       // set observable
-      stash.setObservable(key, value);
+      _stash!.scope?.setObservable(key, value);
     } catch (e) {
       // stash failure always returns true
       ok = true;
@@ -373,12 +378,14 @@ class ApplicationModel extends WidgetModel {
 
   Future<bool> clearStash() async {
     bool ok = true;
+    if (_stash == null) return ok;
+
     try {
       // clear rthe stash map
-      _stash.map.clear();
+      _stash!.map.clear();
 
       // save to the hive
-      await _stash.upsert();
+      await _stash!.upsert();
     } catch (e) {
       // stash failure always returns true
       ok = true;
@@ -386,8 +393,14 @@ class ApplicationModel extends WidgetModel {
     return ok;
   }
 
-  void setActive()
+  Future setActive() async
   {
+    // wait for initialization to complete
+    await _initialized.future;
+
+    // set current
+    System.currentApp = this;
+
     // set active
     started = true;
 
@@ -398,8 +411,11 @@ class ApplicationModel extends WidgetModel {
     logon(jwt);
 
     // set stash values
-    for (var entry in _stash.map.entries) {
-      stash.setObservable(entry.key, entry.value);
+    if (_stash != null)
+    {
+      for (var entry in _stash!.map.entries) {
+        _stash!.scope?.setObservable(entry.key, entry.value);
+      }
     }
 
     // start all datasources
@@ -436,6 +452,9 @@ class ApplicationModel extends WidgetModel {
     // close the app
     close();
 
+    // remove stash scope
+    _stash?.scope?.dispose();
+
     // dispose of all children
     super.dispose();
   }
@@ -444,7 +463,6 @@ class ApplicationModel extends WidgetModel {
     Map<String, dynamic> map = {};
     map["key"] = _dbKey;
     map["url"] = url;
-    map["default"] = isDefault;
     map["name"] = name;
     map["title"] = title;
     map["logo"] = logo;
@@ -470,7 +488,6 @@ class ApplicationModel extends WidgetModel {
           title: fromMap(map, "title"),
           page: fromMapAsInt(map, "page"),
           order: fromMapAsInt(map, "order"),
-          isDefault: fromMapAsBool(map, "default") ?? false,
           settings: map);
     }
     return app;
@@ -478,25 +495,25 @@ class ApplicationModel extends WidgetModel {
 
   // inserts a new app into the local hive
   Future<bool> insert() async {
-    var exception = await Database().insert(tableName, _dbKey, _toMap());
+    var exception = await Database.insert(tableName, _dbKey, _toMap());
     return (exception == null);
   }
 
   // updates the app in the local hive
   Future<bool> upsert() async {
-    var exception = await Database().upsert(tableName, _dbKey, _toMap());
+    var exception = await Database.upsert(tableName, _dbKey, _toMap());
     return (exception == null);
   }
 
   // delete an app from the local hive
   Future<bool> delete() async {
-    var exception = await Database().delete(tableName, _dbKey);
+    var exception = await Database.delete(tableName, _dbKey);
     return (exception == null);
   }
 
   static Future<List<ApplicationModel>> loadAll() async {
     List<ApplicationModel> apps = [];
-    List<Map<String, dynamic>> entries = await Database().query(tableName);
+    List<Map<String, dynamic>> entries = await Database.query(tableName);
     for (var entry in entries) {
       ApplicationModel? app = await _fromMap(entry);
       if (app != null) apps.add(app);

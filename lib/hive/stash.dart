@@ -2,48 +2,49 @@
 import 'dart:async';
 import 'package:fml/data/data.dart';
 import 'package:fml/hive/database.dart';
-import 'package:fml/system.dart';
+import 'package:fml/observable/scope.dart';
 
 class Stash {
   static String tableName = "STASH";
 
   final String key;
   final Map<String, dynamic> map;
+  final Scope? scope;
 
-  Stash(this.key, this.map);
+  Stash(this.key, this.map, {this.scope});
 
-  // inserts a new app into the local hive
+  // inserts a new stash entry
   Future<bool> insert() async {
-    var exception = await Database().insert(tableName, key, map);
+    var exception = await Database.insert(tableName, key, map);
     return (exception == null);
   }
 
-  // updates the app in the local hive
+  // updates the stash entry
   Future<bool> upsert() async {
-    var exception = await Database().upsert(tableName, key, map);
+    var exception = await Database.upsert(tableName, key, map);
     return (exception == null);
   }
 
-  // delete an app from the local hive
+  // deletes a stash entry
   Future<bool> delete() async {
-    var exception = await Database().delete(tableName, key);
+    var exception = await Database.delete(tableName, key);
     return (exception == null);
   }
 
-  static Future<Stash> get(String key) async {
-    Map<String, dynamic>? entry = await Database().find(tableName, key);
-    return Stash(key, entry ?? <String, dynamic>{});
+  // get all stash entries
+  static Future<Stash> get(String key, {Scope? scope}) async {
+    Map<String, dynamic>? entry = await Database.find(tableName, key);
+    return Stash(key, entry ?? <String, dynamic>{}, scope: scope);
   }
 
-  static Future<Stash> getStash() async {
-    String domain = System.domain ?? '';
-    Map<String, dynamic> entries =
-        await Database().find(tableName, domain) ?? {};
+  // get specific stash
+  static Future<Stash> getStash(String domain) async {
+    Map<String, dynamic> entries = await Database.find(tableName, domain) ?? {};
     return Stash(domain, entries);
   }
 
-  static Future<Data> getData() async {
-    Stash stash = await getStash();
+  static Future<Data> getStashData(String domain) async {
+    Stash stash = await getStash(domain);
     Data data = Data();
     stash.map.forEach((k, v) {
       data.add({'key': k, 'value': v});

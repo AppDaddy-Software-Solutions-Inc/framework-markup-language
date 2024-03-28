@@ -19,7 +19,7 @@ class Log {
   String get message => _map["message"];
   String? get caller => _map["caller"];
 
-  bool get initialized => Database().initialized;
+  bool get initialized => Database.initialized;
 
   Log(
       {String? key,
@@ -37,14 +37,14 @@ class Log {
   }
 
   Future<bool> insert() async =>
-      (await Database().insert(tableName, key, _map) == null);
+      (await Database.insert(tableName, key, _map) == null);
   Future<bool> update() async =>
-      (await Database().update(tableName, key, _map) == null);
+      (await Database.update(tableName, key, _map) == null);
   Future<bool> delete() async =>
-      (await Database().delete(tableName, key) == null);
+      (await Database.delete(tableName, key) == null);
 
   static Future<bool> deleteAll() async =>
-      (await Database().deleteAll(tableName) == null);
+      (await Database.deleteAll(tableName) == null);
 
   static Log? _fromMap(dynamic map) {
     Log? log;
@@ -68,14 +68,14 @@ class Log {
   }
 
   static Future<Log?> find(String key) async {
-    Map<String, dynamic>? entry = await Database().find(tableName, key);
+    Map<String, dynamic>? entry = await Database.find(tableName, key);
     Log? log = _fromMap(entry);
     return log;
   }
 
   static Future<List<Log>> findAll() async {
     List<Log> list = [];
-    List<Map<String, dynamic>> entries = await Database().findAll(tableName);
+    List<Map<String, dynamic>> entries = await Database.findAll(tableName);
     for (var entry in entries) {
       Log? log = _fromMap(entry);
       if (log != null) list.add(log);
@@ -86,7 +86,7 @@ class Log {
   static Future<List<Log>> query({String? where, String? orderby}) async {
     List<Log> list = [];
     List<Map<String, dynamic>> entries =
-        await Database().query(tableName, where: where, orderby: orderby);
+        await Database.query(tableName, where: where, orderby: orderby);
     for (var entry in entries) {
       Log? log = _fromMap(entry);
       if (log != null) list.add(log);

@@ -67,8 +67,7 @@ class Assets {
 
     // error?
     if (!response.ok) {
-      Log().error('Error getting asset from $url. Error is $response',
-          caller: "Mirror");
+      Log().error('Error getting asset from $url. ${response.statusCode} ${response.statusMessage}');
       return;
     }
 

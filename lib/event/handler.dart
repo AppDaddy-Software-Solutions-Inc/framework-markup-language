@@ -427,7 +427,7 @@ class EventHandler extends Eval {
 
   // clears the default app setting
   Future<bool> _handleEventClearDefaultApp() async {
-    System.clearDefaultApplication();
+    System.clearBranding();
     return true;
   }
 

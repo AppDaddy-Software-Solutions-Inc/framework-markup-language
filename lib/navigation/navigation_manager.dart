@@ -28,72 +28,31 @@ import 'package:fml/platform/platform.web.dart'
 class NavigationManager extends RouterDelegate<PageConfiguration>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<PageConfiguration> {
 
-  final key = GlobalKey<NavigatorState>();
+  late GlobalKey<NavigatorState> key;
 
   @override
   GlobalKey<NavigatorState> get navigatorKey => key;
 
-  // singleton
-  static final NavigationManager _singleton = NavigationManager._internal();
-  factory NavigationManager({GlobalKey<NavigatorState>? key}) => _singleton;
+  static final initialized = Completer<bool>();
 
-  static final initialized  = Completer<bool>();
-  static final initializing = Completer<bool>();
+  // singleton
+  static final NavigationManager _singleton = NavigationManager._init();
+
+  factory NavigationManager({GlobalKey<NavigatorState>? key}) {
+
+    var mgr = _singleton;
+    if (key != null && key != mgr.key) mgr.key = key;
+    return mgr;
+  }
+
+  NavigationManager._init() {
+    key = GlobalKey<NavigatorState>();
+  }
 
   // holds the navigation stack
   final _pages = <Page>[];
   List<Page> get pages => List.unmodifiable(_pages);
   CustomMaterialPage? dummyPage;
-
-  NavigationManager._internal() {
-    dummyPage = _buildPage("/", child: const Offstage());
-    _addPage(dummyPage!);
-  }
-
-  Future<void> initialize() async {
-
-    // already initialized?
-    if (initialized.isCompleted || initializing.isCompleted) return;
-    initializing.complete(true);
-
-    // clear all pages
-    _pages.clear();
-
-    // get home page
-    String? homePage = System.currentApp?.homePage ?? "store";
-    if (!FmlEngine.isWeb && FmlEngine.isMultiApp) homePage = "store";
-
-    // get start page
-    String startPage = System.currentApp?.startPage ?? homePage;
-
-    // start page is different than home page?
-    if (homePage.split("?")[0].toLowerCase() !=
-        startPage.split("?")[0].toLowerCase()) {
-      // fetch the template
-      var template =
-          await TemplateManager().fetch(url: startPage, refresh: true);
-
-      // document is linkable?
-      // default - if singlePageApplication then false, otherwise true
-      bool linkable = toBool(Xml.attribute(
-              node: template.document!.rootElement, tag: "linkable")) ??
-          System.currentApp?.singlePage ??
-          false;
-
-      // set start page = home page if not linkable
-      if (!linkable) startPage = homePage;
-
-      // single page applications always load the home page
-      if (System.currentApp?.singlePage ?? true) startPage = homePage;
-    }
-
-    // open the page
-    setNewRoutePath(PageConfiguration(uri: Uri.tryParse(startPage)),
-        source: "splash");
-
-    // set initialized
-    initialized.complete(true);
-  }
 
   Future<void> onPageLoaded() async {
     // open the requested page
@@ -131,9 +90,6 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
   @override
   Future<void> setNewRoutePath(PageConfiguration configuration,
       {String source = "system"}) async {
-
-    // initialize
-    if (pages.isNotEmpty && pages.first == dummyPage) return initialize();
 
     // deeplink specified
     String? url = configuration.uri?.toString();

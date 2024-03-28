@@ -12,11 +12,11 @@ class Settings {
   Future<bool> set(String key, dynamic value) async {
     Map<String, dynamic> map = <String, dynamic>{};
     map["value"] = value;
-    return (await Database().insert(tableName, key, map) == null);
+    return (await Database.insert(tableName, key, map) == null);
   }
 
   Future<dynamic> get(String key, {dynamic defaultValue}) async {
-    Map<String, dynamic>? setting = await Database().find(tableName, key);
+    Map<String, dynamic>? setting = await Database.find(tableName, key);
     if (setting != null && setting.containsKey("value")) {
       return setting["value"];
     } else {
@@ -25,5 +25,5 @@ class Settings {
   }
 
   Future<bool> delete(String key) async =>
-      (await Database().delete(tableName, key) == null);
+      (await Database.delete(tableName, key) == null);
 }

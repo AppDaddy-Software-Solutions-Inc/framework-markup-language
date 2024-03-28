@@ -40,14 +40,14 @@ class User {
   }
 
   Future<bool> insert() async =>
-      (await Database().insert(tableName, key, _map) == null);
+      (await Database.insert(tableName, key, _map) == null);
   Future<bool> update() async =>
-      (await Database().update(tableName, key, _map) == null);
+      (await Database.update(tableName, key, _map) == null);
   Future<bool> delete() async =>
-      (await Database().delete(tableName, key) == null);
+      (await Database.delete(tableName, key) == null);
 
   static Future<bool> deleteAll() async =>
-      (await Database().deleteAll(tableName) == null);
+      (await Database.deleteAll(tableName) == null);
 
   static User? _fromMap(dynamic map) {
     User? user;
@@ -64,7 +64,7 @@ class User {
   }
 
   static Future<User?> find(String key) async {
-    Map<String, dynamic>? entry = await Database().find(tableName, key);
+    Map<String, dynamic>? entry = await Database.find(tableName, key);
     User? user = _fromMap(entry);
     return user;
   }
@@ -72,7 +72,7 @@ class User {
   static Future<List<User>> query({String? where, String? orderby}) async {
     List<User> users = [];
     List<Map<String, dynamic>> entries =
-        await Database().query(tableName, where: where, orderby: orderby);
+        await Database.query(tableName, where: where, orderby: orderby);
     for (var entry in entries) {
       User? user = _fromMap(entry);
       if (user != null) users.add(user);

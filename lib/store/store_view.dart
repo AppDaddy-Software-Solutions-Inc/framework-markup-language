@@ -100,7 +100,7 @@ class _ViewState extends State<StoreView>
     if (mounted) setState(() {});
   }
 
-  Widget addAppDialog(BuildContext context) {
+  Widget addAppDialog(BuildContext context, bool popOnExit) {
     var view = StatefulBuilder(builder: (context, setState) {
       var style = TextStyle(color: Theme.of(context).colorScheme.primary);
 
@@ -110,11 +110,9 @@ class _ViewState extends State<StoreView>
       var pad = const Padding(padding: EdgeInsets.only(left: 20));
       var title = Row(children: [ttl, pad, busy]);
 
-      var store = StoreApp(showMakeDefaultOption: widget.model.items.isEmpty);
-
       return AlertDialog(
         title: title,
-        content: Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: store),
+        content: Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: StoreApp(popOnExit: popOnExit)),
         contentPadding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 2.0),
         insetPadding: EdgeInsets.zero,
       );
@@ -123,12 +121,12 @@ class _ViewState extends State<StoreView>
     return view;
   }
 
-  Future<void> showAddAppDialog() async {
+  Future<void> showAddAppDialog(bool dismissable) async {
     return showDialog<void>(
         context: context,
-        barrierDismissible: true,
+        barrierDismissible: dismissable,
         useRootNavigator: false,
-        builder: (BuildContext context) => addAppDialog(context));
+        builder: (BuildContext context) => addAppDialog(context, true));
   }
 
   void removeApp(ApplicationModel app, NavigatorState navigator) async {
@@ -136,7 +134,7 @@ class _ViewState extends State<StoreView>
     // delete the app
     await Store().deleteApp(app);
 
-    // slose the window
+    // close the window
     navigator.pop();
   }
 
@@ -187,12 +185,15 @@ class _ViewState extends State<StoreView>
         child: Text(app.url, style: style));
 
     style = TextStyle(color: Theme.of(context).colorScheme.primary);
+
     var cancel = TextButton(
         onPressed: () => Navigator.of(context).pop(),
         child: Text(phrase.cancel, style: style));
+
     var remove = TextButton(
         onPressed: () => removeApp(app, Navigator.of(context)),
         child: Text(phrase.remove, style: style));
+
     var buttons = Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -237,8 +238,8 @@ class _ViewState extends State<StoreView>
         builder: (BuildContext context) => removeAppDialog(context, app));
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _multiAppView(BuildContext context) {
+
     // build menu items
     widget.model.items = [];
 
@@ -263,13 +264,10 @@ class _ViewState extends State<StoreView>
       widget.model.items.add(item);
     }
 
-    // store menu
-    Widget store = MenuView(widget.model);
-
     var addButton = FloatingActionButton.extended(
         label: Text(phrase.addApp),
         icon: const Icon(Icons.add),
-        onPressed: () => showAddAppDialog(),
+        onPressed: () => showAddAppDialog(true),
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
         splashColor: Theme.of(context).colorScheme.inversePrimary,
@@ -289,16 +287,16 @@ class _ViewState extends State<StoreView>
 
     var busy = Center(
         child: BusyModel(Store(),
-                visible: Store().busy,
-                observable: Store().busyObservable,
-                modal: true)
+            visible: Store().busy,
+            observable: Store().busyObservable,
+            modal: true)
             .getView());
 
     var privacyUri =
-        Uri(scheme: 'https', host: 'fml.dev', path: '/privacy.html');
+    Uri(scheme: 'https', host: 'fml.dev', path: '/privacy.html');
     var privacyText = Text(phrase.privacyPolicy);
     var privacyButton =
-        InkWell(child: privacyText, onTap: () => launchUrl(privacyUri));
+    InkWell(child: privacyText, onTap: () => launchUrl(privacyUri));
 
     var version = Text('${phrase.version} ${FmlEngine.version}');
 
@@ -306,13 +304,35 @@ class _ViewState extends State<StoreView>
         mainAxisSize: MainAxisSize.min, children: [privacyButton, version]);
     var button = Store().busy ? busyButton : addButton;
 
+    var view = MenuView(widget.model);
+
     return Scaffold(
         floatingActionButton: button,
         body: SafeArea(
             child: Stack(children: [
-          Center(child: store),
-          Positioned(left: 10, bottom: 10, child: text),
-          busy
-        ])));
+              Center(child: view),
+              Positioned(left: 10, bottom: 10, child: text),
+              busy
+            ])));
   }
+
+  Widget _brandedAppView(BuildContext context) {
+
+    var privacyUri =
+    Uri(scheme: 'https', host: 'fml.dev', path: '/privacy.html');
+    var privacyText = Text(phrase.privacyPolicy);
+    var privacyButton =
+    InkWell(child: privacyText, onTap: () => launchUrl(privacyUri));
+
+    var version = Text('${phrase.version} ${FmlEngine.version}');
+
+    var text = Column(mainAxisSize: MainAxisSize.min, children: [privacyButton, version]);
+
+    var view = addAppDialog(context, false);
+
+    return Scaffold(body: SafeArea(child: Stack(children: [Center(child: view), Positioned(left: 10, bottom: 10, child: text)])));
+  }
+
+  @override
+  Widget build(BuildContext context) => FmlEngine.type == ApplicationType.branded ? _brandedAppView(context) : _multiAppView(context);
 }

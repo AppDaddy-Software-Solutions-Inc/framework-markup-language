@@ -34,7 +34,8 @@ class Splash extends StatefulWidget {
     // wait for system apps to load
     await System.appsLoaded.future;
 
-    var delay = toInt(System.defaultApp?.splashDelay) ?? defaultDelay;
+    // get splash delay
+    var delay = toInt(System.brandedApp?.splashDelay) ?? defaultDelay;
 
     // skip the splash image
     if (delay <= 0) return onInitializationComplete?.call();
@@ -77,8 +78,8 @@ class _SplashState extends State<Splash> {
     double? imageWidth;
 
     // percent size?
-    if (isPercent(System.defaultApp?.splashWidth)) {
-      var v = toDouble(System.defaultApp?.splashWidth?.split("%")[0]);
+    if (isPercent(System.brandedApp?.splashWidth)) {
+      var v = toDouble(System.brandedApp?.splashWidth?.split("%")[0]);
       if (v != null)
       {
         v = max(min(v,100),0);
@@ -87,8 +88,8 @@ class _SplashState extends State<Splash> {
     }
 
     // fixed size?
-    if (imageWidth == null && isNumeric(System.defaultApp?.splashWidth)) {
-      var v = toDouble(System.defaultApp?.splashWidth);
+    if (imageWidth == null && isNumeric(System.brandedApp?.splashWidth)) {
+      var v = toDouble(System.brandedApp?.splashWidth);
       if (v != null)
       {
         v = max(min(v,constraints.maxWidth),0);
@@ -107,10 +108,10 @@ class _SplashState extends State<Splash> {
 
     // get image
     Widget? image;
-    if (System.defaultApp?.splash != null)
+    if (System.brandedApp?.splash != null)
     {
       // convert data uri
-      var uri = toDataUri(System.defaultApp?.splash);
+      var uri = toDataUri(System.brandedApp?.splash);
       if (uri != null)
       {
         image = uri.mimeType == "image/svg+xml" ?
@@ -125,7 +126,7 @@ class _SplashState extends State<Splash> {
 
     // return wrapped centered image
     return Container(
-        color: toColor(System.defaultApp?.splashBackground) ?? Colors.black,
+        color: toColor(System.brandedApp?.splashBackground) ?? Colors.black,
         child: Center(child: SizedBox(width: imageWidth, child: image)));
   }
 

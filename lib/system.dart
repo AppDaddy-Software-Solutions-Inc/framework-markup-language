@@ -12,7 +12,6 @@ import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
-import 'package:fml/navigation/page.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/postmaster/postmaster.dart';
 import 'package:fml/janitor/janitor.dart';
@@ -63,11 +62,11 @@ class System extends WidgetModel implements IEventManager {
 
   // current app
   static ApplicationModel? _app;
-  static ApplicationModel? get currentApp => brandedApp ?? _app;
+  static ApplicationModel? get currentApp => _brandedApp ?? _app;
   static set currentApp (ApplicationModel? app) => _app = app;
 
   // returns the default app
-  static ApplicationModel? get brandedApp => (FmlEngine.type == ApplicationType.branded && _apps.isNotEmpty) ? _apps.first : null;
+  static ApplicationModel? get _brandedApp => (FmlEngine.type == ApplicationType.branded && _apps.isNotEmpty) ? _apps.first : null;
 
   // current theme
   static late ThemeModel _theme;
@@ -203,11 +202,11 @@ class System extends WidgetModel implements IEventManager {
     // set fml2js
     Platform.fml2js(version: FmlEngine.version);
 
+    // launch the application
+    await launchApplication(currentApp, navigate: false);
+
     // signal complete
     initialized.complete(true);
-
-    // launch the application?
-    launchApplication(currentApp);
   }
 
   onMouseDetected() {
@@ -382,6 +381,9 @@ class System extends WidgetModel implements IEventManager {
       System.currentApp = app;
     }
 
+    // wait for current app to initialize
+    await System.currentApp?.initialized;
+
     // signal complete - used in splash
     appsLoaded.complete(true);
   }
@@ -463,7 +465,7 @@ class System extends WidgetModel implements IEventManager {
   static void clearBranding() async
   {
     // do nothing if in web or no default application
-    if (FmlEngine.isWeb || brandedApp == null) return;
+    if (FmlEngine.isWeb || _brandedApp == null) return;
 
     // show dialog to confirm
     bool ok = await _confirmClearBranding();
@@ -473,7 +475,7 @@ class System extends WidgetModel implements IEventManager {
     _setBranding(mainIcon);
 
     // delete the application
-    ok = await brandedApp!.delete();
+    ok = await _brandedApp!.delete();
 
     // notify the user
     ok ? toast(phrase.defaultAppRemoved) : toast(phrase.defaultAppRemovedProblem);
@@ -502,7 +504,7 @@ class System extends WidgetModel implements IEventManager {
   }
 
   // launches the application
-  static Future launchApplication(ApplicationModel? app) async {
+  static Future<void> launchApplication(ApplicationModel? app, {bool navigate = true}) async {
 
     if (app == null) return;
 
@@ -519,21 +521,20 @@ class System extends WidgetModel implements IEventManager {
     await app.initialized;
 
     // set branding
-    if (brandedApp != null) _setBranding(brandedApp?.company ?? mainIcon);
+    if (_brandedApp != null) _setBranding(_brandedApp!.company ?? mainIcon);
 
     // update application level bindables
     _domain?.set(app.domain);
     _scheme?.set(app.scheme);
     _host?.set(app.host);
 
-    //  activate the appl
+    //  activate the app
     await app.setActive();
 
-    // page
-    var page = PageConfiguration(uri: Uri.tryParse(app.homePage), title: app.title);
-
-    // launch the page
-    NavigationManager().setNewRoutePath(page, source: "store");
+    // navigate to page?
+    if (navigate) {
+      NavigationManager().navigateTo(app.homePage);
+    }
   }
 
   static Future<bool> addApplication(ApplicationModel app) async {
@@ -567,6 +568,9 @@ class System extends WidgetModel implements IEventManager {
 
     // re-sequence the apps
     await _resequenceApps();
+
+    // dispose of the app
+    app.dispose();
 
     return ok;
   }

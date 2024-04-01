@@ -85,7 +85,7 @@ class StoreAppState extends State<StoreApp> {
     }
 
     // already defined
-    if (Store().findApp(url: uri.toString()) != null) {
+    if (StoreModel().findApp(url: uri.toString()) != null) {
       errorText = 'You are already connected to this application';
       return errorText;
     }
@@ -104,11 +104,11 @@ class StoreAppState extends State<StoreApp> {
     // validate the form
     unreachable = false;
 
-    // supplied data valid?
-    if (!(_formKey.currentState?.validate() ?? true)) {
+    // validate the form
+    var ok = _formKey.currentState?.validate() ?? true;
 
-      // site unreachable
-      unreachable = true;
+    // supplied data valid?
+    if (!ok) {
 
       // force form validation to show errors
       _formKey.currentState!.validate();
@@ -126,20 +126,31 @@ class StoreAppState extends State<StoreApp> {
     await app.initialized;
 
     // site is reachable?
-    unreachable = !app.configured;
+    ok = app.configured;
 
-    // app reachable?
-    if (app.configured) {
+    // site not reachable?
+    if (!ok) {
 
-      // add the app - if branded, we need to wait
-      FmlEngine.type == ApplicationType.branded ? await Store().addApp(app) : Store().addApp(app);
+      // site unreachable
+      unreachable = true;
 
-      // launch the app if branded
-      if (FmlEngine.type == ApplicationType.branded) System.launchApplication(app);
+      // force form validation to show errors
+      _formKey.currentState!.validate();
 
-      // pop the dialog
-      if (mounted && widget.popOnExit) Navigator.of(context).pop();
+      // clear busy
+      busy.set(false);
+
+      return;
     }
+
+    // add the app - if branded, we need to wait
+    FmlEngine.type == ApplicationType.branded ? await StoreModel().addApp(app) : StoreModel().addApp(app);
+
+    // pop the dialog
+    if (mounted && widget.popOnExit) Navigator.of(context).pop();
+
+    // launch the app if branded
+    if (FmlEngine.type == ApplicationType.branded) System.launchApplication(app);
 
     // clear busy
     busy.set(false);
@@ -198,7 +209,7 @@ class StoreAppState extends State<StoreApp> {
                 children: [cancel, connect])));
     layout.add(buttons);
 
-    var b = BusyModel(Store(),
+    var b = BusyModel(StoreModel(),
             visible: (busy.get() ?? false), observable: busy, modal: false)
         .getView();
 

@@ -2,15 +2,19 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 
-class Splash extends StatefulWidget {
-  final VoidCallback? onInitializationComplete;
+// platform
+import 'package:fml/platform/platform.web.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
-  // default time (seconds) the splash logo is shown
-  static int defaultDelay = 2;
+
+class Splash extends StatefulWidget {
+  final VoidCallback onInitializationComplete;
 
   // maximum time (seconds) a splash logo will be shown
   static int maxDelay = 10;
@@ -18,8 +22,7 @@ class Splash extends StatefulWidget {
   // await on image
   final Completer<bool> initialized = Completer<bool>();
 
-  Splash({super.key, this.onInitializationComplete})
-  {
+  Splash({super.key, required this.onInitializationComplete}) {
     initialize();
   }
 
@@ -28,17 +31,21 @@ class Splash extends StatefulWidget {
 
   Future<void> initialize() async {
 
-    // start time of initialization wait
-    var started = DateTime.now().microsecond;
-
     // wait for system apps to load
     await System.appsLoaded.future;
 
     // get splash delay
-    var delay = toInt(System.brandedApp?.splashDelay) ?? defaultDelay;
+    int delay = System.currentApp?.splashDuration ?? 0;
 
     // skip the splash image
-    if (delay <= 0) return onInitializationComplete?.call();
+    if (delay <= 0) {
+
+      // wait for the system to initialize
+      await System.initialized.future;
+
+      // launch engine
+      return onInitializationComplete.call();
+    }
 
     // signal default app loaded
     initialized.complete(true);
@@ -46,20 +53,11 @@ class Splash extends StatefulWidget {
     // wait for the system to initialize
     await System.initialized.future;
 
-    // end time of initialization wait
-    var ended = DateTime.now().microsecond;
-
-    // elapsed time
-    var elapsed = ((ended - started)/1000).ceil();
-
-    // splash screen display time (seconds)
-    delay = min(delay,maxDelay);
-
-    // pause start to show display screen just a little longer?
-    if (elapsed < delay) await Future.delayed(Duration(seconds: delay - elapsed));
+    // show the splash logo for specified delay?
+    await Future.delayed(Duration(seconds: min(delay,maxDelay)));
 
     // done
-    onInitializationComplete?.call();
+    onInitializationComplete.call();
   }
 }
 
@@ -67,8 +65,17 @@ class _SplashState extends State<Splash> {
 
   Widget waitScreen()
   {
-    Widget view =  const SizedBox(width: 50, height: 50, child: CircularProgressIndicator.adaptive());
+    var theme = Theme.of(context);
+
+    var pgColor = Platform.backgroundColor ?? theme.colorScheme.background;
+    pgColor = pgColor.computeLuminance() > .5 ? Colors.black.withOpacity(.5) : Colors.white.withOpacity(.5);
+
+    Widget view =  SizedBox(width: 30, height: 30, child: CircularProgressIndicator(color: pgColor));
     view = Center(child: view);
+
+    var bgColor = Platform.backgroundColor ?? theme.colorScheme.background;
+    view = Container(color: bgColor, child: view);
+
     return view;
   }
 
@@ -78,8 +85,8 @@ class _SplashState extends State<Splash> {
     double? imageWidth;
 
     // percent size?
-    if (isPercent(System.brandedApp?.splashWidth)) {
-      var v = toDouble(System.brandedApp?.splashWidth?.split("%")[0]);
+    if (isPercent(System.currentApp?.splashWidth)) {
+      var v = toDouble(System.currentApp?.splashWidth?.split("%")[0]);
       if (v != null)
       {
         v = max(min(v,100),0);
@@ -88,8 +95,8 @@ class _SplashState extends State<Splash> {
     }
 
     // fixed size?
-    if (imageWidth == null && isNumeric(System.brandedApp?.splashWidth)) {
-      var v = toDouble(System.brandedApp?.splashWidth);
+    if (imageWidth == null && isNumeric(System.currentApp?.splashWidth)) {
+      var v = toDouble(System.currentApp?.splashWidth);
       if (v != null)
       {
         v = max(min(v,constraints.maxWidth),0);
@@ -108,10 +115,10 @@ class _SplashState extends State<Splash> {
 
     // get image
     Widget? image;
-    if (System.brandedApp?.splash != null)
+    if (System.currentApp?.splash != null)
     {
       // convert data uri
-      var uri = toDataUri(System.brandedApp?.splash);
+      var uri = toDataUri(System.currentApp?.splash);
       if (uri != null)
       {
         image = uri.mimeType == "image/svg+xml" ?
@@ -126,7 +133,7 @@ class _SplashState extends State<Splash> {
 
     // return wrapped centered image
     return Container(
-        color: toColor(System.brandedApp?.splashBackground) ?? Colors.black,
+        color: toColor(System.currentApp?.splashBackground) ?? Colors.black,
         child: Center(child: SizedBox(width: imageWidth, child: image)));
   }
 
@@ -137,12 +144,18 @@ class _SplashState extends State<Splash> {
 
   Widget _build(BuildContext context, BoxConstraints constraints) {
 
+    var theme = ThemeData(
+        colorSchemeSeed: FmlEngine.defaultColor,
+        brightness: FmlEngine.defaultBrightness,
+        fontFamily: FmlEngine.defaultFont,
+        useMaterial3: true);
+
     // future view requires image
     var view = FutureBuilder(
         future: widget.initialized.future,
         builder: (context, snapshot) =>
         snapshot.hasData ? splashScreen(constraints) : waitScreen());
 
-    return MaterialApp(home: view);
+    return MaterialApp(home: view, theme: theme);
   }
 }

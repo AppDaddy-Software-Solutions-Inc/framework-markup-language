@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fml/application/application_model.dart';
 import 'package:fml/fml.dart';
@@ -42,32 +43,37 @@ class _ViewState extends State<StoreView>
   @override
   void initState() {
     super.initState();
+
     appURLInput = InputModel(null, null,
         hint: phrase.store,
         value: "",
         icon: Icons.link,
         keyboardType: 'url',
         keyboardInput: 'done');
-    Store().registerListener(this);
+
+    StoreModel().registerListener(this);
   }
 
   @override
   didChangeDependencies() {
+
     // listen to route changes
     NavigationObserver().registerListener(this);
+
     super.didChangeDependencies();
   }
 
   @override
   void dispose() {
+
     // stop listening to model changes
-    Store().removeListener(this);
+    StoreModel().removeListener(this);
 
     // stop listening to route changes
     NavigationObserver().removeListener(this);
 
     // Cleanup
-    Store().dispose();
+    StoreModel().dispose();
 
     super.dispose();
   }
@@ -97,7 +103,28 @@ class _ViewState extends State<StoreView>
   /// Callback to fire the [_ViewState.build] when the [StoreModel] changes
   @override
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (mounted) setState(() {});
+
+    // application model
+    if (model is ApplicationModel) {
+      ApplicationModel app = model;
+      var item = widget.model.items.firstWhereOrNull((item) => item.id == ObjectKey(app).toString());
+      if (item != null) {
+        var iconNew = _getThemedIcon(app);
+        var iconOld = item.image?.uri.data.toString();
+        if (iconNew != iconOld) {
+          var image = toDataUri(iconNew);
+          if (image != null) {
+            item.image = image;
+            item.notifyListeners("image", null);
+          }
+        }
+      }
+    }
+
+    // other
+    if (model is! ApplicationModel) {
+      if (mounted) setState(() {});
+    }
   }
 
   Widget addAppDialog(BuildContext context, bool popOnExit) {
@@ -105,8 +132,8 @@ class _ViewState extends State<StoreView>
       var style = TextStyle(color: Theme.of(context).colorScheme.primary);
 
       var ttl = Text(phrase.connectAnApplication, style: style);
-      var busy = BusyView(BusyModel(Store(),
-          visible: Store().busy, observable: Store().busyObservable, size: 14));
+      var busy = BusyView(BusyModel(StoreModel(),
+          visible: StoreModel().busy, observable: StoreModel().busyObservable, size: 14));
       var pad = const Padding(padding: EdgeInsets.only(left: 20));
       var title = Row(children: [ttl, pad, busy]);
 
@@ -132,13 +159,14 @@ class _ViewState extends State<StoreView>
   void removeApp(ApplicationModel app, NavigatorState navigator) async {
 
     // delete the app
-    await Store().deleteApp(app);
+    await StoreModel().deleteApp(app);
 
     // close the window
     navigator.pop();
   }
 
-  Widget? _getIcon(ApplicationModel app) {
+  String? _getThemedIcon(ApplicationModel app)
+  {
     var icon = app.icon;
     if (icon == null) return null;
     if (Theme.of(context).brightness == Brightness.light) {
@@ -147,7 +175,12 @@ class _ViewState extends State<StoreView>
     if (Theme.of(context).brightness == Brightness.dark) {
       icon = app.iconDark ?? icon;
     }
+    return icon;
+  }
 
+  Widget? _getIcon(ApplicationModel app) {
+
+    var icon = _getThemedIcon(app);
     var image = toDataUri(icon);
     if (image == null) return null;
 
@@ -173,7 +206,7 @@ class _ViewState extends State<StoreView>
         children: [Text(phrase.removeApp, style: style)]);
 
     style = TextStyle(
-        color: Theme.of(context).colorScheme.onBackground, fontSize: 18);
+        color: Theme.of(context).colorScheme.primary, fontSize: 18);
     var appTitle = Text(app.title ?? "", style: style);
 
     Widget? appIcon = _getIcon(app);
@@ -204,15 +237,22 @@ class _ViewState extends State<StoreView>
         ]);
 
     var view = Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(50),
         child:
             Column(children: [appIcon ?? const Offstage(), appTitle, appUrl]));
 
+    var color = Theme.of(context).colorScheme.background;
+    var shadow = BoxShadow(
+      color: Theme.of(context).colorScheme.shadow.withOpacity(.25),
+      blurRadius: 7,
+      spreadRadius: 0,
+      offset: Offset(5, 5));
+
     var box = DecoratedBox(
         decoration: BoxDecoration(
-            border:
-                Border.all(color: Theme.of(context).colorScheme.onBackground),
-            borderRadius: const BorderRadius.all(Radius.circular(10))),
+            color: color,
+            boxShadow: [shadow],
+            borderRadius: const BorderRadius.all(Radius.circular(8))),
         child: view);
 
     var content = Column(mainAxisSize: MainAxisSize.min, children: [
@@ -225,6 +265,8 @@ class _ViewState extends State<StoreView>
 
     return AlertDialog(
         title: title,
+        backgroundColor: color,
+        surfaceTintColor: Colors.transparent,
         content: content,
         contentPadding: const EdgeInsets.fromLTRB(4.0, 16.0, 4.0, 2.0),
         insetPadding: EdgeInsets.zero);
@@ -238,28 +280,28 @@ class _ViewState extends State<StoreView>
         builder: (BuildContext context) => removeAppDialog(context, app));
   }
 
-  Widget _multiAppView(BuildContext context) {
+  Widget _multiAppView(BuildContext context, BoxConstraints constraints) {
 
     // build menu items
     widget.model.items = [];
 
+    widget.model.maxWidth = constraints.maxWidth;
+
     // traverse list of apps
     for (var app in System.apps) {
-      var icon = app.icon;
-      if (Theme.of(context).brightness == Brightness.light) {
-        icon = app.iconLight ?? icon;
-      }
-      if (Theme.of(context).brightness == Brightness.dark) {
-        icon = app.iconDark ?? icon;
-      }
 
-      var item = MenuItemModel(widget.model, app.id,
+      // build menu item
+      var item = MenuItemModel(
+          widget.model,
+          ObjectKey(app).toString(),
           url: app.url,
           title: app.title,
-          icon: icon == null ? 'appdaddy' : null,
-          image: icon,
+          image: _getThemedIcon(app),
           onTap: () => System.launchApplication(app),
           onLongPress: () => showRemoveAppDialog(app));
+
+      // register a listener to the app
+      app.registerListener(this);
 
       widget.model.items.add(item);
     }
@@ -286,9 +328,9 @@ class _ViewState extends State<StoreView>
         shape: rrbShape);
 
     var busy = Center(
-        child: BusyModel(Store(),
-            visible: Store().busy,
-            observable: Store().busyObservable,
+        child: BusyModel(StoreModel(),
+            visible: StoreModel().busy,
+            observable: StoreModel().busyObservable,
             modal: true)
             .getView());
 
@@ -302,7 +344,7 @@ class _ViewState extends State<StoreView>
 
     var text = Column(
         mainAxisSize: MainAxisSize.min, children: [privacyButton, version]);
-    var button = Store().busy ? busyButton : addButton;
+    var button = StoreModel().busy ? busyButton : addButton;
 
     var view = MenuView(widget.model);
 
@@ -316,7 +358,7 @@ class _ViewState extends State<StoreView>
             ])));
   }
 
-  Widget _brandedAppView(BuildContext context) {
+  Widget _brandedAppView(BuildContext context, BoxConstraints constraints) {
 
     var privacyUri =
     Uri(scheme: 'https', host: 'fml.dev', path: '/privacy.html');
@@ -334,5 +376,10 @@ class _ViewState extends State<StoreView>
   }
 
   @override
-  Widget build(BuildContext context) => FmlEngine.type == ApplicationType.branded ? _brandedAppView(context) : _multiAppView(context);
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    return FmlEngine.type == ApplicationType.branded ? _brandedAppView(context, constraints) : _multiAppView(context, constraints);
+  }
 }

@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fml/config/config_model.dart';
@@ -47,12 +48,16 @@ class ApplicationModel extends WidgetModel {
 
   ScopeManager scopeManager = ScopeManager();
 
+  // application url
+  late String url;
+
+  // application title
+  String? title;
+
   // mirrors
   Mirror? mirror;
+  String? get mirrorApi => setting("MIRROR") ?? setting("MIRROR_API");
   bool get cacheContent => (mirror != null);
-
-  // secure?
-  bool get secure => scheme == "https" || scheme == "wss";
 
   // forces pages to repaint every visit
   bool get refresh => toBool(setting("REFRESH")) ?? false;
@@ -60,11 +65,6 @@ class ApplicationModel extends WidgetModel {
   // single page application?
   // single page applications restrict navigation to sub pages
   bool get singlePage => toBool(setting('SINGLE_PAGE_APPLICATION')) ?? false;
-
-  late String url;
-
-  // application title
-  String? title;
 
   // company name
   String? get company =>  toStr(setting("COMPANY"));
@@ -75,19 +75,13 @@ class ApplicationModel extends WidgetModel {
   // application name
   String? get name =>  toStr(setting("NAME") ?? setting("APPLICATION_NAME"));
 
-  // application icon
-  String? _icon;
-  String? get icon => _icon;
-
-  String? _iconLight;
-  String? get iconLight => _iconLight;
-
-  String? _iconDark;
-  String? get iconDark => _iconDark;
+  // application icons
+  String? get icon => toStr(setting("ICON"));
+  String? get iconLight => toStr(setting("ICON_LIGHT"));
+  String? get iconDark => toStr(setting("ICON_DARK"));
 
   // splash
-  String? _splash;
-  String? get splash => _splash;
+  String? get splash => toStr(setting("SPLASH"));
 
   // splash background color
   String? get splashBackground =>  toStr(setting("SPLASH_BACKGROUND"));
@@ -96,7 +90,8 @@ class ApplicationModel extends WidgetModel {
   String? get splashWidth => toStr(setting("SPLASH_WIDTH"));
 
   // splash display duration
-  String? get splashDelay =>  toStr(setting("SPLASH_DELAY"));
+  // defaults to 2 seconds if splash image is defined, otherwise 0
+  int get splashDuration =>  max(0,toInt(setting("SPLASH_DURATION")) ?? (splash == null ? 0 : 2));
 
   // hash key - used by encryption event
   String? get hashKey => toStr(setting("HASHKEY"));
@@ -124,6 +119,13 @@ class ApplicationModel extends WidgetModel {
   int? page;
   int? order;
 
+  // fml version support
+  int? get fmlVersion => toVersionNumber(setting("FML_VERSION"));
+
+  String get homePage => setting("HOME_PAGE") ?? "main.xml";
+  String? get loginPage => setting("LOGIN_PAGE");
+  String? get errorPage => setting("ERROR_PAGE");
+
   // config
   ConfigModel? _config;
   String? setting(String key) => (_config?.settings.containsKey(key) ?? false) ? _config?.settings[key] : null;
@@ -131,6 +133,9 @@ class ApplicationModel extends WidgetModel {
 
   // application stash
   Stash? _stash;
+
+  // secure?
+  bool get secure => scheme == "https" || scheme == "wss";
 
   String? _scheme;
   String? get scheme => _scheme;
@@ -146,13 +151,6 @@ class ApplicationModel extends WidgetModel {
 
   Map<String, String>? _queryParameters;
   Map<String, String>? get queryParameters => _queryParameters;
-
-  // fml version support
-  int? get fmlVersion => toVersionNumber(setting("FML_VERSION"));
-
-  String get homePage => setting("HOME_PAGE") ?? "main.xml";
-  String? get loginPage => setting("LOGIN_PAGE");
-  String? get errorPage => setting("ERROR_PAGE");
 
   Map<String, String?>? get configParameters => _config?.parameters;
 
@@ -287,13 +285,7 @@ class ApplicationModel extends WidgetModel {
     }
   }
 
-  // loads the config
-  bool isLoading = false;
-
   Future<void> _loadConfig() async {
-
-    // loading in progress
-    if (isLoading) return;
 
     ConfigModel? model;
 
@@ -305,19 +297,16 @@ class ApplicationModel extends WidgetModel {
     // model created?
     if (model != null) {
 
-      // get the icon
-      _icon = await _getIcon(model.settings["ICON"] ?? model.settings["APP_ICON"]);
-      _iconLight = await _getIcon(model.settings["ICON_LIGHT"]);
-      _iconDark  = await _getIcon(model.settings["ICON_DARK"]);
+      // set icons
+      model.settings["ICON"] = await _getIcon(model.settings["ICON"] ?? model.settings["APP_ICON"]);
+      model.settings["ICON_LIGHT"] = await _getIcon(model.settings["ICON_LIGHT"]);
+      model.settings["ICON_DARK"] = await _getIcon(model.settings["ICON_DARK"]);
 
       // get the splash image
-      _splash = await _getIcon(model.settings["SPLASH"]);
+      model.settings["SPLASH"] = await _getIcon(model.settings["SPLASH"]);
 
-      // mirror
-      if (model.settings["MIRROR_API"] != null && !FmlEngine.isWeb && scheme != "file") {
-        Uri? uri = URI.parse(model.settings["MIRROR_API"], domain: domain);
-        if (uri != null) mirror = Mirror(uri.url)..execute();
-      }
+      // get the splash image
+      model.settings["LOGO"] = await _getIcon(model.settings["LOGO"]);
 
       // set the config
       _config = model;
@@ -328,19 +317,21 @@ class ApplicationModel extends WidgetModel {
       // notify listeners that the config has changed
       notifyListeners("config", null);
     }
-
-    // clear loading flag
-    isLoading = false;
   }
 
   Future<String?> _getIcon(String? icon) async {
     if (icon == null) return null;
 
-    Uri? uri = URI.parse(icon, domain: domain);
+    // already a data uri?
+    var dataUri = await URI.toUriData(icon);
+    if (dataUri != null) return dataUri.toString();
+
+    // get
+    var uri = URI.parse(icon, domain: domain);
     if (uri == null) return null;
 
-    var data = await URI.toUriData(uri.url);
-    return data?.toString();
+    dataUri = await URI.toUriData(uri.url);
+    return dataUri?.toString();
   }
 
   Future<bool> stashValue(String key, dynamic value) async {
@@ -393,10 +384,10 @@ class ApplicationModel extends WidgetModel {
     return ok;
   }
 
-  Future setActive() async
+  Future<void> setActive() async
   {
     // wait for initialization to complete
-    await _initialized.future;
+    await initialized;
 
     // set current
     System.currentApp = this;
@@ -404,8 +395,14 @@ class ApplicationModel extends WidgetModel {
     // set active
     started = true;
 
-    // force an app refresh
-    _loadConfig();
+    // reload the config?
+    //_loadConfig();
+
+    // start mirror
+    if (mirrorApi != null && !FmlEngine.isWeb && scheme != "file") {
+      Uri? uri = URI.parse(mirrorApi, domain: domain);
+      if (uri != null) mirror = Mirror(uri.url)..execute();
+    }
 
     // set credentials
     logon(jwt);
@@ -461,19 +458,12 @@ class ApplicationModel extends WidgetModel {
 
   Map<String, dynamic> _toMap() {
     Map<String, dynamic> map = {};
+    _config?.settings.forEach((key, value) => map[key] = value);
     map["key"] = _dbKey;
     map["url"] = url;
-    map["name"] = name;
     map["title"] = title;
-    map["logo"] = logo;
-    map["icon"] = icon;
-    map["icon_light"] = iconLight;
-    map["icon_dark"] = iconDark;
-    map["splash"] = splash;
-    map["transition"] = fromEnum(transition);
     map["page"] = page;
     map["order"] = order;
-    map["jwt"] = jwt?.token;
     return map;
   }
 

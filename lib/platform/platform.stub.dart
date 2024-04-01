@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 
 class Platform {
   static Future<String?> get path async => null;
@@ -30,6 +31,7 @@ class Platform {
       throw UnimplementedError();
   static int getNavigationType() => throw UnimplementedError();
   static String get title => throw UnimplementedError();
+  static Color? get backgroundColor => throw UnimplementedError();
   static void js2fml() => throw UnimplementedError();
   static void fml2js({String? version}) => throw UnimplementedError();
 }

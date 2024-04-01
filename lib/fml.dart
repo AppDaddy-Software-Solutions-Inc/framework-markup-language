@@ -145,24 +145,7 @@ class FmlEngine {
     System().initialize();
   }
 
-  Widget launch() {
-
-    // fml engine
-    var engine = ChangeNotifierProvider<ThemeNotifier>(
-        child: Application(key: FmlEngine.key),
-        create: (_) => onThemeNotifierCreated());
-
-    // splash screen
-    var splash = Splash(
-        key: UniqueKey(), onInitializationComplete: () => runApp(engine));
-
-    // launch the splash screen
-    runApp(splash);
-
-    return splash;
-  }
-
-  onThemeNotifierCreated() {
+  _onThemeNotifierCreated() {
     try {
       var theme = ThemeNotifier.from(System.theme.colorScheme,
           googleFont: System.theme.font);
@@ -197,5 +180,37 @@ class FmlEngine {
     bool show = false;
     if (details.exception.toString().startsWith("A Render")) show = false;
     if (show) FlutterError.presentError(details);
+  }
+
+  /// launches the FML Engine
+  Widget launch() => _launchSplash();
+
+  /// launches the Splash Screen
+  Widget _launchSplash() {
+
+    // show splash screen
+    // until system is initialized
+    var splash = Splash(
+        key: UniqueKey(),
+        onInitializationComplete: _launchEngine);
+
+    // launch the splash screen
+    runApp(splash);
+
+    return splash;
+  }
+
+  /// launches the FML Engine
+  Widget _launchEngine() {
+
+    // fml engine
+    var engine = ChangeNotifierProvider<ThemeNotifier>(
+        child: Application(key: FmlEngine.key),
+        create: (_) => _onThemeNotifierCreated());
+
+    // launch the splash screen
+    runApp(engine);
+
+    return engine;
   }
 }

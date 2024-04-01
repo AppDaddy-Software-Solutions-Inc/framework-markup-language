@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fml/config/config_model.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/hive/database.dart';
@@ -68,9 +69,6 @@ class ApplicationModel extends WidgetModel {
 
   // company name
   String? get company =>  toStr(setting("COMPANY"));
-
-  // company logo
-  String? get logo =>  toStr(setting("LOGO"));
 
   // application name
   String? get name =>  toStr(setting("NAME") ?? setting("APPLICATION_NAME"));
@@ -298,39 +296,45 @@ class ApplicationModel extends WidgetModel {
     if (model != null) {
 
       // set icons
-      model.settings["ICON"] = await _getIcon(model.settings["ICON"] ?? model.settings["APP_ICON"]);
-      model.settings["ICON_LIGHT"] = await _getIcon(model.settings["ICON_LIGHT"]);
-      model.settings["ICON_DARK"] = await _getIcon(model.settings["ICON_DARK"]);
+      if (!kIsWeb)
+      {
+        model.settings["ICON"] = await _getIcon(model.settings["ICON"] ?? model.settings["APP_ICON"], domain);
+        model.settings["ICON_LIGHT"] = await _getIcon(model.settings["ICON_LIGHT"], domain);
+        model.settings["ICON_DARK"] = await _getIcon(model.settings["ICON_DARK"], domain);
+      }
 
-      // get the splash image
-      model.settings["SPLASH"] = await _getIcon(model.settings["SPLASH"]);
+      // splash delay
+      var delay = toInt(model.settings["SPLASH_DURATION"]) ?? 0;
 
-      // get the splash image
-      model.settings["LOGO"] = await _getIcon(model.settings["LOGO"]);
+      // get the splash image if delay is > 0
+      if (delay > 0)
+      {
+        model.settings["SPLASH"] = await _getIcon(model.settings["SPLASH"], domain);
+      }
 
       // set the config
       _config = model;
 
       // save the application to hive
-      await upsert();
+      upsert();
 
       // notify listeners that the config has changed
-      notifyListeners("config", null);
+      notifyListeners("config", _config);
     }
   }
 
-  Future<String?> _getIcon(String? icon) async {
+  Future<String?> _getIcon(String? icon, String? domain) async {
     if (icon == null) return null;
 
     // already a data uri?
-    var dataUri = await URI.toUriData(icon);
+    var dataUri = await URI.toUriData(icon, domain: domain);
     if (dataUri != null) return dataUri.toString();
 
     // get
     var uri = URI.parse(icon, domain: domain);
     if (uri == null) return null;
 
-    dataUri = await URI.toUriData(uri.url);
+    dataUri = await URI.toUriData(uri.url, domain: domain);
     return dataUri?.toString();
   }
 

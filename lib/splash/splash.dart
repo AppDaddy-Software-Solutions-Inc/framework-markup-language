@@ -68,7 +68,7 @@ class _SplashState extends State<Splash> {
     var theme = Theme.of(context);
 
     var pgColor = Platform.backgroundColor ?? theme.colorScheme.background;
-    pgColor = pgColor.computeLuminance() > .5 ? Colors.black.withOpacity(.5) : Colors.white.withOpacity(.5);
+    pgColor = pgColor.computeLuminance() > .5 ? Colors.black.withOpacity(.1) : Colors.white.withOpacity(.1);
 
     Widget view =  SizedBox(width: 30, height: 30, child: CircularProgressIndicator(color: pgColor));
     view = Center(child: view);

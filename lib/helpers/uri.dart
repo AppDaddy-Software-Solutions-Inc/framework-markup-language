@@ -151,10 +151,10 @@ extension URI on Uri {
     return uri;
   }
 
-  static Future<UriData?> toUriData(String url) async {
+  static Future<UriData?> toUriData(String url, {String? domain}) async {
     try {
       // parse the url
-      Uri? uri = parse(url);
+      Uri? uri = parse(url, domain: domain);
 
       // failed parse
       if (uri == null) return null;
@@ -168,7 +168,7 @@ extension URI on Uri {
         if (filepath == null) return null;
         var file = File(filepath);
         var bytes = await file.readAsBytes();
-        var mime = await Mime.type(url);
+        var mime = await Mime.type(uri.url);
         return UriData.fromBytes(bytes, mimeType: mime);
       }
 
@@ -176,19 +176,19 @@ extension URI on Uri {
       if (uri.scheme == "assets") {
         var assetpath = "${uri.scheme}/${uri.host}${uri.path}";
         ByteData bytes = await rootBundle.load(assetpath);
-        var mime = await Mime.type(url);
+        var mime = await Mime.type(uri.url);
         return UriData.fromBytes(bytes.buffer.asUint8List(), mimeType: mime);
       }
 
       // remote image file
-      var response = await Http.get(url);
+      var response = await Http.get(uri.url);
       if (response.statusCode == HttpStatus.ok) {
         var bytes = response.bytes;
-        var mime = await Mime.type(url);
+        var mime = await Mime.type(uri.url);
         return UriData.fromBytes(bytes, mimeType: mime);
       }
     } catch (e) {
-      Log().info("Error in toUriData using $url. Error is $e");
+      Log().info("Error in toUriData using ${url}. Error is $e");
     }
     return null;
   }

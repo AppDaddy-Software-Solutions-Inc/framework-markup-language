@@ -246,7 +246,7 @@ class _ViewState extends State<StoreView>
       color: Theme.of(context).colorScheme.shadow.withOpacity(.25),
       blurRadius: 7,
       spreadRadius: 0,
-      offset: Offset(5, 5));
+      offset: const Offset(5, 5));
 
     var box = DecoratedBox(
         decoration: BoxDecoration(

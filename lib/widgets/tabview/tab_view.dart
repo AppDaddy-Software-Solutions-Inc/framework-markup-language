@@ -33,15 +33,11 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin {
   @override
   didChangeDependencies() {
     // register event listeners
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.refresh, onRefresh, priority: 0);
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.open, onOpen, priority: 0);
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.close, onClose, priority: 0);
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.back, onBack, priority: 0);
-
+    EventManager.of(widget.model)?.registerEventListener(EventTypes.refresh, onRefresh, priority: 0);
+    EventManager.of(widget.model)?.registerEventListener(EventTypes.open, onOpen, priority: 0);
+    EventManager.of(widget.model)?.registerEventListener(EventTypes.close, onClose, priority: 0);
+    EventManager.of(widget.model)?.registerEventListener(EventTypes.back, onBack, priority: 0);
+    EventManager.of(widget.model)?.registerEventListener(EventTypes.trigger, onTrigger, priority: 0);
     super.didChangeDependencies();
   }
 
@@ -50,24 +46,18 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin {
     super.didUpdateWidget(oldWidget);
     if ((oldWidget.model != widget.model)) {
       // remove old event listeners
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.refresh, onRefresh);
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.open, onOpen);
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.close, onClose);
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.back, onBack);
+      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.refresh, onRefresh);
+      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.open, onOpen);
+      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.close, onClose);
+      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.back, onBack);
+      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.trigger, onTrigger);
 
       // register new event listeners
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.refresh, onRefresh, priority: 0);
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.open, onOpen, priority: 0);
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.close, onClose, priority: 0);
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.back, onBack, priority: 0);
+      EventManager.of(widget.model)?.registerEventListener(EventTypes.refresh, onRefresh, priority: 0);
+      EventManager.of(widget.model)?.registerEventListener(EventTypes.open, onOpen, priority: 0);
+      EventManager.of(widget.model)?.registerEventListener(EventTypes.close, onClose, priority: 0);
+      EventManager.of(widget.model)?.registerEventListener(EventTypes.back, onBack, priority: 0);
+      EventManager.of(widget.model)?.registerEventListener(EventTypes.trigger, onTrigger, priority: 0);
     }
   }
 
@@ -80,7 +70,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin {
     EventManager.of(widget.model)
         ?.removeEventListener(EventTypes.close, onClose);
     EventManager.of(widget.model)?.removeEventListener(EventTypes.back, onBack);
-
+    EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.trigger, onTrigger);
     super.dispose();
   }
 
@@ -142,7 +132,32 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin {
     return _showPage(uri.url, event: event);
   }
 
-  void _showPrevious() {
+  /** 
+   * As it's not expected that there will be nested views, such as TabView, this function 
+   * currently only propogates the triggers to any TriggerModels of the view inside the page model.
+   * If there are instances of nested views, another method may have to be found to
+   * recursively propogate the triggers through each layer. For good measure,
+   * the trigger event is broadcast() to the nested model, but this will need
+   * to be tested.
+  **/
+
+  void onTrigger(Event event) async 
+  {
+    FrameworkModel model;
+
+    if (widget.model.index == null) return;
+    model = widget.model.views.values.elementAt(widget.model.index!).model;
+    model.manager.broadcast(model, event);
+    model.findDescendantsOfExactType(TriggerModel).forEach((trigger) {
+      TriggerModel triggerModel = (trigger as TriggerModel);
+      if (event.parameters?['id'] == triggerModel.id) {
+        triggerModel.trigger();
+      }
+    });
+  }
+
+  void _showPrevious()
+  {
     if (widget.model.index == null) return;
 
     int i = widget.model.index! - 1;

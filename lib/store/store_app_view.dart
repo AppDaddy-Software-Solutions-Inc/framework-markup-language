@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fml/application/application_model.dart';
+import 'package:fml/fml.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/phrase.dart';
@@ -9,8 +10,9 @@ import 'package:fml/widgets/busy/busy_model.dart';
 
 class StoreApp extends StatefulWidget {
 
-  final bool showMakeDefaultOption;
-  const StoreApp({super.key, required this.showMakeDefaultOption});
+  final bool popOnExit;
+
+  const StoreApp({super.key, required this.popOnExit});
 
   @override
   StoreAppState createState() {
@@ -24,7 +26,6 @@ class StoreAppState extends State<StoreApp> {
   String? title;
   String? url;
   bool unreachable = false;
-  bool isDefaultAppChecked = false;
 
   var urlController = TextEditingController();
 
@@ -84,7 +85,7 @@ class StoreAppState extends State<StoreApp> {
     }
 
     // already defined
-    if (Store().findApp(url: uri.toString()) != null) {
+    if (StoreModel().findApp(url: uri.toString()) != null) {
       errorText = 'You are already connected to this application';
       return errorText;
     }
@@ -103,8 +104,32 @@ class StoreAppState extends State<StoreApp> {
     // validate the form
     unreachable = false;
 
+    // validate the form
+    var ok = _formKey.currentState?.validate() ?? true;
+
     // supplied data valid?
-    if (!(_formKey.currentState?.validate() ?? true)) {
+    if (!ok) {
+
+      // force form validation to show errors
+      _formKey.currentState!.validate();
+
+      // clear busy
+      busy.set(false);
+
+      return;
+    }
+
+    // create application
+    ApplicationModel app = ApplicationModel(System(), url: url!, title: title);
+
+    // wait for it to initialize
+    await app.initialized;
+
+    // site is reachable?
+    ok = app.configured;
+
+    // site not reachable?
+    if (!ok) {
 
       // site unreachable
       unreachable = true;
@@ -118,41 +143,22 @@ class StoreAppState extends State<StoreApp> {
       return;
     }
 
-    // create application
-    ApplicationModel app = ApplicationModel(System(), url: url!, title: title, isDefault: isDefaultAppChecked);
+    // add the app - if branded, we need to wait
+    FmlEngine.type == ApplicationType.branded ? await StoreModel().addApp(app) : StoreModel().addApp(app);
 
-    // wait for it to initialize
-    await app.initialized.future;
+    // pop the dialog
+    if (mounted && widget.popOnExit) Navigator.of(context).pop();
 
-    // site is reachable?
-    unreachable = app.config == null;
-
-    // app reachable?
-    if (!unreachable) {
-
-      // pop the dialog
-      if (mounted) Navigator.of(context).pop();
-
-      // add the app - if default, we need to wait until it is added
-      app.isDefault ? await Store().addApp(app) : Store().addApp(app);
-
-      // launch the app if default
-      if (app.isDefault) System.launchApplication(app);
-    }
+    // launch the app if branded
+    if (FmlEngine.type == ApplicationType.branded) System.launchApplication(app);
 
     // clear busy
     busy.set(false);
   }
 
-  _onSetDefaultApplication(bool? checked)
-  {
-    setState(() {
-      isDefaultAppChecked = checked!;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+
     var nameDecoration = InputDecoration(
         labelText: phrase.appName,
         labelStyle: const TextStyle(fontSize: 12),
@@ -179,7 +185,7 @@ class StoreAppState extends State<StoreApp> {
         decoration: addressDecoration,
         style: style);
 
-    var cancel = TextButton(
+    var cancel = FmlEngine.type == ApplicationType.branded ? const Offstage() : TextButton(
         child: Text(phrase.cancel),
         onPressed: () => Navigator.of(context).pop());
 
@@ -193,19 +199,6 @@ class StoreAppState extends State<StoreApp> {
     layout.add(const Padding(padding: EdgeInsets.only(top: 10)));
     layout.add(name);
 
-    // show make default app?
-    if (widget.showMakeDefaultOption){
-
-      var tx = Text(phrase.makeDefaultApp, style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 16));
-      var cb = Checkbox(value: isDefaultAppChecked, onChanged: _onSetDefaultApplication);
-      var note = isDefaultAppChecked ? SizedBox(width: 300, child: Text(softWrap: true, phrase.makeDefaultAppDisclaimer, style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 12))) : null;
-
-      layout.add(const Padding(padding: EdgeInsets.only(top: 10)));
-      layout.add(Row(mainAxisSize: MainAxisSize.min, children: [tx,cb]));
-      if (note != null) layout.add(note);
-      layout.add(const Padding(padding: EdgeInsets.only(top: 10)));
-    }
-
     // buttons
     var buttons = Padding(
         padding: const EdgeInsets.only(top: 10.0, bottom: 10),
@@ -216,9 +209,10 @@ class StoreAppState extends State<StoreApp> {
                 children: [cancel, connect])));
     layout.add(buttons);
 
-    var b = BusyModel(Store(),
+    var b = BusyModel(StoreModel(),
             visible: (busy.get() ?? false), observable: busy, modal: false)
         .getView();
+
     var form = Form(
         key: _formKey,
         child: Column(

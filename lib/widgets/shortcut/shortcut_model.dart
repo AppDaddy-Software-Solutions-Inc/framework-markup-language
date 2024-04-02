@@ -315,7 +315,7 @@ class ShortcutHandler {
 
         // show template
         case "4":
-          System.clearDefaultApplication();
+          System.clearBranding();
           break;
       }
     }

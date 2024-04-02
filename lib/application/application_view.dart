@@ -14,7 +14,7 @@ class Application extends StatelessWidget {
     return MaterialApp.router(
         title: System.title,
         debugShowCheckedModeBanner: false,
-        routerDelegate: NavigationManager(key: GlobalKey<NavigatorState>()),
+        routerDelegate: NavigationManager(),
         routeInformationParser: const RouteParser(),
         backButtonDispatcher: RootBackButtonDispatcher(),
         theme: Provider.of<ThemeNotifier>(context).getTheme(),

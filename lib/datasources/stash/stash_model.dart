@@ -3,6 +3,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/hive/stash.dart';
+import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:xml/xml.dart';
@@ -31,7 +32,7 @@ class StashModel extends DataSourceModel implements IDataSource {
     if (enabled == false) return false;
 
     busy = true;
-    Data data = await Stash.getData();
+    Data data = await Stash.getStashData(System.domain ?? "");
     busy = false;
     return await super.onSuccess(data);
   }
@@ -53,7 +54,7 @@ class StashModel extends DataSourceModel implements IDataSource {
 
       case 'start':
       case 'fire':
-        Data data = await Stash.getData();
+        Data data = await Stash.getStashData(System.domain ?? "");
         super.onSuccess(data);
         return true;
     }

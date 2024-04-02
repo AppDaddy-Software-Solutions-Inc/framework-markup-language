@@ -43,11 +43,11 @@ class Form implements Comparable {
   }
 
   Future<bool> insert() async =>
-      (await Database().insert(tableName, key, _map) == null);
+      (await Database.insert(tableName, key, _map) == null);
   Future<bool> update() async =>
-      (await Database().update(tableName, key, _map) == null);
+      (await Database.update(tableName, key, _map) == null);
   static Future<bool> deleteAll() async =>
-      (await Database().deleteAll(tableName) == null);
+      (await Database.deleteAll(tableName) == null);
 
   static Form? _fromMap(dynamic map) {
     Form? form;
@@ -82,7 +82,7 @@ class Form implements Comparable {
       }
 
       // delete form
-      exception = await Database().delete(tableName, key);
+      exception = await Database.delete(tableName, key);
     } on Exception catch (e) {
       Log().debug('Error deleting from table $tableName');
       Log().debug(e.toString());
@@ -92,7 +92,7 @@ class Form implements Comparable {
   }
 
   static Future<Form?> find(dynamic key) async {
-    Map<String, dynamic>? entry = await Database().find(tableName, key);
+    Map<String, dynamic>? entry = await Database.find(tableName, key);
     Form? form = _fromMap(entry);
     return form;
   }
@@ -100,7 +100,7 @@ class Form implements Comparable {
   static Future<List<Form>> query({String? where, String? orderby}) async {
     List<Form> forms = [];
     List<Map<String, dynamic>> entries =
-        await Database().query(tableName, where: where, orderby: orderby);
+        await Database.query(tableName, where: where, orderby: orderby);
     for (var entry in entries) {
       Form? form = _fromMap(entry);
       if (form != null) forms.add(form);

@@ -9,6 +9,7 @@ import 'package:fml/system.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/material.dart';
 import 'dart:io' as io;
 
 class Platform {
@@ -210,6 +211,8 @@ class Platform {
   static int getNavigationType() => 0;
 
   static String get title => FmlEngine.title;
+
+  static Color? get backgroundColor => null;
 
   static void js2fml() {}
   static void fml2js({String? version}) {}

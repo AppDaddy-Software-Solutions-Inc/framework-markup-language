@@ -131,7 +131,7 @@ class Theme {
   }
 
   Future<void> clear() async {
-    await Database().deleteAll('THEME');
+    await Database.deleteAll('THEME');
     themes.clear();
   }
 }

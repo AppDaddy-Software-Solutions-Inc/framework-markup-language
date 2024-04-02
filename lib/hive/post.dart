@@ -76,13 +76,13 @@ class Post {
   }
 
   Future<bool> insert() async =>
-      (await Database().insert(tableName, key, _map) == null);
+      (await Database.insert(tableName, key, _map) == null);
   Future<bool> update() async =>
-      (await Database().update(tableName, key, _map) == null);
+      (await Database.update(tableName, key, _map) == null);
   Future<bool> delete() async =>
-      (await Database().delete(tableName, key) == null);
+      (await Database.delete(tableName, key) == null);
   static Future<bool> deleteAll() async =>
-      (await Database().deleteAll(tableName) == null);
+      (await Database.deleteAll(tableName) == null);
 
   static Post? _fromMap(dynamic map) {
     Post? post;
@@ -122,7 +122,7 @@ class Post {
   }
 
   static Future<Post?> find(String key) async {
-    Map<String, dynamic>? entry = await Database().find(tableName, key);
+    Map<String, dynamic>? entry = await Database.find(tableName, key);
     Post? post = _fromMap(entry);
     return post;
   }
@@ -130,7 +130,7 @@ class Post {
   static Future<List<Post>> query({String? where, String? orderby}) async {
     List<Post> posts = [];
     List<Map<String, dynamic>> entries =
-        await Database().query(tableName, where: where, orderby: orderby);
+        await Database.query(tableName, where: where, orderby: orderby);
     for (var entry in entries) {
       Post? post = _fromMap(entry);
       if (post != null) posts.add(post);

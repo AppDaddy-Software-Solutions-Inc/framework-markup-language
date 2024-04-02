@@ -1,9 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/helpers/mime.dart';
+import 'package:fml/helpers/string.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:universal_html/html.dart';
 import 'package:flutter/foundation.dart';
@@ -193,5 +195,10 @@ class Platform {
     const jsonEncoder = JsonEncoder();
     final json = jsonEncoder.convert(data);
     context.callMethod('postMessage', [json, '*']);
+  }
+
+  static Color? get backgroundColor {
+    var color = document.body?.style.backgroundColor;
+    return toColor(color);
   }
 }

@@ -91,13 +91,13 @@ class ThemeData {
   }
 
   Future<bool> insert() async =>
-      (await Database().insert(tableName, key, _map) == null);
+      (await Database.insert(tableName, key, _map) == null);
   Future<bool> update() async =>
-      (await Database().update(tableName, key, _map) == null);
+      (await Database.update(tableName, key, _map) == null);
   Future<bool> delete() async =>
-      (await Database().delete(tableName, key) == null);
+      (await Database.delete(tableName, key) == null);
   static Future<bool> deleteAll() async =>
-      (await Database().deleteAll(tableName) == null);
+      (await Database.deleteAll(tableName) == null);
 
   static ThemeData? _fromMap(dynamic map) {
     ThemeData? theme;
@@ -135,7 +135,7 @@ class ThemeData {
   }
 
   Future<ThemeData?> find(String key) async {
-    Map<String, dynamic>? entry = await Database().find(tableName, key);
+    Map<String, dynamic>? entry = await Database.find(tableName, key);
     ThemeData? theme = _fromMap(entry);
     return theme;
   }

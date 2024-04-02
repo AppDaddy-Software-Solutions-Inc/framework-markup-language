@@ -154,7 +154,7 @@ class ApplicationModel extends WidgetModel {
 
   ApplicationModel(WidgetModel parent,
       {String? key,
-        required this.url,
+        required String url,
         this.title,
         this.page,
         this.order,
@@ -165,12 +165,15 @@ class ApplicationModel extends WidgetModel {
     Uri? uri = Uri.tryParse(url);
     if (uri == null) return;
 
-    // set database key
-    _dbKey = key ?? url;
-
     // no scheme provided
     if (!uri.hasScheme) uri = Uri.tryParse("https://${uri.url}");
     if (uri == null) return;
+
+    // set the url
+    this.url = uri.url;
+
+    // set database key
+    _dbKey = key ?? this.url;
 
     _scheme = uri.scheme;
     _host = uri.host;
@@ -490,6 +493,12 @@ class ApplicationModel extends WidgetModel {
   // inserts a new app into the local hive
   Future<bool> insert() async {
     var exception = await Database.insert(tableName, _dbKey, _toMap());
+    return (exception == null);
+  }
+
+  // updates the app in the local hive
+  Future<bool> update() async {
+    var exception = await Database.update(tableName, _dbKey, _toMap());
     return (exception == null);
   }
 

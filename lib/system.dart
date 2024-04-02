@@ -341,13 +341,13 @@ class System extends WidgetModel implements IEventManager {
     // load the apps from the database
     _apps = FmlEngine.isWeb ? [] : await ApplicationModel.loadAll();
 
-    // remove redundant apps if branded
-    if (FmlEngine.type == ApplicationType.branded) {
-      while (apps.length > 1) {
-        var app = apps.last;
-        await app.delete();
-        apps.removeLast();
-      }
+    // remove redundant apps if branded (this normally wont be needed
+    // only in development mode where user is switching between app types
+    while (FmlEngine.type == ApplicationType.branded && _apps.length > 1) {
+      var app = _apps.last;
+      await app.initialized;
+      await app.delete();
+      _apps.removeLast();
     }
 
     // reorder apps by index
@@ -476,8 +476,10 @@ class System extends WidgetModel implements IEventManager {
 
     // delete all apps
     for (var app in _apps) {
+      await app.initialized;
       await app.delete();
     }
+    _apps.clear();
 
     // notify the user
     ok ? toast(phrase.defaultAppRemoved) : toast(phrase.defaultAppRemovedProblem);
@@ -550,7 +552,7 @@ class System extends WidgetModel implements IEventManager {
     app.order ??= _apps.length;
 
     // insert into the hive
-    ok = await app.upsert();
+    ok = await app.insert();
 
     // add to the list
     if (!_apps.contains(app)) _apps.add(app);
@@ -581,19 +583,16 @@ class System extends WidgetModel implements IEventManager {
 
     bool ok = true;
 
-    // get system apps
-    var apps = _apps;
-
     // sort the list by app ordering
     _apps.sort((a, b) => Comparable.compare(a.order ?? 99999, b.order ?? 99999));
 
     int i = 0;
-    for (var app in apps) {
+    for (var app in _apps) {
       // set the application ordering
       app.order = i++;
 
       // insert into the hive
-      ok = await app.upsert();
+      ok = await app.update();
     }
 
     return ok;

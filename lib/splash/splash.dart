@@ -18,6 +18,9 @@ class Splash extends StatefulWidget {
 
   // maximum time (seconds) a splash logo will be shown
   static int maxDelay = 10;
+  static int defaultDelay = 2;
+
+  late final int delay;
 
   // await on image
   final Completer<bool> initialized = Completer<bool>();
@@ -35,7 +38,7 @@ class Splash extends StatefulWidget {
     await System.appsLoaded.future;
 
     // get splash delay
-    int delay = System.currentApp?.splashDuration ?? 0;
+    delay = System.currentApp?.splashDuration ?? (System.currentApp?.splash == null ? 0 : defaultDelay);
 
     // skip the splash image
     if (delay <= 0) {
@@ -65,24 +68,35 @@ class _SplashState extends State<Splash> {
 
   Widget waitScreen()
   {
-    var theme = Theme.of(context);
+    // spinner color
+    var color = Platform.backgroundColor ?? Theme.of(context).colorScheme.background;
+    color = color.computeLuminance() > .5 ? Colors.black.withOpacity(.5) : Colors.white.withOpacity(.5);
 
-    var pgColor = Platform.backgroundColor ?? theme.colorScheme.background;
-    pgColor = pgColor.computeLuminance() > .5 ? Colors.black.withOpacity(.05) : Colors.white.withOpacity(.05);
+    // spinner
+    Widget spinner = Center(child: SizedBox(width: 30, height: 30, child: CircularProgressIndicator(color: color)));
 
-    Widget view =  SizedBox(width: 30, height: 30, child: CircularProgressIndicator(color: pgColor));
-    view = Center(child: view);
+    // don't show spinner unless system loading delays
+    // more than 10 seconds
+    var duration = const Duration(seconds: 10);
 
-    var bgColor = Platform.backgroundColor ?? theme.colorScheme.background;
-    view = Container(color: bgColor, child: view);
+    // fade in spinner
+    var view = TweenAnimationBuilder<double>(
+        tween: Tween<double>(begin: 0.0, end: 1.0),
+        curve: Curves.easeInExpo,
+        duration: duration,
+        builder: (BuildContext context, double opacity, Widget? child) => Opacity(opacity: opacity, child: child ??= spinner));
 
-    return view;
+    // background color
+    color = Platform.backgroundColor ?? Theme.of(context).colorScheme.background;
+
+    // page
+    return Container(color: color, child: view);
   }
 
   Widget splashScreen(BoxConstraints constraints)
   {
-    // get image width
-    double? imageWidth;
+    // image width
+    double? width;
 
     // percent size?
     if (isPercent(System.currentApp?.splashWidth)) {
@@ -90,30 +104,30 @@ class _SplashState extends State<Splash> {
       if (v != null)
       {
         v = max(min(v,100),0);
-        imageWidth = constraints.maxWidth * (v/100);
+        width = constraints.maxWidth * (v/100);
       }
     }
 
     // fixed size?
-    if (imageWidth == null && isNumeric(System.currentApp?.splashWidth)) {
+    if (width == null && isNumeric(System.currentApp?.splashWidth)) {
       var v = toDouble(System.currentApp?.splashWidth);
       if (v != null)
       {
         v = max(min(v,constraints.maxWidth),0);
-        imageWidth = v;
+        width = v;
       }
     }
 
     // undefined size? use default
-    imageWidth ??= constraints.maxWidth/4;
+    width ??= constraints.maxWidth/4;
 
     // round up
-    imageWidth = imageWidth.ceilToDouble();
+    width = width.ceilToDouble();
 
     // zero size image? return offstage
-    if (imageWidth <= 0) return const Offstage();
+    if (width <= 0) return const Offstage();
 
-    // get image
+    // build image
     Widget? image;
     if (System.currentApp?.splash != null)
     {
@@ -122,25 +136,44 @@ class _SplashState extends State<Splash> {
       if (uri != null)
       {
         image = uri.mimeType == "image/svg+xml" ?
-        SvgPicture.memory(uri.contentAsBytes(), width: imageWidth) :
-        Image.memory(uri.contentAsBytes(), width: imageWidth);
+        SvgPicture.memory(uri.contentAsBytes(), width: width) :
+        Image.memory(uri.contentAsBytes(), width: width);
       }
     }
     image ??= Image.asset("assets/images/splash.gif",
-        width: imageWidth,
+        width: width,
         errorBuilder: (a,b,c) =>
-            SvgPicture.asset("assets/images/splash.svg", width: imageWidth));
+            SvgPicture.asset("assets/images/splash.svg", width: width));
 
-    // return wrapped centered image
-    return Container(
-        color: toColor(System.currentApp?.splashBackground) ?? Colors.black,
-        child: Center(child: SizedBox(width: imageWidth, child: image)));
+    // center and size image
+    image = Center(child:SizedBox(width: width, child: image));
+
+    Widget view = image;
+
+    // fade in image
+    if (widget.delay >= 2)
+    {
+      // fade in image in 1/3 the delay time
+      var ms = (min(widget.delay,Splash.maxDelay) * 1000 / 3).ceil();
+      var duration = Duration(milliseconds: ms);
+
+      // fade in image
+      view = TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 0.0, end: 1.0),
+          curve: Curves.ease,
+          duration: duration,
+          builder: (BuildContext context, double opacity, Widget? child) => Opacity(opacity: opacity, child: child ??= image));
+    }
+
+    // background color
+    var color = toColor(System.currentApp?.splashBackground) ?? Platform.backgroundColor ?? Theme.of(context).colorScheme.background;
+
+    // page
+    return Container(color: color, child: view);
   }
 
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: _build);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: _build);
 
   Widget _build(BuildContext context, BoxConstraints constraints) {
 

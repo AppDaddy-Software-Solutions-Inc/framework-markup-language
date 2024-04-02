@@ -188,7 +188,7 @@ extension URI on Uri {
         return UriData.fromBytes(bytes, mimeType: mime);
       }
     } catch (e) {
-      Log().info("Error in toUriData using ${url}. Error is $e");
+      Log().info("Error in toUriData using $url. Error is $e");
     }
     return null;
   }

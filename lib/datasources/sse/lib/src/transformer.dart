@@ -10,8 +10,7 @@ class SseTransformer implements StreamTransformer<List<int>, Event> {
   SseTransformer({this.retryIndicator});
 
   @override
-  Stream<Event> bind(Stream<List<int>> stream)
-  {
+  Stream<Event> bind(Stream<List<int>> stream) {
     _controller = StreamController(onListen: () {
       // the event we are currently building
       var currentEvent = Event();
@@ -22,8 +21,8 @@ class SseTransformer implements StreamTransformer<List<int>, Event> {
       // single event. So we build events on the fly and broadcast the event as
       // soon as we encounter a double newline, then we start a new one.
       stream
-          .transform(Utf8Decoder())
-          .transform(LineSplitter())
+          .transform(const Utf8Decoder())
+          .transform(const LineSplitter())
           .listen((String line) {
         if (line.isEmpty) {
           // event is done
@@ -66,8 +65,7 @@ class SseTransformer implements StreamTransformer<List<int>, Event> {
     return _controller.stream;
   }
 
-  dispose()
-  {
+  dispose() {
     if (!_controller.isClosed) _controller.close();
   }
 

@@ -19,12 +19,12 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
-import 'package:pluto_grid_plus_export/pluto_grid_plus_export.dart' as pluto_grid_export;
+import 'package:pluto_grid_plus_export/pluto_grid_plus_export.dart'
+as pluto_grid_export;
 
-enum Toggle {on, off}
+enum Toggle { on, off }
 
-class TableView extends StatefulWidget implements IWidgetView
-{
+class TableView extends StatefulWidget implements IWidgetView {
   @override
   final TableModel model;
   TableView(this.model) : super(key: ObjectKey(model));
@@ -33,8 +33,7 @@ class TableView extends StatefulWidget implements IWidgetView
   State<TableView> createState() => TableViewState();
 }
 
-class TableViewState extends WidgetState<TableView>
-{
+class TableViewState extends WidgetState<TableView> {
   Widget? busy;
 
   // indicates if grid is paged or not
@@ -58,39 +57,34 @@ class TableViewState extends WidgetState<TableView>
 
   // maps PlutoColumn -> TableHeaderModel
   // this is necessary since PlutoColumns can be re-ordered
-  final HashMap<PlutoColumn, TableHeaderCellModel> map = HashMap<PlutoColumn, TableHeaderCellModel>();
+  final HashMap<PlutoColumn, TableHeaderCellModel> map =
+  HashMap<PlutoColumn, TableHeaderCellModel>();
 
-  final HashMap<TableRowCellModel, Widget> views = HashMap<TableRowCellModel, Widget>();
+  final HashMap<TableRowCellModel, Widget> views =
+  HashMap<TableRowCellModel, Widget>();
 
   // hold a pointer to the last selected cell;
   PlutoCell? _lastSelectedCell;
 
-  closeKeyboard() async
-  {
-    try
-    {
+  closeKeyboard() async {
+    try {
       FocusScope.of(context).unfocus();
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e);
     }
   }
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
+  onModelChange(WidgetModel model, {String? property, dynamic value}) {
     var b = Binding.fromString(property);
     if (b?.property == 'busy') return;
     super.onModelChange(model);
   }
 
-  PlutoColumnType getColumnType(TableHeaderCellModel model)
-  {
+  PlutoColumnType getColumnType(TableHeaderCellModel model) {
     var type = model.type?.toLowerCase().trim();
-    switch (type)
-    {
+    switch (type) {
       case "number":
       case "numeric":
         return PlutoColumnType.number(format: "#", applyFormatOnInit: false);
@@ -111,18 +105,15 @@ class TableViewState extends WidgetState<TableView>
   // build all rows
   void buildAllRows() => buildOutRows(widget.model.getDataRowCount());
 
-  void buildOutRows(int length)
-  {
+  void buildOutRows(int length) {
     // build rows
-    while (rows.length < length)
-    {
+    while (rows.length < length) {
       var row = buildRow(rows.length);
       if (row == null) break;
     }
   }
 
-  PlutoRow? buildRow(int rowIdx)
-  {
+  PlutoRow? buildRow(int rowIdx) {
     // row already created
     if (rowIdx < rows.length) return rows[rowIdx];
 
@@ -130,21 +121,18 @@ class TableViewState extends WidgetState<TableView>
     return buildPlutoRow(rowIdx);
   }
 
-  PlutoRow? buildPlutoRow(int rowIdx)
-  {
+  PlutoRow? buildPlutoRow(int rowIdx) {
     PlutoRow? row;
 
     // get the data row
     dynamic data = widget.model.getData(rowIdx);
 
     // create the row
-    if (data != null)
-    {
+    if (data != null) {
       Map<String, PlutoCell> cells = {};
 
       // get row model
-      for (var column in columns)
-      {
+      for (var column in columns) {
         dynamic value;
 
         // get column index
@@ -154,13 +142,10 @@ class TableViewState extends WidgetState<TableView>
         var model = widget.model.header?.cell(colIdx);
 
         // simple grid
-        if (model?.usesRenderer ?? false)
-        {
+        if (model?.usesRenderer ?? false) {
           var model = widget.model.getRowCellModel(rowIdx, colIdx);
           value = model?.value;
-        }
-        else
-        {
+        } else {
           value = Data.read(data, column.field) ?? "";
         }
 
@@ -174,27 +159,26 @@ class TableViewState extends WidgetState<TableView>
     return row;
   }
 
-  onTap(PlutoCell cell, int rowIdx) async
-  {
+  onTap(PlutoCell cell, int rowIdx) async {
     stateManager?.setCurrentCell(cell, rowIdx);
   }
 
-  Widget cellBuilder(PlutoColumnRendererContext context, bool hasEnterableFields)
-  {
+  Widget cellBuilder(
+      PlutoColumnRendererContext context, bool hasEnterableFields) {
     // get row and column indexes
     var rowIdx = rows.indexOf(context.row);
-    var colIdx = map.containsKey(context.column) ? map[context.column]!.index : -1;
+    var colIdx =
+    map.containsKey(context.column) ? map[context.column]!.index : -1;
 
     // not found
-    if (rowIdx.isNegative || colIdx.isNegative) return Text("");
+    if (rowIdx.isNegative || colIdx.isNegative) return const Text("");
 
     // get cell model
     TableRowCellModel? model = widget.model.getRowCellModel(rowIdx, colIdx);
-    if (model == null) return Text("");
+    if (model == null) return const Text("");
 
     // return the view
-    if (!views.containsKey(model))
-    {
+    if (!views.containsKey(model)) {
       // build the view
       Widget view = RepaintBoundary(child: BoxView(model));
 
@@ -205,46 +189,48 @@ class TableViewState extends WidgetState<TableView>
     // we must wrap the cell in a listener to select the row on tap
     // this isn't necessarily required if the cell doesn't have a gesture detector, onclick, etc
     // without this, the onTap (select) is consumed by the child view
-    var cell = Listener(child: views[model],onPointerDown: (_) => onTap(context.cell, context.rowIdx));
+    var cell = Listener(
+        child: views[model],
+        onPointerDown: (_) => onTap(context.cell, context.rowIdx));
 
     // we override the key listener in order to enable input on
     // enterable fields
-    return hasEnterableFields ? FocusScope(child: cell, onKeyEvent: (FocusNode focusNode, KeyEvent event) => KeyEventResult.skipRemainingHandlers) : cell;
+    return hasEnterableFields
+        ? FocusScope(
+        child: cell,
+        onKeyEvent: (FocusNode focusNode, KeyEvent event) =>
+        KeyEventResult.skipRemainingHandlers)
+        : cell;
   }
 
-  List<PlutoRow> applyFilters(List<PlutoRow> list)
-  {
-    if (stateManager != null)
-    {
+  List<PlutoRow> applyFilters(List<PlutoRow> list) {
+    if (stateManager != null) {
       final filterRows = stateManager!.filterRows;
       final filterCols = stateManager!.refColumns;
-      final filter = FilterHelper.convertRowsToFilter(filterRows,filterCols);
+      final filter = FilterHelper.convertRowsToFilter(filterRows, filterCols);
       if (filter != null) return list.where(filter).toList();
     }
     return list;
   }
 
-  List<PlutoRow> applySort(List<PlutoRow> list)
-  {
-    if (stateManager != null)
-    {
+  List<PlutoRow> applySort(List<PlutoRow> list) {
+    if (stateManager != null) {
       PlutoColumn? column = stateManager?.getSortedColumn;
-      if (column != null)
-      {
+      if (column != null) {
         list = [...list];
-        list.sort((a, b)
-        {
+        list.sort((a, b) {
           final sortA = column.sort.isAscending ? a : b;
           final sortB = column.sort.isAscending ? b : a;
-          return column.type.compare(sortA.cells[column.field]!.valueForSorting, sortB.cells[column.field]!.valueForSorting);
+          return column.type.compare(sortA.cells[column.field]!.valueForSorting,
+              sortB.cells[column.field]!.valueForSorting);
         });
       }
     }
     return list;
   }
 
-  Future<PlutoInfinityScrollRowsResponse> onLazyLoad(PlutoInfinityScrollRowsRequest request) async
-  {
+  Future<PlutoInfinityScrollRowsResponse> onLazyLoad(
+      PlutoInfinityScrollRowsRequest request) async {
     // rows are filtered?
     var filter = request.filterRows.isNotEmpty;
 
@@ -256,20 +242,16 @@ class TableViewState extends WidgetState<TableView>
 
     // index of last row fetched
     var rowIdx = 0;
-    if (request.lastRow != null)
-    {
+    if (request.lastRow != null) {
       var row = request.lastRow!;
       rowIdx = rows.contains(row) ? rows.indexOf(row) : 0;
     }
 
     // build rows
-    if (filter || sort)
-    {
+    if (filter || sort) {
       // build all
       buildAllRows();
-    }
-    else
-    {
+    } else {
       buildOutRows(rowIdx + fetchSize);
     }
 
@@ -277,14 +259,12 @@ class TableViewState extends WidgetState<TableView>
     List<PlutoRow> tempList = rows.toList();
 
     // filter the list
-    if (filter)
-    {
+    if (filter) {
       tempList = applyFilters(tempList);
     }
 
     // sort the list
-    if (sort)
-    {
+    if (sort) {
       tempList = applySort(tempList);
     }
 
@@ -300,14 +280,12 @@ class TableViewState extends WidgetState<TableView>
     // To convert data from server to PlutoRow
     // You can convert it using [PlutoRow.fromJson].
     // In the example, PlutoRow is already created, so it is not created separately.
-    Iterable<PlutoRow> fetchedRows = tempList.skipWhile((row) => request.lastRow != null && row.key != request.lastRow!.key);
+    Iterable<PlutoRow> fetchedRows = tempList.skipWhile(
+            (row) => request.lastRow != null && row.key != request.lastRow!.key);
 
-    if (request.lastRow == null)
-    {
+    if (request.lastRow == null) {
       fetchedRows = fetchedRows.take(fetchSize);
-    }
-    else
-    {
+    } else {
       fetchedRows = fetchedRows.skip(1).take(fetchSize);
     }
 
@@ -317,22 +295,23 @@ class TableViewState extends WidgetState<TableView>
     // isLast should be true when there is no more data to load.
     // rows should pass a List<PlutoRow>.
     // total number of rows
-    final bool isLast = fetchedRows.isEmpty || widget.model.getDataRowCount() < rows.length;
+    final bool isLast =
+        fetchedRows.isEmpty || widget.model.getDataRowCount() < rows.length;
 
     // notify the user
-    if (isLast && mounted)
-    {
+    if (isLast && mounted) {
       //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Last Page!')));
     }
 
     // convert to list
     var list = fetchedRows.toList();
 
-    return Future.value(PlutoInfinityScrollRowsResponse(isLast: isLast, rows: list));
+    return Future.value(
+        PlutoInfinityScrollRowsResponse(isLast: isLast, rows: list));
   }
 
-  Future<PlutoLazyPaginationResponse> onPageLoad(PlutoLazyPaginationRequest request) async
-  {
+  Future<PlutoLazyPaginationResponse> onPageLoad(
+      PlutoLazyPaginationRequest request) async {
     // rows are filtered?
     var filter = request.filterRows.isNotEmpty;
 
@@ -350,13 +329,10 @@ class TableViewState extends WidgetState<TableView>
     var pages = (rows / pageSize).ceil();
 
     // build rows
-    if (filter || sort)
-    {
+    if (filter || sort) {
       // build all
       buildAllRows();
-    }
-    else
-    {
+    } else {
       // build only as many as required
       buildOutRows(pageSize * request.page);
     }
@@ -365,8 +341,7 @@ class TableViewState extends WidgetState<TableView>
     List<PlutoRow> tempList = this.rows.toList();
 
     // filter the list
-    if (filter)
-    {
+    if (filter) {
       tempList = applyFilters(tempList);
 
       pages = (tempList.length / pageSize).ceil();
@@ -374,24 +349,24 @@ class TableViewState extends WidgetState<TableView>
     }
 
     // sort the list
-    if (sort)
-    {
+    if (sort) {
       tempList = applySort(tempList);
     }
 
-    final page  = request.page;
+    final page = request.page;
     final start = (page - 1) * pageSize;
-    final end   = start + pageSize;
+    final end = start + pageSize;
 
     // get list of rows
-    var fetchedRows = tempList.getRange(max(0, start), min(tempList.length, end)).toList();
+    var fetchedRows =
+    tempList.getRange(max(0, start), min(tempList.length, end)).toList();
 
-    return Future.value(PlutoLazyPaginationResponse(totalPage: pages, rows: fetchedRows));
+    return Future.value(
+        PlutoLazyPaginationResponse(totalPage: pages, rows: fetchedRows));
   }
 
   // called when grid is loaded
-  void onLoadedHandler(PlutoGridOnLoadedEvent event)
-  {
+  void onLoadedHandler(PlutoGridOnLoadedEvent event) {
     stateManager = event.stateManager;
 
     // autosize columns
@@ -408,23 +383,22 @@ class TableViewState extends WidgetState<TableView>
     if (fit == "fill") _fitLastColumnWidth();
   }
 
-  void _fitLastColumnWidth()
-  {
+  void _fitLastColumnWidth() {
     // fit last column to fill table
     var fit = widget.model.header?.fit?.trim().toLowerCase();
     if (fit != "fill") return;
 
-    if (stateManager != null && stateManager!.maxWidth != null)
-    {
+    if (stateManager != null && stateManager!.maxWidth != null) {
       // get last pluto column
-      var lastColumn = stateManager!.refColumns.isNotEmpty ? stateManager!.refColumns.last : null;
+      var lastColumn = stateManager!.refColumns.isNotEmpty
+          ? stateManager!.refColumns.last
+          : null;
       if (lastColumn == null) return;
 
       // compute unused space
       var availableWidth = stateManager!.maxWidth!;
       var usedWidth = 0.0;
-      for (final column in stateManager!.refColumns)
-      {
+      for (final column in stateManager!.refColumns) {
         if (column != lastColumn) usedWidth += column.width;
       }
       var unusedSpace = availableWidth - usedWidth;
@@ -438,16 +412,19 @@ class TableViewState extends WidgetState<TableView>
 
   // called when a field changes via edit.
   // only applies to simple grid
-  void onChangedHandler(final PlutoGridOnChangedEvent event) async
-  {
+  void onChangedHandler(final PlutoGridOnChangedEvent event) async {
+
     var rowIdx = rows.indexOf(event.row);
     var colIdx = map.containsKey(event.column) ? map[event.column]!.index : -1;
-    await widget.model.onChangeHandler(rowIdx, colIdx, event.value, event.oldValue);
+    var cell   = event.row.cells.values.toList()[event.columnIdx];
+
+    // fire change handler
+    bool ok = await widget.model.onChangeHandler(rowIdx, colIdx, event.value, event.oldValue);
+    if (!ok) cell.value = event.oldValue;
     onSelectedHandler(force: true);
   }
 
-  void onRowsMoved(PlutoGridOnRowsMovedEvent event) async
-  {
+  void onRowsMoved(PlutoGridOnRowsMovedEvent event) async {
     var dragIndex = rows.indexOf(event.rows.first);
     var dropIndex = event.idx;
 
@@ -458,70 +435,92 @@ class TableViewState extends WidgetState<TableView>
     await widget.model.onDragDrop(dragIndex, dropIndex);
   }
 
-  void onDeselectHandler(PlutoGridOnRowDoubleTapEvent event)
-  {
-      // de-select all rows
-      for (var row in stateManager!.checkedRows)
-      {
-        stateManager!.setRowChecked(row, false);
-      }
+  void onDeselectHandler(PlutoGridOnRowDoubleTapEvent event) {
+    // de-select all rows
+    for (var row in stateManager!.checkedRows) {
+      stateManager!.setRowChecked(row, false);
+    }
 
-      // clear model selection
-      widget.model.onDeSelect();
+    // clear model selection
+    widget.model.onDeSelect();
 
-      // clear grid cell
-      stateManager!.clearCurrentCell();
+    // clear grid cell
+    stateManager!.clearCurrentCell();
 
-      // clear last cell selected
-      _lastSelectedCell = null;
+    // clear last cell selected
+    _lastSelectedCell = null;
   }
 
-  void onSelectedHandler({bool force = false})
+  bool isEditable(PlutoColumn col, PlutoRow row)
   {
-    if (stateManager == null || stateManager!.currentRow == null || stateManager!.currentCell == null) return;
+    var rowIdx = rows.indexOf(row);
+    var colIdx = map.containsKey(col) ? map[col]!.index : -1;
+    var hdr  = map.containsKey(col) ? map[col] : null;
+    var cell = widget.model.getRowCellModel(rowIdx, colIdx);
+    var editable = cell?.editable ?? hdr?.editable ?? false;
+    return editable;
+  }
 
-    // deselect
-    if (stateManager!.currentCell == _lastSelectedCell && !force) return;
+  void onSelectedHandler({bool force = false}) {
 
-    // remember last cell selected
-    _lastSelectedCell = stateManager!.currentCell!;
+    if (stateManager?.currentRow == null ||
+        stateManager?.currentColumn == null ||
+        stateManager?.currentCell == null) return;
+
+    var mgr  = stateManager!;
+    var row  = mgr.currentRow!;
+    var col  = mgr.currentColumn!;
+    var cell = mgr.currentCell!;
+
+    // ignore this call
+    if (cell == _lastSelectedCell && !force) return;
+    var sameColumn = cell.column == _lastSelectedCell?.column;
+    _lastSelectedCell = cell;
 
     // check/uncheck rows
-    for (var row in stateManager!.checkedRows)
-    {
-      if (row != stateManager!.currentRow)
-      {
-        stateManager!.setRowChecked(row, false);
+    for (var row in mgr.checkedRows) {
+      if (row != mgr.currentRow) {
+        mgr.setRowChecked(row, false);
       }
     }
 
     // check this row
-    if (stateManager!.currentRow!.checked != true)
-    {
-      stateManager!.setRowChecked(stateManager!.currentRow!, true);
+    if (row.checked != true) {
+      mgr.setRowChecked(row, true);
     }
 
     // get row index
-    var rowIdx = rows.indexOf(stateManager!.currentRow!);
+    var rowIdx = rows.indexOf(row);
 
     // get column index
-    var colIdx = map.containsKey(stateManager!.currentCell!.column) ? map[stateManager!.currentCell!.column]!.index : -1;
+    var colIdx = map.containsKey(cell.column)
+        ? map[cell.column]!.index
+        : -1;
 
     // set model selection
     widget.model.onSelect(rowIdx, colIdx);
 
-    // remember last cell selected
-    _lastSelectedCell = stateManager!.currentCell!;
+    // cell is editable?
+    bool editable = isEditable(col, row);
+
+    // Editing a cell, then clicking another cell in the same column
+    // that isn't editable, won't fire the onchange() method.
+    // By clearing the _lastSelectedCell, editable will be set to false
+    // on the next subsequent call to this routine.
+    if (!editable && sameColumn)
+    {
+      _lastSelectedCell = null;
+    }
+    else
+    {
+      col.enableEditingMode = editable;
+    }
   }
 
   // called when a field sort operation happens
-  void onSortedHandler(PlutoGridOnSortedEvent event) async
-  {
-    views.clear();
-  }
+  void onSortedHandler(PlutoGridOnSortedEvent event) async => views.clear();
 
-  void rebuild()
-  {
+  void rebuild() {
     grid = null;
     rows.clear();
     views.clear();
@@ -529,95 +528,94 @@ class TableViewState extends WidgetState<TableView>
   }
 
   // forces the lazy/page loaders to refire
-  void refresh()
-  {
+  void refresh() {
     // force a page reload
-    stateManager?.eventManager?.addEvent(PlutoGridSetColumnFilterEvent(filterRows: []));
+    stateManager?.eventManager
+        ?.addEvent(PlutoGridSetColumnFilterEvent(filterRows: []));
   }
 
   // forces the lazy/page loaders to refire
-  void reload()
-  {
+  void reload() {
     rows.clear();
     views.clear();
     refresh();
   }
 
-  List<String> getColumnTitles(PlutoGridStateManager state) => getVisibleColumns(state).map((e) => e.title).toList();
+  List<String> getColumnTitles(PlutoGridStateManager state) =>
+      getVisibleColumns(state).map((e) => e.title).toList();
 
-  List<PlutoColumn> getVisibleColumns(PlutoGridStateManager state) => state.columns.where((element) => !element.hide).toList();
+  List<PlutoColumn> getVisibleColumns(PlutoGridStateManager state) =>
+      state.columns.where((element) => !element.hide).toList();
 
-  List<String?> getSerializedRow(PlutoGridStateManager state, PlutoRow plutoRow)
-  {
+  List<String?> getSerializedRow(
+      PlutoGridStateManager state, PlutoRow plutoRow) {
     List<String?> serializedRow = [];
 
     // Order is important, so we iterate over columns
-    for (PlutoColumn column in getVisibleColumns(state))
-    {
+    for (PlutoColumn column in getVisibleColumns(state)) {
       dynamic value = plutoRow.cells[column.field]?.value;
       serializedRow.add(column.formattedValueForDisplay(value));
     }
     return serializedRow;
   }
 
-  void autosize(String? mode)
-  {
+  void autosize(String? mode) {
     // format mode
     mode = mode?.trim().toLowerCase();
 
-    switch (mode)
-    {
+    switch (mode) {
       case "scale":
-        stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.scale, resizeMode: _getResizeMode()));
+        stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(
+            autoSizeMode: PlutoAutoSizeMode.scale,
+            resizeMode: _getResizeMode()));
         break;
 
       case "equal":
-        stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.equal, resizeMode: _getResizeMode()));
+        stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(
+            autoSizeMode: PlutoAutoSizeMode.equal,
+            resizeMode: _getResizeMode()));
         break;
 
       case "fit":
-      for (PlutoColumn column in columns)
-      {
-        stateManager?.autoFitColumn(context, column);
-      }
-      break;
+        for (PlutoColumn column in columns) {
+          stateManager?.autoFitColumn(context, column);
+        }
+        break;
 
       case "none":
       default:
-      stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.none, resizeMode: _getResizeMode()));
-      break;
+        stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(
+            autoSizeMode: PlutoAutoSizeMode.none,
+            resizeMode: _getResizeMode()));
+        break;
     }
   }
 
   // return the current row
-  int? get currentRowIndex => stateManager?.currentRow != null ? rows.indexOf(stateManager!.currentRow!) : null;
+  int? get currentRowIndex => stateManager?.currentRow != null
+      ? rows.indexOf(stateManager!.currentRow!)
+      : null;
 
   // delete the row from the grid
-  int? deleteRow(int? row)
-  {
+  int? deleteRow(int? row) {
     PlutoRow? plutoRow;
     int? plutoRowIndex;
 
     if (grid == null) return null;
 
     // lookup the row to delete
-    if (row != null)
-    {
+    if (row != null) {
       plutoRow = row > 0 && row < grid!.rows.length ? grid!.rows[row] : null;
-    }
-    else
-    {
+    } else {
       plutoRow = stateManager?.currentRow;
     }
 
     // delete the row
-    if (plutoRow != null)
-    {
+    if (plutoRow != null) {
       plutoRowIndex = rows.indexOf(plutoRow);
 
       stateManager?.removeRows([plutoRow]);
-      if (rows.contains(plutoRow))
-      {
+      if (rows.contains(plutoRow)) {
         rows.remove(plutoRow);
       }
 
@@ -629,46 +627,39 @@ class TableViewState extends WidgetState<TableView>
   }
 
   // insert the row from the grid
-  int? insertRow(int rowIndex)
-  {
+  int? insertRow(int rowIndex) {
     var row = buildPlutoRow(rowIndex);
-    if (row != null)
-    {
+    if (row != null) {
       stateManager?.insertRows(rowIndex, [row]);
     }
     return row != null ? rowIndex : null;
   }
 
   // sets the page size
-  void setFilterBar(bool? on)
-  {
+  void setFilterBar(bool? on) {
     // toggle filter bar
     stateManager?.setShowColumnFilter(on == true);
   }
 
   // sets the page size
-  void setPageSize(int size)
-  {
+  void setPageSize(int size) {
     bool doRebuild = (size > 0 && !paged) || (size <= 0 && paged);
 
     // rebuild the grid
-    if (doRebuild)
-    {
+    if (doRebuild) {
       grid = null;
       setState(() {});
       return;
     }
 
     // change the page size
-    if (paged)
-    {
+    if (paged) {
       stateManager?.setPageSize(size);
       refresh();
     }
   }
 
-  Future<Uint8List?> exportToPDF() async
-  {
+  Future<Uint8List?> exportToPDF() async {
     if (stateManager == null) return null;
 
     // This ensures we have built out all rows
@@ -682,8 +673,7 @@ class TableViewState extends WidgetState<TableView>
 
     // serialize the list
     List<List<String?>> serialized = [];
-    for (var row in list)
-    {
+    for (var row in list) {
       serialized.add(getSerializedRow(stateManager!, row));
     }
 
@@ -696,9 +686,9 @@ class TableViewState extends WidgetState<TableView>
     final themeData = pluto_grid_export.ThemeData.base();
 
     // these should be passed not hard coded
-    var title   = "Table Export";
+    var title = "Table Export";
     var creator = "Futter Markup Language";
-    var format  = pluto_grid_export.PdfPageFormat.a4.landscape;
+    var format = pluto_grid_export.PdfPageFormat.a4.landscape;
 
     // generate the report
     var bytes = pluto_grid_export.GenericPdfController(
@@ -713,8 +703,7 @@ class TableViewState extends WidgetState<TableView>
     return bytes;
   }
 
-  Future<String?> exportToCSV() async
-  {
+  Future<String?> exportToCSV() async {
     if (stateManager == null) return null;
 
     // This ensures we have built out all rows
@@ -728,21 +717,18 @@ class TableViewState extends WidgetState<TableView>
 
     // serialize the list
     List<List<String?>> serialized = [];
-    for (var row in list)
-    {
+    for (var row in list) {
       serialized.add(getSerializedRow(stateManager!, row));
     }
 
     // generate the report
-    var csv = pluto_grid_export.PlutoGridDefaultCsvExport().export(stateManager!);
+    var csv = const pluto_grid_export.PlutoGridDefaultCsvExport()
+        .export(stateManager!);
     return csv;
   }
 
-
-  PlutoLazyPagination _pageLoader(PlutoGridStateManager stateManager)
-  {
+  PlutoLazyPagination _pageLoader(PlutoGridStateManager stateManager) {
     var loader = PlutoLazyPagination(
-
         stateManager: stateManager,
 
         // fetch routine called on
@@ -770,16 +756,13 @@ class TableViewState extends WidgetState<TableView>
         // Determines the page size to move to the previous and next page buttons.
         // Default value is null. In this case,
         // it moves as many as the number of page buttons visible on the screen.
-        pageSizeToMove: null
-    );
+        pageSizeToMove: null);
 
     return loader;
   }
 
-  PlutoInfinityScrollRows _lazyLoader(PlutoGridStateManager stateManager)
-  {
+  PlutoInfinityScrollRows _lazyLoader(PlutoGridStateManager stateManager) {
     var loader = PlutoInfinityScrollRows(
-
       stateManager: stateManager,
 
       // fetch routine called on
@@ -804,20 +787,28 @@ class TableViewState extends WidgetState<TableView>
     return loader;
   }
 
-  PlutoColumnTextAlign _getAlignment()
-  {
-    var align = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
-    if (align.aligned == Alignment.topCenter || align.aligned == Alignment.center || align.aligned == Alignment.bottomCenter) return PlutoColumnTextAlign.center;
-    if (align.aligned == Alignment.topLeft   || align.aligned == Alignment.centerLeft || align.aligned == Alignment.bottomLeft) return PlutoColumnTextAlign.left;
-    if (align.aligned == Alignment.topRight  || align.aligned == Alignment.centerRight || align.aligned == Alignment.bottomRight) return PlutoColumnTextAlign.right;
+  PlutoColumnTextAlign _getAlignment() {
+    var align = WidgetAlignment(widget.model.layoutType, widget.model.center,
+        widget.model.halign, widget.model.valign);
+    if (align.aligned == Alignment.topCenter ||
+        align.aligned == Alignment.center ||
+        align.aligned == Alignment.bottomCenter) {
+      return PlutoColumnTextAlign.center;
+    }
+    if (align.aligned == Alignment.topLeft ||
+        align.aligned == Alignment.centerLeft ||
+        align.aligned == Alignment.bottomLeft) return PlutoColumnTextAlign.left;
+    if (align.aligned == Alignment.topRight ||
+        align.aligned == Alignment.centerRight ||
+        align.aligned == Alignment.bottomRight) {
+      return PlutoColumnTextAlign.right;
+    }
     return PlutoColumnTextAlign.center;
   }
 
-  PlutoResizeMode _getResizeMode()
-  {
+  PlutoResizeMode _getResizeMode() {
     var resize = PlutoResizeMode.normal;
-    switch (widget.model.header?.resize?.trim().toLowerCase())
-    {
+    switch (widget.model.header?.resize?.trim().toLowerCase()) {
       case "none":
         resize = PlutoResizeMode.none;
         break;
@@ -834,37 +825,47 @@ class TableViewState extends WidgetState<TableView>
     return resize;
   }
 
-  PlutoGridConfiguration _buildConfig()
-  {
+  PlutoGridConfiguration _buildConfig() {
     var theme = Theme.of(context);
     var dark = theme.brightness == Brightness.dark;
 
     // define color scheme
-    var borderColor       = widget.model.borderColor ?? (dark ? Color(0xFFDDE2EB) : Color(0xFFDDE2EB));
-    var textColor         = widget.model.textColor   ?? (dark ? Colors.white      : Colors.black);
-    var backgroundColor   = widget.model.color       ?? (dark ? Color(0xFF111111) : Colors.white);
-    var rowColor          = widget.model.color       ?? (dark ? Color(0xFF111111) : Colors.white);
-    var oddRowColor       = widget.model.color2 != null ? rowColor : null;
-    var evenRowColor      = widget.model.color2;
-    var checkedColor      = widget.model.color3 != null ? widget.model.color3! : theme.colorScheme.surfaceVariant;
-    var activeColor       = widget.model.color3 != null ? widget.model.color3! : theme.colorScheme.surfaceVariant;
-    var activeBorderColor = widget.model.color4 != null ? widget.model.color4! : theme.colorScheme.primary;
+    var borderColor = widget.model.borderColor ??
+        (dark ? const Color(0xFFDDE2EB) : const Color(0xFFDDE2EB));
+    var textColor =
+        widget.model.textColor ?? (dark ? Colors.white : Colors.black);
+    var backgroundColor =
+        widget.model.color ?? (dark ? const Color(0xFF111111) : Colors.white);
+    var rowColor =
+        widget.model.color ?? (dark ? const Color(0xFF111111) : Colors.white);
+    var oddRowColor = widget.model.color2 != null ? rowColor : null;
+    var evenRowColor = widget.model.color2;
+    var checkedColor = widget.model.color3 != null
+        ? widget.model.color3!
+        : theme.colorScheme.surfaceVariant;
+    var activeColor = widget.model.color3 != null
+        ? widget.model.color3!
+        : theme.colorScheme.surfaceVariant;
+    var activeBorderColor = widget.model.color4 != null
+        ? widget.model.color4!
+        : theme.colorScheme.primary;
 
     // row and column heights
-    var colHeight    = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
-    var rowHeight    = widget.model.getRowModel(0)?.height ?? colHeight;
+    var colHeight = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
+    var rowHeight = widget.model.getRowModel(0)?.height ?? colHeight;
 
     // style
-    var style = dark ?
-
-    PlutoGridStyleConfig.dark(
-        defaultCellPadding: EdgeInsets.all(0),
+    var style = dark
+        ? PlutoGridStyleConfig.dark(
+        defaultCellPadding: const EdgeInsets.all(0),
         columnHeight: colHeight,
         rowHeight: rowHeight,
-        gridBorderRadius: BorderRadius.circular(widget.model.radiusTopRight),
-        cellTextStyle: TextStyle(fontSize: widget.model.textSize, color: textColor),
-        columnAscendingIcon: Icon(Icons.arrow_downward_rounded),
-        columnDescendingIcon: Icon(Icons.arrow_upward_rounded),
+        gridBorderRadius:
+        BorderRadius.circular(widget.model.radiusTopRight),
+        cellTextStyle:
+        TextStyle(fontSize: widget.model.textSize, color: textColor),
+        columnAscendingIcon: const Icon(Icons.arrow_downward_rounded),
+        columnDescendingIcon: const Icon(Icons.arrow_upward_rounded),
         enableGridBorderShadow: widget.model.shadow,
         borderColor: borderColor,
         gridBackgroundColor: backgroundColor,
@@ -873,16 +874,17 @@ class TableViewState extends WidgetState<TableView>
         evenRowColor: evenRowColor,
         checkedColor: checkedColor,
         activatedColor: activeColor,
-        activatedBorderColor: activeBorderColor) :
-
-    PlutoGridStyleConfig(
-        defaultCellPadding: EdgeInsets.all(0),
+        activatedBorderColor: activeBorderColor)
+        : PlutoGridStyleConfig(
+        defaultCellPadding: const EdgeInsets.all(0),
         columnHeight: colHeight,
         rowHeight: rowHeight,
-        gridBorderRadius: BorderRadius.circular(widget.model.radiusTopRight),
-        cellTextStyle: TextStyle(fontSize: widget.model.textSize, color: textColor),
-        columnAscendingIcon: Icon(Icons.arrow_downward_rounded),
-        columnDescendingIcon: Icon(Icons.arrow_upward_rounded),
+        gridBorderRadius:
+        BorderRadius.circular(widget.model.radiusTopRight),
+        cellTextStyle:
+        TextStyle(fontSize: widget.model.textSize, color: textColor),
+        columnAscendingIcon: const Icon(Icons.arrow_downward_rounded),
+        columnDescendingIcon: const Icon(Icons.arrow_upward_rounded),
         enableGridBorderShadow: widget.model.shadow,
         borderColor: borderColor,
         gridBackgroundColor: backgroundColor,
@@ -894,18 +896,17 @@ class TableViewState extends WidgetState<TableView>
         activatedBorderColor: activeBorderColor);
 
     bool boundedWidth = false;
-    if (widget.model.header != null)
-    {
-      for (var header in widget.model.header!.cells)
-      {
-        if (header.widthOuter != null || header.widthPercentage != null) boundedWidth = true;
+    if (widget.model.header != null) {
+      for (var header in widget.model.header!.cells) {
+        if (header.widthOuter != null || header.widthPercentage != null) {
+          boundedWidth = true;
+        }
       }
     }
 
     // column fit
     var fit = boundedWidth ? PlutoAutoSizeMode.none : PlutoAutoSizeMode.scale;
-    switch (widget.model.header?.fit?.trim().toLowerCase())
-    {
+    switch (widget.model.header?.fit?.trim().toLowerCase()) {
       case "equal":
         fit = PlutoAutoSizeMode.equal;
         break;
@@ -921,11 +922,13 @@ class TableViewState extends WidgetState<TableView>
     }
 
     // config
-    return PlutoGridConfiguration(style: style, columnSize: PlutoGridColumnSizeConfig(autoSizeMode: fit, resizeMode: _getResizeMode()));
+    return PlutoGridConfiguration(
+        style: style,
+        columnSize: PlutoGridColumnSizeConfig(
+            autoSizeMode: fit, resizeMode: _getResizeMode()));
   }
 
-  PlutoColumnGroup? _buildColumnGroup(TableHeaderGroupModel model)
-  {
+  PlutoColumnGroup? _buildColumnGroup(TableHeaderGroupModel model) {
     // ignore this group
     if (!model.hasDescendantCells()) return null;
 
@@ -933,19 +936,15 @@ class TableViewState extends WidgetState<TableView>
     List<String> fields = [];
 
     // iterate through groups
-    for (var mdl in model.groups)
-    {
+    for (var mdl in model.groups) {
       var group = _buildColumnGroup(mdl);
       if (group != null) groups.add(group);
     }
 
     // iterate through groups
-    for (var mdl in model.cells)
-    {
-      for (var entry in map.entries)
-      {
-        if (entry.value == mdl)
-        {
+    for (var mdl in model.cells) {
+      for (var entry in map.entries) {
+        if (entry.value == mdl) {
           var column = entry.key;
           fields.add(column.field);
           break;
@@ -956,38 +955,41 @@ class TableViewState extends WidgetState<TableView>
     // something went wrong
     if (groups.isEmpty && fields.isEmpty) return null;
 
-    var title  = model.title;
-    var header = WidgetSpan(child:BoxView(model));
+    var title = model.title;
+    var header = WidgetSpan(child: BoxView(model));
 
     var group = PlutoColumnGroup(
       title: title ?? "",
       titleSpan: header,
-      fields: fields.isNotEmpty ? fields: null,
-      children: fields.isNotEmpty ? null : groups.isNotEmpty ? groups : null,
-      expandedColumn:  false,
+      fields: fields.isNotEmpty ? fields : null,
+      children: fields.isNotEmpty
+          ? null
+          : groups.isNotEmpty
+          ? groups
+          : null,
+      expandedColumn: false,
       backgroundColor: model.color,
-      titlePadding: EdgeInsets.all(1),
+      titlePadding: const EdgeInsets.all(1),
     );
 
     return group;
   }
 
-  Widget _footerBuilder(PlutoColumnFooterRendererContext context, TableFooterCellModel model)
-  {
-    var view = WidgetSpan(child:BoxView(model));
+  Widget _footerBuilder(
+      PlutoColumnFooterRendererContext context, TableFooterCellModel model) {
+    var view = WidgetSpan(child: BoxView(model));
 
     var footer = PlutoAggregateColumnFooter(
-      rendererContext: context,
-      type: PlutoAggregateColumnType.max,
-      format: '#,###',
-      alignment: Alignment.center,
-      titleSpanBuilder: (text) => [view]);
+        rendererContext: context,
+        type: PlutoAggregateColumnType.max,
+        format: '#,###',
+        alignment: Alignment.center,
+        titleSpanBuilder: (text) => [view]);
 
     return footer;
   }
 
-  void _buildColumns()
-  {
+  void _buildColumns() {
     groups.clear();
     columns.clear();
     map.clear();
@@ -995,32 +997,31 @@ class TableViewState extends WidgetState<TableView>
     if (widget.model.header == null) return;
 
     List<String> fields = [];
-    for (var cell in widget.model.header!.cells)
-    {
-      var title  = cell.title ?? cell.field ?? "Column ${cell.index}";
+    for (var cell in widget.model.header!.cells) {
+      var title = cell.title ?? cell.field ?? "Column ${cell.index}";
 
       // set custom header renderer
-      var header = WidgetSpan(child:BoxView(cell));
-      if (widget.model.header!.cells.length == 1 && (title.trim() == TableModel.dynamicTableValue1 || title.trim() == TableModel.dynamicTableValue2))
-      {
-        header = WidgetSpan(child:Text(""));
+      var header = WidgetSpan(child: BoxView(cell));
+      if (widget.model.header!.cells.length == 1 &&
+          (title.trim() == TableModel.dynamicTableValue1 ||
+              title.trim() == TableModel.dynamicTableValue2)) {
+        header = const WidgetSpan(child: Text(""));
       }
 
       // field names must be unique across columns
-      var field  = cell.field ?? cell.title ?? title;
+      var field = cell.field ?? cell.title ?? title;
       int i = 1;
-      while (fields.contains(field))
-      {
+      while (fields.contains(field)) {
         field = "$field-${i++}";
       }
       fields.add(field);
 
       // cell builder - for performance reasons, tables without defined
       // table rows can be rendered much quicker
-      var builder = cell.usesRenderer ? (rendererContext) => cellBuilder(rendererContext, cell.hasEnterableFields) : null;
-
-      // cell is editable
-      var editable = !cell.usesRenderer && cell.editable;
+      var builder = cell.usesRenderer
+          ? (rendererContext) =>
+          cellBuilder(rendererContext, cell.hasEnterableFields)
+          : null;
 
       // cell is resizeable
       var resizeable = cell.resizeable;
@@ -1034,11 +1035,14 @@ class TableViewState extends WidgetState<TableView>
 
       // footer builder
       TableFooterCellModel? footer;
-      if (widget.model.footer?.cells != null && cell.index < widget.model.footer!.cells.length)
-      {
+      if (widget.model.footer?.cells != null &&
+          cell.index < widget.model.footer!.cells.length) {
         footer = widget.model.footer!.cells[cell.index];
       }
-      var footerBuilder = footer != null ? (PlutoColumnFooterRendererContext context) => _footerBuilder(context, footer!) : null;
+      var footerBuilder = footer != null
+          ? (PlutoColumnFooterRendererContext context) =>
+          _footerBuilder(context, footer!)
+          : null;
 
       // build the column
       var column = PlutoColumn(
@@ -1050,13 +1054,12 @@ class TableViewState extends WidgetState<TableView>
           textAlign: alignment,
           enableSorting: cell.sortable,
           enableFilterMenuItem: cell.filter,
-          enableEditingMode: editable,
           enableAutoEditing: false,
           enableContextMenu: showMenu,
           enableDropToResize: resizeable,
-          readOnly: !editable,
-          titlePadding: EdgeInsets.all(1),
-          cellPadding: EdgeInsets.all(0),
+          enableEditingMode: false,
+          titlePadding: const EdgeInsets.all(1),
+          cellPadding: const EdgeInsets.all(0),
           backgroundColor: cell.color,
           width: cell.widthOuter ?? PlutoGridSettings.columnWidth,
           minWidth: PlutoGridSettings.minColumnWidth,
@@ -1072,46 +1075,48 @@ class TableViewState extends WidgetState<TableView>
     }
 
     // build column groups
-    for (var model in widget.model.header!.groups)
-    {
+    for (var model in widget.model.header!.groups) {
       var group = _buildColumnGroup(model);
-      if (group != null)
-      {
+      if (group != null) {
         groups.add(group);
       }
     }
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // build style
-    if (grid == null)
-    {
+    if (grid == null) {
       // build the columns
       _buildColumns();
 
       var config = _buildConfig();
 
       // Busy / Loading Indicator
-      if (widget.model.showBusy)
-      {
-        busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
+      if (widget.model.showBusy) {
+        busy ??= BusyModel(widget.model,
+            visible: widget.model.busy,
+            observable: widget.model.busyObservable)
+            .getView();
       }
 
       // paged grid
       paged = widget.model.pageSize > 0;
 
+      // Initial empty row set
+      List<PlutoRow> rows = [];
+
       // build the grid
       // UniqueKey() is necessary otherwise the grid will not recreate itself on header changes
-      grid = PlutoGrid(key: UniqueKey(),
+      grid = PlutoGrid(
+          key: UniqueKey(),
           configuration: config,
           columnGroups: groups,
           columns: columns.toList(),
-          rows: [],
+          rows: rows,
           mode: PlutoGridMode.normal,
           onLoaded: onLoadedHandler,
           onSorted: onSortedHandler,
@@ -1120,15 +1125,13 @@ class TableViewState extends WidgetState<TableView>
           onRowsMoved: onRowsMoved,
           //onSelected: onSelectedHandler,
           noRowsWidget: widget.model.noData?.getView(),
-          createFooter: paged ?  _pageLoader : _lazyLoader);
-    }
-    else
-    {
+          createFooter: paged ? _pageLoader : _lazyLoader);
+    } else {
       // fit last column to fill table
       var fit = widget.model.header?.fit?.trim().toLowerCase();
-      if (fit == "fill")
-      {
-        WidgetsBinding.instance.addPostFrameCallback((_) => _fitLastColumnWidth());
+      if (fit == "fill") {
+        WidgetsBinding.instance
+            .addPostFrameCallback((_) => _fitLastColumnWidth());
       }
     }
 
@@ -1139,8 +1142,7 @@ class TableViewState extends WidgetState<TableView>
     view = addMargins(view);
 
     // display busy widget over table
-    if (widget.model.showBusy)
-    {
+    if (widget.model.showBusy) {
       view = Stack(children: [view, Center(child: busy)]);
     }
 

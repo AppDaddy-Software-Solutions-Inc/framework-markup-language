@@ -22,12 +22,12 @@ extension Ex on double {
   double toPrecision(int n) => double.parse(toStringAsFixed(n));
 }
 
-String newId({String prefix = "auto"}) => "$prefix${Uuid().v4().replaceAll("-", "").toLowerCase()}";
+String newId({String prefix = "auto"}) =>
+    "$prefix${const Uuid().v4().replaceAll("-", "").toLowerCase()}";
 
 /// Takes in a String/List and returns true if it is null, blank or empty
 bool isNull(value) => value == null;
-bool isNullOrEmpty(dynamic s)
-{
+bool isNullOrEmpty(dynamic s) {
   try {
     if (s == null || s == 'null') return true;
     if (s is String) {
@@ -41,14 +41,14 @@ bool isNullOrEmpty(dynamic s)
   return false;
 }
 
-bool? toBool(dynamic s, {List<String> allowTrue = const ['true','1','yes'], List<String> allowFalse = const ['false','0','no']})
-{
-  try
-  {
+bool? toBool(dynamic s,
+    {List<String> allowTrue = const ['true', '1', 'yes'],
+    List<String> allowFalse = const ['false', '0', 'no']}) {
+  try {
     if (s == null) return null;
     if (s is bool) return s;
     s = s.toString().trim().toLowerCase();
-    if (allowTrue.contains(s))  return true;
+    if (allowTrue.contains(s)) return true;
     if (allowFalse.contains(s)) return false;
     return null;
   } catch (e) {
@@ -57,37 +57,31 @@ bool? toBool(dynamic s, {List<String> allowTrue = const ['true','1','yes'], List
 }
 
 /// Dynamic check for a boolean from a String/bool
-bool isBool(dynamic b, {List<String> allow = const ['true','false','1','0','yes','no']}) {
+bool isBool(dynamic b,
+    {List<String> allow = const ['true', 'false', '1', '0', 'yes', 'no']}) {
   try {
     if (b == null) return false;
     if (b is bool) return true;
     b = b.toString().trim().toLowerCase();
     return allow.contains(b);
-  }
-  catch (e)
-  {
+  } catch (e) {
     return false;
   }
 }
 
 /// toString() but safe to use on null
-String? toStr(dynamic s)
-{
-  try
-  {
+String? toStr(dynamic s) {
+  try {
     if (s == null) return null;
-    if (s is Color)
-    {
-      var r = s.red.toRadixString(16).padLeft(2,'0');
-      var g = s.green.toRadixString(16).padLeft(2,'0');
-      var b = s.blue.toRadixString(16).padLeft(2,'0');
-      var o = s.alpha.toRadixString(16).padLeft(2,'0');
+    if (s is Color) {
+      var r = s.red.toRadixString(16).padLeft(2, '0');
+      var g = s.green.toRadixString(16).padLeft(2, '0');
+      var b = s.blue.toRadixString(16).padLeft(2, '0');
+      var o = s.alpha.toRadixString(16).padLeft(2, '0');
       return "#$r$g$b$o";
     }
     return s.toString();
-  }
-  catch (e)
-  {
+  } catch (e) {
     return null;
   }
 }
@@ -106,13 +100,16 @@ int? toInt(dynamic s) {
 }
 
 /// Returns an int from a String if it is a numeric value
-Color? toColor(dynamic s)
-{
+Color? toColor(dynamic s) {
   if (s == null) return null;
   if (s is String) return ColorHelper.toColor(s);
   if (s is Color) return s;
-  if (s is MaterialColor) return Color.fromRGBO(s.red, s.green, s.blue, s.opacity);
-  if (s is MaterialAccentColor) return Color.fromRGBO(s.red, s.green, s.blue, s.opacity);
+  if (s is MaterialColor) {
+    return Color.fromRGBO(s.red, s.green, s.blue, s.opacity);
+  }
+  if (s is MaterialAccentColor) {
+    return Color.fromRGBO(s.red, s.green, s.blue, s.opacity);
+  }
   return null;
 }
 
@@ -123,11 +120,9 @@ num? toNum(dynamic s, {allowMalformed = true}) {
   try {
     if (s == null || s == '' || s == 'null') return null;
     if (s is num) return s;
-    if (s is String)
-    {
+    if (s is String) {
       var n = num.parse(s.trim());
-      if (!allowMalformed)
-      {
+      if (!allowMalformed) {
         s = s.toLowerCase().trim();
         if (s.startsWith('0') && s.length > 1) return null;
         if (s.startsWith('.') || s.endsWith('.')) return null;
@@ -138,9 +133,7 @@ num? toNum(dynamic s, {allowMalformed = true}) {
       return n;
     }
     return toNum(s.toString());
-  }
-  catch (e)
-  {
+  } catch (e) {
     return null;
   }
 }
@@ -160,27 +153,21 @@ double? toDouble(dynamic s) {
 /// Converts a String to a formattable DateTime object
 ///
 /// More info on supported formats can be found in [DateFormat] and [DateTime]
-DateTime? toDate(String? datetime, {String? format})
-{
+DateTime? toDate(String? datetime, {String? format}) {
   if (isNullOrEmpty(datetime) || datetime == 'null') return null;
 
   DateTime? result;
-  try
-  {
+  try {
     DateFormat formattedDate = DateFormat(format);
     if (format is String) result = formattedDate.parse(datetime!);
-  } on FormatException catch (e)
-  {
+  } on FormatException catch (e) {
     Log().debug(e.toString(),
-        caller:
-        'static DateTime? toDate(String? datetime, {String? format})');
-  }
-  catch (e)
-  {
+        caller: 'static DateTime? toDate(String? datetime, {String? format})');
+  } catch (e) {
     result = null;
     Log().debug(e.toString(),
         caller:
-        'helper/string.dart => DateTime toDate(String date, String format) => DateFormat(format).parse(date)');
+            'helper/string.dart => DateTime toDate(String date, String format) => DateFormat(format).parse(date)');
   }
 
   try {
@@ -191,7 +178,7 @@ DateTime? toDate(String? datetime, {String? format})
     result = null;
     Log().debug(e.toString(),
         caller:
-        'helper/string.dart => DateTime toDate(String date, String format) => DateTime.tryParse(date)');
+            'helper/string.dart => DateTime toDate(String date, String format) => DateTime.tryParse(date)');
   }
   return result;
 }
@@ -210,7 +197,7 @@ String? toChar(DateTime? datetime, {String? format}) {
     result = null;
     Log().debug(e.toString(),
         caller:
-        'helper/string.dart => String toChar(String date, String format)');
+            'helper/string.dart => String toChar(String date, String format)');
   }
   return result;
 }
@@ -234,7 +221,8 @@ String toTitleCase(String text) {
 int byteToInt8(int b) => Uint8List.fromList([b]).buffer.asByteData().getInt8(0);
 
 /// Convert two byte length int values to an int value, for example a byte of \[00000001, 00000010\] -> 258
-int twoByteToInt16(int v1, int v2) => Uint8List.fromList([v1, v2]).buffer.asByteData().getUint16(0);
+int twoByteToInt16(int v1, int v2) =>
+    Uint8List.fromList([v1, v2]).buffer.asByteData().getUint16(0);
 
 // TODO
 String byteListToHexString(List<int> bytes) => bytes
@@ -259,7 +247,6 @@ T? toEnum<T>(String? key, List<T> values) {
   }
 }
 
-
 UriData? toDataUri(dynamic uri) {
   try {
     if (uri == null) return null;
@@ -281,7 +268,7 @@ String? fromBase64(dynamic s) {
       while (s.length % 4 != 0) {
         s = s + "=";
       }
-      var bytes = Base64Codec().decode(s);
+      var bytes = const Base64Codec().decode(s);
       return utf8.decode(bytes);
     }
     if (s is List<int>) {
@@ -294,15 +281,12 @@ String? fromBase64(dynamic s) {
 }
 
 /// Check if a String is numeric value
-bool isNumeric(dynamic s)
-{
-  try
-  {
+bool isNumeric(dynamic s) {
+  try {
     if (s is double) return true;
     double.parse(s);
     return true;
-  }
-  catch (_) {}
+  } catch (_) {}
   return false;
 }
 
@@ -323,28 +307,33 @@ bool isPercent(dynamic s) {
 }
 
 /// List Item
-dynamic elementAt(Object list, int index) => (list is List && list.isNotEmpty && !index.isNegative && index < list.length) ? list[index] : null;
+dynamic elementAt(Object list, int index) => (list is List &&
+        list.isNotEmpty &&
+        !index.isNegative &&
+        index < list.length)
+    ? list[index]
+    : null;
 
 /// Parses Strings containing emoiji(s) in a text syntax like `:taco:` to `🌮`
 String parseEmojis(String val) {
   String value = val;
   try {
     value = value.replaceAllMapped(RegExp(r'(?=:)([^\s])(.*?)([^\s])(:)'),
-            (Match m) {
-          String? m2;
-          if ((m[0]?.startsWith(':') ?? false) &&
-              (m[0]?.endsWith(':') ?? false) &&
-              !(m[0]?.contains(' ') ?? false)) {
-            m2 = (m[0]!.substring(1, m[0]!.length - 1));
-          }
-          if (!isNullOrEmpty(m2) &&
-              !(m2?.contains(':') ?? false) &&
-              !(m2?.contains(' ') ?? false) &&
-              Emoji.emoji[m2?.toLowerCase()] != null) {
-            return Emoji.emoji[m2?.toLowerCase()]!;
-          }
-          return m[0] ?? m.toString();
-        });
+        (Match m) {
+      String? m2;
+      if ((m[0]?.startsWith(':') ?? false) &&
+          (m[0]?.endsWith(':') ?? false) &&
+          !(m[0]?.contains(' ') ?? false)) {
+        m2 = (m[0]!.substring(1, m[0]!.length - 1));
+      }
+      if (!isNullOrEmpty(m2) &&
+          !(m2?.contains(':') ?? false) &&
+          !(m2?.contains(' ') ?? false) &&
+          Emoji.emoji[m2?.toLowerCase()] != null) {
+        return Emoji.emoji[m2?.toLowerCase()]!;
+      }
+      return m[0] ?? m.toString();
+    });
   } catch (e) {
     return val;
   }

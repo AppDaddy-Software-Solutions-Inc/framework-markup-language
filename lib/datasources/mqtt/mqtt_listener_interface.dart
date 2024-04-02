@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'payload.dart';
-abstract class IMqttListener
-{
+
+abstract class IMqttListener {
   onMessage(Payload payload);
   onConnected();
   onDisconnected(String origin);

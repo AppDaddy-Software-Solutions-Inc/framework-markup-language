@@ -1,111 +1,48 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
 import 'package:fml/application/application_model.dart';
-import 'package:fml/navigation/navigation_manager.dart';
-import 'package:fml/navigation/page.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/widget_model_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 
-class Store extends WidgetModel implements IModelListener
-{
-  final List<ApplicationModel> _apps = [];
-
-  List<ApplicationModel> getApps() => _apps.toList();
+class StoreModel extends WidgetModel {
 
   bool initialized = false;
 
-  static final Store _singleton = Store._initialize();
-  factory Store() => _singleton;
-  Store._initialize() : super(null, "STORE")
-  {
-   init();
-  }
+  static final StoreModel _singleton = StoreModel._initialize();
+  factory StoreModel() => _singleton;
+  StoreModel._initialize() : super(null, "STORE");
 
-  init() async
-  {
-    initialized = await _load();
-  }
-
-  Future<bool> _load() async
-  {
+  Future addApp(ApplicationModel app) async {
     busy = true;
 
-    var apps = await ApplicationModel.loadAll();
+    // add the application
+    bool ok = await System.addApplication(app);
 
-    _apps.clear();
-    for (ApplicationModel app in apps)
-    {
-      app.registerListener(this);
-      _apps.add(app);
-    }
-
-    // sort by position
-    //_apps.sort();
-
-    busy = false;
-
-    return true;
-  }
-
-  Future add(ApplicationModel app) async
-  {
-    busy = true;
-
-    // insert into the hive
-    bool ok = await app.insert();
-
-    // add to the list
-    if (ok) _apps.add(app);
+    // notify
+    if (!ok) System.toast('Failed to add the application');
 
     busy = false;
   }
 
-  ApplicationModel? find({String? url})
-  {
-    // query hive
-    ApplicationModel? app = _apps.firstWhereOrNull((app) => app.url == url);
+  Future deleteApp(ApplicationModel app) async {
+    busy = true;
 
-    return app;
+    // delete the application
+    bool ok = await System.deleteApplication(app);
+
+    // notify
+    if (!ok) System.toast('Failed to delete the application');
+
+    busy = false;
   }
 
-  delete(ApplicationModel? app) async
-  {
-    if (app != null)
+  ApplicationModel? findApp({String? url}) {
+
+    // find app with matching url
+    for (var app in System.apps)
     {
-      busy = true;
-
-      // delete from the hive
-      bool ok = await app.delete();
-
-      // remove from the list
-      if (ok && _apps.contains(app)) _apps.remove(app);
-
-      busy = false;
+      if (app.url == url) return app;
     }
-  }
-
-  launch(ApplicationModel app, BuildContext context) async
-  {
-    // get the home page
-    var page = app.homePage;
-
-    // set the system app
-    app.started = false;
-    System().launchApplication(app, true);
-
-    // refresh the app
-    app.refresh();
-
-    // launch the page
-    NavigationManager().setNewRoutePath(PageConfiguration(uri: Uri.tryParse(page), title: "Store"), source: "store");
-  }
-
-  @override
-  onModelChange(WidgetModel model, {String? property, value})
-  {
-    notifyListeners(property, value);
+    return null;
   }
 }

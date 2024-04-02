@@ -4,9 +4,9 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/datasources/base/model.dart';
-import 'package:fml/event/handler.dart' ;
+import 'package:fml/event/handler.dart';
 import 'package:xml/xml.dart';
 import 'payload.dart';
 import 'nfc_listener_interface.dart';
@@ -14,8 +14,7 @@ import 'nfc.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class NcfModel extends DataSourceModel implements IDataSource, INfcListener
-{
+class NcfModel extends DataSourceModel implements IDataSource, INfcListener {
   @override
   bool get autoexecute => super.autoexecute ?? true;
 
@@ -40,6 +39,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get method => _method?.get() ?? "read";
 
   // on write fail event
@@ -53,8 +53,8 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
           scope: scope, lazyEval: true);
     }
   }
-  String? get onwritefail => _onwritefail?.get();
 
+  String? get onwritefail => _onwritefail?.get();
 
   // on read fail event
   StringObservable? get onReadFailObservable => _onreadfail;
@@ -67,8 +67,8 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
           scope: scope, lazyEval: true);
     }
   }
-  String? get onreadfail => _onreadfail?.get();
 
+  String? get onreadfail => _onreadfail?.get();
 
   // on timeout event
   StringObservable? get onTimeoutObservable => _ontimeout;
@@ -81,65 +81,56 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
           scope: scope, lazyEval: true);
     }
   }
+
   String? get ontimeout => _ontimeout?.get();
 
-  NcfModel(WidgetModel parent, String? id) : super(parent, id)
-  {
-    _received = IntegerObservable(Binding.toKey(id, 'received'), 0, scope: scope);
-    _serial   = StringObservable(Binding.toKey(id, 'serial'), null, scope: scope);
-    _message  = StringObservable(Binding.toKey(id, 'payload'), null, scope: scope);
+  NcfModel(WidgetModel parent, String? id) : super(parent, id) {
+    _received =
+        IntegerObservable(Binding.toKey(id, 'received'), 0, scope: scope);
+    _serial = StringObservable(Binding.toKey(id, 'serial'), null, scope: scope);
+    _message =
+        StringObservable(Binding.toKey(id, 'payload'), null, scope: scope);
   }
 
-  static NcfModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static NcfModel? fromXml(WidgetModel parent, XmlElement xml) {
     NcfModel? model;
-    try
-    {
+    try {
       model = NcfModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'nfc.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'nfc.Model');
       model = null;
     }
     return model;
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     Reader().removeListener(this);
     super.dispose();
   }
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
-
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
-    method      = Xml.attribute(node: xml, tag: 'method');
-    ontimeout   = Xml.get(node: xml, tag: 'ontimeout');
-    onreadfail  = Xml.get(node: xml, tag: 'onwritefail');
+    method = Xml.attribute(node: xml, tag: 'method');
+    ontimeout = Xml.get(node: xml, tag: 'ontimeout');
+    onreadfail = Xml.get(node: xml, tag: 'onwritefail');
     onwritefail = Xml.get(node: xml, tag: 'onreadfail');
-
   }
 
   @override
-  Future<bool> start({bool refresh = false, String? key}) async
-  {
+  Future<bool> start({bool refresh = false, String? key}) async {
     bool ok = true;
 
-    if (!FmlEngine.isMobile)
-    {
+    if (!FmlEngine.isMobile) {
       System.toast("NFC is only available on mobile devices", duration: 4);
       return ok;
     }
 
-    switch (method?.toLowerCase().trim())
-    {
+    switch (method?.toLowerCase().trim()) {
       case "read":
         Reader().registerListener(this);
         statusmessage = "Approach an NFC tag to Read";
@@ -154,69 +145,69 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
   }
 
   @override
-  Future<bool> stop() async
-  {
+  Future<bool> stop() async {
     Reader().removeListener(this);
     super.stop();
     return true;
   }
 
-  Future<bool> _write(String? message, {bool restart = false}) async
-  {
-    if (!isNullOrEmpty(message))
-    {
+  Future<bool> _write(String? message, {bool restart = false}) async {
+    if (!isNullOrEmpty(message)) {
       Log().debug('NFC WRITE: Polling for 60 seconds');
-      String stripTags = message!.replaceAll('\r', '').replaceAll('\t', '').replaceAll('\n', '').replaceAll(RegExp("<[^>]*>", caseSensitive: false), '');
+      String stripTags = message!
+          .replaceAll('\r', '')
+          .replaceAll('\t', '')
+          .replaceAll('\n', '')
+          .replaceAll(RegExp("<[^>]*>", caseSensitive: false), '');
       Writer writer = Writer(stripTags, callback: onResult);
       try {
         bool ok = await writer.write();
 
         // write succeeded
         if (ok) {
-          if(!isNullOrEmpty(onsuccess) || !isNullOrEmpty(onwritesuccess)) {
+          if (!isNullOrEmpty(onsuccess) || !isNullOrEmpty(onwritesuccess)) {
             EventHandler handler = EventHandler(this);
             await handler.execute(onSuccessObservable);
             await handler.execute(onWriteSuccessObservable);
           }
           statusmessage = "Write Successful";
-          if(restart) start();
+          if (restart) start();
         }
 
         // write failed
         else if (!ok) {
-          if(!isNullOrEmpty(onfail) || !isNullOrEmpty(onwritefail)) {
+          if (!isNullOrEmpty(onfail) || !isNullOrEmpty(onwritefail)) {
             EventHandler handler = EventHandler(this);
             await handler.execute(onFailObservable);
             await handler.execute(onWriteFailObservable);
           }
           statusmessage = "Write Failed";
-          if(restart) start();
+          if (restart) start();
         }
-      } on CustomException catch(e){
-        if (e.code == 408){
-          if(!isNullOrEmpty(ontimeout)) {
-          EventHandler handler = EventHandler(this);
-          await handler.execute(onTimeoutObservable);
+      } on CustomException catch (e) {
+        if (e.code == 408) {
+          if (!isNullOrEmpty(ontimeout)) {
+            EventHandler handler = EventHandler(this);
+            await handler.execute(onTimeoutObservable);
           }
           statusmessage = e.message;
-          if(restart) start();
+          if (restart) start();
         }
         if (e.code == 405) {
-          if(!isNullOrEmpty(onfail) || !isNullOrEmpty(onwritefail)){
-          EventHandler handler = EventHandler(this);
-          await handler.execute(onFailObservable);
-          await handler.execute(onWriteFailObservable);
-        }
+          if (!isNullOrEmpty(onfail) || !isNullOrEmpty(onwritefail)) {
+            EventHandler handler = EventHandler(this);
+            await handler.execute(onFailObservable);
+            await handler.execute(onWriteFailObservable);
+          }
           statusmessage = e.message;
-          if(restart) start();
+          if (restart) start();
         }
       }
     }
     return true;
   }
 
-  onResult(bool b)
-  {
+  onResult(bool b) {
     // success
     if (b && onsuccess != null) {
       EventHandler(this).execute(onSuccessObservable);
@@ -224,22 +215,21 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
       statusmessage = "Read Successul";
     }
 
-      // fail
-      if (!b && onfail != null) {
-        EventHandler(this).execute(onFailObservable);
-        EventHandler(this).execute(onWriteSuccessObservable);
-        statusmessage = "Read Failed";
-      }
+    // fail
+    if (!b && onfail != null) {
+      EventHandler(this).execute(onFailObservable);
+      EventHandler(this).execute(onWriteSuccessObservable);
+      statusmessage = "Read Failed";
+    }
   }
 
   @override
-  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
-  {
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
     /// setter
     if (scope == null) return null;
 
-    if (!FmlEngine.isMobile)
-    {
+    if (!FmlEngine.isMobile) {
       System.toast("NFC is only available on mobile devices", duration: 4);
       statusmessage = "NFC is only available on mobile devices";
       return false;
@@ -250,30 +240,25 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
       statusmessage = "Approach an NFC tag to Write";
       String? message = toStr(elementAt(arguments, 0));
       return await _write(message, restart: true);
-    } else if (method?.toLowerCase().trim() == "read")
-    {
-      switch (function)
-      {
-        case "read"  :
-        case "start" :
+    } else if (method?.toLowerCase().trim() == "read") {
+      switch (function) {
+        case "read":
+        case "start":
           statusmessage = "Approach an NFC tag to read";
           Reader().registerListener(this);
           return true;
-        case "stop"  :
+        case "stop":
           statusmessage = "Please Start NFC Reader";
           return await stop();
       }
-    }
-    else if (method?.toLowerCase().trim() == "write")
-    {
-      switch (function)
-      {
-        case "start" :
-        case "write" :
+    } else if (method?.toLowerCase().trim() == "write") {
+      switch (function) {
+        case "start":
+        case "write":
           statusmessage = "Approach an NFC tag to write";
           String? message = body;
           return await _write(message);
-        case "stop"  :
+        case "stop":
           statusmessage = "Please Start NFC Reader";
           return await stop();
       }
@@ -282,8 +267,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
   }
 
   @override
-  onMessage(Payload payload)
-  {
+  onMessage(Payload payload) {
     // enabled?
     if (enabled == false) return;
 
@@ -291,7 +275,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     _received.set(received + 1);
 
     // set last serial received
-      _serial.set(payload.id);
+    _serial.set(payload.id);
 
     // set last message bindable
     _message.set(payload.message);
@@ -301,21 +285,19 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 
     // if the message didn't deserialize (length 0)
     // is the payload url encoded?
-    if (data.isEmpty && payload.message != null)
-    {
+    if (data.isEmpty && payload.message != null) {
       // is a valid url query string?
       String msg = payload.message!.trim();
 
       // parse the string
       Uri? uri = URI.parse(msg);
       if (uri != null && !uri.hasQuery) uri = URI.parse("?$msg");
-      if (uri != null && uri.hasQuery)
-      {
+      if (uri != null && uri.hasQuery) {
         // add payload url parameters
         Map<String, dynamic> map = <String, dynamic>{};
         uri.queryParameters.forEach((k, v) => map[k] = v);
-        if(!map.containsKey('payload')) map['payload'] = payload.message;
-        if(!map.containsKey('serial'))  map['serial'] = payload.id;
+        if (!map.containsKey('payload')) map['payload'] = payload.message;
+        if (!map.containsKey('serial')) map['serial'] = payload.id;
         data.add(map);
       }
     }
@@ -323,7 +305,10 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     // if the message didn't deserialize (length 0)
     // create a simple map with topic and message bindables <id>.data.topic and <id>.data.message
     // otherwise the data is the deserialized message payload
-    if (data.isEmpty) data.insert(0, {'id' : payload.id, 'serial': payload.id , 'payload' : payload.message});
+    if (data.isEmpty) {
+      data.insert(0,
+          {'id': payload.id, 'serial': payload.id, 'payload': payload.message});
+    }
 
     // fire the onresponse
     onSuccess(data, code: 200);

@@ -7,8 +7,7 @@ import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 
-class RadioView extends StatefulWidget implements IWidgetView
-{
+class RadioView extends StatefulWidget implements IWidgetView {
   @override
   final RadioModel model;
   RadioView(this.model) : super(key: ObjectKey(model));
@@ -17,10 +16,8 @@ class RadioView extends StatefulWidget implements IWidgetView
   State<RadioView> createState() => _RadioViewState();
 }
 
-class _RadioViewState extends WidgetState<RadioView>
-{
-  void onChangeOption(OptionModel? option) async
-  {
+class _RadioViewState extends WidgetState<RadioView> {
+  void onChangeOption(OptionModel? option) async {
     // stop model change notifications
     widget.model.removeListener(this);
 
@@ -34,8 +31,7 @@ class _RadioViewState extends WidgetState<RadioView>
     setState(() {});
   }
 
-  Widget addGestures(Widget view, OptionModel option)
-  {
+  Widget addGestures(Widget view, OptionModel option) {
     if (!widget.model.enabled || !widget.model.editable) return view;
 
     view = GestureDetector(onTap: () => onChangeOption(option), child: view);
@@ -43,28 +39,34 @@ class _RadioViewState extends WidgetState<RadioView>
     return view;
   }
 
-  Widget addAlarmText(Widget view)
-  {
+  Widget addAlarmText(Widget view) {
     if (isNullOrEmpty(widget.model.alarmText)) return view;
 
-    Widget? text = Text("${widget.model.alarmText}", style: TextStyle(color: Theme.of(context).colorScheme.error));
+    Widget? text = Text("${widget.model.alarmText}",
+        style: TextStyle(color: Theme.of(context).colorScheme.error));
 
-    view = Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [view, text]);
+    view = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [view, text]);
 
     return view;
   }
 
-  Widget buildRadioButton(OptionModel option)
-  {
-    var selectedColor = widget.model.getBorderColor(context, widget.model.color ?? Theme.of(context).colorScheme.primary);
-    var unselectedColor = widget.model.getBorderColor(context, Theme.of(context).colorScheme.outline);
+  Widget buildRadioButton(OptionModel option) {
+    var selectedColor = widget.model.getBorderColor(
+        context, widget.model.color ?? Theme.of(context).colorScheme.primary);
+    var unselectedColor = widget.model
+        .getBorderColor(context, Theme.of(context).colorScheme.outline);
 
     var selected = (widget.model.selectedOption == option);
     var enabled = (widget.model.editable && widget.model.enabled);
 
-    Widget button = selected ?
-      Icon(Icons.radio_button_checked, size: widget.model.size, color: selectedColor) :
-      Icon(Icons.radio_button_unchecked, size: widget.model.size, color: unselectedColor);
+    Widget button = selected
+        ? Icon(Icons.radio_button_checked,
+            size: widget.model.size, color: selectedColor)
+        : Icon(Icons.radio_button_unchecked,
+            size: widget.model.size, color: unselectedColor);
 
     // add gestures to the button
     button = addGestures(button, option);
@@ -74,8 +76,7 @@ class _RadioViewState extends WidgetState<RadioView>
 
     // pad icon
     button = Padding(
-        padding:
-        EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 3),
+        padding: const EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 3),
         child: button);
 
     // add label
@@ -88,19 +89,17 @@ class _RadioViewState extends WidgetState<RadioView>
     Widget view = Row(
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
-        children: [button,label]);
+        children: [button, label]);
 
     return view;
   }
 
-  List<Widget> buildOptions()
-  {
+  List<Widget> buildOptions() {
     // no options specified?
     if (widget.model.options.isEmpty) return [];
 
     List<Widget> options = [];
-    for (OptionModel option in widget.model.options)
-    {
+    for (OptionModel option in widget.model.options) {
       // build radio button
       Widget view = buildRadioButton(option);
       options.add(view);
@@ -109,44 +108,41 @@ class _RadioViewState extends WidgetState<RadioView>
     return options;
   }
 
-  Widget buildView()
-  {
+  Widget buildView() {
     // build radio buttons
     List<Widget> options = buildOptions();
 
     //this must go after the children are determined
-    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
+    var alignment = WidgetAlignment(widget.model.layoutType,
+        widget.model.center, widget.model.halign, widget.model.valign);
 
     // wrapped row
-    if (widget.model.layout == 'row' && widget.model.wrap)
-    {
-        return Wrap(
-            children: options,
-            direction: Axis.horizontal,
-            alignment: alignment.mainWrapAlignment,
-            runAlignment: alignment.mainWrapAlignment,
-            crossAxisAlignment: alignment.crossWrapAlignment);
+    if (widget.model.layout == 'row' && widget.model.wrap) {
+      return Wrap(
+          direction: Axis.horizontal,
+          alignment: alignment.mainWrapAlignment,
+          runAlignment: alignment.mainWrapAlignment,
+          crossAxisAlignment: alignment.crossWrapAlignment,
+          children: options);
     }
 
     // row
-    if (widget.model.layout == 'row' && !widget.model.wrap)
-    {
-        return Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: alignment.crossAlignment,
-            mainAxisAlignment: alignment.mainAlignment,
-            children: options);
+    if (widget.model.layout == 'row' && !widget.model.wrap) {
+      return Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: alignment.crossAlignment,
+          mainAxisAlignment: alignment.mainAlignment,
+          children: options);
     }
 
     // wrapped column
-    if (widget.model.wrap)
-    {
+    if (widget.model.wrap) {
       return Wrap(
-          children: options,
           direction: Axis.vertical,
           alignment: alignment.mainWrapAlignment,
           runAlignment: alignment.mainWrapAlignment,
-          crossAxisAlignment: alignment.crossWrapAlignment);
+          crossAxisAlignment: alignment.crossWrapAlignment,
+          children: options);
     }
 
     // default - column
@@ -158,12 +154,11 @@ class _RadioViewState extends WidgetState<RadioView>
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
-   // View 
+    // View
     Widget view = buildView();
 
     view = addAlarmText(view);

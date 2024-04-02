@@ -10,8 +10,7 @@ import 'package:fml/helpers/helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class ScaleTransitionModel extends AnimationChildModel
-{
+class ScaleTransitionModel extends AnimationChildModel {
   /// Curve starting point from 0.0 to 1.0
   DoubleObservable? _from;
 
@@ -113,5 +112,6 @@ class ScaleTransitionModel extends AnimationChildModel
   }
 
   @override
-  Widget getAnimatedView(Widget child, {AnimationController? controller}) =>  ScaleTransitionView(this, child, controller);
+  Widget getAnimatedView(Widget child, {AnimationController? controller}) =>
+      ScaleTransitionView(this, child, controller);
 }

@@ -15,10 +15,9 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class MenuModel extends DecoratedWidgetModel implements IScrollable
-{
-  static final String typeList   = "list";
-  static final String typeButton = "button";
+class MenuModel extends DecoratedWidgetModel implements IScrollable {
+  static const String typeList = "list";
+  static const String typeButton = "button";
 
   // to be implemented
   @override
@@ -54,53 +53,44 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable
     if (_allowDrag != null) {
       _allowDrag!.set(v);
     } else if (v != null) {
-      _allowDrag = BooleanObservable(Binding.toKey(id, 'allowdrag'), v, scope: scope, listener: onPropertyChange);
+      _allowDrag = BooleanObservable(Binding.toKey(id, 'allowdrag'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get allowDrag => _allowDrag?.get() ?? false;
 
-  MenuModel(super.parent, super.id)
-  {
+  MenuModel(super.parent, super.id) {
     // instantiate busy observable
     busy = false;
   }
 
-  static MenuModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static MenuModel? fromXml(WidgetModel parent, XmlElement xml) {
     MenuModel? model;
-    try
-    {
+    try {
       model = MenuModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'menu.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'menu.Model');
       model = null;
     }
     return model;
   }
 
-  static MenuModel? fromMap(WidgetModel parent, Map<String, String> map)
-  {
+  static MenuModel? fromMap(WidgetModel parent, Map<String, String> map) {
     MenuModel? model;
-    try
-    {
+    try {
       model = MenuModel(parent, newId());
       model.unmap(map);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'menu.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'menu.Model');
       model = null;
     }
     return model;
   }
 
-  void unmap(Map<String, String> map)
-  {
-    map.forEach((key, value)
-    {
+  void unmap(Map<String, String> map) {
+    map.forEach((key, value) {
       MenuItemModel item = MenuItemModel(
         this,
         newId(),
@@ -115,9 +105,8 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
-    // deserialize 
+  void deserialize(XmlElement xml) {
+    // deserialize
     super.deserialize(xml);
 
     // allow mouse drag
@@ -133,14 +122,13 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable
     _buildItems();
   }
 
-  void _buildItems()
-  {
+  void _buildItems() {
     // build items
-    List<MenuItemModel> items = findChildrenOfExactType(MenuItemModel).cast<MenuItemModel>();
+    List<MenuItemModel> items =
+        findChildrenOfExactType(MenuItemModel).cast<MenuItemModel>();
 
     // set prototype
-    if ((!isNullOrEmpty(datasource)) && (items.isNotEmpty))
-    {
+    if ((!isNullOrEmpty(datasource)) && (items.isNotEmpty)) {
       prototype = prototypeOf(items.first.element);
       items.removeAt(0);
     }
@@ -150,25 +138,21 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable
   }
 
   @override
-  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
-  {
+  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async {
     busy = true;
 
     // save pointer to data source
     myDataSource = source;
 
     // build options
-    if ((list != null))
-    {
+    if ((list != null)) {
       // clear items
-      for (var item in items)
-      {
+      for (var item in items) {
         item.dispose();
       }
       items.clear();
 
-      for (var row in list)
-      {
+      for (var row in list) {
         var model = MenuItemModel.fromXml(this, prototype, data: row);
         if (model != null) items.add(model);
       }
@@ -182,8 +166,7 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable
   }
 
   @override
-  dispose()
-  {
+  dispose() {
     // clear items
     for (var item in items) {
       item.dispose();
@@ -194,8 +177,7 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable
   }
 
   @override
-  void scrollUp(int pixels)
-  {
+  void scrollUp(int pixels) {
     MenuViewState? view = findListenerOfExactType(MenuViewState);
     if (view == null) return;
 
@@ -209,37 +191,36 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable
   }
 
   @override
-  void scrollDown(int pixels)
-  {
+  void scrollDown(int pixels) {
     MenuViewState? view = findListenerOfExactType(MenuViewState);
     if (view == null) return;
 
-    if (view.controller.position.pixels >= view.controller.position.maxScrollExtent) return;
+    if (view.controller.position.pixels >=
+        view.controller.position.maxScrollExtent) return;
 
     var to = view.controller.offset + pixels;
-    to = (to > view.controller.position.maxScrollExtent) ? view.controller.position.maxScrollExtent : to;
+    to = (to > view.controller.position.maxScrollExtent)
+        ? view.controller.position.maxScrollExtent
+        : to;
 
     view.controller.jumpTo(to);
   }
 
   @override
-  Offset? positionOf()
-  {
+  Offset? positionOf() {
     MenuViewState? view = findListenerOfExactType(MenuViewState);
     return view?.positionOf();
   }
 
   @override
-  Size? sizeOf()
-  {
+  Size? sizeOf() {
     MenuViewState? view = findListenerOfExactType(MenuViewState);
     return view?.sizeOf();
   }
 
-  void onDragDrop(IDragDrop droppable, IDragDrop draggable, {Offset? dropSpot}) async
-  {
-    if (droppable is MenuItemModel && draggable is MenuItemModel)
-    {
+  void onDragDrop(IDragDrop droppable, IDragDrop draggable,
+      {Offset? dropSpot}) async {
+    if (droppable is MenuItemModel && draggable is MenuItemModel) {
       // fire onDrop event
       await DragDrop.onDrop(droppable, draggable, dropSpot: dropSpot);
 
@@ -250,8 +231,7 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable
       //var center = DragDrop.getPercentOffset(dropBox, dropSpot);
 
       // move the cell in the items list
-      if (dragIndex >= 0 && dropIndex >= 0 && dragIndex != dropIndex)
-      {
+      if (dragIndex >= 0 && dropIndex >= 0 && dragIndex != dropIndex) {
         // move the cell in the dataset
         notificationsEnabled = false;
         myDataSource?.move(dragIndex, dropIndex, notifyListeners: false);

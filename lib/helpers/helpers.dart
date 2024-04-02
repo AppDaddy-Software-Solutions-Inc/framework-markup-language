@@ -7,8 +7,3 @@ export 'json.dart';
 export 'map.dart';
 export 'color.dart';
 export 'template.dart';
-
-// platform
-export 'package:fml/platform/platform.stub.dart'
-if (dart.library.io)   'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';

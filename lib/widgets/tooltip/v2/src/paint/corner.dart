@@ -49,7 +49,6 @@ class Corner extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
-   print('repaint');
     return true;
   }
 }

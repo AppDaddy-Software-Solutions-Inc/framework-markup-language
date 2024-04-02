@@ -3,8 +3,8 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/event/handler.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:fml/widgets/form/form_model.dart';
@@ -14,8 +14,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TableRowModel extends BoxModel
-{
+class TableRowModel extends BoxModel {
   @override
   String? get layout => super.layout ?? "row";
 
@@ -44,17 +43,28 @@ class TableRowModel extends BoxModel
   String? get valign => super.valign ?? table?.valign;
 
   // cell by index
-  TableRowCellModel? cell(int index) => index >= 0 && index < cells.length ? cells[index] : null;
+  TableRowCellModel? cell(int index) =>
+      index >= 0 && index < cells.length ? cells[index] : null;
 
   // Editable Fields
   List<IFormField>? fields;
 
+  // editable - used on non row prototype only
+  BooleanObservable? _editable;
+  set editable(dynamic v) {
+    if (_editable != null) {
+      _editable!.set(v);
+    } else if (v != null) {
+      _editable = BooleanObservable(Binding.toKey(id, 'editable'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool? get editable => _editable?.get();
+
   // posting source source
   List<String>? _postbrokers;
-  set postbrokers(dynamic v)
-  {
-    if (v is String)
-    {
+  set postbrokers(dynamic v) {
+    if (v is String) {
       var values = v.split(",");
       _postbrokers = [];
       for (var e in values) {
@@ -66,90 +76,72 @@ class TableRowModel extends BoxModel
 
   // selected
   BooleanObservable? _selected;
-  set selected(dynamic v)
-  {
-    if (_selected != null)
-    {
+  set selected(dynamic v) {
+    if (_selected != null) {
       _selected!.set(v);
-    }
-    else
-    {
-      _selected = BooleanObservable(Binding.toKey(id, 'selected'), v, scope: scope, listener: onPropertyChange);
+    } else {
+      _selected = BooleanObservable(Binding.toKey(id, 'selected'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
   bool get selected => _selected?.get() ?? false;
 
   // onclick
   StringObservable? _onClick;
-  set onclick(dynamic v)
-  {
-    if (_onClick != null)
-    {
+  set onclick(dynamic v) {
+    if (_onClick != null) {
       _onClick!.set(v);
-    }
-    else if (v != null)
-    {
-      _onClick = StringObservable(Binding.toKey(id, 'onclick'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    } else if (v != null) {
+      _onClick = StringObservable(Binding.toKey(id, 'onclick'), v,
+          scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
   String? get onclick => _onClick?.get();
 
   // onComplete
   StringObservable? _onComplete;
-  set oncomplete(dynamic v)
-  {
-    if (_onComplete != null)
-    {
+  set oncomplete(dynamic v) {
+    if (_onComplete != null) {
       _onComplete!.set(v);
-    }
-    else if (v != null)
-    {
-      _onComplete = StringObservable(Binding.toKey(id, 'oncomplete'), v, scope: scope, lazyEval: true);
+    } else if (v != null) {
+      _onComplete = StringObservable(Binding.toKey(id, 'oncomplete'), v,
+          scope: scope, lazyEval: true);
     }
   }
   String? get oncomplete => _onComplete?.get();
 
   // onInsert
   StringObservable? _onInsert;
-  set onInsert(dynamic v)
-  {
-    if (_onInsert != null)
-    {
+  set onInsert(dynamic v) {
+    if (_onInsert != null) {
       _onInsert!.set(v);
-    }
-    else if (v != null)
-    {
-      _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v, scope: scope, lazyEval: true);
+    } else if (v != null) {
+      _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v,
+          scope: scope, lazyEval: true);
     }
   }
   String? get onInsert => _onInsert?.get();
-  
+
   // onDelete
   StringObservable? _onDelete;
-  set onDelete(dynamic v)
-  {
-    if (_onDelete != null)
-    {
+  set onDelete(dynamic v) {
+    if (_onDelete != null) {
       _onDelete!.set(v);
-    }
-    else if (v != null)
-    {
-      _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v, scope: scope, lazyEval: true);
+    } else if (v != null) {
+      _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v,
+          scope: scope, lazyEval: true);
     }
   }
   String? get onDelete => _onDelete?.get();
 
   // onChange - only used for simple data grid
   StringObservable? _onChange;
-  set onChange(dynamic v)
-  {
-    if (_onChange != null)
-    {
+  set onChange(dynamic v) {
+    if (_onChange != null) {
       _onChange!.set(v);
-    }
-    else if (v != null)
-    {
-      _onChange = StringObservable(Binding.toKey(id, 'onchange'), v, scope: scope);
+    } else if (v != null) {
+      _onChange =
+          StringObservable(Binding.toKey(id, 'onchange'), v, scope: scope);
     }
   }
   String? get onChange => _onChange?.get();
@@ -157,51 +149,42 @@ class TableRowModel extends BoxModel
   // dirty
   BooleanObservable? get dirtyObservable => _dirty;
   BooleanObservable? _dirty;
-  set dirty(dynamic v)
-  {
-    if (_dirty != null)
-    {
+  set dirty(dynamic v) {
+    if (_dirty != null) {
       _dirty!.set(v);
-    }
-    else if (v != null)
-    {
+    } else if (v != null) {
       _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
     }
   }
   bool get dirty => _dirty?.get() ?? false;
 
-  void onDirtyListener(Observable property)
-  {
+  void onDirtyListener(Observable property) {
     bool isDirty = false;
-    if (fields != null){
-      for (IFormField field in fields!)
-      {
-        if (field.dirty ?? false)
-        {
+    if (fields != null) {
+      for (IFormField field in fields!) {
+        if (field.dirty ?? false) {
           isDirty = true;
           break;
         }
-      }}
+      }
+    }
     dirty = isDirty;
   }
 
-  TableRowModel(WidgetModel super.parent, super.id, {dynamic data}) : super(scope: Scope(parent: parent.scope))
-  {
+  TableRowModel(WidgetModel super.parent, super.id, {dynamic data})
+      : super(scope: Scope(parent: parent.scope)) {
     this.data = data;
     dirty = false;
   }
 
-  static TableRowModel? fromXml(WidgetModel parent, XmlElement? xml, {dynamic data})
-  {
+  static TableRowModel? fromXml(WidgetModel parent, XmlElement? xml,
+      {dynamic data}) {
     if (xml == null) return null;
     TableRowModel? model;
-    try
-    {
+    try {
       model = TableRowModel(parent, Xml.get(node: xml, tag: 'id'), data: data);
       model.deserialize(xml);
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e, caller: 'tableRow.Model');
       model = null;
     }
@@ -210,64 +193,63 @@ class TableRowModel extends BoxModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
-    // deserialize 
+  void deserialize(XmlElement xml) {
+    // deserialize
     super.deserialize(xml);
 
     // properties
-    oncomplete  = Xml.get(node: xml, tag: 'oncomplete');
-    onclick     = Xml.get(node: xml, tag: 'onclick');
+    editable = Xml.get(node: xml, tag: 'editable');
+    oncomplete = Xml.get(node: xml, tag: 'oncomplete');
+    onclick = Xml.get(node: xml, tag: 'onclick');
     postbrokers = Xml.attribute(node: xml, tag: 'postbroker');
-    onInsert    = Xml.get(node: xml, tag: 'oninsert');
-    onDelete    = Xml.get(node: xml, tag: 'ondelete');
-    onChange    = Xml.get(node:xml, tag: 'onchange');
+    onInsert = Xml.get(node: xml, tag: 'oninsert');
+    onDelete = Xml.get(node: xml, tag: 'ondelete');
+    onChange = Xml.get(node: xml, tag: 'onchange');
 
     // get cells
-    cells.addAll(findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>());
+    cells.addAll(
+        findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>());
 
     // Initialize Form Fields
-    for (var _ in cells)
-    {
-      List<IFormField> fields = findChildrenOfExactType(IFormField).cast<IFormField>();
-      for (var field in fields)
-      {
+    for (var _ in cells) {
+      List<IFormField> fields =
+          findChildrenOfExactType(IFormField).cast<IFormField>();
+      for (var field in fields) {
         if (this.fields == null) this.fields = [];
         this.fields!.add(field);
 
         // Register Listener
-        if (field.dirtyObservable != null) field.dirtyObservable!.registerListener(onDirtyListener);
+        if (field.dirtyObservable != null) {
+          field.dirtyObservable!.registerListener(onDirtyListener);
+        }
       }
     }
   }
 
   @override
-  void onPropertyChange(Observable observable)
-  {
+  void onPropertyChange(Observable observable) {
     notifyListeners(observable.key, observable.get());
   }
 
-  Future<bool> onClick(BuildContext context) async
-  {
+  Future<bool> onClick(BuildContext context) async {
     if (onclick == null) return true;
     return await EventHandler(this).execute(_onClick);
   }
 
   // on change handler - fired on cell edit
-  Future<bool> onChangeHandler() async => _onChange != null ? await EventHandler(this).execute(_onChange) : true;
+  Future<bool> onChangeHandler() async =>
+      _onChange != null ? await EventHandler(this).execute(_onChange) : true;
 
-  Future<bool> complete() async
-  {
+  Future<bool> complete() async {
     busy = true;
 
     bool ok = true;
 
     // Post the Row
     if (ok) ok = await _post();
-    
+
     // Mark Clean
-    if ((ok) && (fields != null))
-    {
+    if ((ok) && (fields != null)) {
       for (var field in fields!) {
         field.dirty = false;
       }
@@ -278,8 +260,7 @@ class TableRowModel extends BoxModel
     return ok;
   }
 
-  Future<bool> onComplete() async
-  {
+  Future<bool> onComplete() async {
     busy = true;
 
     bool ok = true;
@@ -291,48 +272,41 @@ class TableRowModel extends BoxModel
     return ok;
   }
 
-  Future<bool> _post() async
-  {
+  Future<bool> _post() async {
     if (dirty == false) return true;
 
     bool ok = true;
-    if ((scope != null) && (postbrokers != null)){
-      for (String id in postbrokers!)
-      {
+    if ((scope != null) && (postbrokers != null)) {
+      for (String id in postbrokers!) {
         IDataSource? source = scope!.getDataSource(id);
-        if (source != null && ok && table != null)
-        {
-          if (!source.custombody)
-          {
-            source.body = await FormModel.buildPostingBody(table!, fields, rootname: source.root ?? "FORM");
+        if (source != null && ok && table != null) {
+          if (!source.custombody) {
+            source.body = await FormModel.buildPostingBody(table!, fields,
+                rootname: source.root ?? "FORM");
           }
           ok = await source.start();
         }
         if (!ok) break;
-      }}
-    else {
+      }
+    } else {
       ok = false;
     }
     return ok;
   }
 
-  Future<bool> onInsertHandler() async
-  {
+  Future<bool> onInsertHandler() async {
     // fire the onchange event
     bool ok = true;
-    if (_onInsert != null)
-    {
+    if (_onInsert != null) {
       ok = await EventHandler(this).execute(_onInsert);
     }
     return ok;
   }
 
-  Future<bool> onDeleteHandler() async
-  {
+  Future<bool> onDeleteHandler() async {
     // fire the onchange event
     bool ok = true;
-    if (_onDelete != null)
-    {
+    if (_onDelete != null) {
       ok = await EventHandler(this).execute(_onDelete);
     }
     return ok;

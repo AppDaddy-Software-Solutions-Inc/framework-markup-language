@@ -11,9 +11,6 @@ import 'package:fml/widgets/animation/animation_model.dart';
 /// Animation Model
 /// Defines the properties;
 class AnimationChildModel extends AnimationModel {
-
-
-
   /// Point at which the animation begins in the controllers value range of 0-1
   DoubleObservable? _begin;
 
@@ -53,7 +50,6 @@ class AnimationChildModel extends AnimationModel {
     return f;
   }
 
-
   AnimationChildModel(super.parent, super.id); // ; {key: value}
 
   static AnimationChildModel? fromXml(WidgetModel parent, XmlElement xml) {
@@ -76,5 +72,4 @@ class AnimationChildModel extends AnimationModel {
     begin = Xml.get(node: xml, tag: 'begin');
     end = Xml.get(node: xml, tag: 'end');
   }
-
 }

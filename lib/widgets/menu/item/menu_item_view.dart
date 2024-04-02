@@ -1,15 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/helpers/color.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
-class MenuItemView extends StatefulWidget implements IWidgetView
-{
+class MenuItemView extends StatefulWidget implements IWidgetView {
   @override
   final MenuItemModel model;
 
@@ -23,31 +22,30 @@ class MenuItemView extends StatefulWidget implements IWidgetView
   State<MenuItemView> createState() => _MenuItemViewState();
 }
 
-class _MenuItemViewState extends WidgetState<MenuItemView>
-{
+class _MenuItemViewState extends WidgetState<MenuItemView> {
   bool isHovered = false;
 
   @override
-  Widget build(BuildContext context)
-  {
-    ColorScheme t = Theme.of(context).colorScheme;
+  Widget build(BuildContext context) {
+
+    ColorScheme theme = Theme.of(context).colorScheme;
 
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
-    Widget menuItem = SizedBox.shrink();
+    Widget menuItem = const SizedBox.shrink();
     double borderRadius = widget.model.radius ?? 8.0;
-    var shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius));
+    var shape = RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(borderRadius));
 
-    if (widget.model.children != null)
-    {
+    if (widget.model.children != null) {
       // build the child views
       List<Widget> children = widget.model.inflate();
       if (children.isEmpty) children.add(Container());
       Widget child = children.length == 1
           ? children[0]
           : Column(
-              children: children, mainAxisAlignment: MainAxisAlignment.center);
+              mainAxisAlignment: MainAxisAlignment.center, children: children);
 
       Widget button = MaterialButton(
           onPressed: onTap,
@@ -58,12 +56,15 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
           height: FmlEngine.isMobile ? 160 : 250,
           color: widget.model.backgroundimage == null
               ? Colors.transparent
-              : t.background,
+              : theme.background,
           hoverColor: widget.model.backgroundimage == null
-              ? ColorHelper.lighten(widget.model.backgroundcolor ?? Colors.white, 0.1).withOpacity(0.1)
-              : t.onSecondary,
+              ? ColorHelper.lighten(
+                      widget.model.backgroundcolor ?? Colors.white, 0.1)
+                  .withOpacity(0.1)
+              : theme.onSecondary,
           child: Padding(
-              padding: EdgeInsets.all(FmlEngine.isMobile ? 0 : 10), child: child));
+              padding: EdgeInsets.all(FmlEngine.isMobile ? 0 : 10),
+              child: child));
       button = MouseRegion(cursor: SystemMouseCursors.click, child: button);
       Widget customButton = Padding(
           padding: EdgeInsets.all(FmlEngine.isMobile ? 0 : 10),
@@ -71,46 +72,51 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
             width: FmlEngine.isMobile
                 ? 160
                 : 250, // These constraints are more strict than a Material Button's
-            height: FmlEngine.isMobile ? 160 : 250,
-            child: button, // button
+            height: FmlEngine.isMobile ? 160 : 250, // button
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
             ),
+            child: button,
           ));
       menuItem = customButton;
-    }
-    else
-    {
+    } else {
       //  Static Item
       String? backgroundImage = widget.model.backgroundimage;
       Widget? image;
-      if (widget.model.image != null)
-      {
+      if (widget.model.image != null) {
         // svg image?
         if (widget.model.image!.mimeType == "image/svg+xml") {
-          image = SvgPicture.memory(widget.model.image!.contentAsBytes(), width: 48, height: 48);
+          image = SvgPicture.memory(widget.model.image!.contentAsBytes(),
+              width: 48, height: 48);
         } else {
-          image = Image.memory(widget.model.image!.contentAsBytes(), width: 48, height: 48, fit: null);
+          image = Image.memory(widget.model.image!.contentAsBytes(),
+              width: 48, height: 48, fit: null);
         }
       }
 
       Widget? icon;
-      if (widget.model.icon != null)
-      {
-        double size = (widget.model.iconsize ?? 48.0) - (FmlEngine.isMobile ? 4 : 0);
-        Color color = widget.model.iconcolor ?? t.primary; //System.colorDefault;
-        icon = Icon(widget.model.icon ?? Icons.touch_app, size: size, color: color);
+      if (widget.model.icon != null) {
+        double size =
+            (widget.model.iconsize ?? 48.0) - (FmlEngine.isMobile ? 4 : 0);
+        Color color =
+            widget.model.iconcolor ?? theme.primary; //System.colorDefault;
+        icon = Icon(widget.model.icon ?? Icons.touch_app,
+            size: size, color: color);
         double? opacity = widget.model.iconopacity;
         if (opacity != null) icon = Opacity(opacity: opacity, child: icon);
         icon = Center(child: icon);
       }
 
       Text? title;
-      if (widget.model.title != null)
-      {
-        title = Text(widget.model.title ?? '', textAlign: TextAlign.center, style: TextStyle(fontSize: (widget.model.fontsize ?? 16.0) - (FmlEngine.isMobile ? 2 : 0), color: backgroundImage != null
+      if (widget.model.title != null) {
+        title = Text(widget.model.title ?? '',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: (widget.model.fontsize ?? 16.0) -
+                    (FmlEngine.isMobile ? 2 : 0),
+                color: backgroundImage != null
                     ? (widget.model.fontcolor ?? Colors.black)
-                    : widget.model.fontcolor ?? t.primary,
+                    : widget.model.fontcolor ?? theme.primary,
                 fontWeight:
                     Theme.of(context).primaryTextTheme.titleLarge!.fontWeight));
       }
@@ -126,7 +132,7 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
                     : 12,
                 color: backgroundImage != null
                     ? (widget.model.fontcolor ?? Colors.black)
-                    : widget.model.fontcolor ?? t.onBackground));
+                    : widget.model.fontcolor ?? theme.onBackground));
       }
 
       List<Widget> btn = [];
@@ -146,26 +152,23 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
           highlightElevation: 0,
           minWidth: FmlEngine.isMobile ? 160 : 250,
           height: FmlEngine.isMobile ? 160 : 250,
-          child: Padding(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: btn,
-                  mainAxisSize: MainAxisSize.max),
-              padding: EdgeInsets.all(FmlEngine.isMobile ? 0 : 10)),
           color: backgroundImage != null
               ? Colors.white.withOpacity(0.4)
-              : t.surface,
+              : widget.model.backgroundcolor ?? theme.surface,
           hoverColor: backgroundImage != null
               ? Colors.white.withOpacity(0.2)
-              : t.onSecondary,
-          animationDuration: Duration(milliseconds: 200),
-          onPressed: widget.model.enabled
-              ? (widget.model.onTap ?? onTap)
-              : null,
-          onLongPress: widget.model.enabled
-              ? (widget.model.onLongPress)
-              : null,
-          shape: shape);
+              : theme.onSecondary,
+          animationDuration: const Duration(milliseconds: 200),
+          onPressed:
+              widget.model.enabled ? (widget.model.onTap ?? onTap) : null,
+          onLongPress: widget.model.enabled ? (widget.model.onLongPress) : null,
+          shape: shape,
+          child: Padding(
+              padding: EdgeInsets.all(FmlEngine.isMobile ? 0 : 10),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: btn)));
 
       if (widget.model.enabled) {
         button = MouseRegion(cursor: SystemMouseCursors.click, child: button);
@@ -174,12 +177,11 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
       Widget staticButton = Padding(
           padding: EdgeInsets.all(FmlEngine.isMobile ? 0 : 10),
           child: AnimatedContainer(
-            duration: Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 200),
             width: FmlEngine.isMobile
                 ? 160
                 : 250, // These constraints are more strict than a Material Button's
-            height: FmlEngine.isMobile ? 160 : 250,
-            child: button, // button
+            height: FmlEngine.isMobile ? 160 : 250, // button
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
                 // color: Colors.grey[300],
@@ -188,31 +190,30 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
                     : [
                         BoxShadow(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? t.shadow.withOpacity(0.75)
-                              : t.shadow.withOpacity(0.25),
-                          offset: Offset(4, 4),
+                              ? theme.shadow.withOpacity(0.75)
+                              : theme.shadow.withOpacity(0.25),
+                          offset: const Offset(4, 4),
                           blurRadius: 10,
                           spreadRadius: 1,
                         ),
                         BoxShadow(
-                          color: t.onSecondary.withOpacity(0.75),
-                          offset: Offset(-2, -2),
+                          color: theme.onSecondary.withOpacity(0.75),
+                          offset: const Offset(-2, -2),
                           blurRadius: 10,
                           spreadRadius: 1,
                         ),
                       ]),
+            child: button,
           ));
 
       menuItem = FmlEngine.isMobile
           ? staticButton
           : MouseRegion(
               cursor: SystemMouseCursors.click,
-              onHover: (event)
-              {
+              onHover: (event) {
                 if (!isHovered) setState(() => isHovered = true);
               },
-              onExit: (event)
-              {
+              onExit: (event) {
                 if (isHovered) setState(() => isHovered = false);
               },
               child: staticButton);
@@ -220,11 +221,10 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
     return menuItem;
   }
 
-  void onTap() async
-  {
+  void onTap() async {
     WidgetModel.unfocus();
     widget.model.onClick();
   }
 
-  Widget? getView() => throw("getView() Not Implemented");
+  Widget? getView() => throw ("getView() Not Implemented");
 }

@@ -26,9 +26,9 @@ abstract class Expression {
 
   static final ExpressionParser _parser = ExpressionParser();
 
-  static Result<Expression?> tryParse(String formattedString)
-  {
-    final Result<Expression?> result = _parser.expression.end().parse(formattedString);
+  static Result<Expression?> tryParse(String formattedString) {
+    final Result<Expression?> result =
+        _parser.expression.end().parse(formattedString);
     return result;
   }
 
@@ -120,25 +120,25 @@ class UnaryExpression extends SimpleExpression {
 }
 
 class BinaryExpression extends CompoundExpression {
-  final String? operator;
+  final String operator;
   final Expression? left;
   final Expression? right;
 
   BinaryExpression(this.operator, this.left, this.right);
 
-  static int? precedenceForOperator(String? operator) =>
-      ExpressionParser.binaryOperations[operator!];
+  static int precedenceForOperator(String operator) =>
+      ExpressionParser.binaryOperations[operator]!;
 
-  int? get precedence => precedenceForOperator(operator);
+  int get precedence => precedenceForOperator(operator);
 
   @override
   String toString() {
     var l = (left is BinaryExpression &&
-        (left as BinaryExpression).precedence! < precedence!)
+            (left as BinaryExpression).precedence < precedence)
         ? '($left)'
         : '$left';
     var r = (right is BinaryExpression &&
-        (right as BinaryExpression).precedence! < precedence!)
+            (right as BinaryExpression).precedence < precedence)
         ? '($right)'
         : '$right';
     return '$l$operator$r';
@@ -150,9 +150,9 @@ class BinaryExpression extends CompoundExpression {
   @override
   bool operator ==(dynamic other) =>
       other is BinaryExpression &&
-          other.left == left &&
-          other.operator == operator &&
-          other.right == right;
+      other.left == left &&
+      other.operator == operator &&
+      other.right == right;
 }
 
 class ConditionalExpression extends CompoundExpression {

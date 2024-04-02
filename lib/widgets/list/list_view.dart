@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/event/event.dart'        ;
+import 'package:fml/event/event.dart';
 import 'package:fml/widgets/dragdrop/draggable_view.dart';
 import 'package:fml/widgets/dragdrop/droppable_view.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
@@ -16,8 +16,7 @@ import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
-class ListLayoutView extends StatefulWidget implements IWidgetView
-{
+class ListLayoutView extends StatefulWidget implements IWidgetView {
   @override
   final ListModel model;
   ListLayoutView(this.model) : super(key: ObjectKey(model));
@@ -26,44 +25,48 @@ class ListLayoutView extends StatefulWidget implements IWidgetView
   State<ListLayoutView> createState() => ListLayoutViewState();
 }
 
-class ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventScrolling
-{
+class ListLayoutViewState extends WidgetState<ListLayoutView>
+    implements IEventScrolling {
   Future<ListModel>? listViewModel;
   Widget? busy;
   final ScrollController controller = ScrollController();
 
   @override
-  didChangeDependencies()
-  {
+  didChangeDependencies() {
     // register event listeners
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.scroll,  onScroll);
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
+    EventManager.of(widget.model)
+        ?.registerEventListener(EventTypes.scroll, onScroll);
+    EventManager.of(widget.model)
+        ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
 
     super.didChangeDependencies();
   }
 
   @override
-  void didUpdateWidget(ListLayoutView oldWidget)
-  {
+  void didUpdateWidget(ListLayoutView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model))
-    {
+    if ((oldWidget.model != widget.model)) {
       // remove old event listeners
-      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.scroll,  onScroll);
-      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
+      EventManager.of(oldWidget.model)
+          ?.removeEventListener(EventTypes.scroll, onScroll);
+      EventManager.of(oldWidget.model)
+          ?.removeEventListener(EventTypes.scrollto, onScrollTo);
 
       // register new event listeners
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.scroll,  onScroll);
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
+      EventManager.of(widget.model)
+          ?.registerEventListener(EventTypes.scroll, onScroll);
+      EventManager.of(widget.model)
+          ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
     }
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     // remove event listeners
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.scroll,  onScroll);
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
+    EventManager.of(widget.model)
+        ?.removeEventListener(EventTypes.scroll, onScroll);
+    EventManager.of(widget.model)
+        ?.removeEventListener(EventTypes.scrollto, onScrollTo);
 
     controller.dispose();
     super.dispose();
@@ -79,75 +82,74 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventS
 
       // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
       if ((child != null) && (child.context != null)) {
-        Scrollable.ensureVisible(child.context, duration: Duration(seconds: 1), alignment: 0.2);
+        Scrollable.ensureVisible(child.context,
+            duration: const Duration(seconds: 1), alignment: 0.2);
       }
     }
   }
 
   @override
-  void onScroll(Event event) async
-  {
+  void onScroll(Event event) async {
     scroll(event, controller);
     event.handled = true;
   }
 
-  scroll(Event event, ScrollController? sc) async
-  {
+  scroll(Event event, ScrollController? sc) async {
     try {
-      if (event.parameters!.containsKey("direction") && event.parameters!.containsKey("pixels")) {
+      if (event.parameters!.containsKey("direction") &&
+          event.parameters!.containsKey("pixels")) {
         String? direction = event.parameters!["direction"];
         double distance = double.parse(event.parameters!["pixels"]!);
-        if (direction != null)
-        {
-          if (direction == 'left' || direction == 'right')
-          {
+        if (direction != null) {
+          if (direction == 'left' || direction == 'right') {
             double offset = sc!.offset;
-            double moveToPosition = offset + (direction == 'left' ? -distance : distance);
-            sc.animateTo(moveToPosition, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
-          }
-          else if (direction == 'up' || direction == 'down')
-          {
+            double moveToPosition =
+                offset + (direction == 'left' ? -distance : distance);
+            sc.animateTo(moveToPosition,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut);
+          } else if (direction == 'up' || direction == 'down') {
             double offset = sc!.offset;
-            double moveToPosition = offset + (direction == 'up' ? -distance : distance);
-            sc.animateTo(moveToPosition, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+            double moveToPosition =
+                offset + (direction == 'up' ? -distance : distance);
+            sc.animateTo(moveToPosition,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut);
           }
         }
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().error('onScroll Error: ');
       Log().exception(e, caller: 'table.View');
     }
   }
 
-  Widget? itemBuilder(BuildContext context, int index)
-  {
+  Widget? itemBuilder(BuildContext context, int index) {
     ListItemModel? model = widget.model.getItemModel(index);
     if (model == null) return null;
 
     Widget view = ListItemView(model);
 
     // droppable?
-    if (model.droppable)
-    {
+    if (model.droppable) {
       view = DroppableView(model, view);
     }
 
     // draggable?
-    if (model.draggable)
-    {
+    if (model.draggable) {
       view = DraggableView(model, view);
     }
 
     view = MouseRegion(cursor: SystemMouseCursors.click, child: view);
-    view = GestureDetector(onTap: () => model.onTap(), child: view, behavior: HitTestBehavior.translucent);
+    view = GestureDetector(
+        onTap: () => model.onTap(),
+        behavior: HitTestBehavior.translucent,
+        child: view);
 
     return view;
   }
 
-  List<ExpansionPanelRadio> expansionItems(BuildContext context)
-  {
+  List<ExpansionPanelRadio> expansionItems(BuildContext context) {
     List<ExpansionPanelRadio> items = [];
     ListItemModel? itemModel;
     int index = 0;
@@ -158,26 +160,29 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventS
         Text? title;
         if (!isNullOrEmpty(itemModel.title)) {
           title = Text(itemModel.title!);
-        } else if (isNullOrEmpty(itemModel.title))
-        {
-          List<dynamic>? descendants = itemModel.findDescendantsOfExactType(TextModel);
-          if (descendants.isNotEmpty)
-          {
+        } else if (isNullOrEmpty(itemModel.title)) {
+          List<dynamic>? descendants =
+              itemModel.findDescendantsOfExactType(TextModel);
+          if (descendants.isNotEmpty) {
             int i = 0;
             while (i < descendants.length && descendants[i].value == null) {
               i++;
             }
-            title = Text(descendants[i].value, style: TextStyle(color: Theme
-                .of(context)
-                .colorScheme
-                .onBackground),);
+            title = Text(
+              descendants[i].value,
+              style:
+                  TextStyle(color: Theme.of(context).colorScheme.onBackground),
+            );
           }
-        }
-        else if (isNullOrEmpty(itemModel.title)) {
+        } else if (isNullOrEmpty(itemModel.title)) {
           title = Text(index.toString());
         }
         ListTile header = ListTile(title: title);
-        var item = ExpansionPanelRadio(value: index, body: listItem, headerBuilder: (BuildContext context, bool isExpanded) => header, canTapOnHeader: true);
+        var item = ExpansionPanelRadio(
+            value: index,
+            body: listItem,
+            headerBuilder: (BuildContext context, bool isExpanded) => header,
+            canTapOnHeader: true);
         items.add(item);
       }
     } while (itemModel != null);
@@ -185,13 +190,14 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventS
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     /// Busy / Loading Indicator
-    busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
+    busy ??= BusyModel(widget.model,
+            visible: widget.model.busy, observable: widget.model.busyObservable)
+        .getView();
 
     // Direction
     dynamic direction = Axis.vertical;
@@ -202,36 +208,43 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventS
     // View
     Widget view;
 
-    if(widget.model.collapsed) {
+    if (widget.model.collapsed) {
       view = SingleChildScrollView(
-        physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null,
-        child: ExpansionPanelList.radio(
-            dividerColor: Theme.of(context).colorScheme.onInverseSurface,
-            initialOpenPanelValue: 0,
-            elevation: 2,
-            expandedHeaderPadding: EdgeInsets.all(4),
-            children: expansionItems(context)));
+          physics: widget.model.onpulldown != null
+              ? const AlwaysScrollableScrollPhysics()
+              : null,
+          child: ExpansionPanelList.radio(
+              dividerColor: Theme.of(context).colorScheme.onInverseSurface,
+              initialOpenPanelValue: 0,
+              elevation: 2,
+              expandedHeaderPadding: const EdgeInsets.all(4),
+              children: expansionItems(context)));
     } else {
-      view = ListView.builder(reverse: widget.model.reverse, physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: controller, itemBuilder: itemBuilder);
+      view = ListView.builder(
+          reverse: widget.model.reverse,
+          physics: widget.model.onpulldown != null
+              ? const AlwaysScrollableScrollPhysics()
+              : null,
+          scrollDirection: direction,
+          controller: controller,
+          itemBuilder: itemBuilder);
     }
 
-
-    if(widget.model.onpulldown != null) {
+    if (widget.model.onpulldown != null) {
       view = RefreshIndicator(
-        onRefresh: () => widget.model.onPull(context),
-        child: view);
+          onRefresh: () => widget.model.onPull(context), child: view);
     }
 
-    if(widget.model.onpulldown != null || widget.model.allowDrag) {
+    if (widget.model.onpulldown != null || widget.model.allowDrag) {
       view = ScrollConfiguration(
-      behavior: ScrollConfiguration.of(context).copyWith(
-        dragDevices: {
-          PointerDeviceKind.touch,
-          PointerDeviceKind.mouse,
-        },
-      ),
-      child: view,
-    );
+        behavior: ScrollConfiguration.of(context).copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+          },
+        ),
+        child: view,
+      );
     }
 
     // add list
@@ -251,14 +264,12 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventS
     return view;
   }
 
-  Offset? positionOf()
-  {
+  Offset? positionOf() {
     RenderBox? render = context.findRenderObject() as RenderBox?;
     return render?.localToGlobal(Offset.zero);
   }
 
-  Size? sizeOf()
-  {
+  Size? sizeOf() {
     RenderBox? render = context.findRenderObject() as RenderBox?;
     return render?.size;
   }

@@ -33,12 +33,11 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView> {
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     var model = widget.model;
 
     // Check if widget is visible before wasting resources on building it
-    if ((model.visible == false)) return Offstage();
+    if ((model.visible == false)) return const Offstage();
 
     // build view
     Widget? view = iframe;
@@ -56,10 +55,10 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView> {
     }
 
     // basic view
-    view = Container(
-        child: view,
+    view = SizedBox(
         width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height);
+        height: MediaQuery.of(context).size.height,
+        child: view);
 
     // apply user defined constraints
     view = applyConstraints(view, widget.model.constraints);

@@ -3,42 +3,35 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart'      ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/span/span_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/system.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class SpanModel extends DecoratedWidgetModel 
-{
+class SpanModel extends DecoratedWidgetModel {
   //TODO: make text spans pass properties to text
-
-  ///////////
-  /* Value */
-  ///////////
+  
+  // Value 
   List<TextModel> spanTextValues = [];
 
   /// shadow attributes
   ///
   /// the color of the elevation shadow, defaults to black26
   ColorObservable? _shadowcolor;
-
   set shadowcolor(dynamic v) {
     if (_shadowcolor != null) {
       _shadowcolor!.set(v);
     } else if (v != null) {
-      _shadowcolor = ColorObservable(
-          Binding.toKey(id, 'shadowcolor'), v,
+      _shadowcolor = ColorObservable(Binding.toKey(id, 'shadowcolor'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-
   Color? get shadowcolor => _shadowcolor?.get();
 
   /// the elevation of the box. The blur radius is 2* the elevation. This is combined with the offsets when constraining the size.
   DoubleObservable? _elevation;
-
   set elevation(dynamic v) {
     if (_elevation != null) {
       _elevation!.set(v);
@@ -76,24 +69,18 @@ class SpanModel extends DecoratedWidgetModel
 
   // font
   StringObservable? _font;
-  set font(dynamic v)
-  {
-    if (_font != null)
-    {
+  set font(dynamic v) {
+    if (_font != null) {
       _font!.set(v);
-    }
-    else if (v != null)
-    {
-      _font = StringObservable(Binding.toKey(id, 'font'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _font = StringObservable(Binding.toKey(id, 'font'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
   String? get font => _font?.get() ?? System.theme.font;
-
-  ////////////
-  /* Weight */
-  ////////////
+  
+  // Weight 
   DoubleObservable? _weight;
-
   set weight(dynamic v) {
     if (_weight != null) {
       _weight!.set(v);
@@ -103,11 +90,8 @@ class SpanModel extends DecoratedWidgetModel
     }
   }
   double? get weight => _weight?.get();
-
-
-  //////////////////////////////////////////////
-  /* If the text is raw or uses special chars */
-  //////////////////////////////////////////////
+  
+  // If the text is raw or uses special chars 
   BooleanObservable? _raw;
   set raw(dynamic v) {
     if (_raw != null) {
@@ -130,10 +114,8 @@ class SpanModel extends DecoratedWidgetModel
     }
   }
   bool get selectable => _selectable?.get() ?? false;
-
-  ///////////////
-  /* bold font */
-  ///////////////
+  
+  // bold font 
   BooleanObservable? _bold;
 
   set bold(dynamic v) {
@@ -145,10 +127,8 @@ class SpanModel extends DecoratedWidgetModel
     }
   }
   bool get bold => _bold?.get() ?? false;
-
-  /////////////////
-  /* italic font */
-  /////////////////
+  
+  // italic font 
   BooleanObservable? _italic;
   set italic(dynamic v) {
     if (_italic != null) {
@@ -159,10 +139,8 @@ class SpanModel extends DecoratedWidgetModel
     }
   }
   bool get italic => _italic?.get() ?? false;
-
-  ////////////////
-  /* font theme */
-  ////////////////
+  
+  // font theme 
   StringObservable? _theme;
   set theme(dynamic v) {
     if (_theme != null) {
@@ -173,10 +151,8 @@ class SpanModel extends DecoratedWidgetModel
     }
   }
   String? get theme => _theme?.get();
-
-  ////////////////
-  /* font style */
-  ////////////////
+  
+  // font style 
   StringObservable? _style;
   set style(dynamic v) {
     if (_style != null) {
@@ -186,27 +162,23 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get style => _style?.get();
 
-  /////////////////////
-  /* font decoration */
-  /////////////////////
+  // font decoration //
   StringObservable? _decoration;
 
   set decoration(dynamic v) {
     if (_decoration != null) {
       _decoration!.set(v);
     } else if (v != null) {
-      _decoration = StringObservable(
-          Binding.toKey(id, 'decoration'), v,
+      _decoration = StringObservable(Binding.toKey(id, 'decoration'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
   String? get decoration => _decoration?.get();
-
-  //////////////////////
-  /* decorationweight */
-  //////////////////////
+  
+  // decoration weight
   DoubleObservable? _decorationweight;
   set decorationweight(dynamic v) {
     if (_decorationweight != null) {
@@ -218,10 +190,8 @@ class SpanModel extends DecoratedWidgetModel
     }
   }
   double? get decorationweight => _decorationweight?.get();
-
-  //////////////////////
-  /* decoration color */
-  //////////////////////
+  
+  // decoration color 
   ColorObservable? _decorationcolor;
 
   set decorationcolor(dynamic v) {
@@ -235,9 +205,8 @@ class SpanModel extends DecoratedWidgetModel
   }
   Color? get decorationcolor => _decorationcolor?.get();
 
-  /////////////////////
-  /* decorationstyle */
-  /////////////////////
+
+  // decoration style
   StringObservable? _decorationstyle;
   set decorationstyle(dynamic v) {
     if (_decorationstyle != null) {
@@ -250,9 +219,7 @@ class SpanModel extends DecoratedWidgetModel
   }
   String get decorationstyle => _decorationstyle?.get() ?? 'none';
 
-  //////////////////
-  /*  wordspacing */
-  //////////////////
+  //  word spacing
   DoubleObservable? _wordspace;
   set wordspace(dynamic v) {
     if (_wordspace != null) {
@@ -264,32 +231,25 @@ class SpanModel extends DecoratedWidgetModel
   }
   double? get wordspace => _wordspace?.get();
 
-  ///////////////////
-  /* letterspacing */
-  ///////////////////
+  // letter spacing
   DoubleObservable? _letterspace;
   set letterspace(dynamic v) {
     if (_letterspace != null) {
       _letterspace!.set(v);
     } else if (v != null) {
-      _letterspace = DoubleObservable(
-          Binding.toKey(id, 'letterspace'), v,
+      _letterspace = DoubleObservable(Binding.toKey(id, 'letterspace'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
   double get letterspace => _letterspace?.get() ?? 0;
 
-  //////////////////
-  /*  lineheight  */
-  //////////////////
+  //  line height
   DoubleObservable? _lineheight;
-
   set lineheight(dynamic v) {
     if (_lineheight != null) {
       _lineheight!.set(v);
     } else if (v != null) {
-      _lineheight = DoubleObservable(
-          Binding.toKey(id, 'lineheight'), v,
+      _lineheight = DoubleObservable(Binding.toKey(id, 'lineheight'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
@@ -300,12 +260,9 @@ class SpanModel extends DecoratedWidgetModel
   String get halign => super.halign ?? 'start'; //left right center justify
   @override
   String get valign => super.valign ?? 'start';
-
-  ////////////////////
-  /*     overflow   */
-  ////////////////////
+  
+  // overflow
   StringObservable? _overflow;
-
   set overflow(dynamic v) {
     if (_overflow != null) {
       _overflow!.set(v);
@@ -314,41 +271,38 @@ class SpanModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String get overflow => _overflow?.get() ?? 'wrap';
 
-
   SpanModel(
-      WidgetModel super.parent,
-      super.id,
-      {
-        dynamic value,
-        dynamic color,
-        dynamic elevation,
-        dynamic shadowcolor,
-        dynamic shadowx,
-        dynamic shadowy,
-        dynamic font,
-        dynamic weight,
-        dynamic bold,
-        dynamic italic,
-        dynamic width,
-        dynamic theme,
-        dynamic decoration,
-        dynamic decorationcolor,
-        dynamic decorationstyle,
-        dynamic decorationweight,
-        dynamic wordspace,
-        dynamic letterspace,
-        dynamic lineheight,
-        dynamic raw,
-        dynamic selectable,
-        dynamic valign,
-        dynamic overflow,
-        dynamic halign,
-        dynamic style,
-      }) {
-
-
+    WidgetModel super.parent,
+    super.id, {
+    dynamic value,
+    dynamic color,
+    dynamic elevation,
+    dynamic shadowcolor,
+    dynamic shadowx,
+    dynamic shadowy,
+    dynamic font,
+    dynamic weight,
+    dynamic bold,
+    dynamic italic,
+    dynamic width,
+    dynamic theme,
+    dynamic decoration,
+    dynamic decorationcolor,
+    dynamic decorationstyle,
+    dynamic decorationweight,
+    dynamic wordspace,
+    dynamic letterspace,
+    dynamic lineheight,
+    dynamic raw,
+    dynamic selectable,
+    dynamic valign,
+    dynamic overflow,
+    dynamic halign,
+    dynamic style,
+  }) {
     if (color != null) this.color = color;
     if (elevation != null) this.elevation = elevation;
     if (shadowcolor != null) this.shadowcolor = shadowcolor;
@@ -374,17 +328,13 @@ class SpanModel extends DecoratedWidgetModel
     if (selectable != null) this.selectable = selectable;
   }
 
-  static SpanModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static SpanModel? fromXml(WidgetModel parent, XmlElement xml) {
     SpanModel? model;
-    try
-    {
+    try {
       model = SpanModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'text.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'text.Model');
       model = null;
     }
     return model;
@@ -392,10 +342,8 @@ class SpanModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
-
-    // deserialize 
+  void deserialize(XmlElement xml) {
+    // deserialize
     super.deserialize(xml);
 
     String? textvalue = Xml.get(node: xml, tag: 'value');
@@ -429,7 +377,8 @@ class SpanModel extends DecoratedWidgetModel
     selectable = Xml.get(node: xml, tag: 'selectable');
 
     // build spans
-    List<TextModel> textSpans = findChildrenOfExactType(TextModel).cast<TextModel>();
+    List<TextModel> textSpans =
+        findChildrenOfExactType(TextModel).cast<TextModel>();
     for (var text in textSpans) {
       spanTextValues.add(text);
     }

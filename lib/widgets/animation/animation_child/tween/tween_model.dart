@@ -12,8 +12,7 @@ import 'package:fml/helpers/helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class TweenModel extends AnimationChildModel
-{
+class TweenModel extends AnimationChildModel {
   /// Curve starting point from 0.0 to 1.0
 
   StringObservable? _from;
@@ -95,7 +94,6 @@ class TweenModel extends AnimationChildModel
     value = from ?? "";
   }
 
-
   @override
   Future<bool?> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
@@ -125,5 +123,6 @@ class TweenModel extends AnimationChildModel
   }
 
   @override
-  Widget getAnimatedView(Widget child, {AnimationController? controller}) => TweenView(this, child, controller);
+  Widget getAnimatedView(Widget child, {AnimationController? controller}) =>
+      TweenView(this, child, controller);
 }

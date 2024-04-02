@@ -1,14 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'dart:core';
+import 'package:changeicon/changeicon.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
-import 'package:fml/connectivity/connectivity.dart';
+import 'package:fml/connection/connection.dart';
 import 'package:fml/datasources/log/log_model.dart';
+import 'package:fml/dialog/manager.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
+import 'package:fml/phrase.dart';
 import 'package:fml/postmaster/postmaster.dart';
 import 'package:fml/janitor/janitor.dart';
 import 'package:flutter/material.dart';
@@ -26,27 +30,43 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'fml.dart';
 import 'widgets/framework/framework_model.dart';
+import 'dart:io' as io show Platform;
+
+// platform
+import 'package:fml/platform/platform.web.dart'
+    if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+    if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class System extends WidgetModel implements IEventManager {
-  static final String myId = "SYSTEM";
+  static const String myId = "SYSTEM";
 
-  // set to true once done
-  static final _completer = Completer();
-  static get initialized => _completer.future;
-
-  // this get called once by Splash
-  Future get installed => _completer.future;
+  static final initialized  = Completer<bool>();
+  static final _initializing = Completer<bool>();
 
   static final System _singleton = System._initialize();
   factory System() => _singleton;
-  System._initialize() : super(null, myId, scope: Scope(id: myId)) {
-    _initialize();
-    Platform.fml2js(version: FmlEngine.version);
-  }
+  System._initialize() : super(null, myId, scope: Scope(id: myId));
 
-  // current application
+  // companies are used for defaultApp's in multiApp mode
+  // on launch, if the user configures a single app in the store and
+  // specified it as the "default" app, the icon on the mobile desktop
+  // if changed to that same icon defined in the res images (android) or plist (ios)
+  // this requires the client to add those images and recompile
+  static final List<String> companies = ['appdaddy', 'goodyear', 'rocketfunds'];
+
+  // application list
+  static List<ApplicationModel> _apps = [];
+
+  // sorted list of applications
+  static List<ApplicationModel> get apps => _apps..sort((a, b) => Comparable.compare(a.order ?? 99999, b.order ?? 99999))..toList();
+
+  // current app
   static ApplicationModel? _app;
-  static ApplicationModel? get app => _app;
+  static ApplicationModel? get currentApp => _brandedApp ?? _app;
+  static set currentApp (ApplicationModel? app) => _app = app;
+
+  // returns the default app
+  static ApplicationModel? get _brandedApp => (FmlEngine.type == ApplicationType.branded && _apps.isNotEmpty) ? _apps.first : null;
 
   // current theme
   static late ThemeModel _theme;
@@ -67,15 +87,15 @@ class System extends WidgetModel implements IEventManager {
   String? get rootpath => _rootpath?.get();
 
   // current domain
-  StringObservable? _domain;
-  String? get domain => _domain?.get();
+  static StringObservable? _domain;
+  static String? get domain => _domain?.get();
 
-  StringObservable? _scheme;
-  String? get scheme => _scheme?.get();
+  static StringObservable? _scheme;
+  static String? get scheme => _scheme?.get();
 
   // current host
-  StringObservable? _host;
-  String? get host => _host?.get();
+  static StringObservable? _host;
+  static String? get host => _host?.get();
 
   /// Global System Observable
   StringObservable? _userplatform;
@@ -130,19 +150,23 @@ class System extends WidgetModel implements IEventManager {
   Gps gps = Gps();
   Payload? currentLocation;
 
-  late String baseUrl;
+  static late String baseUrl;
 
-  _initialize() async {
-    print('Initializing FML Engine V${FmlEngine.version} on ${Uri.base}...');
+  @override
+  Future<void> initialize() async {
+
+    // initialize should only run once
+    if (initialized.isCompleted || _initializing.isCompleted) return;
+
+    // signal initializing in progress
+    _initializing.complete(true);
 
     // base URL changes (fragment is dropped) if
     // used past this point
     baseUrl = Uri.base.toString();
 
-    // the mouse isn't always detected at startup
-    // not until the moves it or clicks
-    // this routine traps that
-    RendererBinding.instance.mouseTracker.addListener(onMouseDetected);
+    // initialize folders
+    await _initFolders();
 
     // initialize platform
     await Platform.init();
@@ -150,29 +174,39 @@ class System extends WidgetModel implements IEventManager {
     // initialize System Globals
     await _initBindables();
 
-    // initialize Hive
+    // initialize connection monitor
+    // this needs to be done ahead of initializing apps
+    // since they use the template manager
+    await Connection.initialize(_connected);
+
+    // initialize the database (Hive)
     await _initDatabase();
 
-    // initialize connectivity
-    await Connectivity(_connected!).initialize();
-
-    // create empty applications folder
-    if (!FmlEngine.isWeb) await _initFolders();
-
-    // set initial route
-    await _initRoute();
+    // load apps
+    await _loadApps();
 
     // start the Post Master
-    await postmaster.start();
+    postmaster.start();
 
     // start the Janitor
-    await janitor.start();
-
-    // signal complete
-    _completer.complete(true);
+    janitor.start();
 
     // add keyboard listener
     ServicesBinding.instance.keyboard.addHandler(onShortcutHandler);
+
+    // the mouse isn't always detected at startup
+    // not until the moves it or clicks
+    // this routine traps that
+    RendererBinding.instance.mouseTracker.addListener(onMouseDetected);
+
+    // set fml2js
+    Platform.fml2js(version: FmlEngine.version);
+
+    // launch the application
+    await launchApplication(currentApp, navigate: false);
+
+    // signal complete
+    initialized.complete(true);
   }
 
   onMouseDetected() {
@@ -208,12 +242,21 @@ class System extends WidgetModel implements IEventManager {
     _screenwidth = IntegerObservable(Binding.toKey('screenwidth'),
         PlatformDispatcher.instance.views.first.physicalSize.width,
         scope: scope);
-    _userplatform = StringObservable(Binding.toKey('platform'), FmlEngine.platform, scope: scope);
-    _useragent = StringObservable(Binding.toKey('useragent'), Platform.useragent, scope: scope);
-    _version = StringObservable(Binding.toKey('version'), FmlEngine.version, scope: scope);
-    _uuid = StringObservable(Binding.toKey('uuid'), newId(), scope: scope, getter: newId);
+    _userplatform = StringObservable(
+        Binding.toKey('platform'), FmlEngine.platform,
+        scope: scope);
+    _useragent = StringObservable(
+        Binding.toKey('useragent'), Platform.useragent,
+        scope: scope);
+    _version = StringObservable(Binding.toKey('version'), FmlEngine.version,
+        scope: scope);
+    _uuid = StringObservable(Binding.toKey('uuid'), newId(),
+        scope: scope, getter: newId);
+
     // this satisfies/eliminates the compiler warning
-    if (_uuid == null) print(_uuid);
+    if (kDebugMode) {
+      print(_uuid);
+    }
 
     // system dates
     _epoch = IntegerObservable(Binding.toKey('epoch'), epoch(),
@@ -238,28 +281,28 @@ class System extends WidgetModel implements IEventManager {
     return true;
   }
 
-  Future<bool> _initDatabase() async {
+  static Future<bool> _initDatabase() async {
+
     // create the hive folder
     var folder = normalize(join(URI.rootPath, "hive"));
     String? hiveFolder = await Platform.createFolder(folder);
 
     // initialize hive
-    await Database().initialize(hiveFolder);
-
-    return true;
+    return await Database.initialize(hiveFolder);
   }
 
-  Future<bool> _initFolders() async {
+  static Future<bool> _initFolders() async {
     bool ok = true;
-
     if (FmlEngine.isWeb) return ok;
+
     try {
       // create applications folder
       String? folderpath = normalize(join(URI.rootPath, "applications"));
       folderpath = await Platform.createFolder(folderpath);
 
       // read asset manifest
-      Map<String, dynamic> manifest = json.decode(await rootBundle.loadString('AssetManifest.json'));
+      Map<String, dynamic> manifest =
+          json.decode(await rootBundle.loadString('AssetManifest.json'));
 
       // copy assets
       for (String key in manifest.keys) {
@@ -270,7 +313,9 @@ class System extends WidgetModel implements IEventManager {
         }
       }
     } catch (e) {
-      print("Error building application assets. Error is $e");
+      if (kDebugMode) {
+        print("Error building application assets. Error is $e");
+      }
       ok = false;
     }
     return ok;
@@ -290,107 +335,293 @@ class System extends WidgetModel implements IEventManager {
     }
   }
 
-  Future _initRoute() async {
+  static var appsLoaded = Completer<bool>();
+  static Future _loadApps() async {
+
+    // load the apps from the database
+    _apps = FmlEngine.isWeb ? [] : await ApplicationModel.loadAll();
+
+    // remove redundant apps if branded (this normally wont be needed
+    // only in development mode where user is switching between app types
+    while (FmlEngine.type == ApplicationType.branded && _apps.length > 1) {
+      var app = _apps.last;
+      await app.initialized;
+      await app.delete();
+      _apps.removeLast();
+    }
+
+    // reorder apps by index
+    var reorder = _apps.length > 1 && (_apps.firstWhereOrNull((app) => app.order == null) != null);
+    if (reorder) await _resequenceApps();
+
     // set default app
-    if (FmlEngine.isWeb || FmlEngine.type == ApplicationTypes.singleApp) {
+    if (kIsWeb || FmlEngine.type == ApplicationType.single) {
+
+      // set the domain
       var domain = FmlEngine.domain;
 
       // replace default for testing
       if (FmlEngine.isWeb) {
+
+        // parse the site domain url
         var uri = Uri.tryParse(baseUrl);
+
+        // if web, we use the browser url unless its localhost
         if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) {
           domain = uri.url;
         }
       }
 
-      print('Startup Domain is $domain');
+      var app = ApplicationModel(System(), url: domain, page: 0, order: 0);
 
-      // set default app
-      ApplicationModel app = ApplicationModel(System(), url: domain);
+      // add the app to the apps list
+      _apps.insert(0, app);
 
-      // wait for it to initialize
-      await app.initialized;
-
-      // start the app
-      System().launchApplication(app, false);
+      // set current
+      System.currentApp = app;
     }
+
+    // wait for current app to initialize
+    await System.currentApp?.initialized;
+
+    // signal complete - used in splash
+    appsLoaded.complete(true);
   }
 
-  void setApplicationTitle(String? title) async {
-    title = title ?? app?.settings("APPLICATION_NAME");
+  static String get title => Platform.title;
+
+  static void setApplicationTitle(String? title) async {
+    title = title ?? currentApp?.name;
     if (!isNullOrEmpty(title)) {
-      // print('setting title to $title');
       SystemChrome.setApplicationSwitcherDescription(
           ApplicationSwitcherDescription(
               label: title, primaryColor: Colors.blue.value));
     }
   }
 
-  static String get title => Platform.title;
+  /// changes the desktop icon
+  static const mainIcon = 'MainActivity';
+  static Changeicon? _changeIconPlugin;
+  static void _setBranding(String icon)
+  {
+    //if (kIsWeb) return;
 
-  // launches the application
-  launchApplication(ApplicationModel app, bool notifyOnThemeChange) {
-    // Close the old application if one
-    // is running
-    if (_app != null) {
-      Log().info("Closing Application ${_app!.url}");
+    bool canSet = false;
+    try
+    {
+      canSet = io.Platform.isIOS || io.Platform.isAndroid;
+    }
+    catch(e)
+    {
+      canSet = false;
+    }
+    if (!canSet) return;
 
-      // set the default domain on the Url utilities
-      URI.rootHost = "";
+    // no clients defined
+    if (companies.isEmpty) return;
 
-      // logoff
-      _app?.logoff();
-
-      // update application level bindables
-      _domain?.set(null);
-      _scheme?.set(null);
-      _host?.set(null);
-
-      // close application
-      _app!.close();
+    // initialize the plugin
+    if (_changeIconPlugin == null) {
+      Changeicon.initialize(classNames: [mainIcon, ...companies]);
+      _changeIconPlugin = Changeicon();
     }
 
-    Log().info("Activating Application (${app.title}) @ ${app.domain}");
+    // trim icon
+    icon = icon.toLowerCase().trim();
+
+    // change the icon
+    if (companies.contains(icon))
+    {
+      _changeIconPlugin?.switchIconTo(classNames: [icon]);
+    }
+    else
+    {
+      _changeIconPlugin?.switchIconTo(classNames: [mainIcon]);
+    }
+  }
+
+  static Future<bool> _confirmClearBranding() async
+  {
+    var context = NavigationManager().navigatorKey.currentContext;
+    if (context != null)
+    {
+      var no = Text(phrase.no,
+          style:
+          const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w500));
+      var yes = Text(phrase.yes,
+          style:
+          const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w500));
+
+      var response = await DialogManager.show(context,
+          type: DialogType.warning,
+          title: phrase.removeDefaultApp,
+          buttons: [no, yes]);
+
+      return response == 1;
+    }
+    return false;
+  }
+
+  static void clearBranding() async
+  {
+    // do nothing if in web or no default application
+    if (FmlEngine.isWeb || _brandedApp == null) return;
+
+    // show dialog to confirm
+    bool ok = await _confirmClearBranding();
+    if (!ok) return;
+
+    // reset default icon
+    _setBranding(mainIcon);
+
+    // delete all apps
+    for (var app in _apps) {
+      await app.initialized;
+      await app.delete();
+    }
+    _apps.clear();
+
+    // notify the user
+    ok ? toast(phrase.defaultAppRemoved) : toast(phrase.defaultAppRemovedProblem);
+  }
+
+  static _closeCurrentApp()
+  {
+    if (currentApp == null) return;
+
+    // closing app
+    Log().info("Closing Application ${currentApp?.url}");
 
     // set the default domain on the Url utilities
+    URI.rootHost = "";
+
+    // logoff
+    currentApp?.logoff();
+
+    // update application level bindables
+    _domain?.set(null);
+    _scheme?.set(null);
+    _host?.set(null);
+
+    // close application
+    currentApp?.close();
+  }
+
+  // launches the application
+  static Future<void> launchApplication(ApplicationModel? app, {bool navigate = true}) async {
+
+    if (app == null) return;
+
+    // close the current application
+    if (app != currentApp) _closeCurrentApp();
+
+    // set the default domain for url conversion
     URI.rootHost = app.domain ?? "";
 
-    // set the current application
-    _app = app;
+    // open new application
+    Log().info("Launching Application (${app.title}) @ ${app.domain}");
 
-    // launch the application
-    app.launch(theme, notifyOnThemeChange);
+    // wait for app to initialize
+    await app.initialized;
 
-    // set credentials
-    if (app.jwt != null) _app?.logon(app.jwt);
+    // set branding
+    if (_brandedApp != null) _setBranding(_brandedApp!.company ?? mainIcon);
 
     // update application level bindables
     _domain?.set(app.domain);
     _scheme?.set(app.scheme);
     _host?.set(app.host);
+
+    //  activate the app
+    await app.setActive();
+
+    // navigate to page?
+    if (navigate) {
+      NavigationManager().navigateTo(app.homePage);
+    }
+  }
+
+  static Future<bool> addApplication(ApplicationModel app) async {
+
+    bool ok = true;
+
+    // set page
+    app.page ??= 0;
+
+    // set ordering
+    app.order ??= _apps.length;
+
+    // insert into the hive
+    ok = await app.insert();
+
+    // add to the list
+    if (!_apps.contains(app)) _apps.add(app);
+
+    return ok;
+  }
+
+  static Future<bool> deleteApplication(ApplicationModel app) async {
+
+    bool ok = true;
+
+    // delete app from the database
+    ok = await app.delete();
+
+    // add to the list
+    if (_apps.contains(app)) _apps.remove(app);
+
+    // re-sequence the apps
+    await _resequenceApps();
+
+    // dispose of the app
+    app.dispose();
+
+    return ok;
+  }
+
+  static Future<bool> _resequenceApps() async {
+
+    bool ok = true;
+
+    // sort the list by app ordering
+    _apps.sort((a, b) => Comparable.compare(a.order ?? 99999, b.order ?? 99999));
+
+    int i = 0;
+    for (var app in _apps) {
+      // set the application ordering
+      app.order = i++;
+
+      // insert into the hive
+      ok = await app.update();
+    }
+
+    return ok;
   }
 
   // sets the active framework
-  FrameworkModel? activeFramework;
-  void setActiveFramework(FrameworkModel model)
-  {
-    activeFramework = model;
-  }
+  FrameworkModel? _activeFramework;
+  void setActiveFramework(FrameworkModel model) => _activeFramework = model;
 
   // handle key press
-  bool onShortcutHandler(KeyEvent event) => ShortcutHandler.handleKeyPress(event, activeFramework);
+  bool onShortcutHandler(KeyEvent event) =>
+      ShortcutHandler.handleKeyPress(event, _activeFramework);
 
   /// Event Manager Host
   final EventManager manager = EventManager();
   @override
-  registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);
+  registerEventListener(EventTypes type, OnEventCallback callback,
+          {int? priority}) =>
+      manager.register(type, callback, priority: priority);
 
   @override
-  removeEventListener(EventTypes type, OnEventCallback callback) => manager.remove(type, callback);
+  removeEventListener(EventTypes type, OnEventCallback callback) =>
+      manager.remove(type, callback);
 
   @override
-  broadcastEvent(WidgetModel source, Event event) => manager.broadcast(this, event);
+  broadcastEvent(WidgetModel source, Event event) =>
+      manager.broadcast(this, event);
 
   @override
-  executeEvent(WidgetModel source, String event) => manager.execute(this, event);
+  executeEvent(WidgetModel source, String event) =>
+      manager.execute(this, event);
 }

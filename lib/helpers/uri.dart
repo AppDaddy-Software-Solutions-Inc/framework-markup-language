@@ -2,71 +2,70 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:fml/datasources/http/http.dart';
 import 'package:fml/helpers/mime.dart';
+import 'package:fml/log/manager.dart';
 import 'package:path/path.dart';
 
-extension URI on Uri
-{
+extension URI on Uri {
   // active domain
   static String rootHost = "";
   static String rootPath = "";
 
-  String  get url    => toString();
-  String  get domain => replace(userInfo: null).removeFragment().removePage().removeQuery().url;
-  String? get page   => (pathSegments.isNotEmpty && pathSegments.last.contains(".")) ? pathSegments.last : null;
-  String? get pageExtension => page?.contains(".") ?? false ? extension(page!).toLowerCase().replaceFirst(".", "").trim() : null;
+  String get url => toString();
+  String get domain =>
+      replace(userInfo: null).removeFragment().removePage().removeQuery().url;
+  String? get page =>
+      (pathSegments.isNotEmpty && pathSegments.last.contains("."))
+          ? pathSegments.last
+          : null;
+  String? get pageExtension => page?.contains(".") ?? false
+      ? extension(page!).toLowerCase().replaceFirst(".", "").trim()
+      : null;
 
-  String? asFilePath({String? domain})
-  {
+  String? asFilePath({String? domain}) {
     if (page == null) return null;
     var folder = asFolderPath(domain: domain);
-    var path   = normalize("$folder/$page");
+    var path = normalize("$folder/$page");
     return path;
   }
 
-  String asFolderPath({String? domain})
-  {
-    var root  = domain ?? rootPath;
-    var uri  = removePage();
+  String asFolderPath({String? domain}) {
+    var root = domain ?? rootPath;
+    var uri = removePage();
     var path = "${uri.host}/${uri.path}";
     if (uri.host != "applications") path = "applications/$path";
     path = normalize("$root/$path");
     return path;
   }
 
-  Uri toAbsolute({String? domain})
-  {
+  Uri toAbsolute({String? domain}) {
     var root = domain ?? rootHost;
-    if (!this.isAbsolute)
-    {
+    if (!this.isAbsolute) {
       var url = "$root/$host/$path";
-      if (hasFragment)
-      {
+      if (hasFragment) {
         url = "$url#$fragment";
       }
-      if (hasQuery)    url = "$url?$query";
+      if (hasQuery) url = "$url?$query";
       var uri = Uri.parse(url).removeEmptySegments();
       return uri;
-    }
-    else {
+    } else {
       return this;
     }
   }
 
-  Uri removeEmptySegments()
-  {
+  Uri removeEmptySegments() {
     // url is a data uri?
     if (data != null) return this;
 
     // remove empty segments
     List<String> pathSegments = this.pathSegments.toList();
-    pathSegments.removeWhere((segment) => Uri.decodeComponent(segment).trim() == "");
+    pathSegments
+        .removeWhere((segment) => Uri.decodeComponent(segment).trim() == "");
 
     // build a new uri
     return replace(pathSegments: pathSegments);
   }
 
-  Uri removeQuery()
-  {
+  Uri removeQuery() {
     if (hasQuery) {
       return Uri.parse(url.split("?")[0]);
     } else {
@@ -74,8 +73,7 @@ extension URI on Uri
     }
   }
 
-  Uri setPage(String page)
-  {
+  Uri setPage(String page) {
     // url is a data uri?
     if (data != null) return this;
 
@@ -89,15 +87,13 @@ extension URI on Uri
     return replace(pathSegments: pathSegments);
   }
 
-  Uri removePage()
-  {
+  Uri removePage() {
     // url is a data uri?
     if (data != null) return this;
 
     // remove empty segments
     List<String> pathSegments = this.pathSegments.toList();
-    if (page != null)
-    {
+    if (page != null) {
       pathSegments.removeLast();
 
       // build a new uri
@@ -106,8 +102,7 @@ extension URI on Uri
     return this;
   }
 
-  Uri addParameter(String key, String value)
-  {
+  Uri addParameter(String key, String value) {
     // url is a data uri?
     if (data != null) return this;
 
@@ -122,18 +117,15 @@ extension URI on Uri
     return replace(queryParameters: queryParameters);
   }
 
-  static Uri? parse(String? url, {String? domain})
-  {
+  static Uri? parse(String? url, {String? domain}) {
     // null or missing url
     if (url == null || url.trim() == "") return null;
 
     // fix for fragment # in query parameter
     // encode # to %23
-    if (url.contains("#"))
-    {
+    if (url.contains("#")) {
       var parts = url.split("?");
-      if (parts.length > 1)
-      {
+      if (parts.length > 1) {
         url = "${parts[0]}?${parts[1].replaceAll("#", "%23")}";
       }
     }
@@ -159,12 +151,10 @@ extension URI on Uri
     return uri;
   }
 
-  static Future<UriData?> toUriData(String url) async
-  {
-    try
-    {
+  static Future<UriData?> toUriData(String url, {String? domain}) async {
+    try {
       // parse the url
-      Uri? uri = parse(url);
+      Uri? uri = parse(url, domain: domain);
 
       // failed parse
       if (uri == null) return null;
@@ -173,37 +163,32 @@ extension URI on Uri
       if (uri.data != null) return uri.data;
 
       // file reference
-      if (uri.scheme == "file")
-      {
+      if (uri.scheme == "file") {
         var filepath = uri.asFilePath();
         if (filepath == null) return null;
-        var file  = File(filepath);
+        var file = File(filepath);
         var bytes = await file.readAsBytes();
-        var mime  = await Mime.type(url);
-        return UriData.fromBytes(bytes,mimeType: mime);
+        var mime = await Mime.type(uri.url);
+        return UriData.fromBytes(bytes, mimeType: mime);
       }
 
       // file reference
-      if (uri.scheme == "assets")
-      {
+      if (uri.scheme == "assets") {
         var assetpath = "${uri.scheme}/${uri.host}${uri.path}";
         ByteData bytes = await rootBundle.load(assetpath);
-        var mime  = await Mime.type(url);
-        return UriData.fromBytes(bytes.buffer.asUint8List(),mimeType: mime);
+        var mime = await Mime.type(uri.url);
+        return UriData.fromBytes(bytes.buffer.asUint8List(), mimeType: mime);
       }
 
       // remote image file
-      var response = await Http.get(url);
-      if (response.statusCode == HttpStatus.ok)
-      {
+      var response = await Http.get(uri.url);
+      if (response.statusCode == HttpStatus.ok) {
         var bytes = response.bytes;
-        var mime  = await Mime.type(url);
+        var mime = await Mime.type(uri.url);
         return UriData.fromBytes(bytes, mimeType: mime);
       }
-    }
-    catch(e)
-    {
-      print("Error in toUriData using $url. Error is $e");
+    } catch (e) {
+      Log().info("Error in toUriData using $url. Error is $e");
     }
     return null;
   }

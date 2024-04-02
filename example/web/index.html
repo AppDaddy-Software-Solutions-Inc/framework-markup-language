@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Do not cache INDEX.html -->
+    <meta http-equiv="Cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+
+    <!--
+      If you are serving your web app in a path other than the root, change the
+      href value below to reflect the base path you are serving from.
+
+      The path provided below has to start and end with a slash "/" in order for
+      it to work correctly.
+
+      For more details:
+      * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+      This is a placeholder for base href that will be replaced by the value of
+      the `--base-href` argument provided to `flutter build`.
+    -->
+    <base href="$FLUTTER_BASE_HREF">
+
+    <meta charset="UTF-8">
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+
+    <!-- iOS meta tags & icons -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="assets/assets/images/icon-192.png" rel="apple-touch-icon">
+
+    <!-- icon -->
+    <link href="assets/assets/images/icon.png" rel="icon" />
+    <link href="assets/assets/images/icon.png" rel="shortcut icon" />
+
+    <link rel="manifest" href="manifest.json">
+
+    <script>
+        // The value below is injected by flutter build, do not touch.
+        var serviceWorkerVersion = null;
+    </script>
+
+    <script type="text/javascript">
+
+        // default title if config.xml does not contain an `APPLICATION_NAME`
+        var title   = "Flutter Markup Language";
+        var version = "";
+        try
+        {
+            // read config.xml
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", "config.xml", false);
+            xhttp.send();
+            var xmlDoc = xhttp.responseXML;
+
+            // read title
+            var titleNode = xmlDoc.getElementsByTagName("APPLICATION_NAME");
+            if (titleNode != null) title = titleNode[0].getAttribute('value');
+
+            var versionNode = xmlDoc.getElementsByTagName("VERSION");
+            if (versionNode != null) version = versionNode[0].getAttribute('value');
+        }
+        catch(e) {}
+
+        // set document title
+        document.title = title;
+
+        // set description
+        var meta = document.createElement("meta");
+        meta.name = "description";
+        meta.content = title;
+        document.head.appendChild(meta);
+
+        // set apple-mobile-web-app-title
+        var iosmeta = document.createElement("meta");
+        iosmeta.name = "apple-mobile-web-app-title";
+        iosmeta.content = title;
+        document.head.appendChild(iosmeta);
+
+        // uncomment to add google maps and supply your api key in place of <your api key here>
+        // var script   = document.createElement("script");
+        // script.type  = "text/javascript";
+        // script.src   = "https://maps.googleapis.com/maps/api/js?key=<your api key here>";
+        // uncomment to include this functionality
+        // document.head.appendChild(script);
+
+        // change -> createScriptURL(k+j+e) to createScriptURL(k+j+e+`?v=${serviceWorkerVersion}`) in main.dart.js
+        // after build. This adds the version # to the deferred parts
+
+        // add flutter.js script
+        var script      = document.createElement("script");
+        script.type     = "text/javascript";
+        script.src      = `flutter.js?v=${serviceWorkerVersion}`;
+        script.defer    = true;
+        document.head.appendChild(script);
+    </script>
+
+    <!-- Local Scripts -->
+    <script src="local.js"></script>
+
+    <!-- Loading image and text (see body) styles -->
+    <style>
+        .centered
+        {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%);
+        }
+        .text
+        {
+            top: 55%;
+            font-family: arial;
+            font-size: 24px;
+            font-weight: 600;
+            color:white;
+        }
+    </style>
+</head>
+
+<body style="background-color:black;">
+
+    <!-- Loading Image. Make sure you change <body style="background-color:black;"> to the correct background color to fit the loading image -->
+    <img id="loadingImage" class="centered" alt="Flutter Markup Language" src="assets/assets/images/loading.gif"/>
+
+    <!-- Loading Text -->
+    <p id="loadingText" class="centered text">
+        <!-- uncomment below if you want to show loading text -->
+        <!-- Loading FML Engine ... -->
+    </p>
+
+    <script>
+
+        // Set Flutter Renderer
+        // auto      - automatically chooses which renderer to use. This option chooses the HTML renderer when the app is running in a mobile browser, and CanvasKit renderer when the app is running in a desktop browser.
+        // html      - always use the HTML renderer. Uses a combination of HTML elements, CSS, Canvas elements, and SVG elements. This renderer has a smaller download size.
+        // canvaskit - always use the CanvasKit renderer. This renderer is fully consistent with Flutter mobile and desktop, has faster performance with higher widget density, but adds about 2MB in download size.
+        let renderer = "auto";
+        console.log("Rendering with " + renderer);
+
+        // load main.dart.js
+        window.addEventListener('load', function(ev)
+        {
+            var loadingImage = document.querySelector('#loadingImage');
+            var loadingText  = document.querySelector('#loadingText');
+
+            // if (loadingText != null) loadingText.textContent = "Loading, please wait ...";
+            _flutter.loader.loadEntrypoint(
+            {
+                entrypointUrl: `main.dart.js?v=${serviceWorkerVersion}`,
+                serviceWorker: {serviceWorkerVersion: serviceWorkerVersion},
+                onEntrypointLoaded: async function(engineInitializer)
+                {
+                    // if (loadingText != null) loadingText.textContent = "Initializing engine...";
+                    let config = { renderer: renderer, useColorEmoji: true, canvasKitBaseUrl: "/canvaskit/"}
+                    let appRunner = await engineInitializer.initializeEngine(config)
+
+                    // remove loading image and text
+                    if (loadingImage != null) loadingImage.remove();
+                    if (loadingText  != null) loadingText.remove();
+                    // run the app
+                    await appRunner.runApp();
+                }
+            });
+        });
+        </script>
+
+    </body>
+</html>

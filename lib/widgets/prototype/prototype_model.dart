@@ -9,12 +9,11 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class PrototypeModel extends BoxModel
-{
+class PrototypeModel extends BoxModel {
   // data sourced prototype
   XmlElement? prototype;
 
@@ -27,19 +26,16 @@ class PrototypeModel extends BoxModel
   // prototypes must be in their own scope
   // since they destroy their children once the prototype is created
   // in the deserialize().
-  PrototypeModel(WidgetModel super.parent, super.id) : super(scope: Scope(parent: parent.scope));
+  PrototypeModel(WidgetModel super.parent, super.id)
+      : super(scope: Scope(parent: parent.scope));
 
-  static PrototypeModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static PrototypeModel? fromXml(WidgetModel parent, XmlElement xml) {
     PrototypeModel? model;
-    try
-    {
+    try {
       // build model
       model = PrototypeModel(parent, null);
       model.deserialize(xml);
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e, caller: 'prototype.Model');
       model = null;
     }
@@ -48,15 +44,15 @@ class PrototypeModel extends BoxModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // make a copy of the element
-    var root  = XmlElement(XmlName("PROTOTYPE"));
+    var root = XmlElement(XmlName("PROTOTYPE"));
     var child = xml.copy();
     root.children.add(child);
 
     // add the datasource attribute to the root node
-    root.attributes.add(XmlAttribute(XmlName("data"), Xml.attribute(node: xml, tag: 'data') ?? "missing"));
+    root.attributes.add(XmlAttribute(
+        XmlName("data"), Xml.attribute(node: xml, tag: 'data') ?? "missing"));
 
     // remove the data attribute from the child
     Xml.removeAttribute(child, "data");
@@ -68,8 +64,7 @@ class PrototypeModel extends BoxModel
     super.deserialize(root);
 
     // register listener
-    if (datasource != null && scope != null)
-    {
+    if (datasource != null && scope != null) {
       IDataSource? source = scope!.getDataSource(datasource);
       source?.register(this);
     }
@@ -83,9 +78,10 @@ class PrototypeModel extends BoxModel
   }
 
   @override
-  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
-  {
-    if (prototype == null || source.id != datasource) return super.onDataSourceSuccess(source, list);
+  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async {
+    if (prototype == null || source.id != datasource) {
+      return super.onDataSourceSuccess(source, list);
+    }
 
     // save pointer to data source
     myDataSource = source;
@@ -95,24 +91,23 @@ class PrototypeModel extends BoxModel
 
     // build children from datasource
     List<WidgetModel> models = [];
-    if (list != null)
-    {
-      for (var data in list)
-      {
+    if (list != null) {
+      for (var data in list) {
         // find model from list
-        WidgetModel? model = children?.firstWhereOrNull((child)
-        {
+        WidgetModel? model = children?.firstWhereOrNull((child) {
           if (child.data == data) return true;
-          if (child.data is List && (child.data as List).isNotEmpty && (child.data as List).first == data) return true;
+          if (child.data is List &&
+              (child.data as List).isNotEmpty &&
+              (child.data as List).first == data) return true;
           return false;
         });
 
         // create the model if it doesn't already exist
-        model ??= WidgetModel.fromXml(this, prototype!.copy(), scope: Scope(parent: parent?.scope), data: data);
+        model ??= WidgetModel.fromXml(this, prototype!.copy(),
+            scope: Scope(parent: parent?.scope), data: data);
 
         // add model to the list
-        if (model != null)
-        {
+        if (model != null) {
           models.add(model);
         }
       }
@@ -120,10 +115,8 @@ class PrototypeModel extends BoxModel
 
     // dispose of unused children
     children ??= [];
-    for (var child in children!)
-    {
-      if (!models.contains(child))
-      {
+    for (var child in children!) {
+      if (!models.contains(child)) {
         child.dispose();
       }
     }
@@ -142,8 +135,7 @@ class PrototypeModel extends BoxModel
     // rebuild form fields
     // this could be done differently
     var form = findAncestorOfExactType(FormModel);
-    if (form is FormModel)
-    {
+    if (form is FormModel) {
       form.setFormFields();
     }
 
@@ -156,18 +148,21 @@ class PrototypeModel extends BoxModel
     return true;
   }
 
-  void onDragDrop(IDragDrop droppable, IDragDrop draggable, {Offset? dropSpot}) async
-  {
+  void onDragDrop(IDragDrop droppable, IDragDrop draggable,
+      {Offset? dropSpot}) async {
     // fire onDrop event
     await DragDrop.onDrop(droppable, draggable, dropSpot: dropSpot);
 
     // get drag and drop index
-    var dragIndex = children?.contains(draggable as WidgetModel) ?? false ? children?.indexOf(draggable as WidgetModel) : null;
-    var dropIndex = children?.contains(droppable as WidgetModel) ?? false ? children?.indexOf(droppable as WidgetModel) : null;
+    var dragIndex = children?.contains(draggable as WidgetModel) ?? false
+        ? children?.indexOf(draggable as WidgetModel)
+        : null;
+    var dropIndex = children?.contains(droppable as WidgetModel) ?? false
+        ? children?.indexOf(droppable as WidgetModel)
+        : null;
 
     // move the cell in the items list
-    if (dragIndex != null && dropIndex != null && dragIndex != dropIndex)
-    {
+    if (dragIndex != null && dropIndex != null && dragIndex != dropIndex) {
       // move the cell in the dataset
       notificationsEnabled = false;
       myDataSource?.move(dragIndex, dropIndex, notifyListeners: false);

@@ -8,7 +8,10 @@ class ScrollShadow extends StatefulWidget {
   final String pos;
   final Axis axis;
   final Color? shadowColor;
-  ScrollShadow(this.scrollController, this.pos, this.axis, [this.shadowColor]);
+
+  const ScrollShadow(
+      this.scrollController, this.pos, this.axis, this.shadowColor,
+      {super.key});
 
   @override
   State<ScrollShadow> createState() => _ScrollShadowState();
@@ -74,70 +77,70 @@ class _ScrollShadowState extends State<ScrollShadow> {
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Remove shadows on mobile web.
-    if (System().userplatform == 'web' && (System().useragent == 'android' || System().useragent == 'ios')) {
-      return Offstage();
+    if (System().userplatform == 'web' &&
+        (System().useragent == 'android' || System().useragent == 'ios')) {
+      return const Offstage();
     }
     Positioned shadow;
-    var col =
-    widget.shadowColor as bool? ?? Theme.of(context).brightness == Brightness.light
+    var col = widget.shadowColor as bool? ??
+            Theme.of(context).brightness == Brightness.light
         ? Theme.of(context).colorScheme.shadow.withOpacity(0.40)
         : Theme.of(context).colorScheme.shadow;
     if (widget.axis == Axis.vertical) {
       shadow = widget.pos == 'top'
           ? Positioned(
-        top: 0,
-        child: Container(
-          height: 0,
-          width: MediaQuery.of(context).size.width,
-          decoration: _needShadowOnTop
-              ? BoxDecoration(boxShadow: [
-            BoxShadow(color: col, spreadRadius: 3, blurRadius: 8)
-          ])
-              : BoxDecoration(),
-        ),
-      )
-      // Shadow on bottom
+              top: 0,
+              child: Container(
+                height: 0,
+                width: MediaQuery.of(context).size.width,
+                decoration: _needShadowOnTop
+                    ? BoxDecoration(boxShadow: [
+                        BoxShadow(color: col, spreadRadius: 3, blurRadius: 8)
+                      ])
+                    : const BoxDecoration(),
+              ),
+            )
+          // Shadow on bottom
           : Positioned(
-        bottom: 0,
-        child: Container(
-          height: 0,
-          width: MediaQuery.of(context).size.width,
-          decoration: _needShadowOnBottom
-              ? BoxDecoration(boxShadow: [
-            BoxShadow(color: col, spreadRadius: 6, blurRadius: 10)
-          ])
-              : BoxDecoration(),
-        ),
-      );
+              bottom: 0,
+              child: Container(
+                height: 0,
+                width: MediaQuery.of(context).size.width,
+                decoration: _needShadowOnBottom
+                    ? BoxDecoration(boxShadow: [
+                        BoxShadow(color: col, spreadRadius: 6, blurRadius: 10)
+                      ])
+                    : const BoxDecoration(),
+              ),
+            );
     } else {
       shadow = widget.pos == 'top'
           ? Positioned(
-        left: 0,
-        child: Container(
-          width: 0,
-          height: MediaQuery.of(context).size.height,
-          decoration: _needShadowOnTop
-              ? BoxDecoration(boxShadow: [
-            BoxShadow(color: col, spreadRadius: 3, blurRadius: 8)
-          ])
-              : BoxDecoration(),
-        ),
-      )
+              left: 0,
+              child: Container(
+                width: 0,
+                height: MediaQuery.of(context).size.height,
+                decoration: _needShadowOnTop
+                    ? BoxDecoration(boxShadow: [
+                        BoxShadow(color: col, spreadRadius: 3, blurRadius: 8)
+                      ])
+                    : const BoxDecoration(),
+              ),
+            )
           : Positioned(
-        right: 0,
-        child: Container(
-          width: 0,
-          height: MediaQuery.of(context).size.height,
-          decoration: _needShadowOnBottom
-              ? BoxDecoration(boxShadow: [
-            BoxShadow(color: col, spreadRadius: 3, blurRadius: 8)
-          ])
-              : BoxDecoration(),
-        ),
-      );
+              right: 0,
+              child: Container(
+                width: 0,
+                height: MediaQuery.of(context).size.height,
+                decoration: _needShadowOnBottom
+                    ? BoxDecoration(boxShadow: [
+                        BoxShadow(color: col, spreadRadius: 3, blurRadius: 8)
+                      ])
+                    : const BoxDecoration(),
+              ),
+            );
     }
     return shadow;
   }

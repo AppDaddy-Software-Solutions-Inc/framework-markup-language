@@ -3,34 +3,35 @@ import 'dart:typed_data';
 
 import 'file.dart';
 
-class FileBase implements File
-{
-  final dynamic  file;
+class FileBase implements File {
+  final dynamic file;
   @override
-  final String   url;
+  final String url;
   @override
-  final String   name;
+  final String name;
   @override
-  final String?  mimeType;
+  final String? mimeType;
   @override
-  final int      size;
+  final int size;
 
   UriData? _uri;
   @override
-  Uint8List? get bytes
-  {
+  Uint8List? get bytes {
     if (file is UriData) return (file as UriData).contentAsBytes();
     if (_uri == null) return null;
     return _uri!.contentAsBytes();
   }
-  set bytes(Uint8List? value)
-  {
-    if (value != null) _uri = UriData.fromBytes(value, mimeType: mimeType!, parameters: {'name' : name, 'bytes' : size.toString()});
+
+  set bytes(Uint8List? value) {
+    if (value != null) {
+      _uri = UriData.fromBytes(value,
+          mimeType: mimeType!,
+          parameters: {'name': name, 'bytes': size.toString()});
+    }
   }
 
   @override
-  String? get uri
-  {
+  String? get uri {
     if (file is UriData) return (file as UriData).toString();
     if (_uri == null) return null;
     return _uri.toString();

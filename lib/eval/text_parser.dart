@@ -12,22 +12,23 @@ class TextValue {
 List<TextValue> textValues = [];
 List<String> styles = [];
 
-void matchElements (String value) {
+void matchElements(String value) {
   /// WARNING: DO NOT USE LOOKBEHIND it is unsupported in safari and other browsers.
-  RegExp bdO =  RegExp(r"(([ *_^#`])|\\)(\*\*)(?![ *])"); // \ will escape the mandatory space before or after a character.
-  RegExp bdC =  RegExp(r"(\S)(\*\*(?=\W|\\))");
-  RegExp itO =  RegExp(r"(([ *_^#`\\])|\\)(\*)(?![ *])");
-  RegExp itC =  RegExp(r"(\S)(\*(?=\W|\\))");
-  RegExp sbO =  RegExp(r"(([ *_^#`\\])|\\)(\^\^)(?![ ^])");
-  RegExp sbC =  RegExp(r"(\S)(\^\^(?=\W|\\))");
-  RegExp spO =  RegExp(r"(([ *_^#`\\])|\\)(\^)(?![ ^])");
-  RegExp spC =  RegExp(r"(\S)(\^(?=\W|\\))");
-  RegExp unO =  RegExp(r"(([ *_^#`\\])|\\)(_)(?![ _])");
-  RegExp unC =  RegExp(r"(\S)(_(?=\W|\\))");
-  RegExp ovO =  RegExp(r"(([ *_^#`\\])|\\)(___)(?![ _])");
-  RegExp ovC =  RegExp(r"(\S)(___(?=\W|\\))");
-  RegExp stO =  RegExp(r"(([ *_^#`\\])|\\)(__)(?![ _])");
-  RegExp stC =  RegExp(r"(\S)(__(?=\W|\\))");
+  RegExp bdO = RegExp(
+      r"(([ *_^#`])|\\)(\*\*)(?![ *])"); // \ will escape the mandatory space before or after a character.
+  RegExp bdC = RegExp(r"(\S)(\*\*(?=\W|\\))");
+  RegExp itO = RegExp(r"(([ *_^#`\\])|\\)(\*)(?![ *])");
+  RegExp itC = RegExp(r"(\S)(\*(?=\W|\\))");
+  RegExp sbO = RegExp(r"(([ *_^#`\\])|\\)(\^\^)(?![ ^])");
+  RegExp sbC = RegExp(r"(\S)(\^\^(?=\W|\\))");
+  RegExp spO = RegExp(r"(([ *_^#`\\])|\\)(\^)(?![ ^])");
+  RegExp spC = RegExp(r"(\S)(\^(?=\W|\\))");
+  RegExp unO = RegExp(r"(([ *_^#`\\])|\\)(_)(?![ _])");
+  RegExp unC = RegExp(r"(\S)(_(?=\W|\\))");
+  RegExp ovO = RegExp(r"(([ *_^#`\\])|\\)(___)(?![ _])");
+  RegExp ovC = RegExp(r"(\S)(___(?=\W|\\))");
+  RegExp stO = RegExp(r"(([ *_^#`\\])|\\)(__)(?![ _])");
+  RegExp stC = RegExp(r"(\S)(__(?=\W|\\))");
   RegExp codeO = RegExp(r"(([ *_^#`\\])|\\)(```)(?![ `])");
   RegExp codeC = RegExp(r"(\S)(```(?=\W|\\))");
 
@@ -38,76 +39,76 @@ void matchElements (String value) {
     return extractStyles(value, []); // There is nothing to apply markdown to
   }
 
-  while (bdO.firstMatch(value) != null && bdC.firstMatch(value) != null) // add or for start and end or add space to start and end
-   {
-    value = value.replaceFirstMapped(bdO, (match) => "${match.group(1)!}###bol###");
+  while (bdO.firstMatch(value) != null &&
+      bdC.firstMatch(value) !=
+          null) // add or for start and end or add space to start and end
+  {
+    value =
+        value.replaceFirstMapped(bdO, (match) => "${match.group(1)!}###bol###");
     value = value.replaceFirstMapped(bdC, (match) => "${match[1]!}###bol###");
   }
 
-  while (itO.firstMatch(value) != null && itC.firstMatch(value) != null)
-  {
-    value = value.replaceFirstMapped(itO, (match) => "${match.group(1)!}###ita###");
+  while (itO.firstMatch(value) != null && itC.firstMatch(value) != null) {
+    value =
+        value.replaceFirstMapped(itO, (match) => "${match.group(1)!}###ita###");
     value = value.replaceFirstMapped(itC, (match) => "${match[1]!}###ita###");
   }
 
-  while (sbO.firstMatch(value) != null && sbC.firstMatch(value) != null)
-  {
-    value = value.replaceFirstMapped(sbO, (match) => "${match.group(1)!}###sub###");
+  while (sbO.firstMatch(value) != null && sbC.firstMatch(value) != null) {
+    value =
+        value.replaceFirstMapped(sbO, (match) => "${match.group(1)!}###sub###");
     value = value.replaceFirstMapped(sbC, (match) => "${match[1]!}###sub###");
   }
 
-  while (spO.firstMatch(value) != null && spC.firstMatch(value) != null)
-  {
-    value = value.replaceFirstMapped(spO, (match) => "${match.group(1)!}###sup###");
+  while (spO.firstMatch(value) != null && spC.firstMatch(value) != null) {
+    value =
+        value.replaceFirstMapped(spO, (match) => "${match.group(1)!}###sup###");
     value = value.replaceFirstMapped(spC, (match) => "${match[1]!}###sup###");
   }
 
-  while (ovO.firstMatch(value) != null && ovC.firstMatch(value) != null)
-  {
-    value = value.replaceFirstMapped(ovO, (match) => "${match.group(1)!}###ove###");
+  while (ovO.firstMatch(value) != null && ovC.firstMatch(value) != null) {
+    value =
+        value.replaceFirstMapped(ovO, (match) => "${match.group(1)!}###ove###");
     value = value.replaceFirstMapped(ovC, (match) => "${match[1]!}###ove###");
   }
 
-  while (stO.firstMatch(value) != null && stC.firstMatch(value) != null)
-  {
-    value = value.replaceFirstMapped(stO, (match) => "${match.group(1)!}###str###");
+  while (stO.firstMatch(value) != null && stC.firstMatch(value) != null) {
+    value =
+        value.replaceFirstMapped(stO, (match) => "${match.group(1)!}###str###");
     value = value.replaceFirstMapped(stC, (match) => "${match[1]!}###str###");
   }
 
-  while (unO.firstMatch(value) != null && unC.firstMatch(value) != null)
-  {
-    value = value.replaceFirstMapped(unO, (match) => "${match.group(1)!}###und###");
+  while (unO.firstMatch(value) != null && unC.firstMatch(value) != null) {
+    value =
+        value.replaceFirstMapped(unO, (match) => "${match.group(1)!}###und###");
     value = value.replaceFirstMapped(unC, (match) => "${match[1]!}###und###");
   }
 
-
   while (codeO.firstMatch(value) != null && codeC.firstMatch(value) != null) {
-    value = value.replaceFirstMapped(codeO, (match) => "${match.group(1)!}###code###");
-    value = value.replaceFirstMapped(codeC, (match) => "${match[1]!}###code###");
+    value = value.replaceFirstMapped(
+        codeO, (match) => "${match.group(1)!}###code###");
+    value =
+        value.replaceFirstMapped(codeC, (match) => "${match[1]!}###code###");
   }
 
   return extractStyles(value, []);
-
 }
 
-
 void extractStyles(String value, List<String> styleList) {
+  String under = "###und###";
+  String over = "###ove###";
+  String strike = "###str###";
+  String sub = "###sub###";
+  String sup = "###sup###";
+  String bold = "###bol###";
+  String italic = "###ita###";
+  String code = "###code###";
+  List<String> styles = [];
+  int? i;
 
- String under = "###und###";
- String over = "###ove###";
- String strike = "###str###";
- String sub = "###sub###";
- String sup = "###sup###";
- String bold = "###bol###";
- String italic = "###ita###";
- String code = "###code###";
- List<String> styles = [];
- int? i;
-
- value = value.trim();
+  value = value.trim();
 
   while (true) {
-
     List<int> leastIndex = [
       value.indexOf(under),
       value.indexOf(over),
@@ -119,105 +120,93 @@ void extractStyles(String value, List<String> styleList) {
       value.indexOf(code),
     ];
 
-    if(leastIndex.isNotEmpty) leastIndex.removeWhere((element) => element == -1);
-    if(leastIndex.isNotEmpty) i = leastIndex.reduce(min);
+    if (leastIndex.isNotEmpty) {
+      leastIndex.removeWhere((element) => element == -1);
+    }
+    if (leastIndex.isNotEmpty) i = leastIndex.reduce(min);
 
-    if(leastIndex.isEmpty) { //check for no matches
+    if (leastIndex.isEmpty) {
+      //check for no matches
       if (isNullOrEmpty(value)) return;
       textValues.add(TextValue(List.from(styles), value.substring(0)));
       return;
     }
 
-    if (i! > 0) { //if index > 0 return value with styles attached
-      textValues.add(TextValue(List.from(styles), value.substring(0, i))); //return everything before the match with styles attached
+    if (i! > 0) {
+      //if index > 0 return value with styles attached
+      textValues.add(TextValue(
+          List.from(styles),
+          value.substring(
+              0, i))); //return everything before the match with styles attached
       value = value.substring(i);
     }
 
-
     if (value.substring(0, 9) == under) {
-      if(styles.contains("underline")) {
+      if (styles.contains("underline")) {
         styles.remove("underline");
       } else {
         styles.add("underline");
       }
 
       value = value.substring(9);
-    }
-
-    else if (value.substring(0, 9) == over) {
-      if(styles.contains("overline")) {
+    } else if (value.substring(0, 9) == over) {
+      if (styles.contains("overline")) {
         styles.remove("overline");
       } else {
         styles.add("overline");
       }
 
       value = value.substring(9);
-    }
-
-    else if (value.substring(0, 9) == strike) {
-      if(styles.contains("strikethrough")) {
+    } else if (value.substring(0, 9) == strike) {
+      if (styles.contains("strikethrough")) {
         styles.remove("strikethrough");
       } else {
         styles.add("strikethrough");
       }
 
       value = value.substring(9);
-    }
-
-    else if (value.substring(0, 9) == sub) {
-      if(styles.contains("subscript")) {
+    } else if (value.substring(0, 9) == sub) {
+      if (styles.contains("subscript")) {
         styles.remove("subscript");
       } else {
         styles.add("subscript");
       }
 
       value = value.substring(9);
-    }
-
-    else if (value.substring(0, 9) == sup) {
-      if(styles.contains("superscript")) {
+    } else if (value.substring(0, 9) == sup) {
+      if (styles.contains("superscript")) {
         styles.remove("superscript");
       } else {
         styles.add("superscript");
       }
 
       value = value.substring(9);
-    }
-
-    else if (value.substring(0, 9) == bold) {
-      if(styles.contains("bold")) {
+    } else if (value.substring(0, 9) == bold) {
+      if (styles.contains("bold")) {
         styles.remove("bold");
       } else {
         styles.add("bold");
       }
 
       value = value.substring(9);
-    }
-
-    else if (value.substring(0, 9) == italic) {
-      if(styles.contains("italic")) {
+    } else if (value.substring(0, 9) == italic) {
+      if (styles.contains("italic")) {
         styles.remove("italic");
       } else {
         styles.add("italic");
       }
 
       value = value.substring(9);
-    }
-
-    else if (value.substring(0, 10) == code) {
-      if(styles.contains("code")) {
+    } else if (value.substring(0, 10) == code) {
+      if (styles.contains("code")) {
         styles.remove("code");
       } else {
         styles.add("code");
       }
 
       value = value.substring(10);
-    }
-
-    else {
+    } else {
       return;
     }
-
   }
 }
-

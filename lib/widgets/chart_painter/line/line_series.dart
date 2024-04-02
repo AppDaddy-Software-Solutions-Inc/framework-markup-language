@@ -78,7 +78,6 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
-
     // deserialize
     super.deserialize(xml);
 
@@ -101,8 +100,7 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
     // Remove datasource listener. The parent chart will take care of this.
     if ((datasource != null) &&
         (scope != null) &&
-        (scope!.datasources.containsKey(datasource)))
-    {
+        (scope!.datasources.containsKey(datasource))) {
       scope!.datasources[datasource!]!.remove(this);
     }
 
@@ -159,7 +157,7 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
         //plot the point as a point object based on the desired function based on series and chart type.
         plot(this, data);
       } catch (e) {
-        print('error formatting date to plot point');
+        Log().exception('error formatting date to plot point');
       }
     }
     dataList = null;
@@ -180,7 +178,8 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
 
   void plot(dynamic series, dynamic data) {
     labels.add(label ?? "");
-    FlSpotExtended point = FlSpotExtended(series, data, toDouble(x) ?? 0, toDouble(y) ?? 0);
+    FlSpotExtended point =
+        FlSpotExtended(series, data, toDouble(x) ?? 0, toDouble(y) ?? 0);
     lineDataPoint.add(point);
   }
 }

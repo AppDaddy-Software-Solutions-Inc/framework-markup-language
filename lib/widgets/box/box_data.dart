@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
 
-enum FlexType {shrinking, fixed, expanding}
+enum FlexType { shrinking, fixed, expanding }
 
 /// Parent data for use with [BoxRenderer].
-class BoxData extends ContainerBoxParentData<RenderBox>
-{
-  ViewableWidgetModel? model;
+class BoxData extends ContainerBoxParentData<RenderBox> {
+  ViewableWidgetMixin? model;
 
   Size? parentSize;
 
@@ -44,12 +43,17 @@ class BoxData extends ContainerBoxParentData<RenderBox>
   /// are non-null. Positioned children do not factor into determining the size
   /// of the stack but are instead placed relative to the non-positioned
   /// children in the stack.
-  bool get isPositioned => top != null || right != null || bottom != null || left != null || width != null || height != null;
+  bool get isPositioned =>
+      top != null ||
+      right != null ||
+      bottom != null ||
+      left != null ||
+      width != null ||
+      height != null;
 }
 
-class LayoutBoxChildData extends ParentDataWidget<BoxData>
-{
-  final ViewableWidgetModel model;
+class LayoutBoxChildData extends ParentDataWidget<BoxData> {
+  final ViewableWidgetMixin model;
 
   /// The distance by which the child's top edge is inset from the top of the stack.
   final double? top;
@@ -73,7 +77,8 @@ class LayoutBoxChildData extends ParentDataWidget<BoxData>
   /// Ignored if both top and bottom are non-null.
   final double? height;
 
-  LayoutBoxChildData({
+  const LayoutBoxChildData({
+    super.key,
     required this.model,
     required super.child,
     this.left,
@@ -85,22 +90,18 @@ class LayoutBoxChildData extends ParentDataWidget<BoxData>
   });
 
   @override
-  void applyParentData(RenderObject renderObject)
-  {
-    if (renderObject.parentData is BoxData)
-    {
+  void applyParentData(RenderObject renderObject) {
+    if (renderObject.parentData is BoxData) {
       final BoxData parentData = renderObject.parentData! as BoxData;
 
       bool needsLayout = false;
 
-      if (parentData.model != model)
-      {
+      if (parentData.model != model) {
         parentData.model = model;
         needsLayout = true;
       }
 
-      if (parentData.left != left)
-      {
+      if (parentData.left != left) {
         parentData.left = left;
         needsLayout = true;
       }
@@ -130,11 +131,9 @@ class LayoutBoxChildData extends ParentDataWidget<BoxData>
         needsLayout = true;
       }
 
-      if (needsLayout)
-      {
+      if (needsLayout) {
         final RenderObject? targetParent = renderObject.parent;
-        if (targetParent is RenderObject)
-        {
+        if (targetParent is RenderObject) {
           targetParent.markNeedsLayout();
         }
       }

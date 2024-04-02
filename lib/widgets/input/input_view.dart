@@ -17,21 +17,21 @@ import 'package:flutter/services.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class InputView extends StatefulWidget implements IWidgetView
-{
+class InputView extends StatefulWidget implements IWidgetView {
   @override
   final InputModel model;
   final dynamic onChangeCallback;
   final dynamic onSubmitted;
 
-  InputView(this.model, {this.onChangeCallback, this.onSubmitted}) : super(key: ObjectKey(model));
+  InputView(this.model, {this.onChangeCallback, this.onSubmitted})
+      : super(key: ObjectKey(model));
 
   @override
   State<InputView> createState() => _InputViewState();
 }
 
-class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
-{
+class _InputViewState extends WidgetState<InputView>
+    with WidgetsBindingObserver {
   final focus = FocusNode();
   Timer? commitTimer;
 
@@ -63,8 +63,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   };
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
 
     // create the controller if its not already created in the model.
@@ -90,22 +89,20 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   }
 
   @override
-  void didUpdateWidget(InputView oldWidget)
-  {
+  void didUpdateWidget(InputView oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     var oldcursorPos = widget.model.controller?.selection.base.offset;
-    if (oldcursorPos != null)
-    {
+    if (oldcursorPos != null) {
       widget.model.controller?.value = TextEditingValue(
           text: widget.model.value ?? "",
-          selection: TextSelection.fromPosition(TextPosition(offset: oldcursorPos)));
+          selection:
+              TextSelection.fromPosition(TextPosition(offset: oldcursorPos)));
     }
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     // cleanup the controller.
     // its important to set the controller to null so that it gets recreated
     // when the input rebuilds.
@@ -118,21 +115,21 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
   /// Callback to fire the [_InputViewState.build] when the [InputModel] changes
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
+  onModelChange(WidgetModel model, {String? property, dynamic value}) {
     // ensure we don't call setstate if the model update was entered via
     // keyboard by comparing the controller to the callback's value
     //return if not mounted
-    if(!mounted) return;
+    if (!mounted) return;
 
     // grab the property that is changing
-    if (model == this.model && property == Binding.toKey(this.model?.id, 'value'))
-    {
+    if (model == this.model &&
+        property == Binding.toKey(this.model?.id, 'value')) {
       if (widget.model.controller?.text == value) return;
 
       // set the controllers value to the model value.
       // this acts in cases where the value changes based on an eval or set.
-      widget.model.controller?.value = TextEditingValue(text: widget.model.value ?? "");
+      widget.model.controller?.value =
+          TextEditingValue(text: widget.model.value ?? "");
     }
 
     super.onModelChange(model);
@@ -156,7 +153,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   }
 
   Future<void> _ensureVisible() async {
-    // Wait for the keyboard to come into view
+    // wait for the keyboard to come into view
     await Future.any(
         [Future.delayed(const Duration(milliseconds: 50)), _keyboardToggled()]);
 
@@ -169,7 +166,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     RenderAbstractViewport? viewport;
     RenderObject? object;
     try {
-      object = context.findRenderObject();
+      object = mounted ? context.findRenderObject() : null;
       if (object is RenderObject) viewport = RenderAbstractViewport.of(object);
     } catch (e) {
       viewport = null;
@@ -178,38 +175,42 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     if (viewport == null) return;
 
     // Get the Scrollable state (in order to retrieve its offset)
-    ScrollableState scrollableState = Scrollable.of(context);
+    ScrollableState? scrollableState = mounted ? Scrollable.of(context) : null;
+    if (scrollableState == null) return;
 
     // Get its offset
     ScrollPosition position = scrollableState.position;
     double alignment;
 
+    // Move down to the top of the viewport
     if (position.pixels > viewport.getOffsetToReveal(object!, 0.0).offset) {
-      // Move down to the top of the viewport
       alignment = 1.0;
-    } else if (position.pixels <
+    }
+
+    // Move up to the bottom of the viewport
+    else if (position.pixels <
         (viewport.getOffsetToReveal(object, 1.0).offset +
-            MediaQuery.of(context).viewInsets.bottom)) {
-      // Move up to the bottom of the viewport
+            (mounted ? MediaQuery.of(context).viewInsets.bottom : 0))) {
       alignment = 0.0;
-    } else {
-      // No scrolling is necessary to reveal the child
+    }
+
+    // No scrolling is necessary to reveal the child
+    else {
       return;
     }
 
     position.ensureVisible(
       object,
       alignment: alignment,
-      duration: Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 100),
       curve: Curves.linearToEaseOut,
     );
   }
 
-  void _handleOnChange(String value)
-  {
-    if (!widget.model.editable)
-    {
-      widget.model.controller?.value = TextEditingValue(text: widget.model.value);
+  void _handleOnChange(String value) {
+    if (!widget.model.editable) {
+      widget.model.controller?.value =
+          TextEditingValue(text: widget.model.value);
       return;
     }
   }
@@ -242,13 +243,11 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     return 'field must be supplied';
   }
 
-  onFocusChange() async
-  {
+  onFocusChange() async {
     if (!widget.model.editable) return;
 
     // commit changes on loss of focus
-    if (!focus.hasFocus)
-    {
+    if (!focus.hasFocus) {
       // cancel the debounce timer
       if (commitTimer?.isActive ?? false) commitTimer!.cancel();
 
@@ -257,45 +256,39 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
       // commit
       if (ok) await _commit();
-    }
-    else
-    {
+    } else {
       // mark field as touched
       widget.model.touched = true;
     }
   }
 
-  Future<bool> _commit() async
-  {
+  Future<bool> _commit() async {
     String? value = widget.model.controller?.text;
 
     // value changed?
-    if (widget.model.value != value)
-    {
+    if (widget.model.value != value) {
       // set answer
       await widget.model.answer(value);
 
       // fire the onChange event
-      await widget.model.onChange(context);
+      await widget.model.onChange(mounted ? context : null);
     }
 
     return true;
   }
 
   // triggers when data is typed
-  void _debounce()
-  {
+  void _debounce() {
     // this should only trigger with the oninputchange
     if (commitTimer?.isActive ?? false) commitTimer!.cancel();
 
     // reset the timer
-    commitTimer = Timer(Duration(milliseconds: 1000), () async => _commit());
+    commitTimer =
+        Timer(const Duration(milliseconds: 1000), () async => _commit());
   }
 
-  void onClear()
-  {
-    if (widget.onChangeCallback != null)
-    {
+  void onClear() {
+    if (widget.onChangeCallback != null) {
       widget.onChangeCallback(widget.model, '');
     }
 
@@ -303,29 +296,24 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     _commit();
   }
 
-  List<TextInputFormatter> _getFormatters()
-  {
+  List<TextInputFormatter> _getFormatters() {
     List<TextInputFormatter> formatters = [];
 
     // capitalization
-    if (widget.model.capitalization == CapitalizationTypes.upper)
-    {
+    if (widget.model.capitalization == CapitalizationTypes.upper) {
       formatters.add(UpperCaseTextFormatter());
     }
 
-    if (widget.model.capitalization == CapitalizationTypes.lower)
-    {
+    if (widget.model.capitalization == CapitalizationTypes.lower) {
       formatters.add(LowerCaseTextFormatter());
     }
 
-    if (widget.model.length != null)
-    {
+    if (widget.model.length != null) {
       formatters.add(LengthLimitingTextInputFormatter(widget.model.length));
     }
 
     // format type
-    switch (widget.model.formatType)
-    {
+    switch (widget.model.formatType) {
       // not 100% sure what the purpose of the first 3 formatters are.
       case 'numeric':
         formatters.add(TextToNumericFormatter());
@@ -364,27 +352,24 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     }
 
     //using allow must not use a mask for filteringtextformatter, causes issues.
-    if (widget.model.allow != null && widget.model.mask == null)
-    {
+    if (widget.model.allow != null && widget.model.mask == null) {
       // Not sure how to make this work with interpolation
-      formatters.add(FilteringTextInputFormatter.allow(RegExp(r'[' "${widget.model.allow!}" ']')));
+      formatters.add(FilteringTextInputFormatter.allow(
+          RegExp(r'[' "${widget.model.allow!}" ']')));
     }
 
-    if (widget.model.deny != null)
-    {
+    if (widget.model.deny != null) {
       // Not sure how to make this work with interpolation
-      formatters.add(FilteringTextInputFormatter.deny(RegExp(r'[' "${widget.model.deny!}" ']')));
+      formatters.add(FilteringTextInputFormatter.deny(
+          RegExp(r'[' "${widget.model.deny!}" ']')));
     }
 
     // The mask formatter with allow
-    if (widget.model.mask != null)
-    {
-      if (widget.model.allow != null)
-      {
-        formatters.add(MaskedInputFormatter(widget.model.mask, allowedCharMatcher: RegExp(r'[' "${widget.model.allow!}" ']+')));
-      }
-      else
-      {
+    if (widget.model.mask != null) {
+      if (widget.model.allow != null) {
+        formatters.add(MaskedInputFormatter(widget.model.mask,
+            allowedCharMatcher: RegExp(r'[' "${widget.model.allow!}" ']+')));
+      } else {
         formatters.add(MaskedInputFormatter(widget.model.mask));
       }
     }
@@ -392,13 +377,11 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     return formatters;
   }
 
-  TextInputType _getKeyboardType()
-  {
+  TextInputType _getKeyboardType() {
     var keyboardType = widget.model.keyboardType?.trim().toLowerCase();
 
     // keyboard based on format type
-    switch (widget.model.formatType)
-    {
+    switch (widget.model.formatType) {
       case 'expire':
       case 'int':
       case 'credit':
@@ -425,77 +408,72 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     }
 
     var inputType = TextInputType.text;
-    if (keyboardType != null && keyboardTypes.containsKey(keyboardType)) inputType = keyboardTypes[keyboardType]!;
+    if (keyboardType != null && keyboardTypes.containsKey(keyboardType)) {
+      inputType = keyboardTypes[keyboardType]!;
+    }
     return inputType;
   }
 
-  _getBorder(Color mainColor, Color? secondaryColor)
-  {
+  _getBorder(Color mainColor, Color? secondaryColor) {
     secondaryColor ??= mainColor;
 
-    if(widget.model.border == "none")
-    {
+    if (widget.model.border == "none") {
       return OutlineInputBorder(
-        borderRadius:
-        BorderRadius.all(Radius.circular(widget.model.radius)),
-        borderSide: BorderSide(
-            color: Colors.transparent,
-            width: 2),
+        borderRadius: BorderRadius.all(Radius.circular(widget.model.radius)),
+        borderSide: const BorderSide(color: Colors.transparent, width: 2),
       );
-    }
-        else if (widget.model.border == "bottom" ||
-        widget.model.border == "underline"){
-        return UnderlineInputBorder(
-      borderRadius: BorderRadius.all(
-          Radius.circular(0)),
-      borderSide: BorderSide(
-          color: widget.model.editable ? mainColor : secondaryColor,
-          width: widget.model.borderWidth),
-    );}
-
-    else {
-      return OutlineInputBorder(
-        borderRadius:
-        BorderRadius.all(Radius.circular(widget.model.radius)),
+    } else if (widget.model.border == "bottom" ||
+        widget.model.border == "underline") {
+      return UnderlineInputBorder(
+        borderRadius: const BorderRadius.all(Radius.circular(0)),
         borderSide: BorderSide(
-            color: mainColor,
+            color: widget.model.editable ? mainColor : secondaryColor,
             width: widget.model.borderWidth),
+      );
+    } else {
+      return OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(widget.model.radius)),
+        borderSide:
+            BorderSide(color: mainColor, width: widget.model.borderWidth),
       );
     }
   }
 
-  _getSuffixIcon(Color hintTextColor)
-  {
-    if (widget.model.formatType == "password" && widget.model.clear == false)
-    {
-      return IconButton(icon: Icon(widget.model.obscure ? Icons.visibility : Icons.visibility_off, size: 17, color: hintTextColor),
+  _getSuffixIcon(Color hintTextColor) {
+    if (widget.model.formatType == "password" && widget.model.clear == false) {
+      return IconButton(
+        icon: Icon(
+            widget.model.obscure ? Icons.visibility : Icons.visibility_off,
+            size: 17,
+            color: hintTextColor),
         onPressed: () => widget.model.obscure = !widget.model.obscure,
       );
-    }
-    else if (widget.model.enabled && widget.model.editable && widget.model.clear)
-    {
-      return IconButton(padding: EdgeInsets.zero, icon: Icon(Icons.clear_rounded, size: 17, color: hintTextColor),
+    } else if (widget.model.enabled &&
+        widget.model.editable &&
+        widget.model.clear) {
+      return IconButton(
+        padding: EdgeInsets.zero,
+        icon: Icon(Icons.clear_rounded, size: 17, color: hintTextColor),
         onPressed: () {
           onClear();
         },
       );
-    }
-    else
-    {
+    } else {
       return null;
     }
   }
 
-  InputDecoration _getDecoration()
-  {
+  InputDecoration _getDecoration() {
     // set the border colors
-    Color? enabledBorderColor  = widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
+    Color? enabledBorderColor =
+        widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
     Color? disabledBorderColor = Theme.of(context).disabledColor;
-    Color? focusBorderColor    = Theme.of(context).focusColor;
-    Color? errorBorderColor    = Theme.of(context).colorScheme.error;
+    Color? focusBorderColor = Theme.of(context).focusColor;
+    Color? errorBorderColor = Theme.of(context).colorScheme.error;
 
     String? hint = widget.model.hint;
-    Color? hintTextColor = widget.model.textcolor?.withOpacity(0.7) ?? Theme.of(context).colorScheme.onSurfaceVariant;
+    Color? hintTextColor = widget.model.textcolor?.withOpacity(0.7) ??
+        Theme.of(context).colorScheme.onSurfaceVariant;
     Color? errorTextColor = Theme.of(context).colorScheme.error;
 
     double? fontsize = widget.model.size;
@@ -503,13 +481,15 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     // set padding
     double paddingTop = 15;
     double paddingBottom = 15;
-    if (widget.model.border == "bottom" || widget.model.border == "underline")
-    {
+    if (widget.model.border == "bottom" || widget.model.border == "underline") {
       paddingTop = 3;
       paddingBottom = 14;
     }
-    var padding = EdgeInsets.only(left: 10, top: paddingTop, right: 10, bottom: paddingBottom);
-    if (widget.model.dense == true) padding = EdgeInsets.only(left: 6, top: 0, right: 6, bottom: 0);
+    var padding = EdgeInsets.only(
+        left: 10, top: paddingTop, right: 10, bottom: paddingBottom);
+    if (widget.model.dense == true) {
+      padding = const EdgeInsets.only(left: 6, top: 0, right: 6, bottom: 0);
+    }
 
     var decoration = InputDecoration(
       isDense: false,
@@ -525,20 +505,17 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         color: widget.model.getErrorHintColor(context, color: hintTextColor),
         shadows: <Shadow>[
           Shadow(
-              offset: Offset(0.0, 0.5),
+              offset: const Offset(0.0, 0.5),
               blurRadius: 2.0,
-              color: widget.model.color ?? Colors.transparent
-          ),
+              color: widget.model.color ?? Colors.transparent),
           Shadow(
-              offset: Offset(0.0, 0.5),
+              offset: const Offset(0.0, 0.5),
               blurRadius: 2.0,
-              color: widget.model.color ?? Colors.transparent
-          ),
+              color: widget.model.color ?? Colors.transparent),
           Shadow(
-              offset: Offset(0.0, 0.5),
+              offset: const Offset(0.0, 0.5),
               blurRadius: 2.0,
-              color: widget.model.color ?? Colors.transparent
-          ),
+              color: widget.model.color ?? Colors.transparent),
         ],
       ),
       errorStyle: TextStyle(
@@ -554,24 +531,21 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         color: widget.model.getErrorHintColor(context, color: hintTextColor),
       ),
 
-
       counterText: "",
       // widget.model.error is getting set to null somewhere.
 
       //Icon Attributes
-      prefixIcon: widget.model.icon != null ? Padding(
-          padding: EdgeInsets.only(
-              right: 10,
-              left: 10,
-              bottom: 0),
-          child: Icon(widget.model.icon)) : null,
-      prefixIconConstraints: BoxConstraints(maxHeight: 24),
-      suffixIcon: _getSuffixIcon(hintTextColor),
-      suffixIconConstraints: (widget.model.enabled &&
-          widget.model.editable &&
-          widget.model.clear)
-          ? BoxConstraints(maxHeight: 20)
+      prefixIcon: widget.model.icon != null
+          ? Padding(
+              padding: const EdgeInsets.only(right: 10, left: 10, bottom: 0),
+              child: Icon(widget.model.icon))
           : null,
+      prefixIconConstraints: const BoxConstraints(maxHeight: 24),
+      suffixIcon: _getSuffixIcon(hintTextColor),
+      suffixIconConstraints:
+          (widget.model.enabled && widget.model.editable && widget.model.clear)
+              ? const BoxConstraints(maxHeight: 20)
+              : null,
 
       //border attributes
       border: _getBorder(enabledBorderColor, null),
@@ -586,10 +560,9 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // set the text color arrays
     Color? enabledTextColor = widget.model.textcolor;
@@ -609,7 +582,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
     var action = (widget.model.keyboardInput != null)
         ? (keyboardInputs[widget.model.keyboardInput?.toLowerCase()] ??
-        TextInputAction.next)
+            TextInputAction.next)
         : TextInputAction.next;
 
     var style = TextStyle(
@@ -619,7 +592,12 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         fontSize: fontsize);
 
     var minLines = widget.model.expand == true ? null : lines ?? 1;
-    var maxLines = widget.model.expand == true ? null : widget.model.obscure ? 1 : widget.model.maxlines ?? (widget.model.wrap == true ? null : lines ?? 1);
+    var maxLines = widget.model.expand == true
+        ? null
+        : widget.model.obscure
+            ? 1
+            : widget.model.maxlines ??
+                (widget.model.wrap == true ? null : lines ?? 1);
 
     Widget view = TextField(
         controller: widget.model.controller,
@@ -633,23 +611,31 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         inputFormatters: formatters,
         enabled: widget.model.enabled,
         style: style,
-        textAlignVertical: widget.model.expand ? TextAlignVertical.top : TextAlignVertical.center,
+        textAlignVertical: widget.model.expand
+            ? TextAlignVertical.top
+            : TextAlignVertical.center,
         maxLength: length,
         maxLines: maxLines,
         minLines: minLines,
-        maxLengthEnforcement: length != null ? MaxLengthEnforcement.enforced : MaxLengthEnforcement.none,
+        maxLengthEnforcement: length != null
+            ? MaxLengthEnforcement.enforced
+            : MaxLengthEnforcement.none,
         decoration: _getDecoration(),
         onChanged: _handleOnChange,
         onSubmitted: _handleSubmit);
 
     // dense
-    if (widget.model.dense) view = Padding(padding: EdgeInsets.all(4), child: view);
+    if (widget.model.dense) {
+      view = Padding(padding: const EdgeInsets.all(4), child: view);
+    }
 
     // get the model constraints
     var modelConstraints = widget.model.constraints;
 
     // constrain the input to 200 pixels if not constrained by the model
-    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width = 200;
+    if (!modelConstraints.hasHorizontalExpansionConstraints) {
+      modelConstraints.width = 200;
+    }
 
     // add margins
     view = addMargins(view);

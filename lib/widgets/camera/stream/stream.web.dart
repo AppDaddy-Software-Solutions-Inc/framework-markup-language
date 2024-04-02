@@ -12,18 +12,22 @@ import 'package:fml/widgets/widget/widget_state.dart';
 import 'dart:ui' as ui;
 import 'package:fml/datasources/file/file.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/camera/stream/stream.dart';
 import 'package:fml/helpers/helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
-if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
-if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
+    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+    if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
+
+// platform
+import 'package:fml/platform/platform.web.dart'
+    if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+    if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 View getView(model) => View(model);
 
-class View extends StatefulWidget implements IWidgetView, StreamView
-{
+class View extends StatefulWidget implements IWidgetView, StreamView {
   @override
   final CameraModel model;
 
@@ -33,8 +37,7 @@ class View extends StatefulWidget implements IWidgetView, StreamView
   ViewState createState() => ViewState();
 }
 
-class ViewState extends WidgetState<View>
-{
+class ViewState extends WidgetState<View> {
   List<dynamic> cameras = [];
   int selectedCamera = 0;
 
@@ -58,35 +61,25 @@ class ViewState extends WidgetState<View>
   void initState() {
     Log().debug('web view');
     super.initState();
-
-    /***********************/
-    /* Create video widget */
-    /***********************/
+    
+    // Create video widget 
     videoWidget = HtmlElementView(key: UniqueKey(), viewType: id);
 
-    /************************/
-    /* Create Video Element */
-    /************************/
+    // Create Video Element 
     video = VideoElement();
     video.muted = true;
     video.autoplay = false;
     video.setAttribute('playsinline', 'true');
 
-    /*************************/
-    /* Create Canvas Element */
-    /*************************/
+    // Create Canvas Element 
     canvas = CanvasElement();
     canvas2 = CanvasElement();
 
-    /*********************/
-    /* Register a webcam */
-    /*********************/
+    // Register a webcam 
     // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(id, (int viewId) => video);
 
-    /****************/
-    /* Start Camera */
-    /****************/
+    // Start Camera 
     start();
   }
 
@@ -113,9 +106,7 @@ class ViewState extends WidgetState<View>
 
     stream = null;
 
-    /**************************/
-    /* Cancel Detection Timer */
-    /**************************/
+    // Cancel Detection Timer 
     if (detectionTimer != null) detectionTimer!.cancel();
 
     super.dispose();
@@ -125,14 +116,10 @@ class ViewState extends WidgetState<View>
   void performDetection() async {
     if (abort) return;
 
-    /**************************/
-    /* Cancel Detection Timer */
-    /**************************/
+    // Cancel Detection Timer 
     if (detectionTimer != null) detectionTimer!.cancel();
 
-    /****************************/
-    /* No New Frames to Detect? */
-    /****************************/
+    // No New Frames to Detect? 
     if (lastFrame != detectedFrame) {
       detectedFrame = lastFrame;
       try {
@@ -143,17 +130,13 @@ class ViewState extends WidgetState<View>
           int height = canvas.height!;
           if ((width + left) > canvas.width!) width = canvas.width! - left;
           if ((height + top) > canvas.height!) height = canvas.height! - top;
-
-          /*************************/
-          /* Get Image RGBA Bitmap */
-          /*************************/
+          
+          // Get Image RGBA Bitmap 
           ImageData image =
               canvas.context2D.getImageData(left, top, width, height);
           List<int> rgba = image.data.toList();
 
-          /************************/
-          /* Convert to Grayscale */
-          /************************/
+          // Convert to Grayscale 
           //rgba = ImageHelper.toGrayScale(rgba);
 
           //var list8 = Uint8List.fromList(rgba);
@@ -182,15 +165,13 @@ class ViewState extends WidgetState<View>
           // process stream image
           onStream(rgba, width, height);
         }
-      } catch(e) {
+      } catch (e) {
         //DialogService().show(type: DialogType.error, title: 'detecting error2');
       }
     }
 
-    /***************************/
-    /* Schedule Next Detection */
-    /***************************/
-    detectionTimer = Timer(Duration(milliseconds: 50), performDetection);
+    // Schedule Next Detection 
+    detectionTimer = Timer(const Duration(milliseconds: 50), performDetection);
   }
 
   bool doneonce = false;
@@ -203,9 +184,7 @@ class ViewState extends WidgetState<View>
       const int haveEnoughData = 4; // enough data available to start playing
 
       if (video.readyState == haveEnoughData) {
-        /**************************************************/
-        /* scale and horizontally center the camera image */
-        /**************************************************/
+        // scale and horizontally center the camera image 
         var videoStreamSize = {
           'width': video.videoWidth,
           'height': video.videoHeight
@@ -225,8 +204,7 @@ class ViewState extends WidgetState<View>
         widget.model.renderwidth = videoRenderSize["width"];
         widget.model.renderheight = videoRenderSize["height"];
 
-        if (widget.model.scale)
-        {
+        if (widget.model.scale) {
           canvas.width = toInt(videoRenderSize["width"]);
           canvas.height = toInt(videoRenderSize["height"]);
           canvas.context2D.drawImageScaled(video, xOffset, 0,
@@ -239,7 +217,7 @@ class ViewState extends WidgetState<View>
 
         lastFrame = epoch;
       }
-    } catch(e) {
+    } catch (e) {
       // System.toast("Error in video");
     }
 
@@ -277,8 +255,8 @@ class ViewState extends WidgetState<View>
         }
       };
       dynamic cameras;
-      cameras ??= await window.navigator.mediaDevices!
-            .getUserMedia(mediaConstraints);
+      cameras ??=
+          await window.navigator.mediaDevices!.getUserMedia(mediaConstraints);
       window.navigator.mediaDevices!
           .getUserMedia(mediaConstraints)
           .then((MediaStream stream) {
@@ -288,7 +266,7 @@ class ViewState extends WidgetState<View>
         window.requestAnimationFrame(renderFrame);
       }).catchError(onError);
       Log().debug("Camera Started");
-    } catch(e) {
+    } catch (e) {
       Log().debug('$e');
     }
   }
@@ -303,7 +281,7 @@ class ViewState extends WidgetState<View>
       }
       stream = null;
       Log().debug("Camera Stopped");
-    } catch(e) {
+    } catch (e) {
       Log().debug('$e');
     }
   }
@@ -314,7 +292,7 @@ class ViewState extends WidgetState<View>
       Log().debug("Pausing Camera");
       video.pause();
       Log().debug("Camera Paused");
-    } catch(e) {
+    } catch (e) {
       Log().debug('$e');
     }
   }
@@ -326,10 +304,10 @@ class ViewState extends WidgetState<View>
         Log().debug("Playing Camera");
         video.play();
         Log().debug("Camera Playing");
-      } catch(e) {
+      } catch (e) {
         Log().debug('$e');
       }
-    } catch(e) {
+    } catch (e) {
       Log().debug('$e');
     }
   }
@@ -347,9 +325,7 @@ class ViewState extends WidgetState<View>
         if ((width + left) > canvas.width!) width = canvas.width! - left;
         if ((height + top) > canvas.height!) height = canvas.height! - top;
 
-        /*************************/
-        /* Get Image RGBA Bitmap */
-        /*************************/
+        // Get Image RGBA Bitmap 
         ImageData image =
             canvas.context2D.getImageData(left, top, width, height);
 
@@ -368,17 +344,18 @@ class ViewState extends WidgetState<View>
           await Platform.fileSaveAsFromBlob(blob, "${newId()}-.png");
         }
 
-        ImageData image2 =
-            canvas2.context2D.getImageData(0, 0, width, height);
+        ImageData image2 = canvas2.context2D.getImageData(0, 0, width, height);
         var rgba2 = image2.data.toList();
 
         // save snapshot
         String uri = canvas2.toDataUrl('image/png', 1.0);
         await onSnapshot(rgba2, width, height, UriData.fromString(uri));
-      } catch(e) {
+      } catch (e) {
         Log().debug('$e');
       }
-    } catch(e) {Log().debug('$e');}
+    } catch (e) {
+      Log().debug('$e');
+    }
   }
 
   onError(error) {
@@ -403,7 +380,8 @@ class ViewState extends WidgetState<View>
   void onStream(List<int> bytes, int width, int height) {
     // detect in stream
     if (widget.model.detectors != null) {
-      DetectableImage? detectable = DetectableImage.fromRgba(bytes, width, height);
+      DetectableImage? detectable =
+          DetectableImage.fromRgba(bytes, width, height);
       widget.model.detectInStream(detectable);
     }
   }
@@ -412,7 +390,8 @@ class ViewState extends WidgetState<View>
       List<int> bytes, int width, int height, UriData uri) async {
     // detect in stream
     if (widget.model.detectors != null) {
-      DetectableImage? detectable = DetectableImage.fromRgba(bytes, width, height);
+      DetectableImage? detectable =
+          DetectableImage.fromRgba(bytes, width, height);
       widget.model.detectInImage(detectable);
     }
 

@@ -37,11 +37,19 @@ class FlipCardViewState extends State<FlipCardView>
     super.initState();
 
     if (widget.controller == null) {
-      _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,));
-      if(widget.model.controllerValue == 1 && widget.model.runonce == true) {
-        _controller.animateTo(widget.model.controllerValue, duration: Duration());
+      _controller = AnimationController(
+          vsync: this,
+          duration: Duration(milliseconds: widget.model.duration),
+          reverseDuration: Duration(
+            milliseconds: widget.model.reverseduration ?? widget.model.duration,
+          ));
+      if (widget.model.controllerValue == 1 && widget.model.runonce == true) {
+        _controller.animateTo(widget.model.controllerValue,
+            duration: const Duration());
 
-        if (widget.model.autoplay == true && _controller.isAnimating != true) start();
+        if (widget.model.autoplay == true && _controller.isAnimating != true) {
+          start();
+        }
       }
       _controller.addStatusListener((status) {
         _animationListener(status);
@@ -51,9 +59,9 @@ class FlipCardViewState extends State<FlipCardView>
       _controller = widget.controller!;
     }
 
-    _controller.addListener(() {setState(() {
-
-    });});
+    _controller.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -62,8 +70,10 @@ class FlipCardViewState extends State<FlipCardView>
     widget.model.registerListener(this);
 
     // register event listeners
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.animate, onAnimate);
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.reset, onReset);
+    EventManager.of(widget.model)
+        ?.registerEventListener(EventTypes.animate, onAnimate);
+    EventManager.of(widget.model)
+        ?.registerEventListener(EventTypes.reset, onReset);
 
     super.didChangeDependencies();
   }
@@ -76,39 +86,38 @@ class FlipCardViewState extends State<FlipCardView>
       oldWidget.model.removeListener(this);
       widget.model.registerListener(this);
 
-      if(soloRequestBuild) {
+      if (soloRequestBuild) {
         // de-register event listeners
-        EventManager.of(oldWidget.model)?.removeEventListener(
-            EventTypes.animate, onAnimate);
-        EventManager.of(widget.model)?.removeEventListener(
-            EventTypes.reset, onReset);
+        EventManager.of(oldWidget.model)
+            ?.removeEventListener(EventTypes.animate, onAnimate);
+        EventManager.of(widget.model)
+            ?.removeEventListener(EventTypes.reset, onReset);
 
         // register event listeners
-        EventManager.of(widget.model)?.registerEventListener(
-            EventTypes.animate, onAnimate);
-        EventManager.of(widget.model)?.registerEventListener(
-            EventTypes.reset, onReset);
+        EventManager.of(widget.model)
+            ?.registerEventListener(EventTypes.animate, onAnimate);
+        EventManager.of(widget.model)
+            ?.registerEventListener(EventTypes.reset, onReset);
 
         _controller.duration = Duration(milliseconds: widget.model.duration);
         _controller.reverseDuration = Duration(
-            milliseconds: widget.model.reverseduration ??
-                widget.model.duration);
+            milliseconds:
+                widget.model.reverseduration ?? widget.model.duration);
       }
     }
   }
 
   @override
   void dispose() {
-
-    if(soloRequestBuild) {
+    if (soloRequestBuild) {
       stop();
       // remove controller
       _controller.dispose();
       // de-register event listeners
-      EventManager.of(widget.model)?.removeEventListener(
-          EventTypes.animate, onAnimate);
-      EventManager.of(widget.model)?.removeEventListener(
-          EventTypes.reset, onReset);
+      EventManager.of(widget.model)
+          ?.removeEventListener(EventTypes.animate, onAnimate);
+      EventManager.of(widget.model)
+          ?.removeEventListener(EventTypes.reset, onReset);
     }
     // remove model listener
     widget.model.removeListener(this);
@@ -122,8 +131,7 @@ class FlipCardViewState extends State<FlipCardView>
   }
 
   @override
-Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     double begin = widget.model.begin;
     double end = widget.model.end;
     Curve curve = AnimationHelper.getCurve(widget.model.curve);
@@ -169,30 +177,20 @@ Widget build(BuildContext context)
 
     //this is done likely wrong. We need to find each element of type, not sure if getting the view here is any good
 
-     frontWidget = widget.child;
-    if(_animation.value <= 0.5 && frontWidget.model.children.length >= 2) {
-      frontWidget.model.children
-          .elementAt(0)
-          .visible = false;
-      frontWidget.model.children
-          .elementAt(1)
-          .visible = true;
-    } else if (frontWidget.model.children.length >= 2){
-    frontWidget.model.children
-        .elementAt(0)
-        .visible = true;
-    frontWidget.model.children
-        .elementAt(1)
-        .visible = false;
+    frontWidget = widget.child;
+    if (_animation.value <= 0.5 && frontWidget.model.children.length >= 2) {
+      frontWidget.model.children.elementAt(0).visible = false;
+      frontWidget.model.children.elementAt(1).visible = true;
+    } else if (frontWidget.model.children.length >= 2) {
+      frontWidget.model.children.elementAt(0).visible = true;
+      frontWidget.model.children.elementAt(1).visible = false;
     }
 
-
-    view = Stack(
-      fit: StackFit.passthrough,
-      children:[
-        _buildContent(
-          frontWidget: frontWidget ?? Container(),
-      )]);
+    view = Stack(fit: StackFit.passthrough, children: [
+      _buildContent(
+        frontWidget: frontWidget ?? Container(),
+      )
+    ]);
 
     return view;
   }
@@ -200,31 +198,29 @@ Widget build(BuildContext context)
   Widget _buildContent({required dynamic frontWidget}) {
     /// pointer events that would reach the backside of the card should be
 
-
-      if (widget.model.direction?.toLowerCase() == "vertical") {
-        return Transform(
-            alignment: FractionalOffset.center,
-            transform: Matrix4.identity()
-              ..setEntry(3, 2, 0.0015)
-              ..rotateX(pi * _animation.value),
-            child: Container(
-              child:  Transform(
-                alignment: FractionalOffset.center,
-                transform:  Matrix4.identity()
-                  ..rotateX(_animation.value <= 0.5 ? 0: pi), child: frontWidget,),
-            ));
-
-      }
-        return Transform(
+    if (widget.model.direction?.toLowerCase() == "vertical") {
+      return Transform(
           alignment: FractionalOffset.center,
           transform: Matrix4.identity()
             ..setEntry(3, 2, 0.0015)
-            ..rotateY(pi * _animation.value),
-          child: Container(
-          child:  Transform(
+            ..rotateX(pi * _animation.value),
+          child: Transform(
+            alignment: FractionalOffset.center,
+            transform: Matrix4.identity()
+              ..rotateX(_animation.value <= 0.5 ? 0 : pi),
+            child: frontWidget,
+          ));
+    }
+    return Transform(
+        alignment: FractionalOffset.center,
+        transform: Matrix4.identity()
+          ..setEntry(3, 2, 0.0015)
+          ..rotateY(pi * _animation.value),
+        child: Transform(
           alignment: FractionalOffset.center,
-    transform:  Matrix4.identity()
-    ..rotateY(_animation.value <= 0.5 ? 0: pi), child: frontWidget,),
+          transform: Matrix4.identity()
+            ..rotateY(_animation.value <= 0.5 ? 0 : pi),
+          child: frontWidget,
         ));
   }
 
@@ -263,24 +259,23 @@ Widget build(BuildContext context)
 
   void start() {
     try {
-      if(widget.model.hasrun) return;
+      if (widget.model.hasrun) return;
       if (_controller.isCompleted) {
-        if(widget.model.runonce) widget.model.hasrun = true;
+        if (widget.model.runonce) widget.model.hasrun = true;
         _controller.reverse();
         widget.model.controllerValue = 0;
         widget.model.onStart(context);
       } else if (_controller.isDismissed) {
         _controller.forward();
         widget.model.controllerValue = 1;
-        if(widget.model.runonce) widget.model.hasrun = true;
+        if (widget.model.runonce) widget.model.hasrun = true;
         widget.model.onStart(context);
       } else {
         _controller.forward();
         widget.model.controllerValue = 1;
-        if(widget.model.runonce) widget.model.hasrun = true;
+        if (widget.model.runonce) widget.model.hasrun = true;
         widget.model.onStart(context);
       }
-
     } catch (e) {
       Log().debug('$e');
     }
@@ -301,7 +296,7 @@ Widget build(BuildContext context)
       widget.model.controllerValue = 1;
       widget.model.side = "back";
       widget.model.onComplete(context);
-    } else if  (status == AnimationStatus.dismissed) {
+    } else if (status == AnimationStatus.dismissed) {
       widget.model.controllerValue = 0;
       widget.model.side = "front";
       widget.model.onDismiss(context);

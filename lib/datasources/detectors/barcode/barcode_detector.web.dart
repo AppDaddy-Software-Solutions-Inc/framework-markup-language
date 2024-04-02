@@ -1,21 +1,20 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/log/manager.dart';
-import 'package:zxing_lib/oned.dart'   deferred as code39;
+import 'package:zxing_lib/oned.dart' deferred as code39;
 import 'package:zxing_lib/pdf417.dart' deferred as pdf417;
 import 'package:zxing_lib/qrcode.dart' deferred as qrcode;
-import 'package:zxing_lib/zxing.dart'  deferred as zxing;
+import 'package:zxing_lib/zxing.dart' deferred as zxing;
 import 'barcode_detector.dart';
 import 'package:fml/helpers/helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
-if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
-if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
+    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+    if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 BarcodeDetector getDetector() => BarcodeDetector();
 
-class BarcodeDetector implements IBarcodeDetector
-{
+class BarcodeDetector implements IBarcodeDetector {
   static final BarcodeDetector _singleton = BarcodeDetector._initialize();
 
   BarcodeDetector._initialize();
@@ -23,24 +22,29 @@ class BarcodeDetector implements IBarcodeDetector
   factory BarcodeDetector() => _singleton;
 
   @override
-  Future<Payload?> detect(DetectableImage detectable, List<BarcodeFormats>? formats, bool? tryharder, bool? invert) async
-  {
-    try
-    {
+  Future<Payload?> detect(DetectableImage detectable,
+      List<BarcodeFormats>? formats, bool? tryharder, bool? invert) async {
+    try {
       Payload? result;
 
       await zxing.loadLibrary();
 
-      if (detectable.image != null)
-      {
+      if (detectable.image != null) {
         //set barcode format
         formats ??= [];
-        if (formats.length == 1)
-        {
-          if (formats.contains(BarcodeFormats.code39)) result = await _code39(detectable.image, tryharder, invert);
-          if (formats.contains(BarcodeFormats.pdf417)) result = await _pdf417(detectable.image, tryharder, invert);
-          if (formats.contains(BarcodeFormats.ondl))   result = await _ondl(detectable.image, tryharder, invert);
-          if (formats.contains(BarcodeFormats.qrcode)) result = await _qrcode(detectable.image, tryharder, invert);
+        if (formats.length == 1) {
+          if (formats.contains(BarcodeFormats.code39)) {
+            result = await _code39(detectable.image, tryharder, invert);
+          }
+          if (formats.contains(BarcodeFormats.pdf417)) {
+            result = await _pdf417(detectable.image, tryharder, invert);
+          }
+          if (formats.contains(BarcodeFormats.ondl)) {
+            result = await _ondl(detectable.image, tryharder, invert);
+          }
+          if (formats.contains(BarcodeFormats.qrcode)) {
+            result = await _qrcode(detectable.image, tryharder, invert);
+          }
         }
         //default barcode format
         else {
@@ -48,9 +52,7 @@ class BarcodeDetector implements IBarcodeDetector
         }
       }
       return result;
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().info("No barcode found");
       return null;
     }
@@ -58,13 +60,13 @@ class BarcodeDetector implements IBarcodeDetector
 
   // any format
   static dynamic _multiFormatReader;
-  static Future<Payload> _multi(dynamic bitmap, List<BarcodeFormats>? formats, bool? tryharder, bool? invert) async
-  {
+  static Future<Payload> _multi(dynamic bitmap, List<BarcodeFormats>? formats,
+      bool? tryharder, bool? invert) async {
     _multiFormatReader ??= zxing.MultiFormatReader();
 
     var reader = _multiFormatReader!;
 
-    Map<dynamic, Object> hints   = <dynamic, Object>{};
+    Map<dynamic, Object> hints = <dynamic, Object>{};
     hints[zxing.DecodeHintType.tryHarder] = (tryharder == true);
     hints[zxing.DecodeHintType.alsoInverted] = (invert == true);
     //hints[DecodeHintType.POSSIBLE_FORMATS] = BarcodeFormats.;
@@ -78,14 +80,14 @@ class BarcodeDetector implements IBarcodeDetector
 
   // pdf417 format
   static dynamic _pDF417Reader;
-  static Future<Payload> _pdf417(dynamic bitmap, bool? tryharder, bool? invert) async
-  {
+  static Future<Payload> _pdf417(
+      dynamic bitmap, bool? tryharder, bool? invert) async {
     await pdf417.loadLibrary();
 
     _pDF417Reader ??= pdf417.PDF417Reader();
     var reader = _pDF417Reader!;
 
-    Map<dynamic, Object> hints   = <dynamic, Object>{};
+    Map<dynamic, Object> hints = <dynamic, Object>{};
     hints[zxing.DecodeHintType.tryHarder] = (tryharder == true);
     hints[zxing.DecodeHintType.alsoInverted] = (invert == true);
 
@@ -96,14 +98,13 @@ class BarcodeDetector implements IBarcodeDetector
   }
 
   // ontario drivers license
-  static Future<Payload> _ondl(dynamic bitmap, bool? tryharder, bool? invert) async
-  {
+  static Future<Payload> _ondl(
+      dynamic bitmap, bool? tryharder, bool? invert) async {
     Payload? payload;
     payload = await _pdf417(bitmap, tryharder, invert);
 
     for (var barcode in payload.barcodes) {
-      if (barcode.barcode!.contains('ANSI 636012'))
-      {
+      if (barcode.barcode!.contains('ANSI 636012')) {
         barcode.parameters = <String, String?>{};
         var lines = barcode.barcode!.split(RegExp(r'\r\n|\n\r|\n|\r|DL'));
         for (var line in lines) {
@@ -138,7 +139,8 @@ class BarcodeDetector implements IBarcodeDetector
               barcode.parameters!["middle_name"] = toTitleCase(value);
               break;
             case "DBD":
-              barcode.parameters!["issue_date"] = toStr(toDate(value, format: "yyyyMMdd"));
+              barcode.parameters!["issue_date"] =
+                  toStr(toDate(value, format: "yyyyMMdd"));
               break;
             case "DBB":
               barcode.parameters!["date_of_birth"] =
@@ -196,14 +198,14 @@ class BarcodeDetector implements IBarcodeDetector
 
   // code 39
   static dynamic _code39Reader;
-  static Future<Payload> _code39(dynamic bitmap, bool? tryharder, bool? invert) async
-  {
+  static Future<Payload> _code39(
+      dynamic bitmap, bool? tryharder, bool? invert) async {
     await code39.loadLibrary();
 
     _code39Reader ??= code39.Code39Reader(false, true);
     var reader = _code39Reader!;
 
-    Map<dynamic, Object> hints   = <dynamic, Object>{};
+    Map<dynamic, Object> hints = <dynamic, Object>{};
     hints[zxing.DecodeHintType.tryHarder] = (tryharder == true);
     hints[zxing.DecodeHintType.alsoInverted] = (invert == true);
 
@@ -215,16 +217,16 @@ class BarcodeDetector implements IBarcodeDetector
 
   // qr code
   static dynamic _qRCodeReader;
-  static Future<Payload> _qrcode(dynamic bitmap, bool? tryharder, bool? invert) async
-  {
+  static Future<Payload> _qrcode(
+      dynamic bitmap, bool? tryharder, bool? invert) async {
     // load deferred library
     await qrcode.loadLibrary();
 
     _qRCodeReader ??= qrcode.QRCodeReader();
     var reader = _qRCodeReader!;
 
-    Map<dynamic, Object> hints   = <dynamic, Object>{};
-    hints[zxing.DecodeHintType.tryHarder]  = (tryharder == true);
+    Map<dynamic, Object> hints = <dynamic, Object>{};
+    hints[zxing.DecodeHintType.tryHarder] = (tryharder == true);
     hints[zxing.DecodeHintType.alsoInverted] = (invert == true);
 
     Log().debug('QR Decode Start');
@@ -233,8 +235,7 @@ class BarcodeDetector implements IBarcodeDetector
     return _buildPayload(result);
   }
 
-  static Payload _buildPayload(dynamic result)
-  {
+  static Payload _buildPayload(dynamic result) {
     Barcode barcode = Barcode();
     barcode.barcode = result.text;
     barcode.format = fromEnum(result.barcodeFormat);

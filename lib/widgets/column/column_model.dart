@@ -2,12 +2,11 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class ColumnModel extends BoxModel
-{
+class ColumnModel extends BoxModel {
   @override
   LayoutType layoutType = LayoutType.column;
 
@@ -17,14 +16,11 @@ class ColumnModel extends BoxModel
   // indicates if the widget will grow in
   // its horizontal axis
   @override
-  bool get expandHorizontally
-  {
+  bool get expandHorizontally {
     if (!super.expandHorizontally) return false;
     bool flexible = false;
-    for (var child in viewableChildren)
-    {
-      if (child.visible && child.expandHorizontally)
-      {
+    for (var child in viewableChildren) {
+      if (child.visible && child.expandHorizontally) {
         flexible = true;
         break;
       }
@@ -34,17 +30,15 @@ class ColumnModel extends BoxModel
 
   ColumnModel(WidgetModel super.parent, super.id, {super.scope, super.data});
 
-  static ColumnModel? fromXml(WidgetModel parent, XmlElement xml, {Scope? scope, dynamic data})
-  {
+  static ColumnModel? fromXml(WidgetModel parent, XmlElement xml,
+      {Scope? scope, dynamic data}) {
     ColumnModel? model;
-    try
-    {
+    try {
       // build model
-      model = ColumnModel(parent, Xml.get(node: xml, tag: 'id'), scope: scope, data: data);
+      model = ColumnModel(parent, Xml.get(node: xml, tag: 'id'),
+          scope: scope, data: data);
       model.deserialize(xml);
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e, caller: 'column.Model');
       model = null;
     }

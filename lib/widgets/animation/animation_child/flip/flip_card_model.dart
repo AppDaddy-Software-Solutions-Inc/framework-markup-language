@@ -10,8 +10,7 @@ import 'package:fml/helpers/helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class FlipCardModel extends AnimationChildModel
-{
+class FlipCardModel extends AnimationChildModel {
   /// Curve ending point from 1.0 to 0.0
   StringObservable? _align;
 
@@ -26,7 +25,6 @@ class FlipCardModel extends AnimationChildModel
 
   String? get align => _align?.get();
 
-
   StringObservable? _direction;
 
   set direction(dynamic v) {
@@ -39,7 +37,6 @@ class FlipCardModel extends AnimationChildModel
   }
 
   String? get direction => _direction?.get();
-
 
   StringObservable? _side;
 
@@ -81,7 +78,6 @@ class FlipCardModel extends AnimationChildModel
   }
 
   double get to => _to?.get() ?? 1.0;
-
 
   FlipCardModel(super.parent, super.id); // ; {key: value}
 
@@ -136,5 +132,6 @@ class FlipCardModel extends AnimationChildModel
   }
 
   @override
-  Widget getAnimatedView(Widget child, {AnimationController? controller}) =>  FlipCardView(this, child, controller);
+  Widget getAnimatedView(Widget child, {AnimationController? controller}) =>
+      FlipCardView(this, child, controller);
 }

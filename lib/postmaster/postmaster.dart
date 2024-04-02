@@ -11,97 +11,82 @@ import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class PostMaster
-{
+class PostMaster {
   static final PostMaster _singleton = PostMaster._init();
-  factory PostMaster()
-  {
+  factory PostMaster() {
     return _singleton;
   }
   PostMaster._init();
 
   Timer? timer;
-  int frequency   = 60;
+  int frequency = 60;
   int maxattempts = 100;
 
-  // busy 
+  // busy
   BooleanObservable? _busy;
-  set busy(dynamic v)
-  {
-    if (_busy != null)
-    {
+  set busy(dynamic v) {
+    if (_busy != null) {
       _busy!.set(v);
-    }
-    else if (v != null)
-    {
-      _busy = BooleanObservable(Binding.toKey("POSTMASTER", 'busy'), v, scope: System().scope, listener: System().onPropertyChange);
+    } else if (v != null) {
+      _busy = BooleanObservable(Binding.toKey("POSTMASTER", 'busy'), v,
+          scope: System().scope, listener: System().onPropertyChange);
     }
   }
-  bool get busy => _busy?.get() ?? false;
-  
 
-  // alerts 
+  bool get busy => _busy?.get() ?? false;
+
+  // alerts
   BooleanObservable? _alert;
-  set alert(dynamic v) 
-  {
-    if (_alert != null) 
-    {
+  set alert(dynamic v) {
+    if (_alert != null) {
       _alert!.set(v);
-    } 
-    else if (v != null) 
-    {
-      _alert = BooleanObservable(Binding.toKey("POSTMASTER", 'alert'), v, scope: System().scope, listener: System().onPropertyChange);
+    } else if (v != null) {
+      _alert = BooleanObservable(Binding.toKey("POSTMASTER", 'alert'), v,
+          scope: System().scope, listener: System().onPropertyChange);
     }
   }
+
   bool get alert => _alert?.get() ?? false;
 
-  // pending posts 
+  // pending posts
   IntegerObservable? _pending;
-  set pending(dynamic v) 
-  {
-    if (_pending != null) 
-    {
+  set pending(dynamic v) {
+    if (_pending != null) {
       _pending!.set(v);
-    } 
-    else if (v != null) 
-    {
-      _pending = IntegerObservable(Binding.toKey("POSTMASTER", 'pending'), v, scope: System().scope, listener: System().onPropertyChange);
+    } else if (v != null) {
+      _pending = IntegerObservable(Binding.toKey("POSTMASTER", 'pending'), v,
+          scope: System().scope, listener: System().onPropertyChange);
     }
   }
+
   int get pending => _pending?.get() ?? 0;
 
-  // errors 
+  // errors
   IntegerObservable? _errors;
-  set errors(dynamic v) 
-  {
-    if (_errors != null) 
-    {
+  set errors(dynamic v) {
+    if (_errors != null) {
       _errors!.set(v);
-    } 
-    else if (v != null) 
-    {
-      _errors = IntegerObservable(Binding.toKey("POSTMASTER", 'errors'), v, scope: System().scope, listener: System().onPropertyChange);
+    } else if (v != null) {
+      _errors = IntegerObservable(Binding.toKey("POSTMASTER", 'errors'), v,
+          scope: System().scope, listener: System().onPropertyChange);
     }
   }
+
   int get errors => _errors?.get() ?? 0;
-  
-  Future<bool> start() async
-  {
+
+  Future<bool> start() async {
     // not in web
     if (FmlEngine.isWeb) return true;
     bool ok = await _post();
     return ok;
   }
 
-  Future<bool> stop() async
-  {
+  Future<bool> stop() async {
     return true;
   }
 
-  Future<bool> _post() async
-  {
-    if (!busy)
-    {
+  Future<bool> _post() async {
+    if (!busy) {
       busy = true;
 
       if (timer != null) timer!.cancel();
@@ -115,96 +100,96 @@ class PostMaster
 
   bool startNotified = false;
 
-  Future<bool> _work() async
-  {
-    // Notify 
-    if (!startNotified)
-    {
+  Future<bool> _work() async {
+    // Notify
+    if (!startNotified) {
       System.toast(phrase.postmasterPhrase001);
       startNotified = true;
     }
 
-    // Get Incomplete Posts 
-    List<hive_pack.Post> posts = await hive_pack.Post.query(where: "{status} == ${hive_pack.Post.statusINCOMPLETE}");
+    // Get Incomplete Posts
+    List<hive_pack.Post> posts = await hive_pack.Post.query(
+        where: "{status} == ${hive_pack.Post.statusINCOMPLETE}");
 
-    // Sort Pending by Parent 
+    // Sort Pending by Parent
     posts.sort();
 
-    // Set Pending Count 
+    // Set Pending Count
     this.pending = posts;
 
-    // Get Errors Count 
-    List<hive_pack.Post> errors = await hive_pack.Post.query(where: "{status} == ${hive_pack.Post.statusERROR}");
+    // Get Errors Count
+    List<hive_pack.Post> errors = await hive_pack.Post.query(
+        where: "{status} == ${hive_pack.Post.statusERROR}");
 
-    // Set Error Count 
+    // Set Error Count
     this.errors = errors;
 
+    // Pending Count
+    int pending = posts.length;
 
-      // Pending Count 
-      int pending = posts.length;
+    // Notify
+    if (pending > 0) {
+      System.toast(
+          phrase.postmasterPhrase002.replaceAll("{jobs}", pending.toString()));
+    }
 
-      // Notify 
-      if (pending > 0) System.toast(phrase.postmasterPhrase002.replaceAll("{jobs}", pending.toString()));
+    // Clear Alert
+    alert = false;
 
-      // Clear Alert 
-      alert = false;
+    // Process Each Post
+    for (var post in posts) {
+      if (await postable(post)) {
+        // Set Pending Count
+        this.pending = pending;
 
-      // Process Each Post 
-      for (var post in posts) {
-        if (await postable(post))
-        {
-          // Set Pending Count 
-          this.pending = pending;
+        // Post the Data
+        HttpResponse response =
+            await Http.post(post.url!, post.body ?? '', headers: post.headers);
 
-          // Post the Data 
-          HttpResponse response = await Http.post(post.url!, post.body ?? '', headers: post.headers);
-
-          // Error? 
-          post.attempts = (post.attempts ?? 0) + 1;
-          if (!response.ok)
-          {
-            if ((post.attempts ?? 0) > maxattempts) post.status   = hive_pack.Post.statusERROR;
-            post.info = response.statusMessage;
-            // bool ok   = (await post.update() == null);
-
-            // Set Alert 
-            alert = true;
+        // Error?
+        post.attempts = (post.attempts ?? 0) + 1;
+        if (!response.ok) {
+          if ((post.attempts ?? 0) > maxattempts) {
+            post.status = hive_pack.Post.statusERROR;
           }
+          post.info = response.statusMessage;
+          // bool ok   = (await post.update() == null);
 
-          // Ok 
-          else
-          {
-            post.status = hive_pack.Post.statusCOMPLETE;
-            // bool ok = (await post.update() == null);
-            pending = pending - 1;
-          }
+          // Set Alert
+          alert = true;
+        }
+
+        // Ok
+        else {
+          post.status = hive_pack.Post.statusCOMPLETE;
+          // bool ok = (await post.update() == null);
+          pending = pending - 1;
         }
       }
+    }
 
     return true;
   }
 
-  Future<bool> postable(hive_pack.Post post) async
-  {
+  Future<bool> postable(hive_pack.Post post) async {
     if (!System().connected) return false;
     return await formPostable(post.formKey);
   }
 
-  Future<bool> formPostable(String? key) async
-  {
-    // No Associated Form 
+  Future<bool> formPostable(String? key) async {
+    // No Associated Form
     if (isNullOrEmpty(key)) return true;
 
-    // Lookup the Form 
+    // Lookup the Form
     hive_pack.Form? form = await hive_pack.Form.find(key);
 
-    // Form Not Found 
+    // Form Not Found
     if (form == null) return true;
 
-    // Form Not Complete 
+    // Form Not Complete
     if (!form.complete) return false;
 
-    // Parent Postable? 
+    // Parent Postable?
     return await formPostable(form.parent);
   }
 }

@@ -8,28 +8,29 @@ import 'payload.dart';
 import 'mqtt_interface.dart';
 import 'package:fml/helpers/helpers.dart';
 
-IMqtt? getMqtt(String url, IMqttListener listener, {String? username, String? password}) => MqttWeb(url, listener, username: username, password: password);
+IMqtt? getMqtt(String url, IMqttListener listener,
+        {String? username, String? password}) =>
+    MqttWeb(url, listener, username: username, password: password);
 
-class MqttWeb implements IMqtt
-{
+class MqttWeb implements IMqtt {
   late MqttBrowserClient client;
   final String url;
   final String? username;
   final String? password;
-  final String identifier = "${System.app?.user.claim('name') ?? 'unknown'} : ${newId()}";
-  final int    keepalive = 60;
+  final String identifier =
+      "${System.currentApp?.user.claim('name') ?? 'unknown'} : ${newId()}";
+  final int keepalive = 60;
 
   bool connected = false;
   IMqttListener listener;
 
-  MqttWeb(this.url, this.listener, {this.username, this.password})
-  {
+  MqttWeb(this.url, this.listener, {this.username, this.password}) {
     Uri? uri = URI.parse(this.url);
     if (uri == null) return;
     var scheme = 'ws';
     var server = uri.host;
-    var port   = (uri.port == 443 || uri.port == 80) ? 61614 : uri.port;
-    var url    = '$scheme://$server';
+    var port = (uri.port == 443 || uri.port == 80) ? 61614 : uri.port;
+    var url = '$scheme://$server';
 
     /// Create Client
     client = MqttBrowserClient(url, identifier);
@@ -54,7 +55,7 @@ class MqttWeb implements IMqtt
     /// you wish. There is also an onSubscribeFail callback for failed subscriptions, these
     /// can fail either because you have tried to subscribe to an invalid topic or the source
     /// rejects the subscribe request.
-    client.onSubscribed   = _onSubscribed;
+    client.onSubscribed = _onSubscribed;
     client.onUnsubscribed = _onUnSubscribed;
 
     /// Set a ping received callback if needed, called whenever a ping response(pong) is received
@@ -63,8 +64,7 @@ class MqttWeb implements IMqtt
   }
 
   @override
-  Future<bool> connect() async
-  {
+  Future<bool> connect() async {
     Log().debug('MQTT:: Connecting to $url on port ${client.port}');
 
     /// Create a connection message to use or use the default one. The default one sets the
@@ -81,23 +81,19 @@ class MqttWeb implements IMqtt
     /// Connect the client, any errors here are communicated by raising of the appropriate exception. Note
     /// in some circumstances the source will just disconnect us, see the spec about this, we however will
     /// never send malformed messages.
-    try
-    {
+    try {
       await client.connect();
-    }
-    on Exception catch(e)
-    {
-      Log().debug('MQTT:: Error Connecting to $url on port ${client.port}. Status is $e');
+    } on Exception catch (e) {
+      Log().debug(
+          'MQTT:: Error Connecting to $url on port ${client.port}. Status is $e');
       client.disconnect();
     }
 
-    if (client.connectionStatus!.state == MqttConnectionState.connected)
-    {
+    if (client.connectionStatus!.state == MqttConnectionState.connected) {
       Log().debug('MQTT:: Client Connected');
-    }
-    else
-    {
-      Log().debug('MQTT:: Error Connecting to $url on port ${client.port}. Status is ${client.connectionStatus}');
+    } else {
+      Log().debug(
+          'MQTT:: Error Connecting to $url on port ${client.port}. Status is ${client.connectionStatus}');
       client.disconnect();
       return false;
     }
@@ -105,15 +101,15 @@ class MqttWeb implements IMqtt
     return true;
   }
 
-  void _onConnected()
-  {
+  void _onConnected() {
     Log().debug('MQTT:: OnConnected');
 
     // Set Connected
     connected = true;
 
     /// Notify that messages have been published
-    client.published?.listen((MqttPublishMessage message) => _onPublished(message));
+    client.published
+        ?.listen((MqttPublishMessage message) => _onPublished(message));
 
     /// Listen for Messages
     client.updates?.listen(_onData, onDone: _onDone, onError: _onError);
@@ -124,43 +120,43 @@ class MqttWeb implements IMqtt
 
   /// The client has a change notifier object(see the Observable class) which we then listen to to get
   /// notifications of published updates to each subscribed topic.
-  void _onData (List messages)
-  {
+  void _onData(List messages) {
     Log().debug('MQTT -> Messages received');
     for (var msg in messages) {
       final MqttPublishMessage recMess = msg.payload as MqttPublishMessage;
-      final message = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+      final message =
+          MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
 
-      Log().debug('MQTT -> Message received for topic [${msg.topic}] Message[$message]');
+      Log().debug(
+          'MQTT -> Message received for topic [${msg.topic}] Message[$message]');
 
       /// notify listener
       listener.onMessage(Payload(topic: msg.topic, message: message));
     }
   }
 
-  void _onDone()
-  {
+  void _onDone() {
     Log().debug('MQTT -> Done');
   }
 
-  void _onError(error)
-  {
+  void _onError(error) {
     Log().debug('MQTT -> Error');
   }
 
   @override
-  Future<bool> disconnect() async
-  {
+  Future<bool> disconnect() async {
     Log().debug('MQTT:: Disconnecting');
     client.disconnect();
     return true;
   }
 
-  void _onDisconnected()
-  {
+  void _onDisconnected() {
     connected = false;
 
-    String origin = (client.connectionStatus!.disconnectionOrigin == MqttDisconnectionOrigin.solicited) ? "client" : "server";
+    String origin = (client.connectionStatus!.disconnectionOrigin ==
+            MqttDisconnectionOrigin.solicited)
+        ? "client"
+        : "server";
     Log().debug('MQTT:: Disconnected (by $origin)');
 
     // notify listener
@@ -168,15 +164,13 @@ class MqttWeb implements IMqtt
   }
 
   @override
-  Future<bool> subscribe(String topic) async
-  {
+  Future<bool> subscribe(String topic) async {
     Log().debug('MQTT:: Subscribing to topic -> $topic');
     client.subscribe(topic, MqttQos.atMostOnce);
     return true;
   }
 
-  void _onSubscribed(String topic)
-  {
+  void _onSubscribed(String topic) {
     Log().debug('MQTT:: Subscribed to topic -> $topic');
 
     // notify listener
@@ -184,15 +178,13 @@ class MqttWeb implements IMqtt
   }
 
   @override
-  Future<bool> unsubscribe(String topic) async
-  {
+  Future<bool> unsubscribe(String topic) async {
     Log().debug('MQTT:: Unsubscribing from topic -> $topic');
     client.unsubscribe(topic);
     return true;
   }
 
-  void _onUnSubscribed(String? topic)
-  {
+  void _onUnSubscribed(String? topic) {
     Log().debug('MQTT:: Unsubscribed from topic -> $topic');
 
     // notify listener
@@ -200,36 +192,35 @@ class MqttWeb implements IMqtt
   }
 
   @override
-  Future<bool> publish(String topic, String msg) async
-  {
+  Future<bool> publish(String topic, String msg) async {
     // connected?
     if (!connected) return false;
 
     final builder = MqttClientPayloadBuilder();
     builder.addString(msg);
-    if (builder.payload != null) client.publishMessage(topic, MqttQos.atMostOnce, builder.payload!);
+    if (builder.payload != null) {
+      client.publishMessage(topic, MqttQos.atMostOnce, builder.payload!);
+    }
 
     return true;
   }
 
-  void _onPublished(MqttPublishMessage message)
-  {
+  void _onPublished(MqttPublishMessage message) {
     var topic = message.variableHeader?.topicName;
-    var msg   = MqttPublishPayload.bytesToStringAsString(message.payload.message);
-    Log().debug('MQTT::Published notification:: topic is $topic, with message $msg');
+    var msg = MqttPublishPayload.bytesToStringAsString(message.payload.message);
+    Log().debug(
+        'MQTT::Published notification:: topic is $topic, with message $msg');
 
     // notify listener
     if (topic != null) listener.onPublished(topic, msg);
   }
 
-  void _onPong()
-  {
+  void _onPong() {
     Log().debug('MQTT:: Keep alive');
   }
 
   @override
-  dispose()
-  {
+  dispose() {
     disconnect();
   }
 }

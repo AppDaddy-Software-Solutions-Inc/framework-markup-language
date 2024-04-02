@@ -11,7 +11,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector_model.dart';
 import 'package:fml/datasources/detectors/text/text_detector_model.dart';
 import 'package:fml/datasources/data/model.dart';
-import 'package:fml/datasources/gps/model.dart';
+import 'package:fml/datasources/gps/gps_model.dart';
 import 'package:fml/datasources/http/model.dart';
 import 'package:fml/datasources/mqtt/mqtt_model.dart';
 import 'package:fml/datasources/nfc/nfc_model.dart';
@@ -73,7 +73,6 @@ import 'package:fml/widgets/map/map_model.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
-import 'package:fml/widgets/nodata/nomatch_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/option/tag_model.dart';
 import 'package:fml/widgets/padding/padding_model.dart';
@@ -101,7 +100,7 @@ import 'package:fml/widgets/table/table_header_cell_model.dart';
 import 'package:fml/widgets/table/table_header_group_model.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
-import 'package:fml/widgets/nodata/nodata_model.dart';
+import 'package:fml/widgets/table/nodata_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:fml/widgets/table/table_row_model.dart';
 import 'package:fml/widgets/tabview/tab_model.dart';
@@ -128,15 +127,13 @@ import 'package:fml/widgets/trigger/trigger_model.dart';
 import 'package:fml/widgets/typeahead/typeahead_model.dart';
 import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:fml/widgets/video/video_model.dart';
-import 'package:fml/widgets/html/html_model.dart';
 import 'package:fml/widgets/span/span_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-Future<void> addChild(WidgetModel model, List<dynamic> arguments) async
-{
+Future<void> addChild(WidgetModel model, List<dynamic> arguments) async {
   // fml
   var xml = elementAt(arguments, 0);
 
@@ -152,8 +149,7 @@ Future<void> addChild(WidgetModel model, List<dynamic> arguments) async
   await _appendXml(model, xml, index, silent);
 }
 
-Future<void> removeChild(WidgetModel model, List<dynamic> arguments) async
-{
+Future<void> removeChild(WidgetModel model, List<dynamic> arguments) async {
   // if index is null, remove all children before replacement.
   int? index = toInt(elementAt(arguments, 0));
 
@@ -164,9 +160,7 @@ Future<void> removeChild(WidgetModel model, List<dynamic> arguments) async
 
     // check if the list is greater than 0, remove at the final index.
     if (model.children!.isNotEmpty) model.children!.removeLast();
-  }
-  else if (model.children != null && index != null) {
-
+  } else if (model.children != null && index != null) {
     // check if index is in range, then dispose of the child at that index.
     if (index >= 0 && model.children!.length > index) {
       model.children![index].dispose();
@@ -176,15 +170,13 @@ Future<void> removeChild(WidgetModel model, List<dynamic> arguments) async
   }
 }
 
-Future<void> removeChildren(WidgetModel model, List<dynamic> arguments) async
-{
+Future<void> removeChildren(WidgetModel model, List<dynamic> arguments) async {
   // dispose of all children
   model.children?.forEach((child) => child.dispose());
   model.children?.clear();
 }
 
-Future<void> replaceChild(WidgetModel model, List<dynamic> arguments) async
-{
+Future<void> replaceChild(WidgetModel model, List<dynamic> arguments) async {
   // fml
   var xml = elementAt(arguments, 0);
 
@@ -202,8 +194,9 @@ Future<void> replaceChild(WidgetModel model, List<dynamic> arguments) async
     model.children!.last.dispose();
 
     // check if the list is greater than 0, remove at the final index.
-    if (model.children!.isNotEmpty) model.children!.removeAt(model.children!.length - 1);
-    print(index.toString());
+    if (model.children!.isNotEmpty) {
+      model.children!.removeAt(model.children!.length - 1);
+    }
   } else if (model.children != null && index != null) {
     // check if index is in range, then dispose of the child at that index.
     if (index >= 0 && model.children!.length > index) {
@@ -214,11 +207,10 @@ Future<void> replaceChild(WidgetModel model, List<dynamic> arguments) async
   }
 
   // add elements
-  await _appendXml(model,xml, index, silent);
+  await _appendXml(model, xml, index, silent);
 }
 
-Future<void> replaceChildren(WidgetModel model, List<dynamic> arguments) async
-{
+Future<void> replaceChildren(WidgetModel model, List<dynamic> arguments) async {
   // fml
   var xml = elementAt(arguments, 0);
 
@@ -235,8 +227,7 @@ Future<void> replaceChildren(WidgetModel model, List<dynamic> arguments) async
   await _appendXml(model, xml, null, silent);
 }
 
-Future<void> removeWidget(WidgetModel model, List<dynamic> arguments) async
-{
+Future<void> removeWidget(WidgetModel model, List<dynamic> arguments) async {
   // index
   int? index = (model.parent?.children?.contains(model) ?? false)
       ? model.parent?.children?.indexOf(model)
@@ -250,8 +241,7 @@ Future<void> removeWidget(WidgetModel model, List<dynamic> arguments) async
   }
 }
 
-Future<void> replaceWidget(WidgetModel model, List<dynamic> arguments) async
-{
+Future<void> replaceWidget(WidgetModel model, List<dynamic> arguments) async {
   // fml
   var xml = elementAt(arguments, 0);
 
@@ -278,8 +268,8 @@ Future<void> replaceWidget(WidgetModel model, List<dynamic> arguments) async
   }
 }
 
-Future<bool> _appendXml(WidgetModel model, String xml, int? index, [bool silent = true]) async
-{
+Future<bool> _appendXml(WidgetModel model, String xml, int? index,
+    [bool silent = true]) async {
   List<XmlElement> nodes = [];
 
   Exception? exception;
@@ -329,14 +319,12 @@ Future<bool> _appendXml(WidgetModel model, String xml, int? index, [bool silent 
 /// This will be overridden for more complex widgets such as TABLE
 /// where children may actually be header or footer declarations that require
 /// a complete restructuring/rebuild of the parent
-Future<bool> _appendChild(WidgetModel parent, XmlElement element, int? index) async
-{
+Future<bool> _appendChild(
+    WidgetModel parent, XmlElement element, int? index) async {
   WidgetModel? model = WidgetModel.fromXml(parent, element);
-  if (model != null)
-  {
+  if (model != null) {
     // model is a datasource
-    if (model is IDataSource)
-    {
+    if (model is IDataSource) {
       // add it to the datasource list
       parent.datasources ??= [];
       parent.datasources!.add(model as IDataSource);
@@ -346,8 +334,7 @@ Future<bool> _appendChild(WidgetModel parent, XmlElement element, int? index) as
     }
 
     // model is widget
-    else
-    {
+    else {
       // add it to the child list
       parent.children ??= [];
 
@@ -387,8 +374,7 @@ XmlElement cloneNode(XmlElement node, Scope? scope) {
         Log().exception("Model $id has no element to copy from");
       }
     } else {
-      Log()
-          .exception("Error attempting to clone model $id. Model not found.");
+      Log().exception("Error attempting to clone model $id. Model not found.");
     }
   }
   return node;
@@ -407,16 +393,14 @@ bool excludeFromTemplate(XmlElement node, Scope? scope) {
   return exclude;
 }
 
-XmlElement? prototypeOf(XmlElement? node)
-{
+XmlElement? prototypeOf(XmlElement? node) {
   if (node == null) return null;
 
   // get the id
   var id = Xml.attribute(node: node, tag: "id");
 
   // if missing, assign it a unique key
-  if (id == null)
-  {
+  if (id == null) {
     id = newId();
     Xml.setAttribute(node, "id", id);
   }
@@ -426,22 +410,21 @@ XmlElement? prototypeOf(XmlElement? node)
   var bindings = Binding.getBindings(xml);
   List<String?> processed = [];
 
-  if (bindings != null)
-  {
+  if (bindings != null) {
     bool doReplace = false;
 
     // process each binding
-    for (var binding in bindings)
-    {
+    for (var binding in bindings) {
       // special case
-      if ((binding.source == 'data') && !processed.contains(binding.signature))
-      {
+      if ((binding.source == 'data') &&
+          !processed.contains(binding.signature)) {
         doReplace = true;
 
         processed.add(binding.signature);
 
         // set the signature
-        var signature = "{$id.${binding.source}.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
+        var signature =
+            "{$id.${binding.source}.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
         xml = xml.replaceAll(binding.signature, signature);
       }
     }
@@ -451,15 +434,12 @@ XmlElement? prototypeOf(XmlElement? node)
 
     // if valid node, we need to replace this node in the tree so
     // ancestor prototypes don't translate data incorrectly
-    if (newNode != null)
-    {
-      if (doReplace)
-      {
+    if (newNode != null) {
+      if (doReplace) {
         var parent = node.parent;
-        var index  = node.parent?.children.indexOf(node) ?? -1;
+        var index = node.parent?.children.indexOf(node) ?? -1;
         newNode = newNode.copy();
-        if (index >= 0 && parent != null)
-        {
+        if (index >= 0 && parent != null) {
           parent.children.removeAt(index);
           parent.children.insert(index, newNode);
         }
@@ -471,12 +451,11 @@ XmlElement? prototypeOf(XmlElement? node)
   return node;
 }
 
-WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dynamic data)
-{
+WidgetModel? fromXmlNode(
+    WidgetModel parent, XmlElement node, Scope? scope, dynamic data) {
   WidgetModel? model;
 
   switch (node.localName) {
-
     case "ALARM":
       model = AlarmModel.fromXml(parent, node);
       break;
@@ -505,7 +484,9 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
     case "BOX": // Preferred Case
     case "CONTAINER": // Container may be deprecated
       bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
-      model = isPrototype ? PrototypeModel.fromXml(parent, node) : BoxModel.fromXml(parent, node, scope: scope, data: data);
+      model = isPrototype
+          ? PrototypeModel.fromXml(parent, node)
+          : BoxModel.fromXml(parent, node, scope: scope, data: data);
       break;
 
     case "BREADCRUMB":
@@ -562,20 +543,20 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       break;
 
     case "BODY":
-    // we dont want to deserialize datasorce body models
-    // in the future we may wish to have a BODY element
-    // for now just return null
+      // we dont want to deserialize datasorce body models
+      // in the future we may wish to have a BODY element
+      // for now just return null
       if (parent is! IDataSource) model = null;
       model = null;
       break;
 
-  // case "sfchart":
-  //   model = SFCHART.ChartModel.fromXml(parent, node);
-  //   break;
+    // case "sfchart":
+    //   model = SFCHART.ChartModel.fromXml(parent, node);
+    //   break;
 
-    case "HTML":
-      model = HtmlModel.fromXml(parent, node);
-      break;
+    // case "HTML":
+    //   model = HtmlModel.fromXml(parent, node);
+    //   break;
 
     case "CHECKBOX":
     case "CHECK":
@@ -594,7 +575,9 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
     case "COLUMN":
     case "COL": //shorthand case
       bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
-      model = isPrototype ? PrototypeModel.fromXml(parent, node) : ColumnModel.fromXml(parent, node, scope: scope, data: data);
+      model = isPrototype
+          ? PrototypeModel.fromXml(parent, node)
+          : ColumnModel.fromXml(parent, node, scope: scope, data: data);
       break;
 
     case "CONDITION":
@@ -624,7 +607,7 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       model = EditorModel.fromXml(parent, node);
       break;
 
-  // deprecated. use row/column/box with %sizing or flex
+    // deprecated. use row/column/box with %sizing or flex
     case "EXPAND":
     case "EXPANDED":
       model = ColumnModel.fromXml(parent, node);
@@ -660,10 +643,10 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       break;
 
     case "FML":
-    // <FML> root models are never a child element
-    // of another parent element, rather they get created from the FrameworkModel.fromXml() routine.
-    // If there is a future reason to do that, this item will need to be revisited. In the meantime,
-    // an <FML> tag encountered in the element xml stream is treated as a <BOX>, not as a new outer framework.
+      // <FML> root models are never a child element
+      // of another parent element, rather they get created from the FrameworkModel.fromXml() routine.
+      // If there is a future reason to do that, this item will need to be revisited. In the meantime,
+      // an <FML> tag encountered in the element xml stream is treated as a <BOX>, not as a new outer framework.
       model = BoxModel.fromXml(parent, node);
       break;
 
@@ -792,8 +775,7 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       break;
 
     case "NODE":
-      if (parent is TreeModel || parent is TreeNodeModel)
-      {
+      if (parent is TreeModel || parent is TreeNodeModel) {
         model = TreeNodeModel.fromXml(parent, node);
       }
       break;
@@ -899,8 +881,7 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       break;
 
     case "PAGE":
-      if (parent is PagerModel)
-      {
+      if (parent is PagerModel) {
         model = PageModel.fromXml(parent, node);
       }
       break;
@@ -951,7 +932,9 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
 
     case "ROW":
       bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
-      model = isPrototype ? PrototypeModel.fromXml(parent, node) : RowModel.fromXml(parent, node, scope: scope, data: data);
+      model = isPrototype
+          ? PrototypeModel.fromXml(parent, node)
+          : RowModel.fromXml(parent, node, scope: scope, data: data);
       break;
 
     case "SCRIBBLE":
@@ -970,11 +953,11 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
     case "SERIES":
       if (parent is ChartModel) {
         model = ChartSeriesModel.fromXml(parent, node);
-      }else if (parent is BarChartModel){
+      } else if (parent is BarChartModel) {
         model = BarChartSeriesModel.fromXml(parent, node);
-      } else if (parent is LineChartModel){
+      } else if (parent is LineChartModel) {
         model = LineChartSeriesModel.fromXml(parent, node);
-      }else if (parent is PieChartModel){
+      } else if (parent is PieChartModel) {
         model = PieChartSeriesModel.fromXml(parent, node);
       }
       // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartSeriesModel.fromXml(parent, node);
@@ -1034,18 +1017,13 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       break;
 
     case "NODATA":
-        model = NoDataModel.fromXml(parent, node);
-      break;
-
-    case "NOMATCH":
-        model = NoMatchModel.fromXml(parent, node);
+      model = NoDataModel.fromXml(parent, node);
       break;
 
     case "TD":
     case "TABLEDATA":
     case "CELL":
-      if (parent is TableHeaderModel || parent is TableHeaderGroupModel)
-      {
+      if (parent is TableHeaderModel || parent is TableHeaderGroupModel) {
         model = TableHeaderCellModel.fromXml(parent, node);
       }
       if (parent is TableRowModel) {

@@ -8,50 +8,44 @@ import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/helpers/helpers.dart';
 
 enum METHODS { launch }
 
-class ColorpickerModel extends DecoratedInputModel implements IFormField
-{
+class ColorpickerModel extends DecoratedInputModel implements IFormField {
   bool isPicking = false;
 
   // value
   ColorObservable? _value;
   @override
-  set value(dynamic v)
-  {
-    if (_value != null)
-    {
+  set value(dynamic v) {
+    if (_value != null) {
       _value!.set(v);
-    }
-    else
-    {
+    } else {
       if (v != null) {
-        _value = ColorObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
+        _value = ColorObservable(Binding.toKey(id, 'value'), v,
+            scope: scope, listener: onPropertyChange);
       }
     }
   }
+
   @override
   Color? get value => _value?.get();
 
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
-  ColorpickerModel(WidgetModel super.parent,super.id);
+  ColorpickerModel(WidgetModel super.parent, super.id);
 
-  static ColorpickerModel? fromXml(WidgetModel parent, XmlElement xml, {String? type})
-  {
+  static ColorpickerModel? fromXml(WidgetModel parent, XmlElement xml,
+      {String? type}) {
     ColorpickerModel? model;
-    try 
-    {
+    try {
       model = ColorpickerModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    } 
-    catch(e) 
-    {
-      Log().exception(e,  caller: 'datepicker.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'datepicker.Model');
       model = null;
     }
     return model;
@@ -59,8 +53,7 @@ class ColorpickerModel extends DecoratedInputModel implements IFormField
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 
@@ -68,12 +61,10 @@ class ColorpickerModel extends DecoratedInputModel implements IFormField
     value = Xml.get(node: xml, tag: fromEnum('value'));
   }
 
-  Future<bool> setSelectedColor(dynamic color) async
-  {
+  Future<bool> setSelectedColor(dynamic color) async {
     // save the answer
     bool ok = await answer(color);
-    if (ok)
-    {
+    if (ok) {
       // fire the onchange event
       await onChange(context);
     }
@@ -81,19 +72,19 @@ class ColorpickerModel extends DecoratedInputModel implements IFormField
   }
 
   @override
-  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
-  {
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
-    switch (function)
-    {
+    switch (function) {
       case "show":
       case "start":
-        return ColorPickerView.launchPicker(this, context);
+        ColorPickerView.launchPicker(this, context);
+        return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
   @override
-  Widget getView({Key? key}) => Offstage();
+  Widget getView({Key? key}) => const Offstage();
 }

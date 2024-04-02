@@ -15,8 +15,8 @@ import 'package:fml/helpers/helpers.dart';
 
 InlineFrameView getView(model) => InlineFrameView(model);
 
-class InlineFrameView extends StatefulWidget implements widget_view.View, IWidgetView
-{
+class InlineFrameView extends StatefulWidget
+    implements widget_view.View, IWidgetView {
   @override
   final InlineFrameModel model;
 
@@ -26,31 +26,31 @@ class InlineFrameView extends StatefulWidget implements widget_view.View, IWidge
   State<InlineFrameView> createState() => _InlineFrameViewState();
 }
 
-class _InlineFrameViewState extends WidgetState<InlineFrameView>
-{
+class _InlineFrameViewState extends WidgetState<InlineFrameView> {
   IFrameWidget? iframe;
 
   @override
-  void dispose()
-  {
+  void dispose() {
     super.dispose();
     iframe?.dispose();
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     InlineFrameModel model = widget.model;
 
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     //This prevents the iframe from rebuilding and hiding the keyboard every time.
     iframe ??= IFrameWidget(model: model);
     Widget view = iframe!;
 
     // basic view
-    view = Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);
+    view = SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: view);
 
     // apply user defined constraints
     view = applyConstraints(view, widget.model.constraints);
@@ -59,34 +59,30 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
   }
 }
 
-class IFrameWidget extends StatelessWidget implements IModelListener
-{
+class IFrameWidget extends StatelessWidget implements IModelListener {
   final InlineFrameModel model;
 
   final String id = newId();
 
   late final Widget iFrame;
   late final universal_html.IFrameElement iframe;
-  final jsonEncoder = JsonEncoder();
+  final jsonEncoder = const JsonEncoder();
 
-  IFrameWidget({required this.model});
+  IFrameWidget({super.key, required this.model});
 
   @override
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
+  onModelChange(WidgetModel model, {String? property, dynamic value}) {
     iframe.src = this.model.url;
   }
 
-  void dispose()
-  {
+  void dispose() {
     universal_html.window.removeEventListener('message', receive);
     iframe.remove();
     model.removeListener(this);
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // create an iFrame widget
     iFrame = HtmlElementView(key: UniqueKey(), viewType: id);
 
@@ -100,8 +96,7 @@ class IFrameWidget extends StatelessWidget implements IModelListener
     iframe.src = model.url;
 
     // contructor callback from script
-    universal_js.context["flutter"] = (content)
-    {
+    universal_js.context["flutter"] = (content) {
       // add listener
       universal_html.window.removeEventListener('message', receive);
       universal_html.window.addEventListener('message', receive);
@@ -110,7 +105,8 @@ class IFrameWidget extends StatelessWidget implements IModelListener
 
     // register the IFrame
     // ignore: undefined_prefixed_name
-    dart_ui.platformViewRegistry.registerViewFactory(id, (int viewId) => iframe);
+    dart_ui.platformViewRegistry
+        .registerViewFactory(id, (int viewId) => iframe);
 
     // register a model listener
     model.registerListener(this);
@@ -119,30 +115,23 @@ class IFrameWidget extends StatelessWidget implements IModelListener
   }
 
   void receive(dynamic event) {
-    try
-    {
+    try {
       // decode message
       Map<String?, dynamic> map = <String?, dynamic>{};
-      if (event.data is Map)
-      {
-        (event.data as Map).forEach((key, value)
-        {
+      if (event.data is Map) {
+        (event.data as Map).forEach((key, value) {
           String? k = toStr(key);
           String? v = toStr(value);
           if (!isNullOrEmpty(k)) map[k] = v;
         });
-      }
-      else if (event.data is String)
-      {
+      } else if (event.data is String) {
         var data = jsonDecode(event.data);
         if (data is Map) map.addAll(data as Map<String?, dynamic>);
       }
 
       // set map
       model.data = map;
-    }
-    catch (e)
-    {
+    } catch (e) {
       Log().exception(e);
     }
   }

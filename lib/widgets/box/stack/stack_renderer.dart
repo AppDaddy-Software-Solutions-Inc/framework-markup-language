@@ -46,11 +46,11 @@ import 'package:fml/widgets/box/box_model.dart';
 /// See also:
 ///
 ///  * [RenderFlow]
-class StackRenderer extends RenderBox with
+class StackRenderer extends RenderBox
+    with
         BoxMixin,
         ContainerRenderObjectMixin<RenderBox, BoxData>,
-        RenderBoxContainerDefaultsMixin<RenderBox, BoxData>
-{
+        RenderBoxContainerDefaultsMixin<RenderBox, BoxData> {
   final BoxModel model;
 
   /// Creates a stack render object.
@@ -64,7 +64,7 @@ class StackRenderer extends RenderBox with
     TextDirection? textDirection,
     StackFit fit = StackFit.loose,
     Clip clipBehavior = Clip.none,
-  }) :  _alignment = alignment,
+  })  : _alignment = alignment,
         _textDirection = textDirection,
         _fit = fit,
         _clipBehavior = clipBehavior {
@@ -161,7 +161,8 @@ class StackRenderer extends RenderBox with
   }
 
   /// Helper function for calculating the intrinsics metrics of a Stack.
-  static double getIntrinsicDimension(RenderBox? firstChild, double Function(RenderBox child) mainChildSizeGetter) {
+  static double getIntrinsicDimension(RenderBox? firstChild,
+      double Function(RenderBox child) mainChildSizeGetter) {
     double extent = 0.0;
     RenderBox? child = firstChild;
     while (child != null) {
@@ -177,22 +178,26 @@ class StackRenderer extends RenderBox with
 
   @override
   double computeMinIntrinsicWidth(double height) {
-    return getIntrinsicDimension(firstChild, (RenderBox child) => child.getMinIntrinsicWidth(height));
+    return getIntrinsicDimension(
+        firstChild, (RenderBox child) => child.getMinIntrinsicWidth(height));
   }
 
   @override
   double computeMaxIntrinsicWidth(double height) {
-    return getIntrinsicDimension(firstChild, (RenderBox child) => child.getMaxIntrinsicWidth(height));
+    return getIntrinsicDimension(
+        firstChild, (RenderBox child) => child.getMaxIntrinsicWidth(height));
   }
 
   @override
   double computeMinIntrinsicHeight(double width) {
-    return getIntrinsicDimension(firstChild, (RenderBox child) => child.getMinIntrinsicHeight(width));
+    return getIntrinsicDimension(
+        firstChild, (RenderBox child) => child.getMinIntrinsicHeight(width));
   }
 
   @override
   double computeMaxIntrinsicHeight(double width) {
-    return getIntrinsicDimension(firstChild, (RenderBox child) => child.getMaxIntrinsicHeight(width));
+    return getIntrinsicDimension(
+        firstChild, (RenderBox child) => child.getMaxIntrinsicHeight(width));
   }
 
   @override
@@ -203,7 +208,8 @@ class StackRenderer extends RenderBox with
   /// Lays out the positioned `child` according to `alignment` within a Stack of `size`.
   ///
   /// Returns true when the child has visual overflow.
-  static bool layoutPositionedChild(RenderBox child, BoxData childParentData, Size size, Alignment alignment) {
+  static bool layoutPositionedChild(RenderBox child, BoxData childParentData,
+      Size size, Alignment alignment) {
     assert(childParentData.isPositioned);
     assert(child.parentData == childParentData);
 
@@ -211,22 +217,26 @@ class StackRenderer extends RenderBox with
     BoxConstraints childConstraints = const BoxConstraints();
 
     if (childParentData.left != null && childParentData.right != null) {
-      childConstraints = childConstraints.tighten(width: size.width - childParentData.right! - childParentData.left!);
+      childConstraints = childConstraints.tighten(
+          width: size.width - childParentData.right! - childParentData.left!);
     } else if (childParentData.width != null) {
       childConstraints = childConstraints.tighten(width: childParentData.width);
     }
 
     if (childParentData.top != null && childParentData.bottom != null) {
-      childConstraints = childConstraints.tighten(height: size.height - childParentData.bottom! - childParentData.top!);
+      childConstraints = childConstraints.tighten(
+          height: size.height - childParentData.bottom! - childParentData.top!);
     } else if (childParentData.height != null) {
-      childConstraints = childConstraints.tighten(height: childParentData.height);
+      childConstraints =
+          childConstraints.tighten(height: childParentData.height);
     }
 
     // calculate the child's size by performing
     // a dry layout. We use LocalBoxConstraints in order to
     // override isTight, which is used in Layout() to determine if a
     // child size change forces a parent to resize.
-    child.layout(LocalBoxConstraints.from(childConstraints), parentUsesSize: true);
+    child.layout(LocalBoxConstraints.from(childConstraints),
+        parentUsesSize: true);
 
     final double x;
     if (childParentData.left != null) {
@@ -267,49 +277,62 @@ class StackRenderer extends RenderBox with
     );
   }
 
-  Size _computeSize({required BoxConstraints constraints, required ChildLayouter layoutChild})
-  {
+  Size _computeSize(
+      {required BoxConstraints constraints,
+      required ChildLayouter layoutChild}) {
     _resolve();
     assert(_resolvedAlignment != null);
 
     var myConstraints = constraints;
-    var width  = model.expandHorizontally && constraints.hasBoundedWidth  ? myConstraints.maxWidth  : myConstraints.minWidth;
-    var height = model.expandVertically   && constraints.hasBoundedHeight ? myConstraints.maxHeight : myConstraints.minHeight;
+    var width = model.expandHorizontally && constraints.hasBoundedWidth
+        ? myConstraints.maxWidth
+        : myConstraints.minWidth;
+    var height = model.expandVertically && constraints.hasBoundedHeight
+        ? myConstraints.maxHeight
+        : myConstraints.minHeight;
 
     // get my width from the model
     // and tighten the my width constraint's if not null
     bool hardSizedWidth = false;
     var parentWidth = widthOf(parent);
     var myWidth = model.getWidth(widthParent: parentWidth);
-    if (myWidth != null)
-    {
+    if (myWidth != null) {
       width = myWidth;
       hardSizedWidth = true;
-      myConstraints = BoxConstraints(minWidth: myConstraints.minWidth, maxWidth: width, minHeight: myConstraints.minHeight, maxHeight: myConstraints.maxHeight);
+      myConstraints = BoxConstraints(
+          minWidth: myConstraints.minWidth,
+          maxWidth: width,
+          minHeight: myConstraints.minHeight,
+          maxHeight: myConstraints.maxHeight);
     }
 
     // get my width from the model
     // and tighten the my width constraint's if not null
     bool hardSizedHeight = false;
-    var parentHeight = constraints.hasBoundedHeight ? constraints.maxHeight : heightOf(parent);
+    var parentHeight =
+        constraints.hasBoundedHeight ? constraints.maxHeight : heightOf(parent);
     var myHeight = model.getHeight(heightParent: parentHeight);
-    if (myHeight != null)
-    {
+    if (myHeight != null) {
       height = myHeight;
       hardSizedHeight = true;
-      myConstraints = BoxConstraints(minWidth: myConstraints.minWidth, maxWidth: myConstraints.maxWidth, minHeight: myConstraints.minHeight, maxHeight: height);
+      myConstraints = BoxConstraints(
+          minWidth: myConstraints.minWidth,
+          maxWidth: myConstraints.maxWidth,
+          minHeight: myConstraints.minHeight,
+          maxHeight: height);
     }
 
     // height and/or width is based on non-positioned children
     RenderBox? child = firstChild;
-    while (child != null)
-    {
+    while (child != null) {
       final BoxData childData = child.parentData! as BoxData;
-      if (!childData.isPositioned)
-      {
+      if (!childData.isPositioned) {
         // get child constraints
         var childConstraints = myConstraints;
-        if (childData.model != null) childConstraints = getChildLayoutConstraints(constraints, child, childData.model!);
+        if (childData.model != null) {
+          childConstraints =
+              getChildLayoutConstraints(constraints, child, childData.model!);
+        }
 
         // calculate the child's size by performing
         // a dry layout. We use LocalBoxConstraints in order to
@@ -318,7 +341,7 @@ class StackRenderer extends RenderBox with
         doLayout(child, childConstraints, layoutChild);
 
         // size of stack is largest unpositioned child if not hard sized
-        if (!hardSizedWidth)  width  = math.max(width,  child.size.width);
+        if (!hardSizedWidth) width = math.max(width, child.size.width);
         if (!hardSizedHeight) height = math.max(height, child.size.height);
       }
       child = childData.nextSibling;
@@ -329,9 +352,7 @@ class StackRenderer extends RenderBox with
   }
 
   @override
-  void performLayout()
-  {
-
+  void performLayout() {
     final BoxConstraints constraints = this.constraints;
     _hasVisualOverflow = false;
 
@@ -342,14 +363,16 @@ class StackRenderer extends RenderBox with
 
     assert(_resolvedAlignment != null);
     RenderBox? child = firstChild;
-    while (child != null)
-    {
+    while (child != null) {
       final BoxData childParentData = child.parentData! as BoxData;
 
       if (!childParentData.isPositioned) {
-        childParentData.offset = _resolvedAlignment!.alongOffset(size - child.size as Offset);
+        childParentData.offset =
+            _resolvedAlignment!.alongOffset(size - child.size as Offset);
       } else {
-        _hasVisualOverflow = layoutPositionedChild(child, childParentData, size, _resolvedAlignment!) || _hasVisualOverflow;
+        _hasVisualOverflow = layoutPositionedChild(
+                child, childParentData, size, _resolvedAlignment!) ||
+            _hasVisualOverflow;
       }
 
       assert(child.parentData == childParentData);
@@ -357,11 +380,11 @@ class StackRenderer extends RenderBox with
     }
 
     // set my size in the model
-    model.layoutComplete(size, Offset(paintBounds.top,paintBounds.left));
+    model.layoutComplete(size, Offset(paintBounds.top, paintBounds.left));
   }
 
   @override
-  bool hitTestChildren(BoxHitTestResult result, { required Offset position }) {
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
     return defaultHitTestChildren(result, position: position);
   }
 
@@ -375,8 +398,7 @@ class StackRenderer extends RenderBox with
   }
 
   @override
-  void paint(PaintingContext context, Offset offset)
-  {
+  void paint(PaintingContext context, Offset offset) {
     if (clipBehavior != Clip.none && _hasVisualOverflow) {
       _clipRectLayer.layer = context.pushClipRect(
         needsCompositing,
@@ -392,7 +414,8 @@ class StackRenderer extends RenderBox with
     }
   }
 
-  final LayerHandle<ClipRectLayer> _clipRectLayer = LayerHandle<ClipRectLayer>();
+  final LayerHandle<ClipRectLayer> _clipRectLayer =
+      LayerHandle<ClipRectLayer>();
 
   @override
   void dispose() {
@@ -415,9 +438,11 @@ class StackRenderer extends RenderBox with
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<AlignmentGeometry>('alignment', alignment));
+    properties
+        .add(DiagnosticsProperty<AlignmentGeometry>('alignment', alignment));
     properties.add(EnumProperty<TextDirection>('textDirection', textDirection));
     properties.add(EnumProperty<StackFit>('fit', fit));
-    properties.add(EnumProperty<Clip>('clipBehavior', clipBehavior, defaultValue: Clip.hardEdge));
+    properties.add(EnumProperty<Clip>('clipBehavior', clipBehavior,
+        defaultValue: Clip.hardEdge));
   }
 }

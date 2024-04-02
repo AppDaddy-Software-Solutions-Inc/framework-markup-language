@@ -16,8 +16,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 ///
 /// Builds a Chart View using [CHART.ChartModel], [SERIES.ChartSeriesModel], [AXIS.ChartAxisModel] and
 /// [EXCERPT.Model] properties
-class BarChartView extends StatefulWidget implements IWidgetView
-{
+class BarChartView extends StatefulWidget implements IWidgetView {
   @override
   final BarChartModel model;
   BarChartView(this.model) : super(key: ObjectKey(model));
@@ -26,8 +25,7 @@ class BarChartView extends StatefulWidget implements IWidgetView
   State<BarChartView> createState() => _ChartViewState();
 }
 
-class _ChartViewState extends WidgetState<BarChartView>
-{
+class _ChartViewState extends WidgetState<BarChartView> {
   Future<Template>? template;
   Future<BarChartModel>? chartViewModel;
   BusyView? busy;
@@ -36,29 +34,31 @@ class _ChartViewState extends WidgetState<BarChartView>
   BarChart? chart;
 
   @override
-  didChangeDependencies()
-  {
+  didChangeDependencies() {
     super.didChangeDependencies();
     hideTooltip();
   }
 
   @override
-  void didUpdateWidget(dynamic oldWidget)
-  {
+  void didUpdateWidget(dynamic oldWidget) {
     super.didUpdateWidget(oldWidget);
     hideTooltip();
   }
 
   @override
-  dispose()
-  {
+  dispose() {
     hideTooltip();
     super.dispose();
   }
 
   Widget bottomTitles(double value, TitleMeta meta) {
-    var style = TextStyle(fontSize: widget.model.xaxis.labelsize ?? 8, color: Theme.of(context).colorScheme.outline);
-    String text = value.toInt() < widget.model.uniqueValues.length && widget.model.uniqueValues.isNotEmpty ? widget.model.uniqueValues.elementAt(value.toInt()).toString(): value.toString();
+    var style = TextStyle(
+        fontSize: widget.model.xaxis.labelsize ?? 8,
+        color: Theme.of(context).colorScheme.outline);
+    String text = value.toInt() < widget.model.uniqueValues.length &&
+            widget.model.uniqueValues.isNotEmpty
+        ? widget.model.uniqueValues.elementAt(value.toInt()).toString()
+        : value.toString();
     // replace the value with the x value of the index[value] in the list of data points.
     return SideTitleWidget(
       axisSide: meta.axisSide,
@@ -70,7 +70,9 @@ class _ChartViewState extends WidgetState<BarChartView>
   }
 
   Widget leftTitles(double value, TitleMeta meta) {
-    var style = TextStyle(fontSize: widget.model.yaxis.labelsize ?? 8, color: Theme.of(context).colorScheme.outline);
+    var style = TextStyle(
+        fontSize: widget.model.yaxis.labelsize ?? 8,
+        color: Theme.of(context).colorScheme.outline);
     return SideTitleWidget(
       axisSide: meta.axisSide,
       space: 8,
@@ -80,38 +82,54 @@ class _ChartViewState extends WidgetState<BarChartView>
     );
   }
 
-  BarChart buildChart(seriesData){
+  BarChart buildChart(seriesData) {
     BarChart chart = BarChart(
       BarChartData(
         barGroups: widget.model.barDataList,
         minY: toDouble(widget.model.yaxis.min),
         maxY: toDouble(widget.model.yaxis.max),
-        barTouchData: BarTouchData(touchCallback: onBarTouch,
-          touchTooltipData: BarTouchTooltipData(getTooltipItem: getTooltipItems)
-
-        ),
-
+        barTouchData: BarTouchData(
+            touchCallback: onBarTouch,
+            touchTooltipData:
+                BarTouchTooltipData(getTooltipItem: getTooltipItems)),
         titlesData: FlTitlesData(
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false),  axisNameWidget: !isNullOrEmpty(widget.model.title) ? Text(widget.model.title!, style: TextStyle(fontSize: 12),): null,),
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: AxisTitles(
+            sideTitles: const SideTitles(showTitles: false),
+            axisNameWidget: !isNullOrEmpty(widget.model.title)
+                ? Text(
+                    widget.model.title!,
+                    style: const TextStyle(fontSize: 12),
+                  )
+                : null,
+          ),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           leftTitles: AxisTitles(
-              axisNameWidget: !isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title!, style: TextStyle(fontSize: 12),): null,
+              axisNameWidget: !isNullOrEmpty(widget.model.yaxis.title)
+                  ? Text(
+                      widget.model.yaxis.title!,
+                      style: const TextStyle(fontSize: 12),
+                    )
+                  : null,
               sideTitles: SideTitles(
                 reservedSize: widget.model.yaxis.padding ?? 22,
                 interval: toDouble(widget.model.yaxis.interval),
                 showTitles: widget.model.yaxis.labelvisible,
                 getTitlesWidget: leftTitles,
-              )
-          ),
+              )),
           bottomTitles: AxisTitles(
-              axisNameWidget: !isNullOrEmpty(widget.model.xaxis.title) ? Text(widget.model.xaxis.title!, style: TextStyle(fontSize: 12),): null,
+              axisNameWidget: !isNullOrEmpty(widget.model.xaxis.title)
+                  ? Text(
+                      widget.model.xaxis.title!,
+                      style: const TextStyle(fontSize: 12),
+                    )
+                  : null,
               sideTitles: SideTitles(
                 reservedSize: widget.model.xaxis.padding ?? 22,
                 interval: toDouble(widget.model.xaxis.interval),
                 showTitles: widget.model.xaxis.labelvisible,
                 getTitlesWidget: bottomTitles,
-              )
-          ),
+              )),
           show: true,
         ),
       ),
@@ -120,30 +138,26 @@ class _ChartViewState extends WidgetState<BarChartView>
     return chart;
   }
 
-
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // Busy / Loading Indicator
-    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model,
+        visible: widget.model.busy, observable: widget.model.busyObservable));
 
     Widget? view;
 
     // get the children
     List<Widget> children = widget.model.inflate();
 
-    try
-    {
-        chart = buildChart(widget.model.series);
-        view = chart;
-    }
-    catch(e)
-    {
+    try {
+      chart = buildChart(widget.model.series);
+      view = chart;
+    } catch (e) {
       Log().exception(e, caller: 'bar_chart_view builder() ');
-      view = Center(child: Icon(Icons.add_chart));
+      view = const Center(child: Icon(Icons.add_chart));
     }
 
     // Prioritize chart ux interactions
@@ -166,55 +180,50 @@ class _ChartViewState extends WidgetState<BarChartView>
     return view;
   }
 
-BarTooltipItem getTooltipItems(BarChartGroupData group,
-    int groupIndex,
-    BarChartRodData rod,
-    int rodIndex)
-  {
-    return BarTooltipItem("${rod.fromY}, ${rod.toY}", TextStyle());
+  BarTooltipItem getTooltipItems(BarChartGroupData group, int groupIndex,
+      BarChartRodData rod, int rodIndex) {
+    return BarTooltipItem("${rod.fromY}, ${rod.toY}", const TextStyle());
   }
 
-  void onBarTouch(FlTouchEvent event, BarTouchResponse? response)
-  {
+  void onBarTouch(FlTouchEvent event, BarTouchResponse? response) {
     bool exit = response?.spot == null;
     bool enter = !exit;
 
-    if (enter)
-    {
+    if (enter) {
       List<IExtendedSeriesInterface> spots = [];
       var spot = response?.spot;
 
-     if (spot?.touchedRodData is IExtendedSeriesInterface)
-      {
+      if (spot?.touchedRodData is IExtendedSeriesInterface) {
         var item = spot!.touchedRodData as IExtendedSeriesInterface;
 
         // stacked item?
-        if (spot.touchedRodData.rodStackItems.isNotEmpty)
-        {
-          item = spot.touchedRodData.rodStackItems.firstWhereOrNull((e) => e is IExtendedSeriesInterface && e.toY == spot.spot.y) as IExtendedSeriesInterface? ?? item;
+        if (spot.touchedRodData.rodStackItems.isNotEmpty) {
+          item = spot.touchedRodData.rodStackItems.firstWhereOrNull((e) =>
+                      e is IExtendedSeriesInterface && e.toY == spot.spot.y)
+                  as IExtendedSeriesInterface? ??
+              item;
         }
         spots.add(item);
       }
 
-     // reponse.spot.offset is the top of the bar
+      // reponse.spot.offset is the top of the bar
 
       RenderBox? render = context.findRenderObject() as RenderBox?;
       Offset? point = event.localPosition;
-      if (render != null && point != null)
-      {
+      if (render != null && point != null) {
         point = render.localToGlobal(point);
       }
 
       // show tooltip in post frame callback
-      WidgetsBinding.instance.addPostFrameCallback((_) => showTooltip(widget.model.getTooltips(spots), point?.dx ?? 0, point?.dy ?? 0));
+      WidgetsBinding.instance.addPostFrameCallback((_) => showTooltip(
+          widget.model.getTooltips(spots), point?.dx ?? 0, point?.dy ?? 0));
 
       // ensure screen updates
       WidgetsBinding.instance.ensureVisualUpdate();
     }
 
     // hide tooltip
-    if (exit)
-    {
+    if (exit) {
       // show tooltip in post frame callback
       WidgetsBinding.instance.addPostFrameCallback((_) => hideTooltip());
 
@@ -223,31 +232,29 @@ BarTooltipItem getTooltipItems(BarChartGroupData group,
     }
   }
 
-  void showTooltip(List<Widget> views, double x, double y)
-  {
+  void showTooltip(List<Widget> views, double x, double y) {
     // remove old tooltip
     hideTooltip();
 
     // show new tooltip
-    if (views.isNotEmpty)
-    {
-      tooltip = OverlayEntry(builder: (context) => Positioned(left: x, top: y + 25, child: Column(children: views, mainAxisSize: MainAxisSize.min)));
+    if (views.isNotEmpty) {
+      tooltip = OverlayEntry(
+          builder: (context) => Positioned(
+              left: x,
+              top: y + 25,
+              child: Column(mainAxisSize: MainAxisSize.min, children: views)));
       Overlay.of(context).insert(tooltip!);
     }
   }
 
-  void hideTooltip()
-  {
+  void hideTooltip() {
     // remove old tooltip
-    try
-    {
+    try {
       tooltip?.remove();
       tooltip?.dispose();
       tooltip = null;
-    }
-    catch(e)
-    {
-      print(e);
+    } catch (e) {
+      Log().exception(e);
     }
   }
 }

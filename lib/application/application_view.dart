@@ -3,27 +3,21 @@ import 'package:fml/application/application_manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/navigation/parser.dart';
 import 'package:fml/system.dart';
-import 'package:fml/theme/themenotifier.dart';
+import 'package:fml/theme/theme.dart';
 import 'package:provider/provider.dart';
 
-class Application extends StatelessWidget
-{
-  Application({super.key});
+class Application extends StatelessWidget {
+  const Application({super.key});
 
   @override
-  Widget build(BuildContext context)
-  {
-    // initializes the theme bindables and updates on theme change
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
-    themeNotifier.mapSystemThemeBindables();
-
+  Widget build(BuildContext context) {
     return MaterialApp.router(
         title: System.title,
         debugShowCheckedModeBanner: false,
-        routerDelegate: NavigationManager(key: GlobalKey<NavigatorState>()),
+        routerDelegate: NavigationManager(),
         routeInformationParser: const RouteParser(),
         backButtonDispatcher: RootBackButtonDispatcher(),
-        theme: themeNotifier.getTheme(),
+        theme: Provider.of<ThemeNotifier>(context).getTheme(),
         builder: (context, widget) => ApplicationManager(child: widget));
   }
 }

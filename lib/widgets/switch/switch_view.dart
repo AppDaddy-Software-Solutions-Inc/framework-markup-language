@@ -2,28 +2,26 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/switch/switch_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart' ;
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/text/text_view.dart';
 
-class SwitchView extends StatefulWidget implements IWidgetView
-{
+class SwitchView extends StatefulWidget implements IWidgetView {
   @override
   final SwitchModel model;
   final dynamic onChangeCallback;
-  SwitchView(this.model, {this.onChangeCallback});
+  const SwitchView(this.model, {super.key, this.onChangeCallback});
 
   @override
   State<SwitchView> createState() => _SwitchViewState();
 }
 
-class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserver
-{
+class _SwitchViewState extends WidgetState<SwitchView>
+    with WidgetsBindingObserver {
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     bool value = widget.model.value;
     String? label = widget.model.label;
@@ -78,23 +76,21 @@ class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserv
     ////////////////////
     /* Constrain Size */
     ////////////////////
-    view = SizedBox(child: view, width: width);
+    view = SizedBox(width: width, child: view);
 
     return view;
   }
 
-  onChange(bool value) async
-  {
+  onChange(bool value) async {
     if (!widget.model.editable) return;
 
     // value changed?
-    if (widget.model.value != value)
-    {
+    if (widget.model.value != value) {
       // set answer
       await widget.model.answer(value);
 
       // fire the onChange event
-      await widget.model.onChange(context);
+      await widget.model.onChange(mounted ? context : null);
     }
   }
 }

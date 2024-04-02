@@ -11,9 +11,9 @@ import 'package:fml/helpers/helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class AnimationModel extends ViewableWidgetModel 
-{
- bool hasrun = false;
+class AnimationModel extends ViewableWidgetModel {
+  bool hasrun = false;
+
   /// Transition Curve
   StringObservable? _curve;
 
@@ -27,7 +27,6 @@ class AnimationModel extends ViewableWidgetModel
   }
 
   String? get curve => _curve?.get();
-
 
   /// bool value to determine how many times the animation repeats
   ///
@@ -48,7 +47,6 @@ class AnimationModel extends ViewableWidgetModel
   }
 
   double get repeat => _repeat?.get() ?? 1;
-
 
   /// Direction to play the Animation in, if set to true will play in reverse, default: false
   BooleanObservable? _reverse;
@@ -140,81 +138,71 @@ class AnimationModel extends ViewableWidgetModel
     if (_gesture != null) {
       _gesture!.set(v);
     } else if (v != null) {
-      _gesture = StringObservable(Binding.toKey(id, 'gesture'), v, scope: scope);
+      _gesture =
+          StringObservable(Binding.toKey(id, 'gesture'), v, scope: scope);
     }
   }
+
   String? get gesture => _gesture?.get();
 
   StringObservable? _oncomplete;
-  set oncomplete (dynamic v)
-  {
-    if (_oncomplete != null)
-    {
+  set oncomplete(dynamic v) {
+    if (_oncomplete != null) {
       _oncomplete!.set(v);
-    }
-    else if (v != null)
-    {
-      _oncomplete = StringObservable(Binding.toKey(id, 'oncomplete'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    } else if (v != null) {
+      _oncomplete = StringObservable(Binding.toKey(id, 'oncomplete'), v,
+          scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
+
   String? get oncomplete => _oncomplete?.get();
 
   StringObservable? _ondismiss;
-  set ondismiss (dynamic v)
-  {
-    if (_ondismiss != null)
-    {
+  set ondismiss(dynamic v) {
+    if (_ondismiss != null) {
       _ondismiss!.set(v);
-    }
-    else if (v != null)
-    {
-      _ondismiss = StringObservable(Binding.toKey(id, 'ondismiss'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    } else if (v != null) {
+      _ondismiss = StringObservable(Binding.toKey(id, 'ondismiss'), v,
+          scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
+
   String? get ondismiss => _ondismiss?.get();
 
   StringObservable? _onstart;
-  set onstart (dynamic v)
-  {
-    if (_onstart != null)
-    {
+  set onstart(dynamic v) {
+    if (_onstart != null) {
       _onstart!.set(v);
-    }
-    else if (v != null)
-    {
-      _onstart = StringObservable(Binding.toKey(id, 'onstart'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    } else if (v != null) {
+      _onstart = StringObservable(Binding.toKey(id, 'onstart'), v,
+          scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
+
   String? get onstart => _onstart?.get();
 
   BooleanObservable? _runonce;
-  set runonce (dynamic v)
-  {
-    if (_runonce != null)
-    {
+  set runonce(dynamic v) {
+    if (_runonce != null) {
       _runonce!.set(v);
-    }
-    else if (v != null)
-    {
-      _runonce = BooleanObservable(Binding.toKey(id, 'runonce'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _runonce = BooleanObservable(Binding.toKey(id, 'runonce'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get runonce => _runonce?.get() ?? false;
 
   double controllerValue = 0;
 
   AnimationModel(WidgetModel super.parent, super.id); // ; {key: value}
 
-  static AnimationModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static AnimationModel? fromXml(WidgetModel parent, XmlElement xml) {
     AnimationModel? model;
-    try
-    {
+    try {
       model = AnimationModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch (e)
-    {
+    } catch (e) {
       Log().debug(e.toString());
       model = null;
     }
@@ -223,8 +211,7 @@ class AnimationModel extends ViewableWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml) async
-  {
+  void deserialize(XmlElement xml) async {
     // deserialize
     super.deserialize(xml);
 
@@ -270,23 +257,21 @@ class AnimationModel extends ViewableWidgetModel
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
-  Future<bool> onStart(BuildContext context) async
-  {
-     return await EventHandler(this).execute(_onstart);
+  Future<bool> onStart(BuildContext context) async {
+    return await EventHandler(this).execute(_onstart);
   }
 
-  Future<bool> onDismiss(BuildContext context) async
-  {
+  Future<bool> onDismiss(BuildContext context) async {
     return await EventHandler(this).execute(_ondismiss);
   }
 
-  Future<bool> onComplete(BuildContext context) async
-  {
+  Future<bool> onComplete(BuildContext context) async {
     return await EventHandler(this).execute(_oncomplete);
   }
 
   @override
   Widget getView({Key? key}) => AnimationView(this, null);
 
-  Widget getAnimatedView(Widget child, {AnimationController? controller}) => AnimationView(this, child);
+  Widget getAnimatedView(Widget child, {AnimationController? controller}) =>
+      AnimationView(this, child);
 }

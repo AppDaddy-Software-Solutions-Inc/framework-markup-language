@@ -1,120 +1,197 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:async';
 import 'dart:ui';
-
+import 'package:fml/fml.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/log/manager.dart';
+import 'package:fml/helpers/string.dart';
 import 'package:fml/system.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
-import 'package:fml/helpers/helpers.dart';
+import 'package:google_fonts/google_fonts.dart' deferred as fonts;
 
-MyTheme theme = MyTheme();
+class ThemeNotifier with ChangeNotifier {
+  // google fonts
+  static Completer? libraryLoader;
+  ThemeData _themeData;
 
-class MyTheme {
-  static final MyTheme _singleton = MyTheme._init();
-  static const String font = 'Roboto';
-  static Brightness? brightnessPreference;
+  ThemeNotifier(this._themeData) {
+    // load the library
+    if (libraryLoader == null) {
+      libraryLoader = Completer();
+      fonts.loadLibrary().then((value) => libraryLoader!.complete(true));
+    }
 
-  factory MyTheme() => _singleton;
+    // wait for the library to load
+    if (!libraryLoader!.isCompleted) {
+      // set the theme
+      libraryLoader!.future.whenComplete(() {
+        var brightness = System.currentApp?.brightness ?? FmlEngine.defaultBrightness;
+        var color = System.currentApp?.color ?? FmlEngine.defaultColor;
+        var font = System.currentApp?.font ?? FmlEngine.defaultFont;
+        setTheme(brightness: brightness, color: color, font: font);
+      });
+    }
+  }
+  getTheme() => _themeData;
 
-  MyTheme._init();
+  TextTheme? _getTextTheme(String font) {
+    TextTheme? theme;
+    if (libraryLoader?.isCompleted ?? false) {
+      try {
+        theme = fonts.GoogleFonts.getTextTheme(font);
+      } catch (e) {
+        Log().exception(e);
+      }
+    }
+    return theme;
+  }
+
+  void setTheme(
+      {required Brightness brightness,
+      required Color color,
+      required String font}) async {
+    // set brightness
+    var sameBrightness = brightness ==
+        (System.theme.brightness == 'dark'
+            ? Brightness.dark
+            : Brightness.light);
+
+    // set color
+    var sameColor = toStr(color) == toStr(System.theme.colorScheme);
+
+    // get text theme
+    var textTheme = _getTextTheme(font);
+    if (textTheme == null) font = System.theme.font ?? FmlEngine.defaultFont;
+
+    // set font
+    var sameFont = toStr(font) == System.theme.font;
+
+    // set the theme
+    if (!sameBrightness || !sameColor || !sameFont) {
+      // set the theme
+      _themeData = ThemeData(
+          useMaterial3: true,
+          brightness: brightness,
+          colorSchemeSeed: color,
+          fontFamily: font,
+          textTheme: textTheme);
+
+      // set system theme bindables
+      _setSystemBindables(brightness: brightness, color: color, font: font);
+
+      // notify
+      notifyListeners();
+    }
+  }
 
   /// Derive theme from a color value and a https://fonts.google.com/ font
-  ThemeData deriveTheme(dynamic fromValue, {String googleFont = font})
-  {
-    Color? col = toColor(fromValue);
-    Brightness? b = getBrightness();
-
+  static ThemeData from(dynamic colorScheme, {String? googleFont}) {
+    Color color = toColor(colorScheme) ??
+        toColor(FmlEngine.defaultColor) ??
+        Colors.blueGrey;
     return ThemeData(
-        colorSchemeSeed: col ?? Colors.blueGrey,
-        brightness: b,
-        fontFamily: font,
-        // pageTransitionsTheme: PageTransitionsTheme(builders: {
-        //   TargetPlatform.android: CustomTransitionBuilder('android'),
-        //   TargetPlatform.iOS: CustomTransitionBuilder('ios'),
-        //   TargetPlatform.macOS: CustomTransitionBuilder('macos'),
-        //   TargetPlatform.windows: CustomTransitionBuilder('windows'),
-        //   TargetPlatform.linux: CustomTransitionBuilder('linux'),
-        // }),
+        colorSchemeSeed: color,
+        brightness: _brightness,
+        fontFamily: googleFont ?? FmlEngine.defaultFont,
         useMaterial3: true);
   }
 
-  getBrightness() {
-    String? brightness = /*await Settings().get('brightness') ??*/
-        System.theme.brightness;
-    if (brightness != null) {
-      if (brightness == 'system' || brightness == 'platform') {
-        brightnessPreference = PlatformDispatcher.instance.platformBrightness;
-      } else if (brightness == 'dark') {
-        brightnessPreference = Brightness.dark;
-      } else if (brightness == 'light') {
-        brightnessPreference = Brightness.light;
-      }
-    } else {
-      brightnessPreference = Brightness.light;
+  static Brightness get _brightness {
+    var brightness = System.theme.brightness ?? FmlEngine.defaultBrightness;
+    switch (brightness) {
+      case 'system':
+      case 'platform':
+        return PlatformDispatcher.instance.platformBrightness;
+
+      case 'dark':
+        return Brightness.dark;
+
+      case 'light':
+      default:
+        return Brightness.light;
     }
-    return brightnessPreference;
   }
 
-  // Map<String, ThemeData> themeList = {
-  //   'default':    ThemeData(colorSchemeSeed: Colors.blueGrey,   brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'red':        ThemeData(colorSchemeSeed: Colors.red,        brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'pink':       ThemeData(colorSchemeSeed: Colors.pink,       brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'purple':     ThemeData(colorSchemeSeed: Colors.purple,     brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'deeppurple': ThemeData(colorSchemeSeed: Colors.deepPurple, brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'indigo':     ThemeData(colorSchemeSeed: Colors.indigo,     brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'blue':       ThemeData(colorSchemeSeed: Colors.blue,       brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'lightblue':  ThemeData(colorSchemeSeed: Colors.lightBlue,  brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'cyan':       ThemeData(colorSchemeSeed: Colors.cyan,       brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'teal':       ThemeData(colorSchemeSeed: Colors.teal,       brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'green':      ThemeData(colorSchemeSeed: Colors.green,      brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'lightgreen': ThemeData(colorSchemeSeed: Colors.lightGreen, brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'lime':       ThemeData(colorSchemeSeed: Colors.lime,       brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'yellow':     ThemeData(colorSchemeSeed: Colors.yellow,     brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'amber':      ThemeData(colorSchemeSeed: Colors.amber,      brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'orange':     ThemeData(colorSchemeSeed: Colors.orange,     brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'deeporange': ThemeData(colorSchemeSeed: Colors.deepOrange, brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'brown':      ThemeData(colorSchemeSeed: Colors.brown,      brightness: brightnessPreference, fontFamily: font, useMaterial3: true),
-  //   'bluegrey':   ThemeData(colorSchemeSeed: Colors.blueGrey,   brightness: brightnessPreference, fontFamily: font, useMateriThemeModeltrue),
-  // };
-}
+  static ThemeData fromTheme(ColorScheme base, ThemeModel theme) {
+    try {
+      var scheme = ColorScheme(
+        brightness:
+            theme.brightness == 'dark' ? Brightness.dark : Brightness.light,
+        background: theme.background ?? base.background,
+        onBackground: theme.onBackground ?? base.onBackground,
+        shadow: theme.shadow ?? base.shadow,
+        outline: theme.outline ?? base.outline,
+        surface: theme.surface ?? base.surface,
+        onSurface: theme.onSurface ?? base.onSurface,
+        surfaceVariant: theme.surfaceVariant ?? base.surfaceVariant,
+        onSurfaceVariant: theme.onSurfaceVariant ?? base.onSurfaceVariant,
+        inverseSurface: theme.inverseSurface ?? base.inverseSurface,
+        onInverseSurface: theme.onInverseSurface ?? base.onInverseSurface,
+        primary: theme.primary ?? base.primary,
+        onPrimary: theme.onPrimary ?? base.onPrimary,
+        primaryContainer: theme.primaryContainer ?? base.primaryContainer,
+        onPrimaryContainer: theme.onPrimaryContainer ?? base.onPrimaryContainer,
+        inversePrimary: theme.inversePrimary ?? base.inversePrimary,
+        secondary: theme.secondary ?? base.secondary,
+        onSecondary: theme.onSecondary ?? base.onSecondary,
+        secondaryContainer: theme.secondaryContainer ?? base.secondaryContainer,
+        onSecondaryContainer:
+            theme.onSecondaryContainer ?? base.onSecondaryContainer,
+        tertiaryContainer: theme.tertiaryContainer ?? base.tertiaryContainer,
+        onTertiaryContainer:
+            theme.onTertiaryContainer ?? base.onTertiaryContainer,
+        error: theme.error ?? base.error,
+        onError: theme.onError ?? base.onError,
+        errorContainer: theme.errorContainer ?? base.errorContainer,
+        onErrorContainer: theme.onErrorContainer ?? base.onErrorContainer,
+      );
 
-ThemeData applyCustomizations(ColorScheme base, ThemeModel m) {
-  ThemeData? customizedTheme;
-  try {
-    customizedTheme = ThemeData.from(
-      useMaterial3: true,
-      colorScheme: ColorScheme(
-        brightness: m.brightness == 'dark' ? Brightness.dark : Brightness.light,
-        background: m.background ?? base.background,
-        onBackground: m.onBackground ?? base.onBackground,
-        shadow: m.shadow ?? base.shadow,
-        outline: m.outline ?? base.outline,
-        surface: m.surface ?? base.surface,
-        onSurface: m.onSurface ?? base.onSurface,
-        surfaceVariant: m.surfaceVariant ?? base.surfaceVariant,
-        onSurfaceVariant: m.onSurfaceVariant ?? base.onSurfaceVariant,
-        inverseSurface: m.inverseSurface ?? base.inverseSurface,
-        onInverseSurface: m.onInverseSurface ?? base.onInverseSurface,
-        primary: m.primary ?? base.primary,
-        onPrimary: m.onPrimary ?? base.onPrimary,
-        primaryContainer: m.primaryContainer ?? base.primaryContainer,
-        onPrimaryContainer: m.onPrimaryContainer ?? base.onPrimaryContainer,
-        inversePrimary: m.inversePrimary ?? base.inversePrimary,
-        secondary: m.secondary ?? base.secondary,
-        onSecondary: m.onSecondary ?? base.onSecondary,
-        secondaryContainer: m.secondaryContainer ?? base.secondaryContainer,
-        onSecondaryContainer: m.onSecondaryContainer ?? base.onSecondaryContainer,
-        tertiaryContainer: m.tertiaryContainer ?? base.tertiaryContainer,
-        onTertiaryContainer: m.onTertiaryContainer ?? base.onTertiaryContainer,
-        error: m.error ?? base.error,
-        onError: m.onError ?? base.onError,
-        errorContainer: m.errorContainer ?? base.errorContainer,
-        onErrorContainer: m.onErrorContainer ?? base.onErrorContainer,
-      ));
+      return ThemeData.from(useMaterial3: true, colorScheme: scheme);
+    } catch (e) {
+      Log().exception(e);
+      return ThemeData.from(colorScheme: base, useMaterial3: true);
+    }
   }
-  catch (e) {
-    Log().exception(e);
+
+  void _setSystemBindables(
+      {required Brightness brightness,
+      required Color color,
+      required String font}) {
+    System.theme.brightness = brightness == Brightness.dark ? 'dark' : 'light';
+    System.theme.colorScheme = color;
+    System.theme.font = font;
+
+    System.theme.background = _themeData.colorScheme.background;
+    System.theme.onBackground = _themeData.colorScheme.onBackground;
+    System.theme.shadow = _themeData.colorScheme.shadow;
+    System.theme.outline = _themeData.colorScheme.outline;
+
+    System.theme.surface = _themeData.colorScheme.surface;
+    System.theme.onSurface = _themeData.colorScheme.onSurface;
+    System.theme.surfaceVariant = _themeData.colorScheme.surfaceVariant;
+    System.theme.onSurfaceVariant = _themeData.colorScheme.onSurfaceVariant;
+    System.theme.inverseSurface = _themeData.colorScheme.inverseSurface;
+    System.theme.onInverseSurface = _themeData.colorScheme.onInverseSurface;
+
+    System.theme.primary = _themeData.colorScheme.primary;
+    System.theme.onPrimary = _themeData.colorScheme.onPrimary;
+    System.theme.primaryContainer = _themeData.colorScheme.primaryContainer;
+    System.theme.onPrimaryContainer = _themeData.colorScheme.onPrimaryContainer;
+    System.theme.inversePrimary = _themeData.colorScheme.inversePrimary;
+
+    System.theme.secondary = _themeData.colorScheme.secondary;
+    System.theme.onSecondary = _themeData.colorScheme.onSecondary;
+    System.theme.secondaryContainer = _themeData.colorScheme.secondaryContainer;
+    System.theme.onSecondaryContainer =
+        _themeData.colorScheme.onSecondaryContainer;
+
+    System.theme.tertiaryContainer = _themeData.colorScheme.tertiaryContainer;
+    System.theme.onTertiaryContainer =
+        _themeData.colorScheme.onTertiaryContainer;
+
+    System.theme.error = _themeData.colorScheme.error;
+    System.theme.onError = _themeData.colorScheme.onError;
+    System.theme.errorContainer = _themeData.colorScheme.errorContainer;
+    System.theme.onErrorContainer = _themeData.colorScheme.onErrorContainer;
   }
-  return customizedTheme ??
-      ThemeData.from(colorScheme: base, useMaterial3: true);
 }

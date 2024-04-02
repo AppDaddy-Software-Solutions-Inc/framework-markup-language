@@ -5,8 +5,7 @@ import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/theme/theme.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
-class ThemeView extends StatefulWidget implements IWidgetView
-{
+class ThemeView extends StatefulWidget implements IWidgetView {
   @override
   final ThemeModel model;
   final List<Widget> children = [];
@@ -17,13 +16,11 @@ class ThemeView extends StatefulWidget implements IWidgetView
   State<ThemeView> createState() => _ThemeViewState();
 }
 
-class _ThemeViewState extends WidgetState<ThemeView>
-{
+class _ThemeViewState extends WidgetState<ThemeView> {
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // build children
     widget.children.clear();
@@ -31,11 +28,14 @@ class _ThemeViewState extends WidgetState<ThemeView>
     if (widget.children.isEmpty) widget.children.add(Container());
 
     var m = widget.model;
-    ThemeData themeData = applyCustomizations(Theme.of(context).colorScheme, m);
+    ThemeData themeData =
+        ThemeNotifier.fromTheme(Theme.of(context).colorScheme, m);
 
-    ///////////
-    /* Theme */
-    ///////////
-    return Theme(data: themeData, child: widget.children.length == 1 ? widget.children[0] : Stack(children: widget.children));
+    // theme
+    return Theme(
+        data: themeData,
+        child: widget.children.length == 1
+            ? widget.children[0]
+            : Stack(children: widget.children));
   }
 }

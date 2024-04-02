@@ -12,8 +12,7 @@ import 'package:fml/helpers/helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class TransformModel extends AnimationChildModel
-{
+class TransformModel extends AnimationChildModel {
   /// Curve starting point from 0.0 to 1.0
   StringObservable? _rotateFrom;
 
@@ -41,7 +40,6 @@ class TransformModel extends AnimationChildModel
   }
 
   String get rotateTo => _rotateTo?.get() ?? "0,0";
-
 
   StringObservable? _translateFrom;
 
@@ -98,7 +96,6 @@ class TransformModel extends AnimationChildModel
 
   double? get warp => _warp?.get();
 
-
   TransformModel(super.parent, super.id); // ; {key: value}
 
   static TransformModel? fromXml(WidgetModel parent, XmlElement xml) {
@@ -119,10 +116,10 @@ class TransformModel extends AnimationChildModel
     // deserialize
     super.deserialize(xml);
 
-    rotateFrom = Xml.get(node: xml, tag: 'rotateFrom');
-    rotateTo = Xml.get(node: xml, tag: 'rotateTo');
-    translateFrom = Xml.get(node: xml, tag: 'translateFrom');
-    translateTo = Xml.get(node: xml, tag: 'translateTo');
+    rotateFrom = Xml.get(node: xml, tag: 'rotatefrom');
+    rotateTo = Xml.get(node: xml, tag: 'rotateto');
+    translateFrom = Xml.get(node: xml, tag: 'translatefrom');
+    translateTo = Xml.get(node: xml, tag: 'translateto');
     align = Xml.get(node: xml, tag: 'align');
   }
 
@@ -155,5 +152,6 @@ class TransformModel extends AnimationChildModel
   }
 
   @override
-  Widget getAnimatedView(Widget child, {AnimationController? controller}) => TransformView(this, child, controller);
+  Widget getAnimatedView(Widget child, {AnimationController? controller}) =>
+      TransformView(this, child, controller);
 }

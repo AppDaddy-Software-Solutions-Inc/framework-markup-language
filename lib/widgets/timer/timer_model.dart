@@ -2,13 +2,12 @@
 import 'dart:async';
 import 'package:fml/log/manager.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:fml/event/handler.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/event/handler.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TimerModel extends WidgetModel
-{
+class TimerModel extends WidgetModel {
   // timer
   Timer? timer;
   bool started = false;
@@ -18,80 +17,74 @@ class TimerModel extends WidgetModel
   set enabled(dynamic v) {
     if (_enabled != null) {
       _enabled!.set(v);
-    }
-    else if (v != null)
-    {
-      _enabled = BooleanObservable(Binding.toKey(id, 'enabled'), v, scope: scope, listener: onTimerChange);
+    } else if (v != null) {
+      _enabled = BooleanObservable(Binding.toKey(id, 'enabled'), v,
+          scope: scope, listener: onTimerChange);
     }
   }
+
   bool get enabled => _enabled?.get() ?? true;
 
   // frequency in milliseconds
   IntegerObservable? _frequency;
-  set frequency(dynamic frequency)
-  {
+  set frequency(dynamic frequency) {
     if (frequency == null) return;
     int factor = 1;
-    if (frequency is String)
-    {
+    if (frequency is String) {
       frequency = frequency.trim().toLowerCase();
-     if (frequency.endsWith('s')) factor = 1000;
-     if (factor > 1) frequency = (frequency.length > 1) ? frequency.substring(0, frequency.length - 1) : null;
+      if (frequency.endsWith('s')) factor = 1000;
+      if (factor > 1) {
+        frequency = (frequency.length > 1)
+            ? frequency.substring(0, frequency.length - 1)
+            : null;
+      }
     }
 
-    if (isNumeric(frequency))
-    {
+    if (isNumeric(frequency)) {
       int v = toInt(frequency)! * factor;
-      if (v >= 0)
-      {
-        if (_frequency != null)
-        {
+      if (v >= 0) {
+        if (_frequency != null) {
           _frequency!.set(v);
-        }
-        else
-        {
-          _frequency = IntegerObservable(Binding.toKey(id, 'frequency'), v, scope: scope, listener: onTimerChange);
+        } else {
+          _frequency = IntegerObservable(Binding.toKey(id, 'frequency'), v,
+              scope: scope, listener: onTimerChange);
         }
       }
     }
   }
+
   int get frequency => _frequency?.get() ?? 0;
-  
+
   // action
   StringObservable? _action;
-  set action (dynamic v)
-  {
-    if (_action != null)
-    {
+  set action(dynamic v) {
+    if (_action != null) {
       _action!.set(v);
-    }
-    else if (v != null)
-    {
-      _action = StringObservable(Binding.toKey(id, 'action'), v, scope: scope, lazyEval: true);
+    } else if (v != null) {
+      _action = StringObservable(Binding.toKey(id, 'action'), v,
+          scope: scope, lazyEval: true);
     }
   }
+
   String? get action => _action?.get();
 
-  TimerModel(WidgetModel super.parent, super.id, {dynamic action, dynamic enabled, dynamic frequency})
-  {
-    if (action    != null) this.action    = action;
-    if (enabled   != null) this.enabled   = enabled;
+  TimerModel(WidgetModel super.parent, super.id,
+      {dynamic action, dynamic enabled, dynamic frequency}) {
+    if (action != null) this.action = action;
+    if (enabled != null) this.enabled = enabled;
     if (frequency != null) this.frequency = frequency;
   }
 
-  static TimerModel? fromXml(WidgetModel parent, XmlElement xml, {String? type})
-  {
+  static TimerModel? fromXml(WidgetModel parent, XmlElement xml,
+      {String? type}) {
     TimerModel? model;
-    try
-    {
+    try {
       model = TimerModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
 
       // start the timer
       model.start();
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e, caller: 'timer.Model');
       model = null;
     }
@@ -100,32 +93,30 @@ class TimerModel extends WidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
-    // deserialize 
+  void deserialize(XmlElement xml) {
+    // deserialize
     super.deserialize(xml);
 
     // properties
-    action    = Xml.get(node: xml, tag: 'action');
-    enabled   = Xml.get(node: xml, tag: 'enabled');
+    action = Xml.get(node: xml, tag: 'action');
+    enabled = Xml.get(node: xml, tag: 'enabled');
     frequency = Xml.get(node: xml, tag: 'frequency');
   }
 
   // start the timer
-  void start()
-  {
+  void start() {
     started = true;
-    if (frequency > 0 && enabled && (timer == null || !timer!.isActive)) timer = Timer(Duration(milliseconds: frequency), onTimer);
+    if (frequency > 0 && enabled && (timer == null || !timer!.isActive)) {
+      timer = Timer(Duration(milliseconds: frequency), onTimer);
+    }
   }
 
   // stop the timer
-  void stop()
-  {
+  void stop() {
     if (timer != null && timer!.isActive) timer!.cancel();
   }
 
-  Future<bool> onTimer() async
-  {
+  Future<bool> onTimer() async {
     bool ok = true;
 
     // fire event
@@ -137,19 +128,16 @@ class TimerModel extends WidgetModel
     return ok;
   }
 
-  void onTimerChange(Observable observable)
-  {
+  void onTimerChange(Observable observable) {
     // restart the timer
-    if (started)
-    {
+    if (started) {
       stop();
       start();
     }
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     // stop the timer
     stop();
     super.dispose();

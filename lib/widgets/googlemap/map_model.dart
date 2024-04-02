@@ -4,7 +4,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/googlemap/map_view.dart';
@@ -14,12 +14,11 @@ import 'package:fml/helpers/helpers.dart';
 
 enum MapTypes { satellite, hybrid, terrain, roadmap }
 
-class MapModel extends DecoratedWidgetModel 
-{
+class MapModel extends DecoratedWidgetModel {
   String? style;
   bool editmode = false;
 
-  final prototypes = HashMap<String?,List<XmlElement>>();
+  final prototypes = HashMap<String?, List<XmlElement>>();
 
   //////////////
   /* latitude */
@@ -33,6 +32,7 @@ class MapModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double? get latitude => _latitude?.get();
 
   //////////////
@@ -47,6 +47,7 @@ class MapModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double? get longitude => _longitude?.get();
 
   ///////////
@@ -61,15 +62,15 @@ class MapModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
-  double get zoom
-  {
+
+  double get zoom {
     double? scale = _zoom?.get() ?? 2;
     if (_zoom == null) return scale;
 
     scale = _zoom?.get();
     scale ??= 5.4;
-    if ((scale < 0))   scale = 0;
-    if ((scale > 25))  scale = 25;
+    if ((scale < 0)) scale = 0;
+    if ((scale > 25)) scale = 25;
     return scale;
   }
 
@@ -87,8 +88,7 @@ class MapModel extends DecoratedWidgetModel
     this.mapType,
     dynamic visible,
     dynamic showAll,
-  })
-  {
+  }) {
     // instantiate busy observable
     busy = false;
     this.zoom = zoom;
@@ -98,14 +98,11 @@ class MapModel extends DecoratedWidgetModel
 
   static MapModel? fromXml(WidgetModel parent, XmlElement xml) {
     MapModel? model;
-    try
-    {
+    try {
       model = MapModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'map.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'map.Model');
       model = null;
     }
     return model;
@@ -113,9 +110,8 @@ class MapModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
-    // deserialize 
+  void deserialize(XmlElement xml) {
+    // deserialize
     super.deserialize(xml);
 
     // properties
@@ -124,27 +120,31 @@ class MapModel extends DecoratedWidgetModel
     latitude = Xml.get(node: xml, tag: 'latitude');
     longitude = Xml.get(node: xml, tag: 'longitude');
     mapType = toEnum(Xml.get(node: xml, tag: 'type'), MapTypes.values);
-    showAll = toBool(Xml.get(node: xml, tag: 'showallpoints')) == false ? false : true;
+    showAll = toBool(Xml.get(node: xml, tag: 'showallpoints')) == false
+        ? false
+        : true;
 
     // build locations
-    List<MapLocationModel> locations = findChildrenOfExactType(MapLocationModel).cast<MapLocationModel>();
+    List<MapLocationModel> locations =
+        findChildrenOfExactType(MapLocationModel).cast<MapLocationModel>();
     for (var model in locations) {
       // data driven prototype location
-      if (!isNullOrEmpty(model.datasource))
-      {
-        if (!prototypes.containsKey(model.datasource)) prototypes[model.datasource] = [];
+      if (!isNullOrEmpty(model.datasource)) {
+        if (!prototypes.containsKey(model.datasource)) {
+          prototypes[model.datasource] = [];
+        }
 
         // build prototype
         var prototype = prototypeOf(model.element) ?? model.element;
 
         // add location model
-        if (prototype != null)
-        {
+        if (prototype != null) {
           prototypes[model.datasource]!.add(prototype);
         }
 
         // register listener to the models datasource
-        IDataSource? source = (scope != null) ? scope!.getDataSource(model.datasource) : null;
+        IDataSource? source =
+            (scope != null) ? scope!.getDataSource(model.datasource) : null;
         if (source != null) source.register(this);
       }
 
@@ -156,8 +156,7 @@ class MapModel extends DecoratedWidgetModel
   }
 
   @override
-  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
-  {
+  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async {
     busy = false;
     bool ok = await _build(list, source);
     notifyListeners('list', locations);
@@ -167,27 +166,26 @@ class MapModel extends DecoratedWidgetModel
   // HashMap<String, Uint8List> _icons = HashMap<String, Uint8List>();
 
   Future<bool> _build(Data? list, IDataSource source) async {
-    try
-    {
-      List<XmlElement>? prototypes = this.prototypes.containsKey(source.id) ? this.prototypes[source.id] : null;
+    try {
+      List<XmlElement>? prototypes = this.prototypes.containsKey(source.id)
+          ? this.prototypes[source.id]
+          : null;
       if (prototypes == null) return true;
 
       // Remove Old Locations
       locations.removeWhere((model) => source.id == model.datasource);
 
       // build new locations
-      if ((list != null) && (list.isNotEmpty)){
-        for (var prototype in prototypes)
-        {
-          for (var data in list)
-          {
-            var location = MapLocationModel.fromXml(parent!, prototype, data: data);
+      if ((list != null) && (list.isNotEmpty)) {
+        for (var prototype in prototypes) {
+          for (var data in list) {
+            var location =
+                MapLocationModel.fromXml(parent!, prototype, data: data);
             if (location != null) locations.add(location);
           }
-        }}
-    }
-    catch(e)
-    {
+        }
+      }
+    } catch (e) {
       Log().error('Error building list. Error is $e', caller: 'MAP');
       return false;
     }

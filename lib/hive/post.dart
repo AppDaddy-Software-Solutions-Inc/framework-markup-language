@@ -3,123 +3,134 @@ import 'dart:async';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helpers/helpers.dart';
 
-enum Fields {key, formKey, status, title, format, method, headers, url, body, date, attempts, info}
+enum Fields {
+  key,
+  formKey,
+  status,
+  title,
+  format,
+  method,
+  headers,
+  url,
+  body,
+  date,
+  attempts,
+  info
+}
 
-class Post
-{
+class Post {
   static String tableName = "POST";
 
   final Map<String, dynamic> _map = <String, dynamic>{};
-  
-  static int statusINCOMPLETE = 1;
-  static int statusCOMPLETE   = 2;
-  static int statusERROR      = 3;
 
-  String  get key      => _map["key"];
-  String? get formKey  => _map["formKey"];
+  static int statusINCOMPLETE = 1;
+  static int statusCOMPLETE = 2;
+  static int statusERROR = 3;
+
+  String get key => _map["key"];
+  String? get formKey => _map["formKey"];
 
   int? get status => _map["status"];
   set status(int? value) => _map["status"] = value;
 
-  String? get title    => _map["title"];
-  String? get format   => _map["format"];
-  String? get method   => _map["method"];
-  String? get url      => _map["url"];
-  String? get body     => _map["body"];
-  int?    get date     => _map["date"];
+  String? get title => _map["title"];
+  String? get format => _map["format"];
+  String? get method => _map["method"];
+  String? get url => _map["url"];
+  String? get body => _map["body"];
+  int? get date => _map["date"];
 
   int? get attempts => _map["attempts"];
-  set attempts (int? value) => _map["attempts"] = value;
+  set attempts(int? value) => _map["attempts"] = value;
 
   String? get info => _map["info"];
-  set info (String? value) => _map["info"] = value;
+  set info(String? value) => _map["info"] = value;
 
-  Map<String, String>? get headers  => _map["headers"];
+  Map<String, String>? get headers => _map["headers"];
 
-  Post({
-    String? key,
-    String? formKey,
-    int?    status,
-    String? title,
-    int?    date,
-    int?    attempts,
-    String? method,
-    Map<String, String>? headers,
-    String? format,
-    String? url,
-    String? body,
-    String? info})
-  {
-    _map["key"]      = key ?? newId();
-    _map["formKey"]  = formKey;
-    _map["status"]   = status;
-    _map["title"]    = title;
-    _map["date"]     = date;
+  Post(
+      {String? key,
+      String? formKey,
+      int? status,
+      String? title,
+      int? date,
+      int? attempts,
+      String? method,
+      Map<String, String>? headers,
+      String? format,
+      String? url,
+      String? body,
+      String? info}) {
+    _map["key"] = key ?? newId();
+    _map["formKey"] = formKey;
+    _map["status"] = status;
+    _map["title"] = title;
+    _map["date"] = date;
     _map["attempts"] = attempts;
-    _map["method"]   = method;
-    _map["format"]   = format;
-    _map["url"]      = url;
-    _map["body"]     = body;
-    _map["info"]     = info;
-    _map["headers"]  = headers;
+    _map["method"] = method;
+    _map["format"] = format;
+    _map["url"] = url;
+    _map["body"] = body;
+    _map["info"] = info;
+    _map["headers"] = headers;
   }
 
-  Future<bool> insert() async => (await Database().insert(tableName, key, _map) == null);
-  Future<bool> update() async => (await Database().update(tableName, key, _map) == null);
-  Future<bool> delete() async => (await Database().delete(tableName, key) == null);
-  static Future<bool> deleteAll() async => (await Database().deleteAll(tableName) == null);
+  Future<bool> insert() async =>
+      (await Database.insert(tableName, key, _map) == null);
+  Future<bool> update() async =>
+      (await Database.update(tableName, key, _map) == null);
+  Future<bool> delete() async =>
+      (await Database.delete(tableName, key) == null);
+  static Future<bool> deleteAll() async =>
+      (await Database.deleteAll(tableName) == null);
 
-  static Post? _fromMap(dynamic map)
-  {
+  static Post? _fromMap(dynamic map) {
     Post? post;
     if (map is Map<String, dynamic>) {
       post = Post(
-          key:      fromMap(map, fromEnum(Fields.key)),
-          formKey:  fromMap(map, fromEnum(Fields.formKey)),
-          status:   fromMapAsInt(map, fromEnum(Fields.status)),
-          title:    fromMap(map, fromEnum(Fields.title)),
-          date:     fromMapAsInt(map, fromEnum(Fields.date)),
+          key: fromMap(map, fromEnum(Fields.key)),
+          formKey: fromMap(map, fromEnum(Fields.formKey)),
+          status: fromMapAsInt(map, fromEnum(Fields.status)),
+          title: fromMap(map, fromEnum(Fields.title)),
+          date: fromMapAsInt(map, fromEnum(Fields.date)),
           attempts: fromMapAsInt(map, fromEnum(Fields.attempts)),
-          format:   fromMap(map, fromEnum(Fields.format)),
-          method:   fromMap(map, fromEnum(Fields.method)),
-          headers:  fromMap(map, fromEnum(Fields.headers)),
-          url:      fromMap(map, fromEnum(Fields.url)),
-          body:     fromMap(map, fromEnum(Fields.body)),
-          info:     fromMap(map, fromEnum(Fields.info))
-      );
+          format: fromMap(map, fromEnum(Fields.format)),
+          method: fromMap(map, fromEnum(Fields.method)),
+          headers: fromMap(map, fromEnum(Fields.headers)),
+          url: fromMap(map, fromEnum(Fields.url)),
+          body: fromMap(map, fromEnum(Fields.body)),
+          info: fromMap(map, fromEnum(Fields.info)));
     }
     return post;
   }
 
-  Map<String?, dynamic> toMap()
-  {
+  Map<String?, dynamic> toMap() {
     var map = <String?, dynamic>{};
-    map[fromEnum(Fields.key)]       = key;
-    map[fromEnum(Fields.formKey)]  = formKey;
-    map[fromEnum(Fields.status)]    = status;
-    map[fromEnum(Fields.title)]     = title;
-    map[fromEnum(Fields.date)]      = date;
-    map[fromEnum(Fields.attempts)]  = attempts;
-    map[fromEnum(Fields.format)]    = format;
-    map[fromEnum(Fields.method)]    = method;
-    map[fromEnum(Fields.headers)]   = headers;
-    map[fromEnum(Fields.url)]       = url;
-    map[fromEnum(Fields.body)]      = body;
-    map[fromEnum(Fields.info)]      = info;
+    map[fromEnum(Fields.key)] = key;
+    map[fromEnum(Fields.formKey)] = formKey;
+    map[fromEnum(Fields.status)] = status;
+    map[fromEnum(Fields.title)] = title;
+    map[fromEnum(Fields.date)] = date;
+    map[fromEnum(Fields.attempts)] = attempts;
+    map[fromEnum(Fields.format)] = format;
+    map[fromEnum(Fields.method)] = method;
+    map[fromEnum(Fields.headers)] = headers;
+    map[fromEnum(Fields.url)] = url;
+    map[fromEnum(Fields.body)] = body;
+    map[fromEnum(Fields.info)] = info;
     return map;
   }
 
-  static Future<Post?> find(String key) async
-  {
-    Map<String, dynamic>? entry = await Database().find(tableName, key);
+  static Future<Post?> find(String key) async {
+    Map<String, dynamic>? entry = await Database.find(tableName, key);
     Post? post = _fromMap(entry);
     return post;
   }
 
-  static Future<List<Post>> query({String? where, String? orderby}) async
-  {
+  static Future<List<Post>> query({String? where, String? orderby}) async {
     List<Post> posts = [];
-    List<Map<String, dynamic>> entries = await Database().query(tableName, where: where, orderby: orderby);
+    List<Map<String, dynamic>> entries =
+        await Database.query(tableName, where: where, orderby: orderby);
     for (var entry in entries) {
       Post? post = _fromMap(entry);
       if (post != null) posts.add(post);

@@ -36,42 +36,39 @@ class Modal extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context)
-  {
-    if (visible)
-    {
-      var color = Theme.of(context).brightness == Brightness.light ? Colors.black38 : Colors.black54;
+  Widget build(BuildContext context) {
+    if (visible) {
+      var color = Theme.of(context).brightness == Brightness.light
+          ? Colors.black38
+          : Colors.black54;
       return GestureDetector(onTap: onTap, child: Container(color: color));
-    }
-    else {
+    } else {
       return Container();
     }
   }
 }
 
-class OverlayWithCutout extends StatelessWidget
-{
+class OverlayWithCutout extends StatelessWidget {
   final ElementBox cutout;
   final Color color;
   final double opacity;
 
-  OverlayWithCutout(this.cutout, this.color, this.opacity);
+  const OverlayWithCutout(this.cutout, this.color, this.opacity, {super.key});
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return _getCustomPaintOverlay(context);
   }
+
   //CustomPainter that helps us in doing this
-  CustomPaint _getCustomPaintOverlay(BuildContext context)
-  {
-    return CustomPaint(size: MediaQuery.of(context).size, painter: OverlayPainter(cutout, color, opacity));
+  CustomPaint _getCustomPaintOverlay(BuildContext context) {
+    return CustomPaint(
+        size: MediaQuery.of(context).size,
+        painter: OverlayPainter(cutout, color, opacity));
   }
 }
 
-
-class OverlayPainter extends CustomPainter
-{
+class OverlayPainter extends CustomPainter {
   final ElementBox cutout;
   final Color color;
   final double opacity;
@@ -79,8 +76,7 @@ class OverlayPainter extends CustomPainter
   OverlayPainter(this.cutout, this.color, this.opacity);
 
   @override
-  void paint(Canvas canvas, Size size)
-  {
+  void paint(Canvas canvas, Size size) {
     final paint = Paint();
     paint.color = Colors.red.withOpacity(.5);
 
@@ -90,7 +86,8 @@ class OverlayPainter extends CustomPainter
 
     // bottom
     var b = Path();
-    b.addRect(Rect.fromLTWH(0, cutout.y + cutout.h, size.width, size.height - cutout.y - cutout.h));
+    b.addRect(Rect.fromLTWH(
+        0, cutout.y + cutout.h, size.width, size.height - cutout.y - cutout.h));
 
     // left
     var l = Path();
@@ -98,12 +95,13 @@ class OverlayPainter extends CustomPainter
 
     // right
     var r = Path();
-    r.addRect(Rect.fromLTWH(cutout.x + cutout.w, cutout.y, size.width - cutout.x, cutout.h));
+    r.addRect(Rect.fromLTWH(
+        cutout.x + cutout.w, cutout.y, size.width - cutout.x, cutout.h));
 
-    canvas.drawPath(t,paint);
-    canvas.drawPath(l,paint);
-    canvas.drawPath(b,paint);
-    canvas.drawPath(r,paint);
+    canvas.drawPath(t, paint);
+    canvas.drawPath(l, paint);
+    canvas.drawPath(b, paint);
+    canvas.drawPath(r, paint);
   }
 
   @override

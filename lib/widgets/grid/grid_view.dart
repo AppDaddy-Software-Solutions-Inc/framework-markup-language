@@ -29,7 +29,6 @@ class GridView extends StatefulWidget implements IWidgetView {
 }
 
 class GridViewState extends WidgetState<GridView> {
-
   Widget? busy;
   bool startup = true;
   final ScrollController controller = ScrollController();
@@ -43,8 +42,7 @@ class GridViewState extends WidgetState<GridView> {
   dynamic direction = Axis.vertical;
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
 
     // Clean
@@ -110,7 +108,7 @@ class GridViewState extends WidgetState<GridView> {
       // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
       if ((child != null) && (child.context != null)) {
         Scrollable.ensureVisible(child.context,
-            duration: Duration(seconds: 1), alignment: 0.2);
+            duration: const Duration(seconds: 1), alignment: 0.2);
       }
     }
   }
@@ -132,8 +130,7 @@ class GridViewState extends WidgetState<GridView> {
     }
   }
 
-  void onScroll(Event event) async
-  {
+  void onScroll(Event event) async {
     scroll(event, controller);
     event.handled = true;
   }
@@ -150,13 +147,15 @@ class GridViewState extends WidgetState<GridView> {
             double moveToPosition =
                 offset + (direction == 'left' ? -distance : distance);
             sc.animateTo(moveToPosition,
-                duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut);
           } else if (direction == 'up' || direction == 'down') {
             double offset = sc!.offset;
             double moveToPosition =
                 offset + (direction == 'up' ? -distance : distance);
             sc.animateTo(moveToPosition,
-                duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut);
           }
         }
       }
@@ -166,8 +165,7 @@ class GridViewState extends WidgetState<GridView> {
     }
   }
 
-  Widget? itemBuilder(BuildContext context, int rowIndex)
-  {
+  Widget? itemBuilder(BuildContext context, int rowIndex) {
     int startIndex = (rowIndex * count);
     int endIndex = (startIndex + count);
 
@@ -175,62 +173,57 @@ class GridViewState extends WidgetState<GridView> {
     if (startIndex >= widget.model.items.length) return null;
 
     List<Widget> children = [];
-    for (int i = startIndex; i < endIndex; i++)
-    {
-      if (i < widget.model.items.length)
-      {
+    for (int i = startIndex; i < endIndex; i++) {
+      if (i < widget.model.items.length) {
         // create the view
         var model = widget.model.items[i]!;
         Widget view = GridItemView(model);
 
         // droppable?
-        if (model.droppable)
-        {
+        if (model.droppable) {
           view = DroppableView(model, view);
         }
 
         // draggable?
-        if (model.draggable)
-        {
+        if (model.draggable) {
           view = DraggableView(model, view);
         }
 
         // wrap for selectable
         view = MouseRegion(cursor: SystemMouseCursors.click, child: view);
-        view = GestureDetector(onTap: () => model.onTap(), child: view, behavior: HitTestBehavior.translucent);
+        view = GestureDetector(
+            onTap: () => model.onTap(),
+            behavior: HitTestBehavior.translucent,
+            child: view);
 
         // add view to child list
-        children.add(Expanded(child: SizedBox(width: prototypeWidth, height: prototypeHeight, child: view)));
-      }
-      else
-      {
+        children.add(Expanded(
+            child: SizedBox(
+                width: prototypeWidth, height: prototypeHeight, child: view)));
+      } else {
         // add empty placeholder
         children.add(Expanded(child: Container()));
       }
     }
 
-    if (direction == Axis.vertical)
-    {
-      return Row(children: children, mainAxisSize: MainAxisSize.min);
-    }
-    else
-    {
-      return Column(children: children, mainAxisSize: MainAxisSize.min);
+    if (direction == Axis.vertical) {
+      return Row(mainAxisSize: MainAxisSize.min, children: children);
+    } else {
+      return Column(mainAxisSize: MainAxisSize.min, children: children);
     }
   }
 
-  void afterFirstLayout(BuildContext context)
-  {
-      _handleScrollNotification(ScrollUpdateNotification(
-          metrics: FixedScrollMetrics(
-              minScrollExtent: controller.position.minScrollExtent,
-              maxScrollExtent: controller.position.maxScrollExtent,
-              pixels: controller.position.pixels,
-              devicePixelRatio: View.of(context).devicePixelRatio,
-              viewportDimension: controller.position.viewportDimension,
-              axisDirection: controller.position.axisDirection),
-          context: context,
-          scrollDelta: 0.0));
+  void afterFirstLayout(BuildContext context) {
+    _handleScrollNotification(ScrollUpdateNotification(
+        metrics: FixedScrollMetrics(
+            minScrollExtent: controller.position.minScrollExtent,
+            maxScrollExtent: controller.position.maxScrollExtent,
+            pixels: controller.position.pixels,
+            devicePixelRatio: View.of(context).devicePixelRatio,
+            viewportDimension: controller.position.viewportDimension,
+            axisDirection: controller.position.axisDirection),
+        context: context,
+        scrollDelta: 0.0));
   }
 
   onMeasuredItem(Size size, {dynamic data}) {
@@ -266,36 +259,31 @@ class GridViewState extends WidgetState<GridView> {
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // build the prototype
-    if (widget.model.size == null || widget.model.items.isEmpty)
-    {
+    if (widget.model.size == null || widget.model.items.isEmpty) {
       Widget prototypeGrid = Container();
-      try
-      {
+      try {
         // build model
         var model = GridItemModel.fromXml(widget.model, widget.model.prototype);
-        if (model != null)
-        {
-          prototypeGrid = Offstage(child: MeasureView(UnconstrainedBox(child: GridItemView(model)), onMeasuredItem));
+        if (model != null) {
+          prototypeGrid = Offstage(
+              child: MeasureView(UnconstrainedBox(child: GridItemView(model)),
+                  onMeasuredItem));
         }
-      }
-      catch (e)
-      {
-        prototypeGrid = Text('Error Prototyping GridModel');
+      } catch (e) {
+        prototypeGrid = const Text('Error Prototyping GridModel');
       }
       return prototypeGrid;
     }
 
-    gridWidth  = widget.model.width  ?? widget.model.myMaxWidthOrDefault;
+    gridWidth = widget.model.width ?? widget.model.myMaxWidthOrDefault;
     gridHeight = widget.model.height ?? widget.model.myMaxHeightOrDefault;
 
-    if (widget.model.items.isNotEmpty)
-    {
+    if (widget.model.items.isNotEmpty) {
       prototypeWidth = widget.model.items.entries.first.value.width ??
           widget.model.myMaxWidthOrDefault /
               (sqrt(widget.model.items.length) + 1);
@@ -332,16 +320,21 @@ class GridViewState extends WidgetState<GridView> {
 
     /// Busy / Loading Indicator
     busy ??= BusyModel(widget.model,
-        visible: widget.model.busy, observable: widget.model.busyObservable).getView();
+            visible: widget.model.busy, observable: widget.model.busyObservable)
+        .getView();
 
     // Build the Grid Rows
-    Widget view = ListView.builder(scrollDirection: direction, physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null,
+    Widget view = ListView.builder(
+        scrollDirection: direction,
+        physics: widget.model.onpulldown != null
+            ? const AlwaysScrollableScrollPhysics()
+            : null,
         controller: controller,
         itemBuilder: itemBuilder);
 
-    if (widget.model.onpulldown != null)
-    {
-      view = RefreshIndicator(onRefresh: () => widget.model.onPull(context), child: view);
+    if (widget.model.onpulldown != null) {
+      view = RefreshIndicator(
+          onRefresh: () => widget.model.onPull(context), child: view);
     }
 
     if (widget.model.onpulldown != null || widget.model.allowDrag) {
@@ -381,14 +374,12 @@ class GridViewState extends WidgetState<GridView> {
     return view;
   }
 
-  Offset? positionOf()
-  {
+  Offset? positionOf() {
     RenderBox? render = context.findRenderObject() as RenderBox?;
     return render?.localToGlobal(Offset.zero);
   }
 
-  Size? sizeOf()
-  {
+  Size? sizeOf() {
     RenderBox? render = context.findRenderObject() as RenderBox?;
     return render?.size;
   }

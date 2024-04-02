@@ -7,16 +7,14 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/span/span_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/text/text_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TextModel extends DecoratedWidgetModel 
-{
+class TextModel extends DecoratedWidgetModel {
   @override
-  FlexFit? get flexFit
-  {
+  FlexFit? get flexFit {
     return super.flexFit ?? FlexFit.loose;
   }
 
@@ -25,19 +23,18 @@ class TextModel extends DecoratedWidgetModel
   // value
   StringObservable? _value;
 
-  set value(dynamic v)
-  {
-    if (_value != null)
-    {
+  set value(dynamic v) {
+    if (_value != null) {
       _value!.set(v);
-    }
-    else
-    {
-      if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) {
-        _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
+    } else {
+      if ((v != null) ||
+          (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) {
+        _value = StringObservable(Binding.toKey(id, 'value'), v,
+            scope: scope, listener: onPropertyChange);
       }
     }
   }
+
   String? get value => _value?.get();
   bool addWhitespace = false;
 
@@ -57,14 +54,13 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
-  double? get size
-  {
+
+  double? get size {
     double? s = _size?.get();
     if (s == null) return null;
-    if (_sizeIsPercent == true)
-    {
-      var width  = calculatedMaxHeightForPercentage * (s / 100.0);
-      var height = myMaxWidthForPercentage  * (s / 100.0);
+    if (_sizeIsPercent == true) {
+      var width = calculatedMaxHeightForPercentage * (s / 100.0);
+      var height = myMaxWidthForPercentage * (s / 100.0);
       s = max(width, height);
     }
     return s;
@@ -77,11 +73,11 @@ class TextModel extends DecoratedWidgetModel
     if (_outlinecolor != null) {
       _outlinecolor!.set(v);
     } else if (v != null) {
-      _outlinecolor = ColorObservable(
-          Binding.toKey(id, 'outlinecolor'), v,
+      _outlinecolor = ColorObservable(Binding.toKey(id, 'outlinecolor'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
+
   Color? get outlinecolor => _outlinecolor?.get();
 
   // outline size
@@ -95,6 +91,7 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double get outline => _outline?.get() ?? 1;
 
   /// shadow attributes
@@ -106,11 +103,11 @@ class TextModel extends DecoratedWidgetModel
     if (_shadowcolor != null) {
       _shadowcolor!.set(v);
     } else if (v != null) {
-      _shadowcolor = ColorObservable(
-          Binding.toKey(id, 'shadowcolor'), v,
+      _shadowcolor = ColorObservable(Binding.toKey(id, 'shadowcolor'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
+
   Color? get shadowcolor => _shadowcolor?.get();
 
   /// the elevation of the box. The blur radius is 2* the elevation. This is combined with the offsets when constraining the size.
@@ -124,6 +121,7 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double get elevation => _elevation?.get() ?? 0;
 
   /// The x offset of the box FROM the shadow. 0,0 is center. This is combined with `elevation` when determining the size.
@@ -136,6 +134,7 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double? get shadowx => _shadowx?.get() ?? 2;
 
   /// The x offset of the box FROM the shadow. 0,0 is center. This is combined with `elevation` when determining the size.
@@ -149,6 +148,7 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double? get shadowy => _shadowy?.get() ?? 2;
 
   // font
@@ -162,6 +162,7 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get font => _font?.get() ?? System.theme.font;
 
   // weight
@@ -174,8 +175,9 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   int? get weight => _weight?.get();
-  
+
   // If the text is raw or uses special chars
   BooleanObservable? _raw;
   set raw(dynamic v) {
@@ -186,6 +188,7 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get raw => _raw?.get() ?? false;
 
   // If the text is selectable defaults to false
@@ -198,8 +201,9 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get selectable => _selectable?.get() ?? false;
-  
+
   // bold font
   BooleanObservable? _bold;
   set bold(dynamic v) {
@@ -210,9 +214,10 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get bold => _bold?.get() ?? false;
 
-  // italic font 
+  // italic font
   BooleanObservable? _italic;
   set italic(dynamic v) {
     if (_italic != null) {
@@ -222,9 +227,10 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get italic => _italic?.get() ?? false;
 
-  // font theme 
+  // font theme
   StringObservable? _theme;
   set theme(dynamic v) {
     if (_theme != null) {
@@ -234,9 +240,10 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get theme => _theme?.get();
 
-  // font style 
+  // font style
   StringObservable? _style;
   set style(dynamic v) {
     if (_style != null) {
@@ -246,22 +253,23 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get style => _style?.get();
 
-  // font decoration 
+  // font decoration
   StringObservable? _decoration;
   set decoration(dynamic v) {
     if (_decoration != null) {
       _decoration!.set(v);
     } else if (v != null) {
-      _decoration = StringObservable(
-          Binding.toKey(id, 'decoration'), v,
+      _decoration = StringObservable(Binding.toKey(id, 'decoration'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get decoration => _decoration?.get();
 
-  // decorationweight 
+  // decorationweight
   DoubleObservable? _decorationweight;
   set decorationweight(dynamic v) {
     if (_decorationweight != null) {
@@ -272,9 +280,10 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double? get decorationweight => _decorationweight?.get();
 
-  // decoration color 
+  // decoration color
   ColorObservable? _decorationcolor;
   set decorationcolor(dynamic v) {
     if (_decorationcolor != null) {
@@ -285,9 +294,10 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   Color? get decorationcolor => _decorationcolor?.get();
 
-  // decorationstyle 
+  // decorationstyle
   StringObservable? _decorationstyle;
   set decorationstyle(dynamic v) {
     if (_decorationstyle != null) {
@@ -298,9 +308,10 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get decorationstyle => _decorationstyle?.get();
 
-  // wordspacing 
+  // wordspacing
   DoubleObservable? _wordspace;
 
   set wordspace(dynamic v) {
@@ -311,19 +322,20 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double? get wordspace => _wordspace?.get();
 
-  // letterspacing 
+  // letterspacing
   DoubleObservable? _letterspace;
   set letterspace(dynamic v) {
     if (_letterspace != null) {
       _letterspace!.set(v);
     } else if (v != null) {
-      _letterspace = DoubleObservable(
-          Binding.toKey(id, 'letterspace'), v,
+      _letterspace = DoubleObservable(Binding.toKey(id, 'letterspace'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double get letterspace => _letterspace?.get() ?? 0;
 
   // lineheight
@@ -333,8 +345,7 @@ class TextModel extends DecoratedWidgetModel
     if (_lineheight != null) {
       _lineheight!.set(v);
     } else if (v != null) {
-      _lineheight = DoubleObservable(
-          Binding.toKey(id, 'lineheight'), v,
+      _lineheight = DoubleObservable(Binding.toKey(id, 'lineheight'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
@@ -351,6 +362,7 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get overflow => _overflow?.get();
 
   TextModel(
@@ -384,8 +396,7 @@ class TextModel extends DecoratedWidgetModel
     dynamic overflow,
     dynamic halign,
     dynamic style,
-  })
-  {
+  }) {
     if (value != null) this.value = value;
     if (size != null) this.size = size;
     if (color != null) this.color = color;
@@ -415,15 +426,14 @@ class TextModel extends DecoratedWidgetModel
     if (raw != null) this.raw = raw;
     if (selectable != null) this.selectable = selectable;
   }
-  
+
   static TextModel? fromXml(WidgetModel parent, XmlElement xml) {
     TextModel? model;
     try {
       model = TextModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    } catch(e) {
-      Log().exception(e,
-           caller: 'text.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'text.Model');
       model = null;
     }
     return model;
@@ -431,8 +441,7 @@ class TextModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 

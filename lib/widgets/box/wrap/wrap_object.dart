@@ -3,8 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/wrap/wrap_renderer.dart';
 
-class WrapObject extends MultiChildRenderObjectWidget
-{
+class WrapObject extends MultiChildRenderObjectWidget {
   final BoxModel model;
 
   /// Creates a wrap layout.
@@ -17,7 +16,7 @@ class WrapObject extends MultiChildRenderObjectWidget
   /// to be necessary to decide which direction to lay the children in or to
   /// disambiguate `start` or `end` values for the main or cross axis
   /// directions, the [textDirection] must not be null.
-  WrapObject({
+  const WrapObject({
     required this.model,
     super.key,
     this.direction = Axis.horizontal,
@@ -207,8 +206,12 @@ class WrapObject extends MultiChildRenderObjectWidget
     properties.add(DoubleProperty('spacing', spacing));
     properties.add(EnumProperty<WrapAlignment>('runAlignment', runAlignment));
     properties.add(DoubleProperty('runSpacing', runSpacing));
-    properties.add(EnumProperty<WrapCrossAlignment>('crossAxisAlignment', crossAxisAlignment));
-    properties.add(EnumProperty<TextDirection>('textDirection', textDirection, defaultValue: null));
-    properties.add(EnumProperty<VerticalDirection>('verticalDirection', verticalDirection, defaultValue: VerticalDirection.down));
+    properties.add(EnumProperty<WrapCrossAlignment>(
+        'crossAxisAlignment', crossAxisAlignment));
+    properties.add(EnumProperty<TextDirection>('textDirection', textDirection,
+        defaultValue: null));
+    properties.add(EnumProperty<VerticalDirection>(
+        'verticalDirection', verticalDirection,
+        defaultValue: VerticalDirection.down));
   }
 }

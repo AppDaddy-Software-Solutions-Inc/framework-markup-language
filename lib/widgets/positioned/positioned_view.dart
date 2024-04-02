@@ -7,8 +7,7 @@ import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'positioned_model.dart';
 
-class PositionedView extends StatefulWidget implements IWidgetView
-{
+class PositionedView extends StatefulWidget implements IWidgetView {
   final List<Widget> children = [];
 
   @override
@@ -19,13 +18,11 @@ class PositionedView extends StatefulWidget implements IWidgetView
   State<PositionedView> createState() => _PositionedViewState();
 }
 
-class _PositionedViewState extends WidgetState<PositionedView>
-{
+class _PositionedViewState extends WidgetState<PositionedView> {
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // build the child views
     List<Widget> children = widget.model.inflate();
@@ -36,21 +33,18 @@ class _PositionedViewState extends WidgetState<PositionedView>
     Widget view = child;
     LayoutType? layout;
     if (widget.model.parent is StackModel) layout = LayoutType.stack;
-    if (widget.model.parent is BoxModel && BoxModel.getLayoutType((widget.model.parent as BoxModel).layout) == LayoutType.stack) layout = LayoutType.stack;
-    if (layout == LayoutType.stack)
-    {
-      if (widget.model.xoffset != null && widget.model.yoffset != null)
-      {
-        double fromTop = (widget.model.myMaxHeightOrDefault / 2) + widget.model.yoffset!;
-        double fromLeft = (widget.model.myMaxWidthOrDefault / 2) + widget.model.xoffset!;
+    if (widget.model.parent is BoxModel &&
+        BoxModel.getLayoutType((widget.model.parent as BoxModel).layout) ==
+            LayoutType.stack) layout = LayoutType.stack;
+    if (layout == LayoutType.stack) {
+      if (widget.model.xoffset != null && widget.model.yoffset != null) {
+        double fromTop =
+            (widget.model.myMaxHeightOrDefault / 2) + widget.model.yoffset!;
+        double fromLeft =
+            (widget.model.myMaxWidthOrDefault / 2) + widget.model.xoffset!;
         view = LayoutBoxChildData(
-            model: widget.model,
-            top: fromTop,
-            left: fromLeft,
-            child: view);
-      }
-      else
-      {
+            model: widget.model, top: fromTop, left: fromLeft, child: view);
+      } else {
         view = LayoutBoxChildData(
             model: widget.model,
             top: widget.model.top,
@@ -59,10 +53,8 @@ class _PositionedViewState extends WidgetState<PositionedView>
             right: widget.model.right,
             child: view);
       }
-    }
-    else
-    {
-      view = LayoutBoxChildData(child: view, model: widget.model);
+    } else {
+      view = LayoutBoxChildData(model: widget.model, child: view);
     }
 
     return view;

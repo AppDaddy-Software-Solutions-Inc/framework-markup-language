@@ -8,7 +8,7 @@
   "glyphs": [
     {
       "uid": "8e53699c0efeccc4426f3c42ed24aaf9",
-      "css": "wingfoot-(3)",
+      "css": "wingfoot",
       "code": 59392,
       "src": "custom_icons",
       "selected": true,
@@ -22,7 +22,7 @@
     },
     {
       "uid": "574dac1bbd43d73c937c93989223516c",
-      "css": "appdaddyicon",
+      "css": "appdaddy",
       "code": 59393,
       "src": "custom_icons",
       "selected": true,
@@ -31,7 +31,7 @@
         "width": 1000
       },
       "search": [
-        "appdaddyicon"
+        "appdaddy"
       ]
     }
   ]

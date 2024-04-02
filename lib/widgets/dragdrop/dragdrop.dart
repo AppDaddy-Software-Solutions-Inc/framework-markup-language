@@ -7,10 +7,8 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
-class DragDrop
-{
-  static bool willAccept(IDragDrop droppable, IDragDrop draggable)
-  {
+class DragDrop {
+  static bool willAccept(IDragDrop droppable, IDragDrop draggable) {
     bool ok = true;
 
     var expression = droppable.canDropObservable?.signature;
@@ -22,17 +20,20 @@ class DragDrop
     var bindings = droppable.canDropObservable?.bindings;
 
     // variables
-    var variables = EventHandler.getVariables(bindings, droppable as WidgetModel, draggable as WidgetModel, localAliasNames: ['this','drop'], remoteAliasNames: ['drag']);
+    var variables = EventHandler.getVariables(
+        bindings, droppable as WidgetModel, draggable as WidgetModel,
+        localAliasNames: ['this', 'drop'], remoteAliasNames: ['drag']);
 
     // execute will accept
-    ok = toBool(Observable.doEvaluation(expression, variables: variables)) ?? true;
+    ok = toBool(Observable.doEvaluation(expression, variables: variables)) ??
+        true;
 
     // return result
     return ok;
   }
 
-  static Future<bool> onDrop(IDragDrop droppable, IDragDrop draggable, {RenderBox? dragBox, RenderBox? dropBox, Offset? dropSpot}) async
-  {
+  static Future<bool> onDrop(IDragDrop droppable, IDragDrop draggable,
+      {RenderBox? dragBox, RenderBox? dropBox, Offset? dropSpot}) async {
     bool ok = true;
 
     // same object dropped on itself
@@ -45,35 +46,41 @@ class DragDrop
     droppable.drop = draggable.data;
 
     // fire onDrop event of the droppable
-    if (ok)
-    {
+    if (ok) {
       // expression
-      var expression = droppable.onDropObservable?.signature ?? droppable.onDropObservable?.value;
+      var expression = droppable.onDropObservable?.signature ??
+          droppable.onDropObservable?.value;
 
       // bindings
       var bindings = draggable.onDropObservable?.bindings;
 
       // variables
-      var variables = EventHandler.getVariables(bindings, droppable as WidgetModel, draggable as WidgetModel, localAliasNames: ['this','drop'], remoteAliasNames: ['drag']);
+      var variables = EventHandler.getVariables(
+          bindings, droppable as WidgetModel, draggable as WidgetModel,
+          localAliasNames: ['this', 'drop'], remoteAliasNames: ['drag']);
 
       // execute event
-      ok = await EventHandler(droppable as WidgetModel).executeExpression(expression, variables);
+      ok = await EventHandler(droppable as WidgetModel)
+          .executeExpression(expression, variables);
     }
 
     // fire onDropped event of the draggable
-    if (ok)
-    {
+    if (ok) {
       // expression
-      var expression = draggable.onDroppedObservable?.signature ?? draggable.onDroppedObservable?.value;
+      var expression = draggable.onDroppedObservable?.signature ??
+          draggable.onDroppedObservable?.value;
 
       // bindings
       var bindings = draggable.onDroppedObservable?.bindings;
 
       // variables
-      var variables = EventHandler.getVariables(bindings, draggable as WidgetModel, droppable as WidgetModel, localAliasNames: ['this','drag'], remoteAliasNames: ['drop']);
+      var variables = EventHandler.getVariables(
+          bindings, draggable as WidgetModel, droppable as WidgetModel,
+          localAliasNames: ['this', 'drag'], remoteAliasNames: ['drop']);
 
       // execute event
-      ok = await EventHandler(draggable as WidgetModel).executeExpression(expression, variables);
+      ok = await EventHandler(draggable as WidgetModel)
+          .executeExpression(expression, variables);
     }
 
     // undo data
@@ -82,33 +89,34 @@ class DragDrop
     return ok;
   }
 
-  static Map<String, dynamic> getSourceTargetVariables(WidgetModel source, WidgetModel target, List<String> sourceAliasNames, List<String> targetAliasNames, List<Binding>? bindings)
-  {
+  static Map<String, dynamic> getSourceTargetVariables(
+      WidgetModel source,
+      WidgetModel target,
+      List<String> sourceAliasNames,
+      List<String> targetAliasNames,
+      List<Binding>? bindings) {
     var variables = <String, dynamic>{};
 
     // get variables
-    bindings?.forEach((binding)
-    {
-      var key   = binding.key;
+    bindings?.forEach((binding) {
+      var key = binding.key;
       var scope = source.scope;
-      var name  = binding.source.toLowerCase();
+      var name = binding.source.toLowerCase();
 
       var i = sourceAliasNames.indexOf(name);
-      if (i >= 0)
-      {
+      if (i >= 0) {
         key = key?.replaceFirst(sourceAliasNames[i], source.id);
         scope = source.scope;
       }
 
       i = targetAliasNames.indexOf(name);
-      if (i >= 0)
-      {
+      if (i >= 0) {
         key = key?.replaceFirst(targetAliasNames[i], target.id);
         scope = target.scope;
       }
 
       // find the observable
-      var observable = System.app?.scopeManager.findObservable(scope, key);
+      var observable = System.currentApp?.scopeManager.findObservable(scope, key);
 
       // add to the list
       variables[binding.toString()] = observable?.get();
@@ -118,19 +126,19 @@ class DragDrop
   }
 
   // on drag event
-  static Future<bool> onDrag(IDragDrop draggable) async 
-  {
-    return await EventHandler(draggable as WidgetModel).execute(draggable.onDragObservable);
+  static Future<bool> onDrag(IDragDrop draggable) async {
+    return await EventHandler(draggable as WidgetModel)
+        .execute(draggable.onDragObservable);
   }
 
   // given 2 objects, returns the +/- offset from center expressed as a percentage
-  static Offset? getPercentOffset(RenderBox? droppedOn, Offset? droppedAt)
-  {
+  static Offset? getPercentOffset(RenderBox? droppedOn, Offset? droppedAt) {
     if (droppedOn == null || droppedAt == null) return null;
 
     final offset = droppedOn.localToGlobal(Offset.zero);
 
-    final center = Offset(droppedOn.size.width/2 + offset.dx, droppedOn.size.height/2 + offset.dy);
+    final center = Offset(droppedOn.size.width / 2 + offset.dx,
+        droppedOn.size.height / 2 + offset.dy);
 
     // dx is +/- percent offset from center
     // dx = offset (droppedAt) - offset (center) / (width (droppedOn) / 2)

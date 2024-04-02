@@ -11,10 +11,10 @@ import 'package:fml/widgets/box/box_mixin.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/stack/stack_renderer.dart';
 import 'package:fml/widgets/box/wrap/wrap_renderer.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
 
 // change to false to allow write messages
-final debug = kDebugMode && true;
+const debug = kDebugMode && true;
 
 /// Displays its children in a one-dimensional array.
 ///
@@ -68,9 +68,7 @@ class FlexRenderer extends RenderBox
         BoxMixin,
         ContainerRenderObjectMixin<RenderBox, BoxData>,
         RenderBoxContainerDefaultsMixin<RenderBox, BoxData>,
-        DebugOverflowIndicatorMixin
-{
-
+        DebugOverflowIndicatorMixin {
   final BoxModel model;
 
   @override
@@ -402,14 +400,12 @@ class FlexRenderer extends RenderBox
     return defaultComputeDistanceToFirstActualBaseline(baseline);
   }
 
-  int _getFlex(RenderBox child)
-  {
+  int _getFlex(RenderBox child) {
     final BoxData childParentData = child.parentData! as BoxData;
     return childParentData.flex ?? 0;
   }
 
-  FlexFit _getFit(RenderBox child)
-  {
+  FlexFit _getFit(RenderBox child) {
     final BoxData childParentData = child.parentData! as BoxData;
     return childParentData.fit ?? FlexFit.tight;
   }
@@ -461,10 +457,8 @@ class FlexRenderer extends RenderBox
   }
 
   @override
-  void paint(PaintingContext context, Offset offset)
-  {
-    if (!_hasOverflow)
-    {
+  void paint(PaintingContext context, Offset offset) {
+    if (!_hasOverflow) {
       defaultPaint(context, offset);
       return;
     }
@@ -578,41 +572,38 @@ class FlexRenderer extends RenderBox
         defaultValue: null));
   }
 
-  BoxConstraints _getChildLayoutConstraints(RenderBox child, ViewableWidgetModel model, double maxExtent)
-  {
-    BoxConstraints constraints = BoxConstraints(maxHeight: this.constraints.maxHeight, maxWidth: this.constraints.maxWidth);
+  BoxConstraints _getChildLayoutConstraints(
+      RenderBox child, ViewableWidgetMixin model, double maxExtent) {
+    BoxConstraints constraints = BoxConstraints(
+        maxHeight: this.constraints.maxHeight,
+        maxWidth: this.constraints.maxWidth);
 
     // set constraints flex child
-    switch (_direction)
-    {
+    switch (_direction) {
       case Axis.horizontal:
         constraints = BoxConstraints(
-            maxWidth: maxExtent,
-            maxHeight: constraints.maxHeight);
+            maxWidth: maxExtent, maxHeight: constraints.maxHeight);
         break;
 
       case Axis.vertical:
         constraints = BoxConstraints(
-            maxWidth: constraints.maxWidth,
-            maxHeight: maxExtent);
+            maxWidth: constraints.maxWidth, maxHeight: maxExtent);
         break;
     }
 
     return getChildLayoutConstraints(constraints, child, model);
   }
 
-  void _setChildFlex(BoxData data, ViewableWidgetModel model)
-  {
+  void _setChildFlex(BoxData data, ViewableWidgetMixin model) {
     data.flex = null;
-    data.fit  = null;
-    switch (_direction)
-    {
+    data.fit = null;
+    switch (_direction) {
       case Axis.horizontal:
 
         // if we are constrained in the horizontal and not shrinking in width,
         // then the child can potentially flex in width
-        if (constraints.hasBoundedWidth && _horizontalFlex != FlexType.shrinking)
-        {
+        if (constraints.hasBoundedWidth &&
+            _horizontalFlex != FlexType.shrinking) {
           data.flex = model.flexWidth;
           if (data.flex != null) data.fit = model.flexFit;
         }
@@ -621,29 +612,29 @@ class FlexRenderer extends RenderBox
       case Axis.vertical:
         // if we are constrained in the vertical and not shrinking in height,
         // then the child can potentially flex in height
-        if (constraints.hasBoundedHeight && _verticalFlex != FlexType.shrinking)
-        {
+        if (constraints.hasBoundedHeight &&
+            _verticalFlex != FlexType.shrinking) {
           data.flex = model.flexHeight();
           if (data.flex != null) data.fit = model.flexFit;
         }
     }
   }
 
-  Size calculateFixedChildSizes(ChildLayouter layoutChild)
-  {
+  Size calculateFixedChildSizes(ChildLayouter layoutChild) {
     var allocatedWidth = 0.0;
     var allocatedHeight = 0.0;
 
-    double maxChildExtent = _direction == Axis.horizontal ? constraints.maxWidth : constraints.maxHeight;
+    double maxChildExtent = _direction == Axis.horizontal
+        ? constraints.maxWidth
+        : constraints.maxHeight;
 
     //var idParent = model.id;
 
     RenderBox? child = firstChild;
-    while (child != null)
-    {
+    while (child != null) {
       // perform layout
-      if (child.parentData is BoxData && (child.parentData as BoxData).model != null)
-      {
+      if (child.parentData is BoxData &&
+          (child.parentData as BoxData).model != null) {
         var childData = (child.parentData as BoxData);
         var childModel = childData.model!;
 
@@ -653,10 +644,10 @@ class FlexRenderer extends RenderBox
         _setChildFlex(childData, childModel);
 
         // layout child
-        if (childData.flex == null)
-        {
+        if (childData.flex == null) {
           // get layout constraints
-          var childConstraints = _getChildLayoutConstraints(child, childModel, maxChildExtent);
+          var childConstraints =
+              _getChildLayoutConstraints(child, childModel, maxChildExtent);
 
           // calculate the child's size by performing
           // a dry layout. We use LocalBoxConstraints in order to
@@ -665,10 +656,14 @@ class FlexRenderer extends RenderBox
           doLayout(child, childConstraints, layoutChild);
 
           // set width
-          allocatedWidth = _direction == Axis.horizontal ? (allocatedWidth + (child.size.width)) : max(allocatedWidth, (child.size.width));
+          allocatedWidth = _direction == Axis.horizontal
+              ? (allocatedWidth + (child.size.width))
+              : max(allocatedWidth, (child.size.width));
 
           // set height
-          allocatedHeight = _direction == Axis.horizontal ? max(allocatedHeight, (child.size.height)) : allocatedHeight + (child.size.height);
+          allocatedHeight = _direction == Axis.horizontal
+              ? max(allocatedHeight, (child.size.height))
+              : allocatedHeight + (child.size.height);
         }
       }
       // get next child
@@ -679,7 +674,6 @@ class FlexRenderer extends RenderBox
 
   Size calculateFlexChildSizes(ChildLayouter layoutChild,
       {required double freeSpace}) {
-
     var allocatedWidth = 0.0;
     var allocatedHeight = 0.0;
 
@@ -705,8 +699,7 @@ class FlexRenderer extends RenderBox
       // layout flexible children
       final double spacePerFlex = freeSpace / totalFlex;
       child = firstChild;
-      while (child != null)
-      {
+      while (child != null) {
         // perform layout
         if (child.parentData is BoxData &&
             (child.parentData as BoxData).model != null) {
@@ -715,12 +708,13 @@ class FlexRenderer extends RenderBox
           //var idChild = childModel.id;
 
           final int flex = _getFlex(child);
-          if (flex > 0)
-          {
+          if (flex > 0) {
             var fit = _getFit(child);
 
             // get the childs max extent
-            double maxExtent = (child == lastFlexChild) ? (freeSpace - flexSpaceUsed) : spacePerFlex * flex;
+            double maxExtent = (child == lastFlexChild)
+                ? (freeSpace - flexSpaceUsed)
+                : spacePerFlex * flex;
 
             // get the childs min extent
             // switch (fit)
@@ -735,13 +729,13 @@ class FlexRenderer extends RenderBox
 
             // how much of the free space can I consume?
             var maxSpace = (flex / totalFlex) * freeSpace;
-            if (maxExtent > maxSpace)
-            {
+            if (maxExtent > maxSpace) {
               maxExtent = maxSpace;
             }
 
             // get child layout constraints
-            var childConstraints = _getChildLayoutConstraints(child, childModel, maxExtent);
+            var childConstraints =
+                _getChildLayoutConstraints(child, childModel, maxExtent);
 
             // calculate the child's size by performing
             // a dry layout. We use LocalBoxConstraints in order to
@@ -750,21 +744,29 @@ class FlexRenderer extends RenderBox
             doLayout(child, childConstraints, layoutChild);
 
             // set used flex space
-            switch (fit)
-            {
+            switch (fit) {
               case FlexFit.tight:
                 flexSpaceUsed = flexSpaceUsed + maxExtent;
                 break;
               case FlexFit.loose:
-                flexSpaceUsed = flexSpaceUsed + min(maxExtent, (_direction == Axis.horizontal ? child.size.width : child.size.height));
+                flexSpaceUsed = flexSpaceUsed +
+                    min(
+                        maxExtent,
+                        (_direction == Axis.horizontal
+                            ? child.size.width
+                            : child.size.height));
                 break;
             }
 
             // set width
-            allocatedWidth = _direction == Axis.horizontal ? (allocatedWidth + child.size.width) : max(allocatedWidth, child.size.width);
+            allocatedWidth = _direction == Axis.horizontal
+                ? (allocatedWidth + child.size.width)
+                : max(allocatedWidth, child.size.width);
 
             // set height
-            allocatedHeight = _direction == Axis.horizontal ? max(allocatedHeight, child.size.height) : allocatedHeight + child.size.height;
+            allocatedHeight = _direction == Axis.horizontal
+                ? max(allocatedHeight, child.size.height)
+                : allocatedHeight + child.size.height;
           }
         }
 
@@ -787,8 +789,7 @@ class FlexRenderer extends RenderBox
   }
 
   FlexType get _horizontalFlex {
-    if (model.hasBoundedWidth)
-    {
+    if (model.hasBoundedWidth) {
       return FlexType.fixed;
     }
     if (model.expandHorizontally && constraints.hasBoundedWidth) {
@@ -797,25 +798,29 @@ class FlexRenderer extends RenderBox
     return FlexType.shrinking;
   }
 
-  _LayoutSizes _computeSizes({required BoxConstraints constraints, required ChildLayouter layoutChild})
-  {
+  _LayoutSizes _computeSizes(
+      {required BoxConstraints constraints,
+      required ChildLayouter layoutChild}) {
     // size fixed children
     var fixedSize = calculateFixedChildSizes(layoutChild);
 
     var maxWidth = 0.0;
-    switch (_horizontalFlex)
-    {
+    switch (_horizontalFlex) {
       case FlexType.shrinking:
         maxWidth = fixedSize.width;
         break;
 
       case FlexType.fixed:
-        var  parent = parentOf(this);
-        bool parentIsBox = parent is FlexRenderer || parent is StackRenderer || parent is WrapRenderer;
+        var parent = parentOf(this);
+        bool parentIsBox = parent is FlexRenderer ||
+            parent is StackRenderer ||
+            parent is WrapRenderer;
         maxWidth = constraints.maxWidth;
-        if (constraints.hasInfiniteWidth || !parentIsBox)
-        {
-          maxWidth = min(model.getWidth(widthParent: widthOf(this.parent)) ?? double.infinity, constraints.maxWidth);
+        if (constraints.hasInfiniteWidth || !parentIsBox) {
+          maxWidth = min(
+              model.getWidth(widthParent: widthOf(this.parent)) ??
+                  double.infinity,
+              constraints.maxWidth);
         }
         break;
 
@@ -825,19 +830,22 @@ class FlexRenderer extends RenderBox
     }
 
     var maxHeight = 0.0;
-    switch (_verticalFlex)
-    {
+    switch (_verticalFlex) {
       case FlexType.shrinking:
         maxHeight = fixedSize.height;
         break;
 
       case FlexType.fixed:
-        var  parent = parentOf(this);
-        bool parentIsBox = parent is FlexRenderer || parent is StackRenderer || parent is WrapRenderer;
+        var parent = parentOf(this);
+        bool parentIsBox = parent is FlexRenderer ||
+            parent is StackRenderer ||
+            parent is WrapRenderer;
         maxHeight = constraints.maxHeight;
-        if (constraints.hasInfiniteHeight || !parentIsBox)
-        {
-          maxHeight = min(model.getHeight(heightParent: heightOf(this.parent)) ?? double.infinity, constraints.maxHeight);
+        if (constraints.hasInfiniteHeight || !parentIsBox) {
+          maxHeight = min(
+              model.getHeight(heightParent: heightOf(this.parent)) ??
+                  double.infinity,
+              constraints.maxHeight);
         }
         break;
 
@@ -848,17 +856,23 @@ class FlexRenderer extends RenderBox
 
     // calculate the free space
     // for flex children
-    var freeSpace = math.max(0.0, (_direction == Axis.horizontal ? maxWidth : maxHeight) - (_direction == Axis.horizontal ? fixedSize.width : fixedSize.height));
+    var freeSpace = math.max(
+        0.0,
+        (_direction == Axis.horizontal ? maxWidth : maxHeight) -
+            (_direction == Axis.horizontal
+                ? fixedSize.width
+                : fixedSize.height));
 
     // size fixed children
     var flexSize = calculateFlexChildSizes(layoutChild, freeSpace: freeSpace);
 
     // set width
     var width = 0.0;
-    switch (_horizontalFlex)
-    {
+    switch (_horizontalFlex) {
       case FlexType.shrinking:
-        width = direction == Axis.horizontal ? fixedSize.width + flexSize.width : max(fixedSize.width, flexSize.width);
+        width = direction == Axis.horizontal
+            ? fixedSize.width + flexSize.width
+            : max(fixedSize.width, flexSize.width);
         break;
 
       case FlexType.fixed:
@@ -870,10 +884,11 @@ class FlexRenderer extends RenderBox
 
     // set height
     var height = 0.0;
-    switch (_verticalFlex)
-    {
+    switch (_verticalFlex) {
       case FlexType.shrinking:
-        height = direction == Axis.horizontal ? max(fixedSize.height, flexSize.height) : fixedSize.height + flexSize.height;
+        height = direction == Axis.horizontal
+            ? max(fixedSize.height, flexSize.height)
+            : fixedSize.height + flexSize.height;
         break;
 
       case FlexType.fixed:
@@ -899,9 +914,9 @@ class FlexRenderer extends RenderBox
   }
 
   @override
-  void performLayout()
-  {
-    final _LayoutSizes sizes = _computeSizes(layoutChild: ChildLayoutHelper.layoutChild, constraints: constraints);
+  void performLayout() {
+    final _LayoutSizes sizes = _computeSizes(
+        layoutChild: ChildLayoutHelper.layoutChild, constraints: constraints);
 
     final double allocatedSize = sizes.allocatedSize;
     double mainAxisSize = sizes.mainSize;
@@ -1051,7 +1066,7 @@ class FlexRenderer extends RenderBox
     }
 
     // set my size in model
-    model.layoutComplete(size, Offset(paintBounds.top,paintBounds.left));
+    model.layoutComplete(size, Offset(paintBounds.top, paintBounds.left));
   }
 }
 

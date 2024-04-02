@@ -9,7 +9,7 @@ import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/checkbox/checkbox_view.dart';
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -18,8 +18,7 @@ import 'package:fml/helpers/helpers.dart';
 /// Button [CheckboxModel]
 ///
 /// Defines the properties used to build a [CHECKBOX.CheckboxView]
-class CheckboxModel extends FormFieldModel implements IFormField
-{
+class CheckboxModel extends FormFieldModel implements IFormField {
   // options
   final List<OptionModel> options = [];
 
@@ -33,18 +32,16 @@ class CheckboxModel extends FormFieldModel implements IFormField
   ListObservable? _value;
   @override
   set value(dynamic v) {
-    if (_value != null)
-    {
+    if (_value != null) {
       _value!.set(v);
-    }
-    else
-    {
-      if (v != null)
-      {
-        _value = ListObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
+    } else {
+      if (v != null) {
+        _value = ListObservable(Binding.toKey(id, 'value'), v,
+            scope: scope, listener: onPropertyChange);
       }
     }
   }
+
   @override
   dynamic get value => _value?.get() ?? defaultValue;
 
@@ -54,10 +51,10 @@ class CheckboxModel extends FormFieldModel implements IFormField
     if (_center != null) {
       _center!.set(v);
     } else if (v != null) {
-      _center = BooleanObservable(Binding.toKey(id, 'center'), v,
-          scope: scope);
+      _center = BooleanObservable(Binding.toKey(id, 'center'), v, scope: scope);
     }
   }
+
   bool get center => _center?.get() ?? false;
 
   // wrap
@@ -70,6 +67,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
           scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get wrap => _wrap?.get() ?? false;
 
   /// Layout determines the widgets childrens layout. Can be `row`, `column`, `col`, or `stack`. Defaulted to `column`. If set to `stack` it can take `POSITIONED` as a child.
@@ -78,30 +76,28 @@ class CheckboxModel extends FormFieldModel implements IFormField
     if (_layout != null) {
       _layout!.set(v);
     } else if (v != null) {
-      _layout = StringObservable(Binding.toKey(id, 'layout'), v,
-          scope: scope);
+      _layout = StringObservable(Binding.toKey(id, 'layout'), v, scope: scope);
     }
   }
+
   /// By default we stack the [Check]s vertically, if set to row we display them horizontal
-  LayoutType get layoutType => BoxModel.getLayoutType(layout, defaultLayout: LayoutType.column);
+  LayoutType get layoutType =>
+      BoxModel.getLayoutType(layout, defaultLayout: LayoutType.column);
   String get layout => _layout?.get()?.toLowerCase() ?? 'column';
 
   // set answer
   @override
-  Future<bool> answer(dynamic v, {bool? delete}) async
-  {
+  Future<bool> answer(dynamic v, {bool? delete}) async {
     touched = true;
-    bool ok = (delete == true) ? await _removeAnswer(v) : await _insertAnswer(v);
+    bool ok =
+        (delete == true) ? await _removeAnswer(v) : await _insertAnswer(v);
     return ok;
   }
 
-  Future<bool> _insertAnswer(dynamic v) async
-  {
+  Future<bool> _insertAnswer(dynamic v) async {
     bool ok = true;
-    if (value is List)
-    {
-      if ((v != null) && (!(value as List).contains(v)))
-      {
+    if (value is List) {
+      if ((v != null) && (!(value as List).contains(v))) {
         // add value to list
         (value as List).add(v);
 
@@ -114,29 +110,25 @@ class CheckboxModel extends FormFieldModel implements IFormField
             longitude: System().currentLocation?.longitude,
             altitude: System().currentLocation?.altitude,
             epoch: DateTime.now().millisecondsSinceEpoch,
-            user: System.app?.user.claim('key'),
-            username: System.app?.user.claim('name'));
+            user: System.currentApp?.user.claim('key'),
+            username: System.currentApp?.user.claim('name'));
 
         // save the value
         //ok = await save();
 
         // save failed?
-        if (ok == false)
-        {
+        if (ok == false) {
           value.remove(v);
           geocode = oldGeocode;
         }
 
         // save succeeded. set dirty
-        else
-        {
+        else {
           dirty = true;
           _value!.notifyListeners();
         }
       }
-    }
-    else
-    {
+    } else {
       var oldValue = value;
       value = v;
 
@@ -149,22 +141,20 @@ class CheckboxModel extends FormFieldModel implements IFormField
           longitude: System().currentLocation?.longitude,
           altitude: System().currentLocation?.altitude,
           epoch: DateTime.now().millisecondsSinceEpoch,
-          user: System.app?.user.claim('key'),
-          username: System.app?.user.claim('name'));
+          user: System.currentApp?.user.claim('key'),
+          username: System.currentApp?.user.claim('name'));
 
       // save the value
       // ok = await save();
 
       // save failed?
-      if (ok == false)
-      {
-        value   = oldValue;
+      if (ok == false) {
+        value = oldValue;
         geocode = oldGeocode;
       }
 
       // save succeeded. set dirty
-      else
-      {
+      else {
         dirty = true;
         _value!.notifyListeners();
       }
@@ -172,11 +162,9 @@ class CheckboxModel extends FormFieldModel implements IFormField
     return ok;
   }
 
-  Future<bool> _removeAnswer(dynamic v) async
-  {
+  Future<bool> _removeAnswer(dynamic v) async {
     bool ok = true;
-    if ((v != null) && (value is List) && (value as List).contains(v))
-    {
+    if ((v != null) && (value is List) && (value as List).contains(v)) {
       // Old GeoCode
       var oldGeocode = geocode;
       geocode = Payload(
@@ -184,8 +172,8 @@ class CheckboxModel extends FormFieldModel implements IFormField
           longitude: System().currentLocation?.longitude,
           altitude: System().currentLocation?.altitude,
           epoch: DateTime.now().millisecondsSinceEpoch,
-          user: System.app?.user.claim('key'),
-          username: System.app?.user.claim('name'));
+          user: System.currentApp?.user.claim('key'),
+          username: System.currentApp?.user.claim('name'));
 
       // Remove Value
       value.remove(v);
@@ -210,15 +198,11 @@ class CheckboxModel extends FormFieldModel implements IFormField
 
   // Values
   @override
-  List<String>? get values
-  {
+  List<String>? get values {
     List<String>? list;
-    if (value != null)
-    {
-      value.forEach((v)
-      {
-        if (!isNullOrEmpty(v?.toString()))
-        {
+    if (value != null) {
+      value.forEach((v) {
+        if (!isNullOrEmpty(v?.toString())) {
           list ??= [];
           list!.add(v.toString());
         }
@@ -229,8 +213,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
 
   // question was answered
   @override
-  bool get answered
-  {
+  bool get answered {
     if (value == null) return false;
     return (value.isNotEmpty) && (!isNullOrEmpty(value[0]));
   }
@@ -247,8 +230,8 @@ class CheckboxModel extends FormFieldModel implements IFormField
       }
     }
   }
-  double get size
-  {
+
+  double get size {
     double? s = _size?.get();
     if ((s == null) || (s < 0)) s = 24.0;
     return s;
@@ -266,6 +249,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
       }
     }
   }
+
   List? get label => _label?.get();
 
   CheckboxModel(
@@ -288,40 +272,35 @@ class CheckboxModel extends FormFieldModel implements IFormField
     dynamic post,
     dynamic onchange,
     dynamic wrap,
-  })
-  {
-    if (mandatory    != null) this.mandatory    = mandatory;
-    if (editable     != null) this.editable     = editable;
-    if (enabled      != null) this.enabled      = enabled;
-    if (value        != null) this.value        = value;
+  }) {
+    if (mandatory != null) this.mandatory = mandatory;
+    if (editable != null) this.editable = editable;
+    if (enabled != null) this.enabled = enabled;
+    if (value != null) this.value = value;
     if (defaultValue != null) this.defaultValue = defaultValue;
-    if (width        != null) this.width        = width;
-    if (layout       != null) this.layout       = layout;
-    if (center       != null) this.center       = center;
-    if (valign       != null) this.valign       = valign;
-    if (halign       != null) this.halign       = halign;
-    if (size         != null) this.size         = size;
-    if (color        != null) this.color        = color;
-    if (label        != null) this.label        = label;
-    if (post         != null) this.post         = post;
-    if (onchange     != null) this.onchange     = onchange;
-    if (wrap         != null) this.wrap         = wrap;
+    if (width != null) this.width = width;
+    if (layout != null) this.layout = layout;
+    if (center != null) this.center = center;
+    if (valign != null) this.valign = valign;
+    if (halign != null) this.halign = halign;
+    if (size != null) this.size = size;
+    if (color != null) this.color = color;
+    if (label != null) this.label = label;
+    if (post != null) this.post = post;
+    if (onchange != null) this.onchange = onchange;
+    if (wrap != null) this.wrap = wrap;
 
     alarming = false;
     dirty = false;
   }
 
-  static CheckboxModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static CheckboxModel? fromXml(WidgetModel parent, XmlElement xml) {
     CheckboxModel? model;
-    try
-    {
+    try {
       model = CheckboxModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'checkbox.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'checkbox.Model');
       model = null;
     }
     return model;
@@ -329,18 +308,15 @@ class CheckboxModel extends FormFieldModel implements IFormField
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // deserialize
     super.deserialize(xml);
 
     // checkboxes can have multiple values
     var values = Xml.getChildElements(node: xml, tag: 'value');
-    values?.forEach((element)
-    {
+    values?.forEach((element) {
       String? v = Xml.getText(element);
-      if (!isNullOrEmpty(v))
-      {
+      if (!isNullOrEmpty(v)) {
         if (_value == null) value = v;
         if (_value is List && !_value!.contains(v)) _value!.add(v);
       }
@@ -350,7 +326,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
     layout = Xml.get(node: xml, tag: 'layout');
     center = Xml.get(node: xml, tag: 'center');
     wrap = Xml.get(node: xml, tag: 'wrap');
-    size  = Xml.get(node: xml, tag: 'size');
+    size = Xml.get(node: xml, tag: 'size');
 
     // build radio options
     _buildOptions();
@@ -359,17 +335,16 @@ class CheckboxModel extends FormFieldModel implements IFormField
     if (datasource == null) _setSelectedOptions();
   }
 
-  void _buildOptions()
-  {
+  void _buildOptions() {
     // clear options
     _clearOptions();
 
     // Build options
-    List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
+    List<OptionModel> options =
+        findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
-    if (!isNullOrEmpty(datasource) && options.isNotEmpty)
-    {
+    if (!isNullOrEmpty(datasource) && options.isNotEmpty) {
       prototype = prototypeOf(options.first.element);
       options.removeAt(0);
     }
@@ -378,8 +353,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
     this.options.addAll(options);
   }
 
-  void _clearOptions()
-  {
+  void _clearOptions() {
     for (var option in options) {
       option.dispose();
     }
@@ -387,11 +361,9 @@ class CheckboxModel extends FormFieldModel implements IFormField
     selectedOptions.clear();
   }
 
-  void _setSelectedOptions()
-  {
+  void _setSelectedOptions() {
     selectedOptions.clear();
-    for (var option in options)
-    {
+    for (var option in options) {
       bool contains = false;
       if (value is String && option.value == value) contains = true;
       if (value is List && value.contains(option.value)) contains = true;
@@ -400,28 +372,27 @@ class CheckboxModel extends FormFieldModel implements IFormField
 
     // set data
     List<dynamic> data = [];
-    for (var option in selectedOptions)
-    {
+    for (var option in selectedOptions) {
       if (option.data != null) data.add(option.data);
     }
     this.data = data;
   }
 
-  Future<bool> setSelectedOption(OptionModel? option) async
-  {
+  Future<bool> setSelectedOption(OptionModel? option) async {
     if (option == null) return true;
 
     // set answer
-    bool ok = await answer(option.value, delete: selectedOptions.contains(option));
-    if (ok)
-    {
+    bool ok =
+        await answer(option.value, delete: selectedOptions.contains(option));
+    if (ok) {
       // check/uncheck
-      selectedOptions.contains(option) ? selectedOptions.remove(option) : selectedOptions.add(option);
+      selectedOptions.contains(option)
+          ? selectedOptions.remove(option)
+          : selectedOptions.add(option);
 
       // set data
       List<dynamic> data = [];
-      for (var option in selectedOptions)
-      {
+      for (var option in selectedOptions) {
         if (option.data != null) data.add(option.data);
       }
       this.data = data;
@@ -433,44 +404,37 @@ class CheckboxModel extends FormFieldModel implements IFormField
   }
 
   @override
-  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
-  {
-    try
-    {
+  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async {
+    try {
       if (prototype == null) return true;
 
       // clear options
       _clearOptions();
 
       // build options
-      list?.forEach((row)
-      {
+      list?.forEach((row) {
         OptionModel? model = OptionModel.fromXml(this, prototype, data: row);
         if (model != null) options.add(model);
       });
 
       // set selected option
       _setSelectedOptions();
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().error('Error building list. Error is $e', caller: 'CHECKBOX');
     }
     return true;
   }
 
   @override
-  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
-  {
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
 
-    switch (function)
-    {
+    switch (function) {
       case "check":
         selectedOptions.clear();
-        for (var option in options)
-        {
+        for (var option in options) {
           await setSelectedOption(option);
         }
         return true;
@@ -478,15 +442,13 @@ class CheckboxModel extends FormFieldModel implements IFormField
       case "uncheck":
         selectedOptions.clear();
         selectedOptions.addAll(options);
-        for (var option in options)
-        {
+        for (var option in options) {
           await setSelectedOption(option);
         }
         return true;
 
       case "toggle":
-        for (var option in options)
-        {
+        for (var option in options) {
           await setSelectedOption(option);
         }
         return true;

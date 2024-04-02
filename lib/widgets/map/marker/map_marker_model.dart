@@ -7,72 +7,62 @@ import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/map/map_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class MapMarkerModel extends DecoratedWidgetModel
-{
+class MapMarkerModel extends DecoratedWidgetModel {
   /// latitude
   DoubleObservable? _latitude;
-  set latitude (dynamic v)
-  {
-    if (_latitude != null)
-    {
+  set latitude(dynamic v) {
+    if (_latitude != null) {
       _latitude!.set(v);
-    }
-    else if (v != null)
-    {
-      _latitude = DoubleObservable(Binding.toKey(id, 'latitude'), v, scope: scope);
+    } else if (v != null) {
+      _latitude =
+          DoubleObservable(Binding.toKey(id, 'latitude'), v, scope: scope);
       _latitude!.registerListener(onMarkerChange);
     }
   }
+
   double? get latitude => _latitude?.get();
 
   /// longitude
   DoubleObservable? _longitude;
-  set longitude (dynamic v)
-  {
-    if (_longitude != null)
-    {
+  set longitude(dynamic v) {
+    if (_longitude != null) {
       _longitude!.set(v);
-    }
-    else if (v != null)
-    {
-      _longitude = DoubleObservable(Binding.toKey(id, 'longitude'), v, scope: scope);
+    } else if (v != null) {
+      _longitude =
+          DoubleObservable(Binding.toKey(id, 'longitude'), v, scope: scope);
       _longitude!.registerListener(onMarkerChange);
     }
   }
+
   double? get longitude => _longitude?.get();
 
   MapMarkerModel(WidgetModel super.parent, super.id,
-   {
-     dynamic data,
-     dynamic latitude,
-     dynamic longitude,
-     String? info,
-     String? infoSnippet,
-     String? marker,
-     dynamic visible
-  }) : super(scope: Scope(parent: parent.scope))
-  {
-    this.data         = data;
-    this.latitude     = latitude;
-    this.longitude    = longitude;
+      {dynamic data,
+      dynamic latitude,
+      dynamic longitude,
+      String? info,
+      String? infoSnippet,
+      String? marker,
+      dynamic visible})
+      : super(scope: Scope(parent: parent.scope)) {
+    this.data = data;
+    this.latitude = latitude;
+    this.longitude = longitude;
   }
 
-  static MapMarkerModel? fromXml(WidgetModel parent, XmlElement? xml, {dynamic data})
-  {
+  static MapMarkerModel? fromXml(WidgetModel parent, XmlElement? xml,
+      {dynamic data}) {
     MapMarkerModel? model;
-    try
-    {
+    try {
       // build model
       model = MapMarkerModel(parent, Xml.get(node: xml, tag: 'id'), data: data);
       model.deserialize(xml);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'map.location.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'map.location.Model');
       model = null;
     }
     return model;
@@ -80,24 +70,25 @@ class MapMarkerModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement? xml)
-  {
+  void deserialize(XmlElement? xml) {
     if (xml == null) return;
 
-    // deserialize 
+    // deserialize
     super.deserialize(xml);
 
-    latitude    = Xml.get(node: xml, tag: 'latitude');
-    longitude   = Xml.get(node: xml, tag: 'longitude');
+    latitude = Xml.get(node: xml, tag: 'latitude');
+    longitude = Xml.get(node: xml, tag: 'longitude');
 
     // remove datasource listener. The parent map will take care of this.
-    if ((datasource != null) && (scope != null) && (scope!.datasources.containsKey(datasource))) scope!.datasources[datasource!]!.remove(this);
+    if ((datasource != null) &&
+        (scope != null) &&
+        (scope!.datasources.containsKey(datasource))) {
+      scope!.datasources[datasource!]!.remove(this);
+    }
   }
 
-  void onMarkerChange(Observable observable)
-  {
-    if (parent is MapModel)
-    {
+  void onMarkerChange(Observable observable) {
+    if (parent is MapModel) {
       (parent as MapModel).notifyListeners(observable.key, observable.get());
     }
   }

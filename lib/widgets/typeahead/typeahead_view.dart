@@ -9,8 +9,7 @@ import 'package:fml/widgets/option/option_model.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
-class TypeaheadView extends StatefulWidget implements IWidgetView
-{
+class TypeaheadView extends StatefulWidget implements IWidgetView {
   @override
   final TypeaheadModel model;
 
@@ -20,8 +19,7 @@ class TypeaheadView extends StatefulWidget implements IWidgetView
   State<TypeaheadView> createState() => TypeaheadViewState();
 }
 
-class TypeaheadViewState extends WidgetState<TypeaheadView>
-{
+class TypeaheadViewState extends WidgetState<TypeaheadView> {
   // typeahead has been initialized
   bool initialized = false;
 
@@ -35,8 +33,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
   final focus = FocusNode();
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
 
     // used to change controller text back to its original value
@@ -44,15 +41,14 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     controller.dispose();
     focus.dispose();
     super.dispose();
   }
 
-  Widget fieldBuilder(BuildContext context, TextEditingController controller, FocusNode focusNode)
-  {
+  Widget fieldBuilder(BuildContext context, TextEditingController controller,
+      FocusNode focusNode) {
     // set the text color arrays
     Color? enabledTextColor = widget.model.textcolor;
     Color? disabledTextColor = Theme.of(context).disabledColor;
@@ -75,47 +71,65 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
         decoration: _getTextDecoration(),
         textAlignVertical: TextAlignVertical.center);
 
-    if (widget.model.clear)
-    {
-      var clear = SizedBox(width: 24, height: 24, child: IconButton(padding: EdgeInsets.zero, splashRadius: 5, icon: Icon(Icons.clear_rounded, size: 12, color: Colors.black), onPressed: () => onChangeOption(null)));
-      view = Stack(children: [view, Positioned(top: 0, right: 0, child: clear)]);
+    if (widget.model.clear) {
+      var clear = SizedBox(
+          width: 24,
+          height: 24,
+          child: IconButton(
+              padding: EdgeInsets.zero,
+              splashRadius: 5,
+              icon: const Icon(Icons.clear_rounded,
+                  size: 12, color: Colors.black),
+              onPressed: () => onChangeOption(null)));
+      view =
+          Stack(children: [view, Positioned(top: 0, right: 0, child: clear)]);
     }
     return view;
   }
 
-  Widget emptyBuilder(BuildContext context)
-  {
+  Widget emptyBuilder(BuildContext context) {
     Widget? view;
 
     // no data
-    if (widget.model.options.isEmpty)
-    {
-      view = widget.model.noData?.getView();
-      view ??= Text(Phrases().noData, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleMedium);
-      view = Padding(padding: const EdgeInsets.all(8),child: view);
-      view = GestureDetector(onTap: () => focus.unfocus(), child: MouseRegion(cursor: SystemMouseCursors.click, child: view));
+    if (widget.model.options.isEmpty) {
+      view = widget.model.noDataOption?.getView();
+      view ??= Text(Phrases().noData,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.titleMedium);
+      view = Padding(padding: const EdgeInsets.all(8), child: view);
+      view = GestureDetector(
+          onTap: () => focus.unfocus(),
+          child: MouseRegion(cursor: SystemMouseCursors.click, child: view));
       return view;
     }
 
-    view = widget.model.noMatch?.getView();
-    view ??= Text(Phrases().noMatchFound, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleMedium);
-    view = Padding(padding: const EdgeInsets.all(8),child: view);
-    view = GestureDetector(onTap: () => focus.unfocus(), child: MouseRegion(cursor: SystemMouseCursors.click, child: view));
+    view = widget.model.noMatchOption?.getView();
+    view ??= Text(Phrases().noMatchFound,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.titleMedium);
+    view = Padding(padding: const EdgeInsets.all(8), child: view);
+    view = GestureDetector(
+        onTap: () => focus.unfocus(),
+        child: MouseRegion(cursor: SystemMouseCursors.click, child: view));
     return view;
   }
 
-  Widget addBorders(Widget view)
-  {
+  Widget addBorders(Widget view) {
     // border padding - this need to be changed to check border width
-    var padding = EdgeInsets.only(left: 10, top: 3, right: 0, bottom: 3);
-    if (widget.model.border == "none") padding = EdgeInsets.only(left: 10, top: 4, right: 10, bottom: 4);
+    var padding = const EdgeInsets.only(left: 10, top: 3, right: 0, bottom: 3);
+    if (widget.model.border == "none") {
+      padding = const EdgeInsets.only(left: 10, top: 4, right: 10, bottom: 4);
+    }
 
     // border radius
     var radius = BorderRadius.circular(widget.model.radius.toDouble());
 
     // border color
-    var color = widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
-    if (widget.model.alarming) color = widget.model.getBorderColor(context, widget.model.borderColor);
+    var color =
+        widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
+    if (widget.model.alarming) {
+      color = widget.model.getBorderColor(context, widget.model.borderColor);
+    }
     if (!widget.model.enabled) color = Theme.of(context).disabledColor;
 
     // border width
@@ -127,80 +141,77 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
         borderRadius: radius);
 
     // no border
-    if (widget.model.border == 'none')
-    {
-      decoration = BoxDecoration(color: widget.model.getFieldColor(context), borderRadius: radius);
+    if (widget.model.border == 'none') {
+      decoration = BoxDecoration(
+          color: widget.model.getFieldColor(context), borderRadius: radius);
     }
 
-    if (widget.model.border == 'bottom' || widget.model.border == 'underline')
-    {
-      decoration =  BoxDecoration(color: widget.model.getFieldColor(context),
+    if (widget.model.border == 'bottom' || widget.model.border == 'underline') {
+      decoration = BoxDecoration(
+          color: widget.model.getFieldColor(context),
           border: Border(bottom: BorderSide(width: width, color: color)));
     }
 
     return Container(padding: padding, decoration: decoration, child: view);
   }
 
-  TextStyle _getLabelStyle({required Color color})
-  {
+  TextStyle _getLabelStyle({required Color color}) {
     var style = TextStyle(
       fontSize: widget.model.size != null ? widget.model.size! - 2 : 14,
       color: widget.model.getErrorHintColor(context, color: color),
       shadows: <Shadow>[
         Shadow(
-            offset: Offset(0.0, 0.5),
+            offset: const Offset(0.0, 0.5),
             blurRadius: 2.0,
-            color: widget.model.color ?? Colors.transparent
-        ),
+            color: widget.model.color ?? Colors.transparent),
         Shadow(
-            offset: Offset(0.0, 0.5),
+            offset: const Offset(0.0, 0.5),
             blurRadius: 2.0,
-            color: widget.model.color ?? Colors.transparent
-        ),
+            color: widget.model.color ?? Colors.transparent),
         Shadow(
-            offset: Offset(0.0, 0.5),
+            offset: const Offset(0.0, 0.5),
             blurRadius: 2.0,
-            color: widget.model.color ?? Colors.transparent
-        ),
+            color: widget.model.color ?? Colors.transparent),
       ],
     );
     return style;
   }
 
-  Widget? _getPrefixIcon()
-  {
+  Widget? _getPrefixIcon() {
     if (widget.model.icon == null) return null;
     return Padding(
-        padding: EdgeInsets.only(
-            right: 10,
-            left: 10,
-            bottom: 0),
+        padding: const EdgeInsets.only(right: 10, left: 10, bottom: 0),
         child: Icon(widget.model.icon));
   }
 
-  EdgeInsets _getTextPadding()
-  {
+  EdgeInsets _getTextPadding() {
     // set padding
-    double paddingTop = 0;//widget.model.paddingTop ?? 15;
+    double paddingTop = 0; //widget.model.paddingTop ?? 15;
     double paddingBottom = widget.model.paddingBottom ?? 15;
     double paddingLeft = widget.model.paddingLeft ?? 10;
     double paddingRight = widget.model.paddingRight ?? 10;
-    if (widget.model.border == "bottom" || widget.model.border == "underline")
-    {
+    if (widget.model.border == "bottom" || widget.model.border == "underline") {
       paddingTop = widget.model.paddingTop ?? 3;
       paddingBottom = widget.model.paddingBottom ?? 14;
     }
-    var padding = EdgeInsets.only(left: paddingLeft, top: paddingTop, right: paddingRight, bottom: paddingBottom);
-    if (widget.model.dense == true) padding = EdgeInsets.only(left: 6, top: 0, right: 6, bottom: 0);
+    var padding = EdgeInsets.only(
+        left: paddingLeft,
+        top: paddingTop,
+        right: paddingRight,
+        bottom: paddingBottom);
+    if (widget.model.dense == true) {
+      padding = const EdgeInsets.only(left: 6, top: 0, right: 6, bottom: 0);
+    }
 
     return padding;
   }
 
-  InputDecoration _getTextDecoration()
-  {
+  InputDecoration _getTextDecoration() {
     // set colors
-    Color? color = widget.model.textcolor?.withOpacity(0.7) ?? Theme.of(context).colorScheme.onSurfaceVariant;
-    Color? borderColor = widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
+    Color? color = widget.model.textcolor?.withOpacity(0.7) ??
+        Theme.of(context).colorScheme.onSurfaceVariant;
+    Color? borderColor =
+        widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
 
     var decoration = InputDecoration(
       isDense: false,
@@ -222,7 +233,8 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
       ),
 
       hintText: widget.model.dense ? widget.model.hint : null,
-      hintStyle: TextStyle(fontSize: widget.model.size ?? 14,
+      hintStyle: TextStyle(
+        fontSize: widget.model.size ?? 14,
         fontWeight: FontWeight.w300,
         color: widget.model.getErrorHintColor(context, color: color),
       ),
@@ -231,8 +243,8 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
 
       //Icon Attributes
       prefixIcon: _getPrefixIcon(),
-      prefixIconConstraints: BoxConstraints(maxHeight: 24),
-      suffixIcon: Icon(Icons.arrow_drop_down, size: 25),
+      prefixIconConstraints: const BoxConstraints(maxHeight: 24),
+      suffixIcon: const Icon(Icons.arrow_drop_down, size: 25),
 
       //border attributes
       border: _getBorder(borderColor, null),
@@ -246,43 +258,32 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     return decoration;
   }
 
-  _getBorder(Color mainColor, Color? secondaryColor)
-  {
+  _getBorder(Color mainColor, Color? secondaryColor) {
     secondaryColor ??= mainColor;
 
-    if(widget.model.border == "none")
-    {
+    if (widget.model.border == "none") {
       return OutlineInputBorder(
-        borderRadius:
-        BorderRadius.all(Radius.circular(widget.model.radius)),
-        borderSide: BorderSide(
-            color: Colors.transparent,
-            width: 2),
+        borderRadius: BorderRadius.all(Radius.circular(widget.model.radius)),
+        borderSide: const BorderSide(color: Colors.transparent, width: 2),
       );
-    }
-    else if (widget.model.border == "bottom" ||
-        widget.model.border == "underline"){
+    } else if (widget.model.border == "bottom" ||
+        widget.model.border == "underline") {
       return UnderlineInputBorder(
-        borderRadius: BorderRadius.all(
-            Radius.circular(0)),
+        borderRadius: const BorderRadius.all(Radius.circular(0)),
         borderSide: BorderSide(
             color: widget.model.editable ? mainColor : secondaryColor,
             width: widget.model.borderWidth),
-      );}
-
-    else {
+      );
+    } else {
       return OutlineInputBorder(
-        borderRadius:
-        BorderRadius.all(Radius.circular(widget.model.radius)),
-        borderSide: BorderSide(
-            color: mainColor,
-            width: widget.model.borderWidth),
+        borderRadius: BorderRadius.all(Radius.circular(widget.model.radius)),
+        borderSide:
+            BorderSide(color: mainColor, width: widget.model.borderWidth),
       );
     }
   }
 
-  Future<List<OptionModel>> buildSuggestions(String pattern) async
-  {
+  Future<List<OptionModel>> buildSuggestions(String pattern) async {
     // if not enable then show no list
     if (!widget.model.enabled) return [];
 
@@ -295,8 +296,13 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     return widget.model.getMatchingOptions(pattern);
   }
 
-  void onChangeOption(OptionModel? option) async
-  {
+  void onChangeOption(OptionModel? option) async {
+    // no data?
+    if (option != null && option == widget.model.noDataOption) return;
+
+    // no match?
+    if (option != null && option == widget.model.noMatchOption) return;
+
     // stop model change notifications
     widget.model.removeListener(this);
 
@@ -313,61 +319,58 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     focus.unfocus();
   }
 
-  Widget itemBuilder(BuildContext context, OptionModel option)
-  {
+  Widget itemBuilder(BuildContext context, OptionModel option) {
     Widget? view = option.getView();
-    if (option == widget.model.selectedOption)
-    {
+    if (option == widget.model.selectedOption) {
       view = Container(color: Theme.of(context).focusColor, child: view);
     }
-    view = Padding(padding: const EdgeInsets.all(8),child: view);
+    view = Padding(padding: const EdgeInsets.all(8), child: view);
     return DropdownMenuItem(child: view);
   }
 
-  OptionModel? getSelectedOption()
-  {
+  OptionModel? getSelectedOption() {
     // add options
-    for (OptionModel option in widget.model.options)
-    {
+    for (OptionModel option in widget.model.options) {
       if (widget.model.value == option.value) return option;
     }
     return null;
   }
 
   // set controller text
-  setControllerText(String? text) 
-  {
+  setControllerText(String? text) {
     if (controller.text != text) controller.text = text ?? "";
   }
 
   // focus change sets the text to the most recent selection
-  void onFocusChange()
-  {
+  void onFocusChange() {
     // set the label
     setControllerText(widget.model.selectedOption?.label);
 
     // select all
-    if (focus.hasFocus && widget.model.editable) controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
+    if (focus.hasFocus && widget.model.editable) {
+      controller.selection =
+          TextSelection(baseOffset: 0, extentOffset: controller.text.length);
+    }
   }
 
-  Widget? buildBusy()
-  {
+  Widget? buildBusy() {
     if (!widget.model.busy) return null;
 
     var view = BusyModel(widget.model,
-        visible: true,
-        size: 24,
-        color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
-        modal: false).getView();
+            visible: true,
+            size: 24,
+            color:
+                Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
+            modal: false)
+        .getView();
 
     return view;
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // set the controller text
     setControllerText(widget.model.selectedOption?.label);
@@ -388,16 +391,25 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
 
     // display busy
     Widget? busy = buildBusy();
-    if (busy != null) view = Stack(children: [view, Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)]);
+    if (busy != null) {
+      view = Stack(children: [
+        view,
+        Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)
+      ]);
+    }
 
     // dense
-    if (widget.model.dense) view = Padding(padding: EdgeInsets.all(4), child: view);
+    if (widget.model.dense) {
+      view = Padding(padding: const EdgeInsets.all(4), child: view);
+    }
 
     // get the model constraints
     var modelConstraints = widget.model.constraints;
 
     // constrain the input to 200 pixels if not constrained by the model
-    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width = 200;
+    if (!modelConstraints.hasHorizontalExpansionConstraints) {
+      modelConstraints.width = 200;
+    }
 
     // add margins
     view = addMargins(view);

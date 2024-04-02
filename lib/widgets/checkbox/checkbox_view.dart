@@ -10,8 +10,7 @@ import 'package:fml/widgets/alignment/alignment.dart';
 /// Checkbox View
 ///
 /// Builds the Checkbox View from [Model] properties
-class CheckboxView extends StatefulWidget implements IWidgetView
-{
+class CheckboxView extends StatefulWidget implements IWidgetView {
   @override
   final CheckboxModel model;
   CheckboxView(this.model) : super(key: ObjectKey(model));
@@ -20,10 +19,8 @@ class CheckboxView extends StatefulWidget implements IWidgetView
   State<CheckboxView> createState() => _CheckboxViewState();
 }
 
-class _CheckboxViewState extends WidgetState<CheckboxView>
-{
-  void onChangeOption(OptionModel? option) async
-  {
+class _CheckboxViewState extends WidgetState<CheckboxView> {
+  void onChangeOption(OptionModel? option) async {
     // stop model change notifications
     widget.model.removeListener(this);
 
@@ -37,8 +34,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     setState(() {});
   }
 
-  Widget addGestures(Widget view, OptionModel option)
-  {
+  Widget addGestures(Widget view, OptionModel option) {
     if (!widget.model.enabled || !widget.model.editable) return view;
 
     view = GestureDetector(onTap: () => onChangeOption(option), child: view);
@@ -46,28 +42,33 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     return view;
   }
 
-  Widget addAlarmText(Widget view)
-  {
+  Widget addAlarmText(Widget view) {
     if (isNullOrEmpty(widget.model.alarmText)) return view;
 
-    Widget? text = Text("${widget.model.alarmText}", style: TextStyle(color: Theme.of(context).colorScheme.error));
+    Widget? text = Text("${widget.model.alarmText}",
+        style: TextStyle(color: Theme.of(context).colorScheme.error));
 
-    view = Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [view, text]);
+    view = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [view, text]);
 
     return view;
   }
 
-  Widget buildCheckboxButton(OptionModel option)
-  {
-    var selectedColor = widget.model.getBorderColor(context, widget.model.color ?? Theme.of(context).colorScheme.primary);
-    var unselectedColor = widget.model.getBorderColor(context, Theme.of(context).colorScheme.outline);
+  Widget buildCheckboxButton(OptionModel option) {
+    var selectedColor = widget.model.getBorderColor(
+        context, widget.model.color ?? Theme.of(context).colorScheme.primary);
+    var unselectedColor = widget.model
+        .getBorderColor(context, Theme.of(context).colorScheme.outline);
 
     var selected = (widget.model.selectedOptions.contains(option));
     var enabled = (widget.model.editable && widget.model.enabled);
 
-    Widget button = selected ?
-    Icon(Icons.check_box, size: widget.model.size, color: selectedColor) :
-    Icon(Icons.check_box_outline_blank_sharp, size: widget.model.size, color: unselectedColor);
+    Widget button = selected
+        ? Icon(Icons.check_box, size: widget.model.size, color: selectedColor)
+        : Icon(Icons.check_box_outline_blank_sharp,
+            size: widget.model.size, color: unselectedColor);
 
     // add gestures to the button
     button = addGestures(button, option);
@@ -77,8 +78,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
 
     // pad icon
     button = Padding(
-        padding:
-        EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 3),
+        padding: const EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 3),
         child: button);
 
     // add label
@@ -91,19 +91,17 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     Widget view = Row(
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
-        children: [button,label]);
+        children: [button, label]);
 
     return view;
   }
 
-  List<Widget> buildOptions()
-  {
+  List<Widget> buildOptions() {
     // no options specified?
     if (widget.model.options.isEmpty) return [];
 
     List<Widget> options = [];
-    for (OptionModel option in widget.model.options)
-    {
+    for (OptionModel option in widget.model.options) {
       // build radio button
       Widget view = buildCheckboxButton(option);
       options.add(view);
@@ -112,28 +110,26 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     return options;
   }
 
-  Widget buildView()
-  {
+  Widget buildView() {
     // build radio buttons
     List<Widget> options = buildOptions();
 
     //this must go after the children are determined
-    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
+    var alignment = WidgetAlignment(widget.model.layoutType,
+        widget.model.center, widget.model.halign, widget.model.valign);
 
     // wrapped row
-    if (widget.model.layout == 'row' && widget.model.wrap)
-    {
+    if (widget.model.layout == 'row' && widget.model.wrap) {
       return Wrap(
-          children: options,
           direction: Axis.horizontal,
           alignment: alignment.mainWrapAlignment,
           runAlignment: alignment.mainWrapAlignment,
-          crossAxisAlignment: alignment.crossWrapAlignment);
+          crossAxisAlignment: alignment.crossWrapAlignment,
+          children: options);
     }
 
     // row
-    if (widget.model.layout == 'row' && !widget.model.wrap)
-    {
+    if (widget.model.layout == 'row' && !widget.model.wrap) {
       return Row(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: alignment.crossAlignment,
@@ -142,14 +138,13 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     }
 
     // wrapped column
-    if (widget.model.wrap)
-    {
+    if (widget.model.wrap) {
       return Wrap(
-          children: options,
           direction: Axis.vertical,
           alignment: alignment.mainWrapAlignment,
           runAlignment: alignment.mainWrapAlignment,
-          crossAxisAlignment: alignment.crossWrapAlignment);
+          crossAxisAlignment: alignment.crossWrapAlignment,
+          children: options);
     }
 
     // default - column
@@ -161,9 +156,9 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
+    // ignore: prefer_const_constructors
     if (!widget.model.visible) return Offstage();
 
     // View

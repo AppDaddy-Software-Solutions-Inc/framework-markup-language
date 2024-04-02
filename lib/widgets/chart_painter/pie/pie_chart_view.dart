@@ -14,8 +14,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 ///
 /// Builds a Chart View using [CHART.ChartModel], [SERIES.ChartSeriesModel], [AXIS.ChartAxisModel] and
 /// [EXCERPT.Model] properties
-class PieChartView extends StatefulWidget implements IWidgetView
-{
+class PieChartView extends StatefulWidget implements IWidgetView {
   @override
   final PieChartModel model;
   PieChartView(this.model) : super(key: ObjectKey(model));
@@ -24,61 +23,53 @@ class PieChartView extends StatefulWidget implements IWidgetView
   State<PieChartView> createState() => _PieChartViewState();
 }
 
-class _PieChartViewState extends WidgetState<PieChartView>
-{
+class _PieChartViewState extends WidgetState<PieChartView> {
   Future<Template>? template;
   Future<PieChartModel>? chartViewModel;
   BusyView? busy;
   OverlayEntry? tooltip;
 
   @override
-  didChangeDependencies()
-  {
+  didChangeDependencies() {
     super.didChangeDependencies();
     hideTooltip();
   }
 
   @override
-  void didUpdateWidget(dynamic oldWidget)
-  {
+  void didUpdateWidget(dynamic oldWidget) {
     super.didUpdateWidget(oldWidget);
     hideTooltip();
   }
 
   @override
-  dispose()
-  {
+  dispose() {
     hideTooltip();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // Busy / Loading Indicator
-    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model,
+        visible: widget.model.busy, observable: widget.model.busyObservable));
 
     Widget? view;
 
     // get the children
     List<Widget> children = widget.model.inflate();
 
-    try
-    {
+    try {
       view = PieChart(PieChartData(
           sections: widget.model.pieData,
           centerSpaceRadius: widget.model.centerRadius,
           sectionsSpace: widget.model.spacing,
-          pieTouchData: PieTouchData(touchCallback: onPieTouch)
-      ));
-    }
-    catch(e)
-    {
+          pieTouchData: PieTouchData(touchCallback: onPieTouch)));
+    } catch (e) {
       Log().exception(e, caller: 'chart_view builder() ');
-      view = Center(child: Icon(Icons.add_chart));
+      view = const Center(child: Icon(Icons.add_chart));
     }
 
     // Prioritize chart ux interactions
@@ -101,39 +92,35 @@ class _PieChartViewState extends WidgetState<PieChartView>
     return view;
   }
 
-  void onPieTouch(FlTouchEvent event, PieTouchResponse? response)
-  {
+  void onPieTouch(FlTouchEvent event, PieTouchResponse? response) {
     bool exit = response?.touchedSection == null || event is FlPointerExitEvent;
     bool enter = !exit;
 
-    if (enter)
-    {
+    if (enter) {
       Offset? point = event.localPosition;
 
       List<IExtendedSeriesInterface> spots = [];
       var spot = response!.touchedSection?.touchedSection;
 
-      if (spot is IExtendedSeriesInterface)
-      {
+      if (spot is IExtendedSeriesInterface) {
         spots.add(spot as IExtendedSeriesInterface);
 
         RenderBox? render = context.findRenderObject() as RenderBox?;
-        if (render != null && point != null)
-        {
+        if (render != null && point != null) {
           point = render.localToGlobal(point);
         }
       }
 
       // show tooltip in post frame callback
-      WidgetsBinding.instance.addPostFrameCallback((_) => showTooltip(widget.model.getTooltips(spots), point?.dx ?? 0, point?.dy ?? 0));
+      WidgetsBinding.instance.addPostFrameCallback((_) => showTooltip(
+          widget.model.getTooltips(spots), point?.dx ?? 0, point?.dy ?? 0));
 
       // ensure screen updates
       WidgetsBinding.instance.ensureVisualUpdate();
     }
 
     // hide tooltip
-    if (exit)
-    {
+    if (exit) {
       // show tooltip in post frame callback
       WidgetsBinding.instance.addPostFrameCallback((_) => hideTooltip());
 
@@ -142,30 +129,28 @@ class _PieChartViewState extends WidgetState<PieChartView>
     }
   }
 
-  void showTooltip(List<Widget> views, double x, double y)
-  {
+  void showTooltip(List<Widget> views, double x, double y) {
     // remove old tooltip
     hideTooltip();
 
     // show new tooltip
-    if (views.isNotEmpty)
-    {
-      tooltip = OverlayEntry(builder: (context) => Positioned(left: x, top: y + 25, child: Column(children: views, mainAxisSize: MainAxisSize.min)));
+    if (views.isNotEmpty) {
+      tooltip = OverlayEntry(
+          builder: (context) => Positioned(
+              left: x,
+              top: y + 25,
+              child: Column(mainAxisSize: MainAxisSize.min, children: views)));
       Overlay.of(context).insert(tooltip!);
     }
   }
 
-  void hideTooltip()
-  {
+  void hideTooltip() {
     // remove old tooltip
-    try
-    {
+    try {
       tooltip?.remove();
       tooltip?.dispose();
-    }
-    catch(e)
-    {
-      print(e);
+    } catch (e) {
+      Log().exception(e);
     }
   }
 }

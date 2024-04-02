@@ -1,5 +1,4 @@
-abstract class IVideoPlayer
-{
+abstract class IVideoPlayer {
   Future<bool> start();
   Future<bool> stop();
   Future<bool> pause();

@@ -123,15 +123,14 @@ export 'package:flutter/animation.dart';
 ///  * [Flow], which provides paint-time control of its children using transform
 ///    matrices.
 ///  * The [catalog of layout widgets](https://flutter.dev/widgets/layout/).
-class StackObject extends MultiChildRenderObjectWidget
-{
+class StackObject extends MultiChildRenderObjectWidget {
   final BoxModel model;
 
   /// Creates a stack layout widget.
   ///
   /// By default, the non-positioned children of the stack are aligned by their
   /// top left corners.
-  StackObject({
+  const StackObject({
     required this.model,
     super.key,
     this.alignment = AlignmentDirectional.topStart,
@@ -186,8 +185,11 @@ class StackObject extends MultiChildRenderObjectWidget
       assert(debugCheckHasDirectionality(
         context,
         why: "to resolve the 'alignment' argument",
-        hint: alignment == AlignmentDirectional.topStart ? "The default value for 'alignment' is AlignmentDirectional.topStart, which requires a text direction." : null,
-        alternative: "Instead of providing a Directionality widget, another solution would be passing a non-directional 'alignment', or an explicit 'textDirection', to the $runtimeType.",
+        hint: alignment == AlignmentDirectional.topStart
+            ? "The default value for 'alignment' is AlignmentDirectional.topStart, which requires a text direction."
+            : null,
+        alternative:
+            "Instead of providing a Directionality widget, another solution would be passing a non-directional 'alignment', or an explicit 'textDirection', to the $runtimeType.",
       ));
     }
     return true;
@@ -218,9 +220,12 @@ class StackObject extends MultiChildRenderObjectWidget
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<AlignmentGeometry>('alignment', alignment));
-    properties.add(EnumProperty<TextDirection>('textDirection', textDirection, defaultValue: null));
+    properties
+        .add(DiagnosticsProperty<AlignmentGeometry>('alignment', alignment));
+    properties.add(EnumProperty<TextDirection>('textDirection', textDirection,
+        defaultValue: null));
     properties.add(EnumProperty<StackFit>('fit', fit));
-    properties.add(EnumProperty<Clip>('clipBehavior', clipBehavior, defaultValue: Clip.hardEdge));
+    properties.add(EnumProperty<Clip>('clipBehavior', clipBehavior,
+        defaultValue: Clip.hardEdge));
   }
 }

@@ -4,13 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/colorpicker/colorpicker_model.dart';
 import 'package:fml/helpers/string.dart';
 
-class ColorPickerView
-{
-  static launchPicker(ColorpickerModel model, BuildContext? context) async
-  {
+class ColorPickerView {
+  static launchPicker(ColorpickerModel model, BuildContext? context) async {
     if (context == null) return;
 
-    var buttons = ColorPickerActionButtons(dialogActionButtons: false);
+    var buttons = const ColorPickerActionButtons(dialogActionButtons: false);
 
     var view = ColorPicker(
         color: toColor(model.value) ?? Colors.transparent,
@@ -21,14 +19,15 @@ class ColorPickerView
         borderRadius: model.radius,
         borderColor: model.borderColor,
         actionButtons: buttons,
-        heading: Text('Select color', style: Theme.of(context).textTheme.headlineSmall),
-        subheading: Text('Select color shade', style: Theme.of(context).textTheme.titleSmall));
+        heading: Text('Select color',
+            style: Theme.of(context).textTheme.headlineSmall),
+        subheading: Text('Select color shade',
+            style: Theme.of(context).textTheme.titleSmall));
 
     view.showPickerDialog(context);
   }
 
-  static Future onColorChange(ColorpickerModel model, Color? color) async
-  {
+  static Future onColorChange(ColorpickerModel model, Color? color) async {
     await model.setSelectedColor(color);
   }
 }

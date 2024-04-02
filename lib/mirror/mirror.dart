@@ -4,21 +4,23 @@ import 'package:fml/log/manager.dart';
 import 'asset.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Mirror
-{
+// platform
+import 'package:fml/platform/platform.web.dart'
+    if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+    if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
+class Mirror {
   final String url;
 
   Mirror(this.url);
 
   bool abort = false;
 
-  void dispose()
-  {
+  void dispose() {
     abort = true;
   }
 
-  void execute() async
-  {
+  void execute() async {
     if (isNullOrEmpty(url)) return;
 
     // load assets from the remote
@@ -26,40 +28,40 @@ class Mirror
     await assets.load(url);
 
     for (Asset asset in assets.list) {
-      if (asset.type == "file" && !abort)
-    {
-      var uri = URI.parse(asset.uri);
-      if (uri != null && uri.pageExtension != null)
-      {
-        // file exists?
-        var filepath = uri.asFilePath();
-        bool exists = (filepath != null && Platform.fileExists(filepath));
+      if (asset.type == "file" && !abort) {
+        var uri = URI.parse(asset.uri);
+        if (uri != null && uri.pageExtension != null) {
+          // file exists?
+          var filepath = uri.asFilePath();
+          bool exists = (filepath != null && Platform.fileExists(filepath));
 
-        // check the age
-        bool downloadRequired = true;
-        if (exists)
-        {
-          var file = Platform.getFile(filepath);
-          if (file != null)
-          {
-            var modified = await file.lastModified();
-            var epoch = modified.millisecondsSinceEpoch;
-            if (epoch >= (asset.epoch ?? 0)) downloadRequired = false;
-            if (downloadRequired) Log().debug('File on disk is out of date [${asset.name}]', caller: "Mirror");
+          // check the age
+          bool downloadRequired = true;
+          if (exists) {
+            var file = Platform.getFile(filepath);
+            if (file != null) {
+              var modified = await file.lastModified();
+              var epoch = modified.millisecondsSinceEpoch;
+              if (epoch >= (asset.epoch ?? 0)) downloadRequired = false;
+              if (downloadRequired) {
+                Log().debug('File on disk is out of date [${asset.name}]',
+                    caller: "Mirror");
+              }
+            }
+          }
+
+          // get the asset from the server
+          if (downloadRequired && filepath != null && !abort) {
+            await _copyAssetFromServer(asset, filepath);
           }
         }
-
-        // get the asset from the server
-        if (downloadRequired && filepath != null && !abort) await _copyAssetFromServer(asset, filepath);
       }
-    }
     }
 
     Log().debug('Inventory Check Complete', caller: "Mirror");
   }
 
-  static Future<bool> _copyAssetFromServer(Asset asset, String filepath) async
-  {
+  static Future<bool> _copyAssetFromServer(Asset asset, String filepath) async {
     if (asset.uri == null) return false;
 
     Log().debug('Getting file from server [${asset.name}]', caller: "Mirror");
@@ -68,9 +70,10 @@ class Mirror
     var response = await Http.get(asset.uri!);
 
     // error in response?
-    if (!response.ok)
-    {
-      Log().error('Error copying asset from ${asset.uri}. Error is ${response.statusMessage}', caller: "Mirror");
+    if (!response.ok) {
+      Log().error(
+          'Error copying asset from ${asset.uri}. Error is ${response.statusMessage}',
+          caller: "Mirror");
       return false;
     }
 

@@ -1,7 +1,6 @@
 import 'package:mime/mime.dart' deferred as mime;
 
-class Mime
-{
+class Mime {
   static bool _libraryLoaded = false;
 
   static Future<String> type(String path, {String defaultType = ""}) async {
@@ -21,9 +20,9 @@ class Mime
   /// makes a filename safe
   static String toSafeFileName(String filename,
       {String separator = '-',
-        bool withSpaces = false,
-        bool lowercase = false,
-        bool onlyAlphanumeric = false}) {
+      bool withSpaces = false,
+      bool lowercase = false,
+      bool onlyAlphanumeric = false}) {
     final List<String> reservedCharacters = [
       '?',
       ':',

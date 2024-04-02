@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/datepicker/datepicker_model.dart';
@@ -13,10 +14,10 @@ class DatepickerView extends StatefulWidget implements IWidgetView {
   DatepickerView(this.model) : super(key: ObjectKey(model));
 
   @override
-  State<DatepickerView> createState() => _DatepickerViewState();
+  State<DatepickerView> createState() => DatepickerViewState();
 }
 
-class _DatepickerViewState extends WidgetState<DatepickerView> {
+class DatepickerViewState extends WidgetState<DatepickerView> {
   String? format;
   String? date;
   String? oldValue;
@@ -26,6 +27,9 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
   @override
   void initState() {
     super.initState();
+
+    // register camera
+    widget.model.datepicker = this;
 
     focusNode = FocusNode();
 
@@ -70,33 +74,27 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
-    if ((cont!.text != widget.model.value) && (widget.model.isPicking != true))
-    {
+  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+    if ((cont!.text != widget.model.value) &&
+        (widget.model.isPicking != true)) {
       widget.model.onChange(context);
     }
     cont!.text = widget.model.value;
-
     super.onModelChange(model);
   }
 
-
   void onChange(String d) async {
-    if (true) {
-      cont!.value = TextEditingValue(
-          text: widget.model.value.toString(),
-          selection: TextSelection(
-              baseOffset: 0,
-              extentOffset: widget.model.value.toString().length));
+    cont!.value = TextEditingValue(
+        text: widget.model.value.toString(),
+        selection: TextSelection(
+            baseOffset: 0, extentOffset: widget.model.value.toString().length));
 
-      if (oldValue != widget.model.value) {
-        // set answer
-        bool ok = await widget.model.answer(widget.model.value);
+    if (oldValue != widget.model.value) {
+      // set answer
+      bool ok = await widget.model.answer(widget.model.value);
 
-        // fire on change event
-        if (ok == true) await widget.model.onChange(context);
-      }
+      // fire on change event
+      if (ok == true && mounted) await widget.model.onChange(context);
     }
 
     return;
@@ -107,51 +105,186 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
     widget.model.value = '';
   }
 
-
-  _getBorder(Color mainColor, Color? secondaryColor){
-
+  _getBorder(Color mainColor, Color? secondaryColor) {
     secondaryColor ??= mainColor;
 
-    if(widget.model.border == "none") {
+    if (widget.model.border == "none") {
       return OutlineInputBorder(
-        borderRadius:
-        BorderRadius.all(Radius.circular(widget.model.radius)),
-        borderSide: BorderSide(
-            color: Colors.transparent,
-            width: 2),
+        borderRadius: BorderRadius.all(Radius.circular(widget.model.radius)),
+        borderSide: const BorderSide(color: Colors.transparent, width: 2),
       );
-    }
-    else if (widget.model.border == "bottom" ||
-        widget.model.border == "underline"){
+    } else if (widget.model.border == "bottom" ||
+        widget.model.border == "underline") {
       return UnderlineInputBorder(
-        borderRadius: BorderRadius.all(
-            Radius.circular(0)),
+        borderRadius: const BorderRadius.all(Radius.circular(0)),
         borderSide: BorderSide(
             color: widget.model.editable ? mainColor : secondaryColor,
             width: widget.model.borderWidth),
-      );}
-
-    else {
+      );
+    } else {
       return OutlineInputBorder(
-        borderRadius:
-        BorderRadius.all(Radius.circular(widget.model.radius)),
-        borderSide: BorderSide(
-            color: mainColor,
-            width: widget.model.borderWidth),
+        borderRadius: BorderRadius.all(Radius.circular(widget.model.radius)),
+        borderSide:
+            BorderSide(color: mainColor, width: widget.model.borderWidth),
       );
     }
+  }
 
+  Future _showDateRangePicker(DatePickerEntryMode mode) async {
+    if (!mounted) return;
+
+    var format = widget.model.format;
+    var newest = widget.model.newest;
+    var oldest = widget.model.oldest;
+
+    DateTimeRange? result;
+
+    if (mounted) {
+      result = await showDateRangePicker(
+        context: context,
+        initialEntryMode: mode,
+        firstDate: toDate(oldest, format: format) ??
+            DateTime(DateTime.now().year - 100),
+        currentDate: DateTime.now(),
+        lastDate: toDate(newest, format: format) ??
+            DateTime(DateTime.now().year + 10),
+      );
+    }
+    if (result == null) return;
+
+    // set value
+    widget.model.setValue(result.start, TimeOfDay.now(), format,
+        secondResult: result.end);
+  }
+
+  Future _showTimePicker(TimePickerEntryMode mode) async {
+    if (!mounted) return;
+
+    TimeOfDay time = TimeOfDay.now();
+    var format = widget.model.format;
+    try {
+      time =
+          TimeOfDay.fromDateTime(toDate(widget.model.value, format: format)!);
+    } catch (e) {
+      Log().exception(e, caller: 'Datepicker');
+    }
+
+    TimeOfDay? result;
+    if (mounted) {
+      result = await showTimePicker(
+          context: context, initialTime: time, initialEntryMode: mode);
+    }
+    if (result == null) return;
+
+    // set value
+    widget.model.setValue(DateTime.now(), result, format);
+  }
+
+  Future _showDateTimePicker(
+      DatePickerEntryMode dmode, TimePickerEntryMode tmode) async {
+    if (!mounted) return;
+
+    var type = widget.model.type;
+    var newest = widget.model.newest;
+    var oldest = widget.model.oldest;
+    var value = widget.model.value;
+    var format = widget.model.format;
+
+    DateTime? date;
+    TimeOfDay? time;
+
+    // show date picker
+    if (mounted) {
+      date = await showDatePicker(
+          context: context,
+          initialDatePickerMode: type == "year" || type == "yeartime"
+              ? DatePickerMode.year
+              : DatePickerMode.day,
+          initialEntryMode: dmode,
+          firstDate: toDate(oldest, format: format) ??
+              DateTime(DateTime.now().year - 100),
+          initialDate: toDate(value, format: format) ?? DateTime.now(),
+          lastDate: toDate(newest, format: format) ??
+              DateTime(DateTime.now().year + 10));
+
+      // show time picker
+      var show =
+          (type == 'datetime' || type == 'yeartime' || type == 'rangetime');
+      if (show && mounted) {
+        time = await showTimePicker(
+            context: context,
+            initialTime: TimeOfDay.now(),
+            initialEntryMode: tmode);
+      }
+    }
+    if (date == null) return;
+
+    // set the value
+    widget.model.setValue(date, time, format);
+  }
+
+  Future<bool> show() async {
+    TimePickerEntryMode tmode = TimePickerEntryMode.dial;
+    DatePickerEntryMode dmode = DatePickerEntryMode.calendar;
+    switch (widget.model.mode) {
+      case "gui":
+        {
+          tmode = TimePickerEntryMode.dial;
+          dmode = DatePickerEntryMode.calendarOnly;
+        }
+        break;
+      case "input":
+        {
+          tmode = TimePickerEntryMode.input;
+          dmode = DatePickerEntryMode.inputOnly;
+        }
+        break;
+      case "bothinput":
+        {
+          tmode = TimePickerEntryMode.input;
+          dmode = DatePickerEntryMode.input;
+        }
+        break;
+      case "bothgui":
+        {
+          tmode = TimePickerEntryMode.dial;
+          dmode = DatePickerEntryMode.calendar;
+        }
+        break;
+      default:
+        {
+          tmode = TimePickerEntryMode.dial;
+          dmode = DatePickerEntryMode.calendar;
+        }
+        break;
+    }
+
+    widget.model.setFormat();
+
+    switch (widget.model.type) {
+      case "range":
+        await _showDateRangePicker(dmode);
+        break;
+
+      case "time":
+        await _showTimePicker(tmode);
+        break;
+
+      default:
+        await _showDateTimePicker(dmode, tmode);
+    }
+    return true;
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     // set the border color arrays
     // set the border colors
-    Color? enabledBorderColor = widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
+    Color? enabledBorderColor =
+        widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
     Color? disabledBorderColor = Theme.of(context).disabledColor;
     Color? focusBorderColor = Theme.of(context).focusColor;
     Color? errorBorderColor = Theme.of(context).colorScheme.error;
@@ -165,7 +298,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
     String? hint = widget.model.hint;
 
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     String? value = widget.model.value;
     cont = TextEditingController(text: value);
@@ -184,9 +317,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
         focusNode!.requestFocus();
         if (widget.model.editable) {
           widget.model.isPicking = true;
-
-          await widget.model.show(context, widget.model.mode, widget.model.type,
-              widget.model.oldest, widget.model.newest, widget.model.format);
+          await show();
           widget.model.isPicking = false;
         }
       },
@@ -204,7 +335,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
             style: TextStyle(
                 color: widget.model.enabled
                     ? enabledTextColor ??
-                    Theme.of(context).colorScheme.onBackground
+                        Theme.of(context).colorScheme.onBackground
                     : disabledTextColor,
                 fontSize: fontsize),
             textAlignVertical: TextAlignVertical.center,
@@ -215,7 +346,10 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
               fillColor: widget.model.getFieldColor(context),
               filled: true,
               contentPadding: EdgeInsets.only(
-                  left: pad + 10, top: pad + 15, right: pad + 10, bottom: pad + 15),
+                  left: pad + 10,
+                  top: pad + 15,
+                  right: pad + 10,
+                  bottom: pad + 15),
               alignLabelWithHint: true,
               labelStyle: TextStyle(
                 fontSize: fontsize != null ? fontsize - 2 : 14,
@@ -235,37 +369,39 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
                 color: widget.model.getErrorHintColor(context),
               ),
               prefixIcon: Padding(
-                  padding: EdgeInsets.only(
-                      right: 10,
-                      left: 10,
-                      bottom: 0),
+                  padding:
+                      const EdgeInsets.only(right: 10, left: 10, bottom: 0),
                   child: Icon(widget.model.icon ??
                       (widget.model.type.toLowerCase() == "time"
                           ? Icons.access_time
                           : Icons.calendar_today))),
-              prefixIconConstraints: BoxConstraints(maxHeight: 24),
+              prefixIconConstraints: const BoxConstraints(maxHeight: 24),
               suffixIcon: null,
               suffixIconConstraints: null,
-
               border: _getBorder(enabledBorderColor, null),
               errorBorder: _getBorder(errorBorderColor, null),
               focusedErrorBorder: _getBorder(focusBorderColor, null),
               focusedBorder: _getBorder(focusBorderColor, null),
               enabledBorder: _getBorder(enabledBorderColor, null),
-              disabledBorder: _getBorder(disabledBorderColor, enabledBorderColor),
+              disabledBorder:
+                  _getBorder(disabledBorderColor, enabledBorderColor),
             ),
           ),
         ),
       ),
     );
 
-    if (widget.model.dense) view = Padding(padding: EdgeInsets.all(4), child: view);
+    if (widget.model.dense) {
+      view = Padding(padding: const EdgeInsets.all(4), child: view);
+    }
 
     // get the model constraints
     var modelConstraints = widget.model.constraints;
 
     // constrain the input to 200 pixels if not constrained by the model
-    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width = 200;
+    if (!modelConstraints.hasHorizontalExpansionConstraints) {
+      modelConstraints.width = 200;
+    }
 
     // add margins
     view = addMargins(view);
@@ -275,7 +411,4 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
 
     return view;
   }
-
-
-
 }

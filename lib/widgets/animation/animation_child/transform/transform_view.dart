@@ -42,11 +42,19 @@ class TransformViewState extends State<TransformView>
     super.initState();
 
     if (widget.controller == null) {
-      _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,));
-      if(widget.model.controllerValue == 1 && widget.model.runonce == true) {
-        _controller.animateTo(widget.model.controllerValue, duration: Duration());
+      _controller = AnimationController(
+          vsync: this,
+          duration: Duration(milliseconds: widget.model.duration),
+          reverseDuration: Duration(
+            milliseconds: widget.model.reverseduration ?? widget.model.duration,
+          ));
+      if (widget.model.controllerValue == 1 && widget.model.runonce == true) {
+        _controller.animateTo(widget.model.controllerValue,
+            duration: const Duration());
 
-        if (widget.model.autoplay == true && _controller.isAnimating != true) start();
+        if (widget.model.autoplay == true && _controller.isAnimating != true) {
+          start();
+        }
       }
       _controller.addStatusListener((status) {
         _animationListener(status);
@@ -66,12 +74,12 @@ class TransformViewState extends State<TransformView>
     // register model listener
     widget.model.registerListener(this);
 
-    if(soloRequestBuild) {
+    if (soloRequestBuild) {
       // register event listeners
-      EventManager.of(widget.model)?.registerEventListener(
-          EventTypes.animate, onAnimate);
-      EventManager.of(widget.model)?.registerEventListener(
-          EventTypes.reset, onReset);
+      EventManager.of(widget.model)
+          ?.registerEventListener(EventTypes.animate, onAnimate);
+      EventManager.of(widget.model)
+          ?.registerEventListener(EventTypes.reset, onReset);
     }
 
     super.didChangeDependencies();
@@ -85,39 +93,38 @@ class TransformViewState extends State<TransformView>
       oldWidget.model.removeListener(this);
       widget.model.registerListener(this);
 
-      if(soloRequestBuild) {
+      if (soloRequestBuild) {
         // de-register event listeners
-        EventManager.of(oldWidget.model)?.removeEventListener(
-            EventTypes.animate, onAnimate);
-        EventManager.of(widget.model)?.removeEventListener(
-            EventTypes.reset, onReset);
+        EventManager.of(oldWidget.model)
+            ?.removeEventListener(EventTypes.animate, onAnimate);
+        EventManager.of(widget.model)
+            ?.removeEventListener(EventTypes.reset, onReset);
 
         // register event listeners
-        EventManager.of(widget.model)?.registerEventListener(
-            EventTypes.animate, onAnimate);
-        EventManager.of(widget.model)?.registerEventListener(
-            EventTypes.reset, onReset);
+        EventManager.of(widget.model)
+            ?.registerEventListener(EventTypes.animate, onAnimate);
+        EventManager.of(widget.model)
+            ?.registerEventListener(EventTypes.reset, onReset);
 
         _controller.duration = Duration(milliseconds: widget.model.duration);
         _controller.reverseDuration = Duration(
-            milliseconds: widget.model.reverseduration ??
-                widget.model.duration);
+            milliseconds:
+                widget.model.reverseduration ?? widget.model.duration);
       }
     }
   }
 
   @override
   void dispose() {
-
-    if(soloRequestBuild) {
+    if (soloRequestBuild) {
       stop();
       // remove controller
       _controller.dispose();
       // de-register event listeners
-      EventManager.of(widget.model)?.removeEventListener(
-          EventTypes.animate, onAnimate);
-      EventManager.of(widget.model)?.removeEventListener(
-          EventTypes.reset, onReset);
+      EventManager.of(widget.model)
+          ?.removeEventListener(EventTypes.animate, onAnimate);
+      EventManager.of(widget.model)
+          ?.removeEventListener(EventTypes.reset, onReset);
     }
 
     // remove model listener
@@ -132,8 +139,7 @@ class TransformViewState extends State<TransformView>
   }
 
   @override
-Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     double begin = widget.model.begin;
     double end = widget.model.end;
 
@@ -143,7 +149,7 @@ Widget build(BuildContext context)
 
     List<String?> rotateFrom = widget.model.rotateFrom?.split(",") ?? [];
 
-    if(rotateFrom.isEmpty){
+    if (rotateFrom.isEmpty) {
       rotateFrom.add("0");
       rotateFrom.add("0");
     } else if (rotateFrom.length < 2) {
@@ -152,7 +158,7 @@ Widget build(BuildContext context)
 
     List<String?> rotateTo = widget.model.rotateTo.split(",");
 
-    if(rotateTo.isEmpty){
+    if (rotateTo.isEmpty) {
       rotateTo.add("0");
       rotateTo.add("0");
     } else if (rotateTo.length < 2) {
@@ -161,7 +167,7 @@ Widget build(BuildContext context)
 
     List<String?> translateFrom = widget.model.translateFrom?.split(",") ?? [];
 
-    if(translateFrom.isEmpty){
+    if (translateFrom.isEmpty) {
       translateFrom.add("0");
       translateFrom.add("0");
       translateFrom.add("0");
@@ -174,7 +180,7 @@ Widget build(BuildContext context)
 
     List<String?> translateTo = widget.model.translateTo.split(",");
 
-    if(translateTo.isEmpty){
+    if (translateTo.isEmpty) {
       translateTo.add("0");
       translateTo.add("0");
       translateTo.add("0");
@@ -187,9 +193,7 @@ Widget build(BuildContext context)
 
     //start, end, center
     Alignment align =
-    AnimationHelper.getAlignment(widget.model.align?.toLowerCase());
-
-
+        AnimationHelper.getAlignment(widget.model.align?.toLowerCase());
 
     if (begin != 0.0 || end != 1.0) {
       curve = Interval(
@@ -236,7 +240,6 @@ Widget build(BuildContext context)
       parent: _controller,
     ));
 
-
     // Build View
     Widget? view;
 
@@ -245,7 +248,8 @@ Widget build(BuildContext context)
         ..setEntry(3, 2, warp)
         ..rotateY(pi * _yAnimation.value * 2)
         ..rotateX(pi * _xAnimation.value * 2)
-        ..translate(_xTranslateAnimation.value, _yTranslateAnimation.value, _zTranslateAnimation.value),
+        ..translate(_xTranslateAnimation.value, _yTranslateAnimation.value,
+            _zTranslateAnimation.value),
       alignment: align,
       //origin: Offset(0, 0),
       child: widget.child,
@@ -290,24 +294,23 @@ Widget build(BuildContext context)
 
   void start() {
     try {
-      if(widget.model.hasrun) return;
+      if (widget.model.hasrun) return;
       if (_controller.isCompleted) {
-        if(widget.model.runonce) widget.model.hasrun = true;
+        if (widget.model.runonce) widget.model.hasrun = true;
         _controller.reverse();
         widget.model.controllerValue = 0;
         widget.model.onStart(context);
       } else if (_controller.isDismissed) {
         _controller.forward();
         widget.model.controllerValue = 1;
-        if(widget.model.runonce) widget.model.hasrun = true;
+        if (widget.model.runonce) widget.model.hasrun = true;
         widget.model.onStart(context);
       } else {
         _controller.forward();
         widget.model.controllerValue = 1;
-        if(widget.model.runonce) widget.model.hasrun = true;
+        if (widget.model.runonce) widget.model.hasrun = true;
         widget.model.onStart(context);
       }
-
     } catch (e) {
       Log().debug('$e');
     }
@@ -327,7 +330,7 @@ Widget build(BuildContext context)
     if (status == AnimationStatus.completed) {
       widget.model.controllerValue = 1;
       widget.model.onComplete(context);
-    } else if  (status == AnimationStatus.dismissed) {
+    } else if (status == AnimationStatus.dismissed) {
       widget.model.controllerValue = 0;
       widget.model.onDismiss(context);
     }

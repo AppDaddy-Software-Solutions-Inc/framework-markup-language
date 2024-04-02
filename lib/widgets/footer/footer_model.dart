@@ -1,12 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart'  ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class FooterModel extends BoxModel 
-{
+class FooterModel extends BoxModel {
   @override
   String? get layout => super.layout ?? "stack";
 
@@ -15,18 +14,14 @@ class FooterModel extends BoxModel
 
   FooterModel(WidgetModel super.parent, super.id);
 
-  static FooterModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static FooterModel? fromXml(WidgetModel parent, XmlElement xml) {
     FooterModel? model;
-    try
-    {
+    try {
       // Build Model
       model = FooterModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'footer.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'footer.Model');
       model = null;
     }
     return model;

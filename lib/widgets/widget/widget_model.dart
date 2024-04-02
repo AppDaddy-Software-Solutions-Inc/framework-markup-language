@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/datasource_listener_interface.dart';
@@ -7,13 +8,13 @@ import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class WidgetModel implements IDataSourceListener {
-
   // primary identifier
   // needs to be unique within the scope
   late final String id;
@@ -36,38 +37,31 @@ class WidgetModel implements IDataSourceListener {
 
   // data element
   ListObservable? _data;
-  set data(dynamic v)
-  {
-    if (_data != null)
-    {
+  set data(dynamic v) {
+    if (_data != null) {
       _data!.set(v);
-    }
-
-    else if (v != null)
-    {
+    } else if (v != null) {
       final key = Binding.toKey(id, 'data');
 
-      _data = ListObservable(key,
-          null,
-          scope: scope,
-          listener: onPropertyChange,
+      _data =
+          ListObservable(key, null, scope: scope, listener: onPropertyChange,
 
-          // inline setter
-          // used to set values within the data element
-          // when twoway binding is used
-          setter: (dynamic value, {Observable? setter})
-          {
-            if (setter?.twoway == null) return value;
-            var bdg = Binding.fromString(setter?.signature);
-            var tag = bdg?.toString().replaceFirst("$key.", "");
-            Data.write(data, tag, value);
-            return data;
-          });
+              // inline setter
+              // used to set values within the data element
+              // when twoway binding is used
+              setter: (dynamic value, {Observable? setter}) {
+        if (setter?.twoway == null) return value;
+        var bdg = Binding.fromString(setter?.signature);
+        var tag = bdg?.toString().replaceFirst("$key.", "");
+        Data.write(data, tag, value);
+        return data;
+      });
 
       // set the value
       _data!.set(v);
     }
   }
+
   get data => _data?.get();
 
   void onDataChange() => _data?.notifyListeners();
@@ -85,6 +79,7 @@ class WidgetModel implements IDataSourceListener {
           scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get debug => _debug?.get() ?? false;
 
   // parent model
@@ -124,8 +119,7 @@ class WidgetModel implements IDataSourceListener {
 
   bool get busy => _busy?.get() ?? false;
 
-  WidgetModel(this.parent, String? id, {Scope? scope, dynamic data})
-  {
+  WidgetModel(this.parent, String? id, {Scope? scope, dynamic data}) {
     // set the id
     this.id = getUniqueId(id);
 
@@ -144,24 +138,24 @@ class WidgetModel implements IDataSourceListener {
   }
 
   static RegExp onlyAlpha = RegExp(r'''[^a-zA-Z0-9\s.]''');
-  String getUniqueId(String? id)
-  {
+  String getUniqueId(String? id) {
     // user supplied id
     if (!isNullOrEmpty(id)) return id!;
 
     // auto generated id
     String prefix = "auto";
-    if (FmlEngine.kDebugMode)
-    {
+    if (kDebugMode) {
       prefix = "$runtimeType";
-      prefix = prefix.replaceAll(onlyAlpha,'');
-      if (prefix.endsWith('model')) prefix = prefix.substring(0, prefix.lastIndexOf('model'));
+      prefix = prefix.replaceAll(onlyAlpha, '');
+      if (prefix.endsWith('model')) {
+        prefix = prefix.substring(0, prefix.lastIndexOf('model'));
+      }
     }
     return newId(prefix: prefix);
   }
 
-  static WidgetModel? fromXml(WidgetModel parent, XmlElement node, {Scope? scope, dynamic data})
-  {
+  static WidgetModel? fromXml(WidgetModel parent, XmlElement node,
+      {Scope? scope, dynamic data}) {
     // clone node?
     node = cloneNode(node, scope ?? parent.scope);
 
@@ -173,10 +167,32 @@ class WidgetModel implements IDataSourceListener {
   }
 
   // used in the sort process to deserialize
-  static final List<String> _topmost = ["VAR","BARCODE","BEACON","BIOMETRIC","DATA","DELETE","DETECTOR","FILEPICKER","GET","GPS","HTTP","LOG","MQTT","NFC","OCR","POST","PUT","SOCKET","SSE","STASH","TESTDATA","ZEBRA"];
+  static final List<String> _topmost = [
+    "VAR",
+    "BARCODE",
+    "BEACON",
+    "BIOMETRIC",
+    "DATA",
+    "DELETE",
+    "DETECTOR",
+    "FILEPICKER",
+    "GET",
+    "GPS",
+    "HTTP",
+    "LOG",
+    "MQTT",
+    "NFC",
+    "OCR",
+    "POST",
+    "PUT",
+    "SOCKET",
+    "SSE",
+    "STASH",
+    "TESTDATA",
+    "ZEBRA"
+  ];
 
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // set busy
     busy = true;
 
@@ -194,11 +210,11 @@ class WidgetModel implements IDataSourceListener {
     // we first sort the elements moving vars and datasources to the top of the
     // deserialization sequence in order to avoid excessive deferred bindings
     var elements = xml.children.whereType<XmlElement>().toList();
-    if (elements.length > 1)
-    {
-      var topmost = elements.where((element) => _topmost.contains(element.name.toString())).toList();
-      if (topmost.isNotEmpty && topmost.length != elements.length)
-      {
+    if (elements.length > 1) {
+      var topmost = elements
+          .where((element) => _topmost.contains(element.name.toString()))
+          .toList();
+      if (topmost.isNotEmpty && topmost.length != elements.length) {
         elements.removeWhere((element) => topmost.contains(element));
         elements.insertAll(0, topmost);
       }
@@ -206,21 +222,23 @@ class WidgetModel implements IDataSourceListener {
 
     // deserialize children
     children?.clear();
-    for (var element in elements)
-    {
+    for (var element in elements) {
       // deserialize the model
       var model = WidgetModel.fromXml(this, element);
 
-      // add model to the datasource list
-      if (model is IDataSource)
+      if (model != null)
       {
-        (datasources ??= []).add(model as IDataSource);
-      }
+        // add model to the datasource list
+        if (model is IDataSource) {
+          (datasources ??= []).add(model as IDataSource);
+        }
 
-      // add model to the child list
-      else if (model != null)
-      {
-        (children ??= []).add(model);
+        // add model to the child list
+        // in cases like camera, it is both a viewable widget as well
+        // as a data source.
+        if (model is! IDataSource || model is ViewableWidgetMixin) {
+          (children ??= []).add(model);
+        }
       }
     }
 
@@ -234,7 +252,8 @@ class WidgetModel implements IDataSourceListener {
     removeAllListeners();
 
     // dispose of datasources
-    datasources?.forEach((datasource) => datasource.parent == this ? datasource.dispose() : null);
+    datasources?.forEach((datasource) =>
+        datasource.parent == this ? datasource.dispose() : null);
     datasources?.clear();
 
     // remove model and all of its bindables from the scope
@@ -269,20 +288,21 @@ class WidgetModel implements IDataSourceListener {
   removeAllListeners() => _listeners?.clear();
 
   /// model listener notifications
-  notifyListeners(String? property, dynamic value, {bool notify = false}) => _listeners?.forEach((listener) => listener.onModelChange(this, property: property, value: value));
+  notifyListeners(String? property, dynamic value, {bool notify = false}) =>
+      _listeners?.forEach((listener) =>
+          listener.onModelChange(this, property: property, value: value));
 
   /// notifies property listeners of any changes to a property
-  void onPropertyChange(Observable observable) => notificationsEnabled ? notifyListeners(observable.key, observable.get()) : null;
+  void onPropertyChange(Observable observable) => notificationsEnabled
+      ? notifyListeners(observable.key, observable.get())
+      : null;
 
   /// initializes the model by starting brokers
-  Future<void> initialize() async
-  {
+  Future<void> initialize() async {
     // start datasources
-    datasources?.forEach((datasource)
-    {
+    datasources?.forEach((datasource) {
       // skip if the datasource has already been initialized
-      if (!datasource.initialized)
-      {
+      if (!datasource.initialized) {
         // mark as started
         datasource.initialized = true;
 
@@ -295,14 +315,10 @@ class WidgetModel implements IDataSourceListener {
     });
   }
 
-  static void unfocus()
-  {
-    try
-    {
+  static void unfocus() {
+    try {
       WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
-    }
-    catch (e)
-    {
+    } catch (e) {
       Log().exception(e);
     }
   }
@@ -313,41 +329,47 @@ class WidgetModel implements IDataSourceListener {
     return model.framework!.bindables!.contains(key);
   }
 
-  dynamic firstAncestorWhere(Function(dynamic element) test)
-  {
+  dynamic firstAncestorWhere(Function(dynamic element) test) {
     if (parent == null) return null;
     if (test(parent)) return parent;
     return parent?.firstAncestorWhere(test);
   }
 
-  dynamic findAncestorOfExactType(Type T, {String? id, bool includeSiblings = false})
-  {
-    var list = findAncestorsOfExactType(T, id: id, includeSiblings: includeSiblings);
+  dynamic findAncestorOfExactType(Type T,
+      {String? id, bool includeSiblings = false}) {
+    var list =
+        findAncestorsOfExactType(T, id: id, includeSiblings: includeSiblings);
     return (list?.isNotEmpty ?? false) ? list?.first : null;
   }
 
   List<dynamic>? get ancestors => findAncestorsOfExactType(null);
 
-  List<dynamic>? findAncestorsOfExactType(Type? T, {String? id, bool includeSiblings = false}) => parent?._findAncestorsOfExactType(T, id, includeSiblings);
+  List<dynamic>? findAncestorsOfExactType(Type? T,
+          {String? id, bool includeSiblings = false}) =>
+      parent?._findAncestorsOfExactType(T, id, includeSiblings);
 
-  List<dynamic> _findAncestorsOfExactType(Type? T, String? id, bool includeSiblings)
-  {
+  List<dynamic> _findAncestorsOfExactType(
+      Type? T, String? id, bool includeSiblings) {
     var list = [];
 
     // evaluate me
-    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id))) list.add(this);
+    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id))) {
+      list.add(this);
+    }
 
     // evaluate my siblings
-    if (includeSiblings)
-    {
-      children?.forEach((child)
-      {
-        if (child.runtimeType == T && child.id == (id ?? child.id)) list.add(child);
+    if (includeSiblings) {
+      children?.forEach((child) {
+        if (child.runtimeType == T && child.id == (id ?? child.id)) {
+          list.add(child);
+        }
       });
     }
 
     // evaluate my ancestors
-    if (parent != null) list.addAll(parent!._findAncestorsOfExactType(T, id, includeSiblings));
+    if (parent != null) {
+      list.addAll(parent!._findAncestorsOfExactType(T, id, includeSiblings));
+    }
 
     return list;
   }
@@ -359,25 +381,28 @@ class WidgetModel implements IDataSourceListener {
     return list.isNotEmpty ? list.first : null;
   }
 
-  List<dynamic> findDescendantsOfExactType(Type? T, {String? id, Type? breakOn})
-  {
+  List<dynamic> findDescendantsOfExactType(Type? T,
+      {String? id, Type? breakOn}) {
     var list = [];
-    children?.forEach((child)
-    {
-      if (child.runtimeType != breakOn) list.addAll(child._findDescendantsOfExactType(T, id));
+    children?.forEach((child) {
+      if (child.runtimeType != breakOn) {
+        list.addAll(child._findDescendantsOfExactType(T, id));
+      }
     });
     return list;
   }
 
   List<dynamic> _findDescendantsOfExactType(Type? T, String? id) {
-
     var list = [];
 
     // evaluate me
-    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id))) list.add(this);
+    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id))) {
+      list.add(this);
+    }
 
     // evaluate my children
-    children?.forEach((child) => list.addAll(child._findDescendantsOfExactType(T, id)));
+    children?.forEach(
+        (child) => list.addAll(child._findDescendantsOfExactType(T, id)));
 
     return list;
   }
@@ -389,18 +414,22 @@ class WidgetModel implements IDataSourceListener {
     return null;
   }
 
-  dynamic findChildOfExactType(Type T, {String? id}) => children?.firstWhereOrNull((child) => child.runtimeType == (T) && (child.id == (id ?? child.id)));
+  dynamic findChildOfExactType(Type T, {String? id}) =>
+      children?.firstWhereOrNull((child) =>
+          child.runtimeType == (T) && (child.id == (id ?? child.id)));
 
   List<dynamic> findChildrenOfExactType(Type T, {String? id}) {
     var list = [];
-    children?.forEach((child)
-    {
-      if (child.runtimeType == (T) && child.id == (id ?? child.id)) list.add(child);
+    children?.forEach((child) {
+      if (child.runtimeType == (T) && child.id == (id ?? child.id)) {
+        list.add(child);
+      }
     });
     return list;
   }
 
-  void removeChildrenOfExactType(Type T) => children?.removeWhere((child) => (child.runtimeType == (T)));
+  void removeChildrenOfExactType(Type T) =>
+      children?.removeWhere((child) => (child.runtimeType == (T)));
 
   dynamic findListenerOfExactType(Type T) {
     if (_listeners != null) {
@@ -427,19 +456,17 @@ class WidgetModel implements IDataSourceListener {
     this.busy = busy;
   }
 
-  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async {
-
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
     if (scope == null) return null;
 
     var function = propertyOrFunction.toLowerCase().trim();
 
-    switch (function)
-    {
+    switch (function) {
       case 'set':
         return set(this, caller, propertyOrFunction, arguments, scope!);
 
       case 'addchild':
-
         addChild(this, arguments);
 
         // force rebuild
@@ -448,7 +475,6 @@ class WidgetModel implements IDataSourceListener {
         return true;
 
       case 'removechild':
-
         removeChild(this, arguments);
 
         // force rebuild
@@ -457,7 +483,6 @@ class WidgetModel implements IDataSourceListener {
         return true;
 
       case 'removechildren':
-
         removeChildren(this, arguments);
 
         // force rebuild
@@ -466,7 +491,6 @@ class WidgetModel implements IDataSourceListener {
         return true;
 
       case 'replacechild':
-
         replaceChild(this, arguments);
 
         // force rebuild
@@ -475,7 +499,6 @@ class WidgetModel implements IDataSourceListener {
         return true;
 
       case 'replacechildren':
-
         replaceChildren(this, arguments);
 
         // force rebuild
@@ -484,7 +507,6 @@ class WidgetModel implements IDataSourceListener {
         return true;
 
       case 'removewidget':
-
         removeWidget(this, arguments);
 
         // force rebuild
@@ -493,7 +515,6 @@ class WidgetModel implements IDataSourceListener {
         return true;
 
       case 'replacewidget':
-
         replaceWidget(this, arguments);
 
         // force rebuild
@@ -505,8 +526,8 @@ class WidgetModel implements IDataSourceListener {
     return false;
   }
 
-  static bool set(WidgetModel model, String caller, String propertyOrFunction, List<dynamic> arguments, Scope scope)
-  {
+  static bool set(WidgetModel model, String caller, String propertyOrFunction,
+      List<dynamic> arguments, Scope scope) {
     // value
     var value = elementAt(arguments, 0);
 

@@ -1,0 +1,40 @@
+name: fml_example
+version: 3.0.0
+description: Flutter Markup Language
+homepage: https://fml.dev
+repository: https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language.git
+
+environment:
+  sdk: '>=3.3.1 <4.0.0'
+  flutter: '>=3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  fml:
+    path: ../
+
+dev_dependencies:
+
+  # Dart linter
+  lints: ^3.0.0
+
+  # Flutter linter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/images/
+    - assets/applications/
+
+    - assets/applications/example/
+    - assets/applications/example/images/
+    - assets/applications/example/templates/
+
+    - assets/applications/fmlpad/
+    - assets/applications/fmlpad/images/
+    - assets/applications/fmlpad/templates/

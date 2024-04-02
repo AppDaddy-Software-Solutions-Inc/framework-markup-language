@@ -15,21 +15,17 @@ class IconView extends StatefulWidget implements IWidgetView {
 }
 
 class _IconViewState extends WidgetState<IconView> {
-
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible) return const Offstage();
 
     IconData? value = widget.model.icon;
 
     double? size = 32;
     if (widget.model.size != null) size = widget.model.size;
 
-    ///////////
-    /* Color */
-    ///////////
+    // icon color
     Color? color = Theme.of(context).colorScheme.inverseSurface;
     if (widget.model.color != null) color = widget.model.color;
     if (widget.model.opacity != null) {

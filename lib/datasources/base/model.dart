@@ -470,7 +470,7 @@ class DataSourceModel extends WidgetModel implements IDataSource {
     if (xml.childElements.length > 1) return null;
 
     // legacy - <value/> tag specified
-    if (xml.childElements.length == 1 && xml.childElements.first.name == 'value') {
+    if (xml.childElements.length == 1 && xml.childElements.first.localName == 'value') {
       return null;
     }
 

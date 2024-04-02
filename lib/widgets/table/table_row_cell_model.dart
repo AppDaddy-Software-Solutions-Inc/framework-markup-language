@@ -71,6 +71,17 @@ class TableRowCellModel extends BoxModel {
   }
   bool? get editable => _editable?.get() ?? row?.editable;
 
+  // value - used to sort
+  StringObservable? _validate;
+  set validate(dynamic v) {
+    if (_validate != null) {
+      _validate!.set(v);
+    } else if (v != null) {
+      _validate = StringObservable(Binding.toKey(id, 'validate'), v, scope: scope);
+    }
+  }
+  String? get validate => _validate?.get();
+
   // selected
   BooleanObservable? _selected;
   set selected(dynamic v) {
@@ -123,11 +134,13 @@ class TableRowCellModel extends BoxModel {
       if (txt is TextModel) value = txt.value;
     }
     editable = Xml.get(node: xml, tag: 'editable');
+    validate = Xml.get(node: xml, tag: 'validate');
   }
 
   // on change handler - fired on cell edit
-  Future<bool> onChangeHandler() async =>
-      _onChange != null ? await EventHandler(this).execute(_onChange) : true;
+  Future<bool> onChangeHandler() async {
+    return _onChange != null ? await EventHandler(this).execute(_onChange) : true;
+  }
 
   static bool usesRenderer(TableRowCellModel cell) {
     // no children

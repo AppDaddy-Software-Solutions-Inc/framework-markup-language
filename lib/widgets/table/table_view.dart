@@ -7,6 +7,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/system.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -419,9 +420,13 @@ class TableViewState extends WidgetState<TableView> {
     var cell   = event.row.cells.values.toList()[event.columnIdx];
 
     // fire change handler
-    bool ok = await widget.model.onChangeHandler(rowIdx, colIdx, event.value, event.oldValue);
+    bool ok = await widget.model.onChangeHandler(rowIdx, colIdx, event.value, event.oldValue, callback: onValidationError);
     if (!ok) cell.value = event.oldValue;
     onSelectedHandler(force: true);
+  }
+
+  void onValidationError(String error){
+    WidgetsBinding.instance.addPostFrameCallback((_) => System.toast(error,duration: 2));
   }
 
   void onRowsMoved(PlutoGridOnRowsMovedEvent event) async {

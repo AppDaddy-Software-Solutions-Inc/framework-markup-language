@@ -574,6 +574,11 @@ WidgetModel? fromXmlNode(
 
     case "COLUMN":
     case "COL": //shorthand case
+      if (parent is TableModel) {
+        model = TableHeaderModel.fromXml(parent, node);
+        break;
+      }
+
       bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
       model = isPrototype
           ? PrototypeModel.fromXml(parent, node)
@@ -692,6 +697,11 @@ WidgetModel? fromXmlNode(
     case "HEADER":
       if (parent is FrameworkModel) {
         model = HeaderModel.fromXml(parent, node);
+        break;
+      }
+      if (parent is TableModel) {
+        model = TableHeaderModel.fromXml(parent, node);
+        break;
       }
       break;
 
@@ -931,6 +941,11 @@ WidgetModel? fromXmlNode(
       break;
 
     case "ROW":
+      if (parent is TableModel) {
+        model = TableRowModel.fromXml(parent, node);
+        break;
+      }
+
       bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
       model = isPrototype
           ? PrototypeModel.fromXml(parent, node)
@@ -1025,12 +1040,15 @@ WidgetModel? fromXmlNode(
     case "CELL":
       if (parent is TableHeaderModel || parent is TableHeaderGroupModel) {
         model = TableHeaderCellModel.fromXml(parent, node);
+        break;
       }
       if (parent is TableRowModel) {
         model = TableRowCellModel.fromXml(parent, node);
+        break;
       }
       if (parent is TableFooterModel) {
         model = TableFooterCellModel.fromXml(parent, node);
+        break;
       }
       break;
 

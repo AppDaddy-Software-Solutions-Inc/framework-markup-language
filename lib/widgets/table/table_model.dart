@@ -28,6 +28,8 @@ import 'package:fml/platform/platform.web.dart'
     if (dart.library.io) 'package:fml/platform/platform.vm.dart'
     if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
+typedef ValidationErrorCallback = Function(String error);
+
 class TableModel extends BoxModel implements IForm {
   static String dynamicTableValue1 = "{field}";
   static String dynamicTableValue2 = "[*]";
@@ -681,6 +683,7 @@ class TableModel extends BoxModel implements IForm {
   }
 
   void _buildRowPrototype(Data? data) {
+
     if (prototype == null) return;
 
     // build row prototype cells
@@ -693,8 +696,9 @@ class TableModel extends BoxModel implements IForm {
       // create new row prototype
       var tr = prototype!.copy();
 
-      // clear children
-      tr.children.clear();
+      // clear cell children
+      var cells = {'CELL', 'TD', 'TABLEDATA'};
+      tr.children.removeWhere((child) => child is XmlElement && cells.contains(child.localName));
 
       // process each cell
       int cellIdx = 0;
@@ -762,7 +766,11 @@ class TableModel extends BoxModel implements IForm {
   }
 
   Future<bool> onChangeHandler(
-      int rowIdx, int colIdx, dynamic value, dynamic oldValue) async {
+      int rowIdx,
+      int colIdx,
+      dynamic value,
+      dynamic oldValue,
+      {ValidationErrorCallback? callback} ) async {
 
     var row = (rowIdx >= 0 && rowIdx < rows.length) ? rows[rowIdx] : null;
     var rowCell = row?.cell(colIdx);
@@ -772,6 +780,7 @@ class TableModel extends BoxModel implements IForm {
 
     bool ok = true;
     if (data != null && colCell != null && fld != null) {
+
       // write new value
       Data.write(data, fld, value);
 
@@ -783,6 +792,14 @@ class TableModel extends BoxModel implements IForm {
 
       // fire column change handler
       ok = true;
+
+      // fire the row's cell validator
+      if (ok) {
+        ok = isNullOrEmpty(rowCell?.validate) || toBool(rowCell?.validate) == false;
+        if (!ok && toBool(rowCell?.validate) != true && callback != null) {
+          callback.call(rowCell!.validate!);
+        }
+      }
 
       // fire the row's cell change handler
       if (ok) ok = await rowCell?.onChangeHandler() ?? true;
@@ -812,6 +829,11 @@ class TableModel extends BoxModel implements IForm {
 
         // reset selected
         selected = data;
+      }
+
+      // mark dirty
+      if (ok) {
+        row?.dirty = true;
       }
     }
     return ok;
@@ -894,6 +916,17 @@ class TableModel extends BoxModel implements IForm {
         var mode = toStr(elementAt(arguments, 0));
         autosize(mode);
         return true;
+
+      case 'post':
+      case 'submit':
+      case 'complete':
+        return await complete();
+
+      case 'save':
+        return await save();
+
+      case 'validate':
+        return await validate();
     }
 
     return super.execute(caller, propertyOrFunction, arguments);

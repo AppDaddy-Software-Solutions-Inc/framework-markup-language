@@ -5,7 +5,7 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-enum AlarmType { generic, mandatory, validation, server }
+enum AlarmType { generic, mandatory, validation }
 
 class AlarmModel extends WidgetModel {
   // indicates the type of alarm

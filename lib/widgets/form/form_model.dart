@@ -70,7 +70,6 @@ class FormModel extends BoxModel implements IForm {
       }
     }
   }
-
   List<String>? get postbrokers => _postbrokers;
 
   // status
@@ -307,8 +306,7 @@ class FormModel extends BoxModel implements IForm {
     mandatory = Xml.get(node: xml, tag: 'mandatory');
     post = Xml.get(node: xml, tag: 'post');
     geocode = Xml.get(node: xml, tag: 'geocode');
-    postbrokers = Xml.attribute(node: xml, tag: 'post') ??
-        Xml.attribute(node: xml, tag: 'postbroker');
+    postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
 
     // events
     onComplete = Xml.get(node: xml, tag: 'oncomplete');

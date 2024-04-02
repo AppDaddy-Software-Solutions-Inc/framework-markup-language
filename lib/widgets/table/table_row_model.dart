@@ -201,10 +201,10 @@ class TableRowModel extends BoxModel {
     editable = Xml.get(node: xml, tag: 'editable');
     oncomplete = Xml.get(node: xml, tag: 'oncomplete');
     onclick = Xml.get(node: xml, tag: 'onclick');
-    postbrokers = Xml.attribute(node: xml, tag: 'postbroker');
     onInsert = Xml.get(node: xml, tag: 'oninsert');
     onDelete = Xml.get(node: xml, tag: 'ondelete');
     onChange = Xml.get(node: xml, tag: 'onchange');
+    postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
 
     // get cells
     cells.addAll(
@@ -276,7 +276,7 @@ class TableRowModel extends BoxModel {
     if (dirty == false) return true;
 
     bool ok = true;
-    if ((scope != null) && (postbrokers != null)) {
+    if (scope != null && postbrokers != null) {
       for (String id in postbrokers!) {
         IDataSource? source = scope!.getDataSource(id);
         if (source != null && ok && table != null) {

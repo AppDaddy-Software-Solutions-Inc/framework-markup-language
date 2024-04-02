@@ -25,7 +25,9 @@ import 'package:url_launcher/url_launcher.dart';
 const bool enableTestPlayground = false;
 
 class StoreView extends StatefulWidget {
+
   final MenuModel model = MenuModel(null, 'Applications');
+
   StoreView({super.key});
 
   @override
@@ -128,19 +130,26 @@ class _ViewState extends State<StoreView>
   }
 
   Widget addAppDialog(BuildContext context, bool popOnExit) {
+
     var view = StatefulBuilder(builder: (context, setState) {
+
       var style = TextStyle(color: Theme.of(context).colorScheme.primary);
 
       var ttl = Text(phrase.connectAnApplication, style: style);
+
       var busy = BusyView(BusyModel(StoreModel(),
           visible: StoreModel().busy, observable: StoreModel().busyObservable, size: 14));
-      var pad = const Padding(padding: EdgeInsets.only(left: 20));
-      var title = Row(children: [ttl, pad, busy]);
+
+      var title = Row(children: [ttl, const Padding(padding: EdgeInsets.only(left: 20)), busy]);
 
       return AlertDialog(
         title: title,
         content: Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: StoreApp(popOnExit: popOnExit)),
         contentPadding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 2.0),
+        surfaceTintColor: Colors.transparent,
+        backgroundColor: Theme.of(context).colorScheme.onSecondary,
+        elevation: 10.0,
+        shadowColor: Theme.of(context).colorScheme.shadow.withOpacity(.5),
         insetPadding: EdgeInsets.zero,
       );
     });
@@ -199,6 +208,7 @@ class _ViewState extends State<StoreView>
   }
 
   Widget removeAppDialog(BuildContext context, ApplicationModel app) {
+
     var style = TextStyle(color: Theme.of(context).colorScheme.primary);
     var title = Column(
         mainAxisSize: MainAxisSize.max,
@@ -241,7 +251,6 @@ class _ViewState extends State<StoreView>
         child:
             Column(children: [appIcon ?? const Offstage(), appTitle, appUrl]));
 
-    var color = Theme.of(context).colorScheme.background;
     var shadow = BoxShadow(
       color: Theme.of(context).colorScheme.shadow.withOpacity(.25),
       blurRadius: 7,
@@ -250,7 +259,7 @@ class _ViewState extends State<StoreView>
 
     var box = DecoratedBox(
         decoration: BoxDecoration(
-            color: color,
+            color: Theme.of(context).colorScheme.onSecondary,
             boxShadow: [shadow],
             borderRadius: const BorderRadius.all(Radius.circular(8))),
         child: view);
@@ -265,8 +274,10 @@ class _ViewState extends State<StoreView>
 
     return AlertDialog(
         title: title,
-        backgroundColor: color,
+        backgroundColor: Theme.of(context).colorScheme.onSecondary,
         surfaceTintColor: Colors.transparent,
+        elevation: 10.0,
+        shadowColor: Theme.of(context).colorScheme.shadow.withOpacity(.5),
         content: content,
         contentPadding: const EdgeInsets.fromLTRB(4.0, 16.0, 4.0, 2.0),
         insetPadding: EdgeInsets.zero);
@@ -282,6 +293,9 @@ class _ViewState extends State<StoreView>
 
   Widget _multiAppView(BuildContext context, BoxConstraints constraints) {
 
+    // set menu color
+    widget.model.color = Theme.of(context).colorScheme.onSecondary;
+
     // build menu items
     widget.model.items = [];
 
@@ -293,6 +307,7 @@ class _ViewState extends State<StoreView>
       // build menu item
       var item = MenuItemModel(
           widget.model,
+          backgroundcolor: Theme.of(context).colorScheme.onSecondary,
           ObjectKey(app).toString(),
           url: app.url,
           title: app.title,
@@ -313,7 +328,7 @@ class _ViewState extends State<StoreView>
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
         splashColor: Theme.of(context).colorScheme.inversePrimary,
-        hoverColor: Theme.of(context).colorScheme.surface,
+        hoverColor: Theme.of(context).colorScheme.onSecondary,
         focusColor: Theme.of(context).colorScheme.inversePrimary,
         shape: rrbShape);
 
@@ -334,16 +349,6 @@ class _ViewState extends State<StoreView>
             modal: true)
             .getView());
 
-    var privacyUri =
-    Uri(scheme: 'https', host: 'fml.dev', path: '/privacy.html');
-    var privacyText = Text(phrase.privacyPolicy);
-    var privacyButton =
-    InkWell(child: privacyText, onTap: () => launchUrl(privacyUri));
-
-    var version = Text('${phrase.version} ${FmlEngine.version}');
-
-    var text = Column(
-        mainAxisSize: MainAxisSize.min, children: [privacyButton, version]);
     var button = StoreModel().busy ? busyButton : addButton;
 
     var view = MenuView(widget.model);
@@ -353,33 +358,35 @@ class _ViewState extends State<StoreView>
         body: SafeArea(
             child: Stack(children: [
               Center(child: view),
-              Positioned(left: 10, bottom: 10, child: text),
+              Positioned(left: 5, bottom: 5, child: _privacyButton()),
               busy
             ])));
   }
 
+  Widget _privacyButton() {
+
+    var uri = Uri(
+        scheme: 'https',
+        host: 'fml.dev',
+        path: '/privacy.html');
+
+    var text = Text(phrase.privacyPolicy, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary));
+
+    return InkWell(
+        onTap: () => launchUrl(uri),
+        child: Padding(padding: const EdgeInsets.all(10), child: text));
+  }
+
   Widget _brandedAppView(BuildContext context, BoxConstraints constraints) {
-
-    var privacyUri =
-    Uri(scheme: 'https', host: 'fml.dev', path: '/privacy.html');
-    var privacyText = Text(phrase.privacyPolicy);
-    var privacyButton =
-    InkWell(child: privacyText, onTap: () => launchUrl(privacyUri));
-
-    var version = Text('${phrase.version} ${FmlEngine.version}');
-
-    var text = Column(mainAxisSize: MainAxisSize.min, children: [privacyButton, version]);
-
     var view = addAppDialog(context, false);
-
-    return Scaffold(body: SafeArea(child: Stack(children: [Center(child: view), Positioned(left: 10, bottom: 10, child: text)])));
+    return Scaffold(backgroundColor: Theme.of(context).colorScheme.onSecondary, body: SafeArea(child: Stack(children: [Center(child: view), Positioned(left: 5, bottom: 5, child: _privacyButton())])));
   }
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
-    return FmlEngine.type == ApplicationType.branded ? _brandedAppView(context, constraints) : _multiAppView(context, constraints);
-  }
+  Widget builder(BuildContext context, BoxConstraints constraints) =>
+    (FmlEngine.type == ApplicationType.branded) ?
+    _brandedAppView(context, constraints) :
+    _multiAppView(context, constraints);
 }

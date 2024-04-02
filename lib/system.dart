@@ -474,8 +474,10 @@ class System extends WidgetModel implements IEventManager {
     // reset default icon
     _setBranding(mainIcon);
 
-    // delete the application
-    ok = await _brandedApp!.delete();
+    // delete all apps
+    for (var app in _apps) {
+      await app.delete();
+    }
 
     // notify the user
     ok ? toast(phrase.defaultAppRemoved) : toast(phrase.defaultAppRemovedProblem);

@@ -6,6 +6,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
+import 'package:fml/widgets/trigger/trigger_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
@@ -70,7 +71,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin {
     EventManager.of(widget.model)
         ?.removeEventListener(EventTypes.close, onClose);
     EventManager.of(widget.model)?.removeEventListener(EventTypes.back, onBack);
-    EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.trigger, onTrigger);
+    EventManager.of(widget.model)?.removeEventListener(EventTypes.trigger, onTrigger);
     super.dispose();
   }
 
@@ -132,14 +133,13 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin {
     return _showPage(uri.url, event: event);
   }
 
-  /** 
-   * As it's not expected that there will be nested views, such as TabView, this function 
-   * currently only propogates the triggers to any TriggerModels of the view inside the page model.
-   * If there are instances of nested views, another method may have to be found to
-   * recursively propogate the triggers through each layer. For good measure,
-   * the trigger event is broadcast() to the nested model, but this will need
-   * to be tested.
-  **/
+
+   // As it's not expected that there will be nested views, such as TabView, this function
+   // currently only propagates the triggers to any TriggerModels of the view inside the page model.
+   // If there are instances of nested views, another method may have to be found to
+   // recursively propagate the triggers through each layer. For good measure,
+   // the trigger event is broadcast() to the nested model, but this will need
+   // to be tested.
 
   void onTrigger(Event event) async 
   {

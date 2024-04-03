@@ -69,6 +69,9 @@ class FormFieldModel extends DecoratedWidgetModel {
   }
   bool get dirty => _dirty?.get() ?? false;
 
+  /// registers a listener to the diry observable
+  void registerDirtyListener(OnChangeCallback callback) => _dirty?.registerListener(callback);
+
   /// mandatory will dictate if the field will stop the form from `complete()`ing if not filled out.
   BooleanObservable? _mandatory;
   set mandatory(dynamic v) {

@@ -197,6 +197,7 @@ class TableRowModel extends BoxModel {
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
+
     // deserialize
     super.deserialize(xml);
 
@@ -210,22 +211,14 @@ class TableRowModel extends BoxModel {
     postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
 
     // get cells
-    cells.addAll(
-        findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>());
+    cells.addAll(findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>());
 
     // Initialize Form Fields
-    for (var _ in cells) {
-      List<IFormField> fields =
-          findChildrenOfExactType(IFormField).cast<IFormField>();
-      for (var field in fields) {
-        if (this.fields == null) this.fields = [];
-        this.fields!.add(field);
-
-        // Register Listener
-        if (field.dirtyObservable != null) {
-          field.dirtyObservable!.registerListener(onDirtyListener);
-        }
-      }
+    List<IFormField> fields = findChildrenOfExactType(IFormField).cast<IFormField>();
+    for (var field in fields) {
+      if (this.fields == null) this.fields = [];
+      this.fields!.add(field);
+      field.registerDirtyListener(onDirtyListener);
     }
   }
 
@@ -251,8 +244,16 @@ class TableRowModel extends BoxModel {
     // Post the Row
     if (ok) ok = await _post();
 
-    // Mark Clean
-    if ((ok) && (fields != null)) {
+    // mark row clean
+    if (ok) {
+      dirty = false;
+      for (var cell in cells) {
+        cell.dirty = false;
+      }
+    }
+
+    // mark custom form fields as clean
+    if (ok && fields != null) {
       for (var field in fields!) {
         field.dirty = false;
       }

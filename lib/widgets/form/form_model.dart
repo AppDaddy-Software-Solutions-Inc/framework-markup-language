@@ -370,9 +370,7 @@ class FormModel extends BoxModel implements IForm {
 
     // add dirty listener to each field
     for (var field in formFields) {
-      if (field.dirtyObservable != null) {
-        field.dirtyObservable!.registerListener(onDirtyListener);
-      }
+      field.registerDirtyListener(onDirtyListener);
     }
 
     // add dirty listener to each sub-form

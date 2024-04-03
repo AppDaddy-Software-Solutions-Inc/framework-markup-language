@@ -356,7 +356,7 @@ class DatepickerViewState extends WidgetState<DatepickerView> {
                 color: widget.model.getErrorHintColor(context),
               ),
               counterText: "",
-              errorText: widget.model.alarmText,
+              errorText: widget.model.alarm,
               errorStyle: TextStyle(
                 fontSize: fontsize ?? 12,
                 fontWeight: FontWeight.w300,

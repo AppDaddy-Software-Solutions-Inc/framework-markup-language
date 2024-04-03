@@ -225,7 +225,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
       labelText: widget.model.dense ? null : widget.model.hint,
       labelStyle: _getLabelStyle(color: color),
 
-      errorText: widget.model.alarmText,
+      errorText: widget.model.alarm,
       errorStyle: TextStyle(
         fontSize: widget.model.size ?? 14,
         fontWeight: FontWeight.w300,

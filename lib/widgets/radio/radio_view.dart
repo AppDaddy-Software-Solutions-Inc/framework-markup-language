@@ -40,9 +40,9 @@ class _RadioViewState extends WidgetState<RadioView> {
   }
 
   Widget addAlarmText(Widget view) {
-    if (isNullOrEmpty(widget.model.alarmText)) return view;
+    if (isNullOrEmpty(widget.model.alarm)) return view;
 
-    Widget? text = Text("${widget.model.alarmText}",
+    Widget? text = Text("${widget.model.alarm}",
         style: TextStyle(color: Theme.of(context).colorScheme.error));
 
     view = Column(

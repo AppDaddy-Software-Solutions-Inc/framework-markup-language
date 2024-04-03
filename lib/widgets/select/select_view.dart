@@ -85,11 +85,11 @@ class _SelectViewState extends WidgetState<SelectView> {
   }
 
   Widget addAlarmText(Widget view) {
-    if (isNullOrEmpty(widget.model.alarmText)) return view;
+    if (isNullOrEmpty(widget.model.alarm)) return view;
 
     Widget? errorText = Padding(
         padding: const EdgeInsets.only(top: 6.0, bottom: 2.0),
-        child: Text("${widget.model.alarmText}",
+        child: Text("${widget.model.alarm}",
             style: TextStyle(color: Theme.of(context).colorScheme.error)));
     view = Column(
       crossAxisAlignment: CrossAxisAlignment.start,

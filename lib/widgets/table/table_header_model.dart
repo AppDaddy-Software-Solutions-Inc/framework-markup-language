@@ -93,6 +93,9 @@ class TableHeaderModel extends BoxModel {
 
   bool get resizeable => _resizeable?.get() ?? table?.resizeable ?? true;
 
+  // column uses editable
+  bool get maybeEditable => _editable != null;
+
   // editable - used on non row prototype only
   BooleanObservable? _editable;
   set editable(dynamic v) {

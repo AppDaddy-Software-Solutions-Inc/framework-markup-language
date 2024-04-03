@@ -49,6 +49,9 @@ class TableRowModel extends BoxModel {
   // Editable Fields
   List<IFormField>? fields;
 
+  // column uses editable
+  bool get maybeEditable => _editable != null;
+
   // editable - used on non row prototype only
   BooleanObservable? _editable;
   set editable(dynamic v) {

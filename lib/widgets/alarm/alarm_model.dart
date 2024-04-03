@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -24,11 +25,9 @@ class AlarmModel extends WidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get text => _text?.get();
 
   /// The eval to determine if the error state of the parent is displayed.
-  BooleanObservable? get alarmingObservable => _alarming;
   BooleanObservable? _alarming;
   set alarming(dynamic v) {
     if (_alarming != null) {
@@ -38,7 +37,6 @@ class AlarmModel extends WidgetModel {
           BooleanObservable(Binding.toKey(id, 'alarming'), v, scope: scope);
     }
   }
-
   bool get alarming => _alarming?.get() ?? false;
 
   /// The event string to execute when an alarm is triggered.
@@ -51,21 +49,7 @@ class AlarmModel extends WidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get onalarm => _onalarm?.get();
-
-  /// The event string to execute when an alarm is dismissed.
-  StringObservable? _ondismissed;
-  set ondismissed(dynamic v) {
-    if (_ondismissed != null) {
-      _ondismissed?.set(v);
-    } else if (v != null) {
-      _ondismissed = StringObservable(Binding.toKey(id, 'ondismissed'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get ondismissed => _ondismissed?.get();
 
   AlarmModel(WidgetModel parent, String? id,
       {dynamic type, dynamic text, dynamic alarm})
@@ -107,10 +91,17 @@ class AlarmModel extends WidgetModel {
 
     // set properties
     alarming =
-        Xml.get(node: xml, tag: 'alarm') ?? Xml.get(node: xml, tag: 'error');
+        Xml.get(node: xml, tag: 'alarm') ?? Xml.get(node: xml, tag: 'error') ?? Xml.get(node: xml, tag: 'value');
     text =
         Xml.get(node: xml, tag: 'text') ?? Xml.get(node: xml, tag: 'errortext');
     onalarm = Xml.get(node: xml, tag: 'onalarm');
-    ondismissed = Xml.get(node: xml, tag: 'ondismissed');
+  }
+
+  // listen for changed
+  void onChange(OnChangeCallback callback) => _alarming?.registerListener(callback);
+
+  Future<bool> onAlarm() async {
+    if (_onalarm == null) return true;
+    return await EventHandler(this).execute(_onalarm);
   }
 }

@@ -252,9 +252,7 @@ class ListItemModel extends BoxModel {
         this.fields!.add(field);
 
         // Register Listener to Dirty Field
-        if (field.dirtyObservable != null) {
-          field.dirtyObservable!.registerListener(onDirtyListener);
-        }
+        field.registerDirtyListener(onDirtyListener);
       }
     }
   }

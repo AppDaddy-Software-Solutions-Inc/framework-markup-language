@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/data/data.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
@@ -156,7 +157,6 @@ class TableViewState extends WidgetState<TableView> {
 
       // get row model
       for (var column in columns) {
-        dynamic value;
 
         // get column index
         var colIdx = map.containsKey(column) ? map[column]!.index : -1;
@@ -165,12 +165,20 @@ class TableViewState extends WidgetState<TableView> {
         var model = widget.model.header?.cell(colIdx);
 
         // simple grid
-        if (model?.usesRenderer ?? false) {
-          var model = widget.model.getRowCellModel(rowIdx, colIdx);
-          value = model?.value;
-        } else {
-          value = Data.read(data, column.field) ?? "";
+        dynamic value;
+
+        // get value override from model
+        if (model?.usesRenderer == true) {
+          value = widget.model.getRowCellModel(rowIdx, colIdx)?.value;
         }
+
+        // get value from data
+        if (value == null) {
+          value = Data.read(data, column.field);
+        }
+
+        // default
+        value ??= "";
 
         cells[column.field] = PlutoCell(value: value);
         colIdx++;
@@ -188,6 +196,9 @@ class TableViewState extends WidgetState<TableView> {
 
   Widget cellBuilder(
       PlutoColumnRendererContext context, bool hasEnterableFields) {
+
+    var x = this.rows;
+
     // get row and column indexes
     var rowIdx = rows.indexOf(context.row);
     var colIdx =

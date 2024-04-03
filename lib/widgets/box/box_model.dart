@@ -57,7 +57,6 @@ class BoxModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get layout => _layout?.get()?.toLowerCase().trim();
 
   /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.

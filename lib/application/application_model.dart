@@ -307,7 +307,7 @@ class ApplicationModel extends WidgetModel {
       }
 
       // splash delay
-      var delay = toInt(model.settings["SPLASH_DURATION"]) ?? 0;
+      var delay = toInt(model.settings["SPLASH_DURATION"]) ?? 10;
 
       // get the splash image if delay is > 0
       if (delay > 0)

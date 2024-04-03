@@ -178,7 +178,7 @@ class TableViewState extends WidgetState<TableView> {
         }
 
         // default
-        value ??= "";
+        //value ??= "";
 
         cells[column.field] = PlutoCell(value: value);
         colIdx++;

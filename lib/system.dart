@@ -322,14 +322,8 @@ class System extends WidgetModel implements IEventManager {
   }
 
   static toast(String? msg, {int? duration}) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _toast(msg, duration: duration);
-    });
-  }
-
-  static _toast(String? msg, {int? duration}) {
     BuildContext? context = NavigationManager().navigatorKey.currentContext;
-    if (context != null) {
+    if (context != null && context.mounted) {
       SnackBar snackBar = SnackBar(
           content: Text(msg ?? ''),
           duration: Duration(seconds: duration ?? 4),

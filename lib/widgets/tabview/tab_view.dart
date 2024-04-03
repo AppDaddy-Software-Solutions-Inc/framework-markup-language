@@ -133,7 +133,6 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin {
     return _showPage(uri.url, event: event);
   }
 
-
    // As it's not expected that there will be nested views, such as TabView, this function
    // currently only propagates the triggers to any TriggerModels of the view inside the page model.
    // If there are instances of nested views, another method may have to be found to

@@ -47,11 +47,16 @@ class ExpressionEvaluator {
       return value.map(
           (key, value) => MapEntry(eval(key, context), eval(value, context)));
     }
+    if (value is String) {
+      if (value.startsWith("___V") && context.containsKey(value)) {
+        return context[value];
+      }
+    }
     return value;
   }
 
   dynamic evalVariable(Variable variable, Map<String?, dynamic> context) {
-    return context[variable.identifier.name];
+    return context[variable.identifier.name] ?? context[variable.identifier.name.toLowerCase()];
   }
 
   dynamic evalThis(ThisExpression expression, Map<String?, dynamic> context) {

@@ -523,7 +523,7 @@ class _InputViewState extends WidgetState<InputView>
         fontWeight: FontWeight.w300,
         color: errorTextColor,
       ),
-      errorText: widget.model.alarmText,
+      errorText: widget.model.alarm,
       hintText: widget.model.dense ? hint : null,
       hintStyle: TextStyle(
         fontSize: fontsize ?? 14,

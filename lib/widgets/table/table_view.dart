@@ -2,12 +2,12 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
+import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -55,6 +55,11 @@ class TableViewState extends WidgetState<TableView> {
 
   // list of Pluto Rows
   final List<PlutoRow> rows = [];
+
+  // used in lazy and page loaders
+  // to determine of a row model must be built or
+  // if the model is being built by the row's cell builder
+  bool mustBuildRowModel = false;
 
   // maps PlutoColumn -> TableHeaderModel
   // this is necessary since PlutoColumns can be re-ordered
@@ -111,6 +116,23 @@ class TableViewState extends WidgetState<TableView> {
     while (rows.length < length) {
       var row = buildRow(rows.length);
       if (row == null) break;
+
+      // compute must build
+      if (widget.model.rows.length < 2) {
+        mustBuildRowModel = _mustBuildRowModel();
+      }
+
+      // must build model
+      if (mustBuildRowModel) {
+
+        // get row index
+        var index = rows.indexOf(row);
+
+        // not found
+        if (!index.isNegative) {
+          widget.model.getRowModel(index);
+        }
+      }
     }
   }
 
@@ -420,13 +442,9 @@ class TableViewState extends WidgetState<TableView> {
     var cell   = event.row.cells.values.toList()[event.columnIdx];
 
     // fire change handler
-    bool ok = await widget.model.onChangeHandler(rowIdx, colIdx, event.value, event.oldValue, callback: onValidationError);
+    bool ok = await widget.model.onChangeHandler(rowIdx, colIdx, event.value, event.oldValue);
     if (!ok) cell.value = event.oldValue;
     onSelectedHandler(force: true);
-  }
-
-  void onValidationError(String error){
-    WidgetsBinding.instance.addPostFrameCallback((_) => System.toast(error,duration: 2));
   }
 
   void onRowsMoved(PlutoGridOnRowsMovedEvent event) async {
@@ -1003,7 +1021,10 @@ class TableViewState extends WidgetState<TableView> {
 
     List<String> fields = [];
     for (var cell in widget.model.header!.cells) {
+
       var title = cell.title ?? cell.field ?? "Column ${cell.index}";
+
+      bool render = cell.usesRenderer;
 
       // set custom header renderer
       var header = WidgetSpan(child: BoxView(cell));
@@ -1023,7 +1044,7 @@ class TableViewState extends WidgetState<TableView> {
 
       // cell builder - for performance reasons, tables without defined
       // table rows can be rendered much quicker
-      var builder = cell.usesRenderer
+      var builder = render
           ? (rendererContext) =>
           cellBuilder(rendererContext, cell.hasEnterableFields)
           : null;
@@ -1036,7 +1057,7 @@ class TableViewState extends WidgetState<TableView> {
 
       // get cell alignment
       var alignment = _getAlignment();
-      if (cell.usesRenderer) alignment = PlutoColumnTextAlign.left;
+      if (render) alignment = PlutoColumnTextAlign.left;
 
       // footer builder
       TableFooterCellModel? footer;
@@ -1088,6 +1109,31 @@ class TableViewState extends WidgetState<TableView> {
     }
   }
 
+  bool _mustBuildRowModel() {
+
+    // renderer defined
+    if (widget.model.header?.cells.firstWhereOrNull((cell) => cell.usesRenderer) != null) return false;
+
+    // table editable?
+    if (widget.model.maybeEditable) return true;
+
+    // header or header cell is editable?
+    if (widget.model.header != null) {
+      var hdr = widget.model.header!;
+      if (hdr.maybeEditable) return true;
+      if (hdr.cells.firstWhereOrNull((cell) => cell.maybeEditable) != null) return true;
+    }
+
+    // row or row cell is editable?
+    if (widget.model.rows.isNotEmpty) {
+      var row = widget.model.rows.values.first;
+      if (row.maybeEditable) return true;
+      if (row.cells.firstWhereOrNull((cell) => cell.maybeEditable) != null) return true;
+    }
+
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
@@ -1095,6 +1141,7 @@ class TableViewState extends WidgetState<TableView> {
 
     // build style
     if (grid == null) {
+
       // build the columns
       _buildColumns();
 

@@ -457,6 +457,7 @@ class DataSourceModel extends WidgetModel implements IDataSource {
                   ? false
                   : true) ==
           null);
+
       return isText ? body.innerText.trim() : body.innerXml.trim();
     }
 

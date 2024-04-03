@@ -28,8 +28,6 @@ import 'package:fml/platform/platform.web.dart'
     if (dart.library.io) 'package:fml/platform/platform.vm.dart'
     if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
-typedef ValidationErrorCallback = Function(String error);
-
 class TableModel extends BoxModel implements IForm {
   static String dynamicTableValue1 = "{field}";
   static String dynamicTableValue2 = "[*]";
@@ -180,6 +178,9 @@ class TableModel extends BoxModel implements IForm {
   }
 
   bool get resizeable => _resizeable?.get() ?? true;
+
+  // column uses editable
+  bool get maybeEditable => _editable != null;
 
   // editable - used on non row prototype only
   BooleanObservable? _editable;
@@ -400,18 +401,21 @@ class TableModel extends BoxModel implements IForm {
   }
 
   void _setInitialRows() {
+
     // get all child rows
     List<TableRowModel> rows =
         findChildrenOfExactType(TableRowModel).cast<TableRowModel>();
 
     // iterate through all rows
     for (var row in rows) {
-      var isFirstRow = rows.first == row;
 
       // first row?
+      var isFirstRow = rows.first == row;
+
       // set header as simple
       if (isFirstRow) {
-        // set usesRenderer
+
+        // set column usesRenderer
         for (var cell in row.cells) {
           var cellIdx = row.cells.indexOf(cell);
           var column = header != null && cellIdx < header!.cells.length
@@ -769,8 +773,7 @@ class TableModel extends BoxModel implements IForm {
       int rowIdx,
       int colIdx,
       dynamic value,
-      dynamic oldValue,
-      {ValidationErrorCallback? callback} ) async {
+      dynamic oldValue) async {
 
     var row = (rowIdx >= 0 && rowIdx < rows.length) ? rows[rowIdx] : null;
     var rowCell = row?.cell(colIdx);
@@ -781,7 +784,14 @@ class TableModel extends BoxModel implements IForm {
     bool ok = true;
     if (data != null && colCell != null && fld != null) {
 
+      // mark dirty
+      row?.dirty = true;
+      rowCell?.dirty = true;
+      //rowCell?.touched = true;
+
       // write new value
+      // the data needs to be written ahead of alarm validation
+      // in order for binding to work correctly
       Data.write(data, fld, value);
 
       // set current data
@@ -790,16 +800,9 @@ class TableModel extends BoxModel implements IForm {
       // set selected to current data
       selected = data;
 
-      // fire column change handler
-      ok = true;
-
-      // fire the row's cell validator
-      if (ok) {
-        ok = isNullOrEmpty(rowCell?.validate) || toBool(rowCell?.validate) == false;
-        if (!ok && toBool(rowCell?.validate) != true && callback != null) {
-          callback.call(rowCell!.validate!);
-        }
-      }
+      // validation alarm?
+      ok = !(rowCell?.alarming ?? false);
+      if (!ok) rowCell?.onAlarm();
 
       // fire the row's cell change handler
       if (ok) ok = await rowCell?.onChangeHandler() ?? true;
@@ -822,6 +825,8 @@ class TableModel extends BoxModel implements IForm {
 
       // on fail, restore old value
       if (!ok) {
+
+        // write back old value
         Data.write(data, fld, oldValue);
 
         // reset current row data
@@ -829,11 +834,6 @@ class TableModel extends BoxModel implements IForm {
 
         // reset selected
         selected = data;
-      }
-
-      // mark dirty
-      if (ok) {
-        row?.dirty = true;
       }
     }
     return ok;
@@ -954,7 +954,7 @@ class TableModel extends BoxModel implements IForm {
     }
   }
 
-  // delete a row
+  // insert a row
   Future<bool> insertRow(String? jsonOrXml, int? rowIndex) async {
     try {
       var view = findListenerOfExactType(TableViewState);

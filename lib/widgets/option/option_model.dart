@@ -32,7 +32,6 @@ class OptionModel extends RowModel {
       _label = StringObservable(null, v, scope: scope);
     }
   }
-
   String? get label => _label?.get() ?? labelInner ?? value;
 
   // list of labels from child text widgets
@@ -136,7 +135,7 @@ class OptionModel extends RowModel {
     if (viewableChildren.isEmpty)
     {
       children ??= [];
-      children!.add(TextModel(this,null,value: value));
+      children!.add(TextModel(this,null,value: label ?? value));
     }
   }
 

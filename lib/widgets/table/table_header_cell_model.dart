@@ -61,6 +61,9 @@ class TableHeaderCellModel extends BoxModel {
   @override
   double? get height => null;
 
+  @override
+  String? get layout => super.layout ?? "column";
+
   // column type
   StringObservable? _type;
   set type(dynamic v) {

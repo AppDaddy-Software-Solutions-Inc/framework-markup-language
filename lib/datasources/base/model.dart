@@ -465,7 +465,7 @@ class DataSourceModel extends WidgetModel implements IDataSource {
     if (xml.children.isEmpty) return null;
 
     // no model children?
-    if (children?.isNotEmpty ?? true) return null;
+    if (children != null && children!.isNotEmpty) return null;
 
     // more than 1 non-textual element?
     if (xml.childElements.length > 1) return null;

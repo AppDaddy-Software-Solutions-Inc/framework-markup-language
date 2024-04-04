@@ -41,6 +41,9 @@ class TableRowCellModel extends BoxModel {
   @override
   double? get height => null;
 
+  @override
+  String? get layout => super.layout ?? "row";
+
   /// cell has been changed?
   BooleanObservable? _dirty;
   set dirty(dynamic v) {

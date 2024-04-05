@@ -24,7 +24,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
   bool initialized = false;
 
   // text editing controller
-  final controller = TextEditingController();
+  var controller = TextEditingController();
 
   // suggestion controller
   final suggestionController = SuggestionsController<OptionModel>();
@@ -348,8 +348,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
 
     // select all
     if (focus.hasFocus && widget.model.editable) {
-      controller.selection =
-          TextSelection(baseOffset: 0, extentOffset: controller.text.length);
+      controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
     }
   }
 
@@ -371,6 +370,10 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
+
+    controller.dispose();
+
+    controller = TextEditingController();
 
     // set the controller text
     setControllerText(widget.model.selectedOption?.label);

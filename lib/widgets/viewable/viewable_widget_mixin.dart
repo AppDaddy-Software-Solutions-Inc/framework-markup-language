@@ -88,7 +88,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
       _width!.set(v, notify: false);
     }
   }
-
   double? get width => _width?.get();
 
   // this routine enforces the min and max width
@@ -133,7 +132,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
       _height!.set(v, notify: false);
     }
   }
-
   double? get height => _height?.get();
 
   // this routine enforces the min and max height
@@ -175,7 +173,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   int? get flex => _flex?.get();
 
   // this routine set the width silently and resets the
@@ -1078,8 +1075,19 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
           BooleanObservable(Binding.toKey(id, 'candrop'), v, scope: scope);
     }
   }
-
   bool? get canDrop => canDropObservable?.get();
+
+  /// The opacity of the widget
+  DoubleObservable? _opacity;
+  set opacity(dynamic v) {
+    if (_opacity != null) {
+      _opacity!.set(v);
+    } else if (v != null) {
+      _opacity = DoubleObservable(Binding.toKey(id, 'opacity'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get opacity => _opacity?.get();
 
   // rotation
   DoubleObservable? _rotation;
@@ -1091,8 +1099,19 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get rotation => _rotation?.get();
+
+  // flip
+  StringObservable? _flip;
+  set flip(dynamic v) {
+    if (_flip != null) {
+      _flip!.set(v);
+    } else if (v != null) {
+      _flip = StringObservable(Binding.toKey(id, 'flip'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get flip => _flip?.get();
 
   /// Deserializes the FML template elements, attributes and children
   @override
@@ -1294,7 +1313,7 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
       view = DraggableView(this, view);
     }
 
-    // rotation
+    /// rotation
     if (rotation != null) {
       view = RotationTransition(
           turns: AlwaysStoppedAnimation(rotation! / 360), child: view);

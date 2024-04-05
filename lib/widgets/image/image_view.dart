@@ -244,51 +244,28 @@ class _ImageViewState extends WidgetState<ImageView> {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
-    String? url = widget.model.url;
-    double? opacity = widget.model.opacity;
-    double? width = widget.model.width;
-    double? height = widget.model.height;
-    String? fit = widget.model.fit;
-    String? filter = widget.model.filter;
-    Scope? scope = Scope.of(widget.model);
-
     // get the image
-    Widget view = ImageView.getImage(url, widget.model.animations == null,
+    Widget view = ImageView.getImage(widget.model.url, widget.model.animations == null,
             color: widget.model.color,
-            scope: scope,
+            scope: Scope.of(widget.model),
             defaultImage: widget.model.defaultvalue,
-            width: width,
-            height: height,
-            fit: fit,
-            filter: filter) ??
+            width: widget.model.width,
+            height: widget.model.height,
+            fit: widget.model.fit,
+            filter: widget.model.filter) ??
         Container();
 
-    // Flip
-    if (widget.model.flip != null) {
-      if (widget.model.flip!.toLowerCase() == 'vertical') {
-        view = Transform.scale(scaleY: -1, child: view);
-      }
-      if (widget.model.flip!.toLowerCase() == 'horizontal') {
-        view = Transform.scale(scaleX: -1, child: view);
-      }
-    }
-
-    // Alpha/Opacity
-    if (opacity != null) view = Opacity(opacity: opacity, child: view);
-
-    // Stack Children
-    if (widget.model.children != null && widget.model.children!.isNotEmpty) {
-      view = Stack(children: [view]);
-    }
-
-    // Interactive
-    if (widget.model.interactive == true) view = InteractiveViewer(child: view);
+    // interactive image??
+    if (widget.model.interactive) view = InteractiveViewer(child: view);
 
     // add margins
     view = addMargins(view);
 
     // apply constraints
     view = applyConstraints(view, widget.model.constraints);
+
+    // apply visual transforms
+    view = applyTransforms(view);
 
     // apply user defined constraints
     return view;

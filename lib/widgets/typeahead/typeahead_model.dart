@@ -73,7 +73,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
       _value = StringObservable(
         Binding.toKey(id, 'value'),
         v,
-        scope: scope,
+        scope: scope, listener: onValueChange
       );
     }
   }
@@ -172,14 +172,6 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
 
     // set the default selected option
     if (datasource == null) _setSelectedOption();
-  }
-
-  void onValueChange(Observable observable) {
-    // set the selected option
-    _setSelectedOption(setValue: false);
-
-    // notify listeners
-    onPropertyChange(observable);
   }
 
   void _setSelectedOption({bool setValue = true}) {
@@ -311,6 +303,15 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
       await onChange(context);
     }
     return ok;
+  }
+
+  void onValueChange(Observable observable) {
+
+    // set the selected option
+    _setSelectedOption(setValue: false);
+
+    // notify listeners
+    onPropertyChange(observable);
   }
 
   Future<List<OptionModel>> getMatchingOptions(String pattern) async {

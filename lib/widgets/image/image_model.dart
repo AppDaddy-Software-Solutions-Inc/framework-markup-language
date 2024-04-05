@@ -19,7 +19,6 @@ class ImageModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get url => _url?.get();
 
   // default
@@ -32,7 +31,6 @@ class ImageModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get defaultvalue => _default?.get();
 
   // fit
@@ -45,7 +43,6 @@ class ImageModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get fit => _fit?.get();
 
   // filter
@@ -58,21 +55,7 @@ class ImageModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get filter => _filter?.get();
-
-  // flip
-  StringObservable? _flip;
-  set flip(dynamic v) {
-    if (_flip != null) {
-      _flip!.set(v);
-    } else if (v != null) {
-      _flip = StringObservable(Binding.toKey(id, 'flip'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get flip => _flip?.get();
 
   // interactive
   BooleanObservable? _interactive;
@@ -84,7 +67,6 @@ class ImageModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get interactive => _interactive?.get() ?? false;
 
   ImageModel(WidgetModel super.parent, super.id,

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:math' as math;
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/widgets/box/box_constraints.dart';
@@ -297,7 +298,10 @@ class StackRenderer extends RenderBox
     var parentWidth = widthOf(parent);
     var myWidth = model.getWidth(widthParent: parentWidth);
     if (myWidth != null) {
-      width = myWidth;
+
+      // fix - olajos April 4, 2024
+      width = min(myWidth, myConstraints.maxWidth);
+
       hardSizedWidth = true;
       myConstraints = BoxConstraints(
           minWidth: myConstraints.minWidth,
@@ -313,7 +317,10 @@ class StackRenderer extends RenderBox
         constraints.hasBoundedHeight ? constraints.maxHeight : heightOf(parent);
     var myHeight = model.getHeight(heightParent: parentHeight);
     if (myHeight != null) {
-      height = myHeight;
+
+      // fix - olajos April 4, 2024
+      height = min(myHeight, myConstraints.maxHeight);
+
       hardSizedHeight = true;
       myConstraints = BoxConstraints(
           minWidth: myConstraints.minWidth,

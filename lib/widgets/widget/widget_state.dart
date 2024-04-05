@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
@@ -46,7 +48,37 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T>
     }
   }
 
-  // applies margins to the view based on the widget model
+  /// applies trabnsforms like rotate, flip, etc.
+  Widget applyTransforms(Widget view) {
+
+    // opacity
+    if (model?.opacity != null) {
+      view = Opacity(opacity: model!.opacity!, child: view);
+    }
+
+    // rotation
+    if (model?.rotation != null) {
+      view = Transform.rotate(
+          angle: model!.rotation! * pi / 180,
+          child: view);
+    }
+
+    // flip
+    if (model?.flip != null) {
+      switch (model?.flip?.toLowerCase()){
+        case 'vertical':
+          view = Transform.scale(scaleY: -1, child: view);
+          break;
+        case 'horizontal':
+          view = Transform.scale(scaleX: -1, child: view);
+          break;
+      }
+    }
+
+    return view;
+  }
+
+    /// applies margins to the view based on the widget model
   Widget addMargins(Widget view) {
     if (model?.marginTop != null ||
         model?.marginBottom != null ||

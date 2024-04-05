@@ -15,12 +15,14 @@ import 'package:fml/helpers/helpers.dart';
 enum InputTypes { numeric, integer, text, boolean }
 
 class SliderModel extends FormFieldModel implements IFormField {
+
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
-  ////////////////////
-  /* capitalization */
-  ////////////////////
+  @override
+  double? get height => super.height ?? 46;
+
+  // capitalization
   InputTypes? _inputtype;
   set inputtype(dynamic v) {
     if (v is InputTypes) _inputtype = v;
@@ -31,9 +33,7 @@ class SliderModel extends FormFieldModel implements IFormField {
     return _inputtype;
   }
 
-  /////////////
-  /* Minimum */
-  /////////////
+  // minimum range value
   DoubleObservable? _minimum;
   set minimum(dynamic v) {
     if (_minimum != null) {
@@ -43,12 +43,9 @@ class SliderModel extends FormFieldModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get minimum => _minimum?.get() ?? 0;
 
-  /////////////
-  /* Maximum */
-  /////////////
+  // maximum range value
   DoubleObservable? _maximum;
   set maximum(dynamic v) {
     if (_maximum != null) {
@@ -58,12 +55,9 @@ class SliderModel extends FormFieldModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get maximum => _maximum?.get() ?? 0;
 
-  ///////////////
-  /* Divisions */
-  ///////////////
+  // divisions
   IntegerObservable? _divisions;
   set divisions(dynamic v) {
     if (_divisions != null) {
@@ -73,12 +67,9 @@ class SliderModel extends FormFieldModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   int? get divisions => _divisions?.get();
 
-  ///////////
-  /* Value */
-  ///////////
+  // value
   StringObservable? _value;
   @override
   set value(dynamic v) {
@@ -94,9 +85,7 @@ class SliderModel extends FormFieldModel implements IFormField {
   @override
   dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
-  ////////////
-  /* Answer */
-  ////////////
+  // answer
   @override
   Future<bool> answer(dynamic v, {bool range = false}) async {
     bool ok = true;
@@ -144,7 +133,7 @@ class SliderModel extends FormFieldModel implements IFormField {
     return ok;
   }
 
-  // Range
+  // range
   BooleanObservable? _range;
   set range(dynamic v) {
     if (_range != null) {

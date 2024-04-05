@@ -73,19 +73,6 @@ class DecoratedWidgetModel extends ViewableWidgetModel {
 
   Color? get color4 => _color4?.get();
 
-  /// The opacity of the box and its children.
-  DoubleObservable? _opacity;
-  set opacity(dynamic v) {
-    if (_opacity != null) {
-      _opacity!.set(v);
-    } else if (v != null) {
-      _opacity = DoubleObservable(Binding.toKey(id, 'opacity'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double? get opacity => _opacity?.get();
-
   DecoratedWidgetModel(super.parent, super.id, {super.scope, super.data});
 
   /// Deserializes the FML template elements, attributes and children

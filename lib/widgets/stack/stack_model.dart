@@ -44,11 +44,4 @@ class StackModel extends BoxModel {
     }
     return super.inflate();
   }
-
-  /// Deserializes the FML template elements, attributes and children
-  @override
-  void deserialize(XmlElement xml) {
-    // deserialize
-    super.deserialize(xml);
-  }
 }

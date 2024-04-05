@@ -1,14 +1,16 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/widgets/positioned/positioned_view.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class PositionedModel extends ViewableWidgetModel {
+class PositionedModel extends ColumnModel {
+
+  @override
+  bool get expand => false;
+
   // left
   // bool _leftIsPercent = false;
   DoubleObservable? _left;
@@ -122,7 +124,7 @@ class PositionedModel extends ViewableWidgetModel {
   @override
   double get depth => _depth?.get() ?? 1.0;
 
-  PositionedModel(WidgetModel super.parent, super.id,
+  PositionedModel(super.parent, super.id,
       {dynamic left,
       dynamic right,
       dynamic top,
@@ -168,7 +170,4 @@ class PositionedModel extends ViewableWidgetModel {
     yoffset = Xml.get(node: xml, tag: 'yoffset'); // formally vcenter
     depth = Xml.get(node: xml, tag: 'depth');
   }
-
-  @override
-  Widget getView({Key? key}) => getReactiveView(PositionedView(this));
 }

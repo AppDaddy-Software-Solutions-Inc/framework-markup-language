@@ -4,7 +4,6 @@ import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
-import 'package:fml/widgets/positioned/positioned_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -353,15 +352,10 @@ class BoxModel extends DecoratedWidgetModel {
       if (model is! ModalModel) {
         var view = model.getView();
 
-        // wrap child in child data widget
-        // This is already done for us in our "positioned" widget view
-        if (view is! PositionedView) {
-          view = LayoutBoxChildData(model: model, child: view!);
-        }
-
         // add the view to the
         // view list
         if (view != null) {
+          view = LayoutBoxChildData(model: model, child: view);
           views.add(view);
         }
       }

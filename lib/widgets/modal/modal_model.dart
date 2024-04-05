@@ -4,7 +4,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/modal/modal_manager_view.dart';
-import 'package:fml/widgets/positioned/positioned_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -198,21 +197,17 @@ class ModalModel extends BoxModel {
         // wrap child in child data widget
         // this is done for us in "positioned" if the child happens
         // to be a positioned widget and the layout is "stack" (see positioned_view.dart)
-        if (view is! PositionedView) {
-          view = LayoutBoxChildData(model: model, child: view!);
+        if (view != null) {
+          view = LayoutBoxChildData(model: model, child: view);
+          views.add(view);
         }
-
-        if (view != null) views.add(view);
       }
     }
 
     // add the static child
     if (child != null) {
-      var view = child;
-      if (view is! PositionedView) {
-        view = LayoutBoxChildData(model: this, child: child!);
-      }
-      views.add(view!);
+      var view = LayoutBoxChildData(model: this, child: child!);
+      views.add(view);
     }
 
     return views;

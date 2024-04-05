@@ -224,8 +224,11 @@ class StackRenderer extends RenderBox
       childConstraints = childConstraints.tighten(width: childParentData.width);
     }
     else if (size.width.isFinite) {
-      childConstraints =
-          childConstraints.tighten(width: size.width);
+      childConstraints = BoxConstraints(
+          minWidth: childConstraints.minWidth,
+          maxWidth: size.width,
+          minHeight: childConstraints.minHeight,
+          maxHeight: childConstraints.maxHeight);
     }
 
     if (childParentData.top != null && childParentData.bottom != null) {
@@ -237,8 +240,11 @@ class StackRenderer extends RenderBox
           childConstraints.tighten(height: childParentData.height);
     }
     else if (size.height.isFinite) {
-      childConstraints =
-          childConstraints.tighten(height: size.height);
+      childConstraints = BoxConstraints(
+          minWidth: childConstraints.minWidth,
+          maxWidth: childConstraints.maxWidth,
+          minHeight: childConstraints.minHeight,
+          maxHeight: size.height);
     }
 
     // calculate the child's size by performing

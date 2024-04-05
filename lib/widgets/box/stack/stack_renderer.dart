@@ -223,13 +223,22 @@ class StackRenderer extends RenderBox
     } else if (childParentData.width != null) {
       childConstraints = childConstraints.tighten(width: childParentData.width);
     }
+    else if (size.width.isFinite) {
+      childConstraints =
+          childConstraints.tighten(width: size.width);
+    }
 
     if (childParentData.top != null && childParentData.bottom != null) {
       childConstraints = childConstraints.tighten(
           height: size.height - childParentData.bottom! - childParentData.top!);
-    } else if (childParentData.height != null) {
+    }
+    else if (childParentData.height != null) {
       childConstraints =
           childConstraints.tighten(height: childParentData.height);
+    }
+    else if (size.height.isFinite) {
+      childConstraints =
+          childConstraints.tighten(height: size.height);
     }
 
     // calculate the child's size by performing

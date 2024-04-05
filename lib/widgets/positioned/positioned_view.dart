@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/stack/stack_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'positioned_model.dart';
@@ -19,6 +18,7 @@ class PositionedView extends StatefulWidget implements IWidgetView {
 }
 
 class _PositionedViewState extends WidgetState<PositionedView> {
+
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
@@ -27,36 +27,37 @@ class _PositionedViewState extends WidgetState<PositionedView> {
     // build the child views
     List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
+
+    // get child
     var child = children.length == 1 ? children[0] : Column(children: children);
 
-    // A positioned widget's immediate parent must be a stack
-    Widget view = child;
+    // get parent layout
     LayoutType? layout;
-    if (widget.model.parent is StackModel) layout = LayoutType.stack;
-    if (widget.model.parent is BoxModel &&
-        BoxModel.getLayoutType((widget.model.parent as BoxModel).layout) ==
-            LayoutType.stack) layout = LayoutType.stack;
-    if (layout == LayoutType.stack) {
-      if (widget.model.xoffset != null && widget.model.yoffset != null) {
-        double fromTop =
-            (widget.model.myMaxHeightOrDefault / 2) + widget.model.yoffset!;
-        double fromLeft =
-            (widget.model.myMaxWidthOrDefault / 2) + widget.model.xoffset!;
-        view = LayoutBoxChildData(
-            model: widget.model, top: fromTop, left: fromLeft, child: view);
-      } else {
-        view = LayoutBoxChildData(
-            model: widget.model,
-            top: widget.model.top,
-            bottom: widget.model.bottom,
-            left: widget.model.left,
-            right: widget.model.right,
-            child: view);
-      }
-    } else {
-      view = LayoutBoxChildData(model: widget.model, child: view);
+    if (widget.model.parent is BoxModel) layout = BoxModel.getLayoutType((widget.model.parent as BoxModel).layout);
+
+    // parent is not a stack?
+    if (layout != LayoutType.stack) {
+      return LayoutBoxChildData(model: widget.model, child: child);
     }
 
-    return view;
+    if (widget.model.xoffset != null && widget.model.yoffset != null) {
+
+      double fromTop =
+          (widget.model.myMaxHeightOrDefault / 2) + widget.model.yoffset!;
+
+      double fromLeft =
+          (widget.model.myMaxWidthOrDefault / 2) + widget.model.xoffset!;
+
+      return LayoutBoxChildData(
+          model: widget.model, top: fromTop, left: fromLeft, child: child);
+    }
+
+    return LayoutBoxChildData(
+        model: widget.model,
+        top: widget.model.top,
+        bottom: widget.model.bottom,
+        left: widget.model.left,
+        right: widget.model.right,
+        child: child);
   }
 }

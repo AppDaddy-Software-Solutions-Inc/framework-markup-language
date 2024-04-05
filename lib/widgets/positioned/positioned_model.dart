@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -8,7 +8,7 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/positioned/positioned_view.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class PositionedModel extends DecoratedWidgetModel {
+class PositionedModel extends ViewableWidgetModel {
   // left
   // bool _leftIsPercent = false;
   DoubleObservable? _left;

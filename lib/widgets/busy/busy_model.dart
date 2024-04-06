@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -13,7 +13,7 @@ import 'package:fml/helpers/helpers.dart';
 /// Busy Model
 ///
 /// Defines the properties of a [BUSY.BusyView]
-class BusyModel extends DecoratedWidgetModel {
+class BusyModel extends ViewableWidgetModel {
   // visible
   BooleanObservable? _visible;
 

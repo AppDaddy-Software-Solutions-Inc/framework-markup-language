@@ -2,7 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -17,7 +17,7 @@ enum VerticalAlignmentType { top, bottom, center, around, between, evenly }
 
 enum HorizontalAlignmentType { left, right, center, around, between, evenly }
 
-class BoxModel extends DecoratedWidgetModel {
+class BoxModel extends ViewableWidgetModel {
   LayoutType get layoutType =>
       getLayoutType(layout, defaultLayout: LayoutType.column);
 

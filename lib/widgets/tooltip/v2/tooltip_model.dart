@@ -1,9 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
-import 'package:fml/observable/observables/color.dart';
 import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/observables/integer.dart';
 import 'package:fml/observable/observables/string.dart';
@@ -16,20 +14,8 @@ import 'package:fml/helpers/helpers.dart';
 enum OpenMethods { tap, longpress, hover, manual }
 
 class TooltipModel extends ViewableWidgetModel {
+
   OpenMethods? openMethod;
-
-  // color
-  ColorObservable? _color;
-  set color(dynamic v) {
-    if (_color != null) {
-      _color!.set(v);
-    } else if (v != null) {
-      _color = ColorObservable(Binding.toKey(id, 'color'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  Color? get color => _color?.get();
 
   StringObservable? _position;
   set position(dynamic v) {

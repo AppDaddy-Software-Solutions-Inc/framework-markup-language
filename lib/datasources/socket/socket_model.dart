@@ -322,7 +322,13 @@ class SocketModel extends DataSourceModel
           if (asBinary) {
             await socket?.send(bytes);
           } else {
-            await socket?.send(utf8.decode(bytes));
+            String? text;
+            try {
+              text = utf8.decode(bytes);
+              await socket?.send(text);
+            } catch (e) {
+              Log().exception(e);
+            }
           }
         }
       }

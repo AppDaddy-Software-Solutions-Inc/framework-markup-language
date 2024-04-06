@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -11,7 +11,8 @@ import 'package:fml/helpers/helpers.dart';
 /// Breadcrumb Model
 ///
 /// Defines the properties of [BREADCRUMB.BreadcrumbView] widget
-class BreadcrumbModel extends DecoratedWidgetModel {
+class BreadcrumbModel extends ViewableWidgetModel {
+  
   /// background color of the breadcrumb bar
   ColorObservable? _backgroundcolor;
   set backgroundcolor(dynamic v) {
@@ -23,7 +24,6 @@ class BreadcrumbModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   Color? get backgroundcolor => _backgroundcolor?.get();
 
   BreadcrumbModel({
@@ -65,7 +65,6 @@ class BreadcrumbModel extends DecoratedWidgetModel {
 
     // properties
     backgroundcolor = Xml.get(node: xml, tag: 'backgroundcolor');
-    opacity = Xml.get(node: xml, tag: 'opacity');
   }
 
   @override

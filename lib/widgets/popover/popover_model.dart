@@ -2,7 +2,7 @@
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/event/handler.dart';
@@ -13,7 +13,7 @@ import 'package:fml/widgets/popover/item/popover_item_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class PopoverModel extends DecoratedWidgetModel implements IModelListener {
+class PopoverModel extends ViewableWidgetModel implements IModelListener {
   List<PopoverItemModel> items = [];
 
   // data sourced prototype

@@ -66,7 +66,13 @@ class FileModel extends DataSourceModel implements IDataSource {
     if (WidgetModel.isBound(this, "$id.data.text")) {
       await file.read();
       map['text'] = "";
-      if (file.bytes != null) map["text"] = utf8.decode(file.bytes!);
+      if (file.bytes != null) {
+        try {
+          map["text"] = utf8.decode(file.bytes!);
+        } catch (e) {
+          map["text"] = "";
+        }
+      }
     }
 
     // add map

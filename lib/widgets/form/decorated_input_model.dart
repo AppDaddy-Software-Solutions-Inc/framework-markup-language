@@ -28,7 +28,6 @@ class DecoratedInputModel extends FormFieldModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get dense => _dense?.get() ?? false;
 
   /// The hint that sits inside of the input, and floats above if not dense and filled.

@@ -5,7 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
@@ -15,7 +15,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class MenuModel extends DecoratedWidgetModel implements IScrollable {
+class MenuModel extends ViewableWidgetModel implements IScrollable {
   static const String typeList = "list";
   static const String typeButton = "button";
 

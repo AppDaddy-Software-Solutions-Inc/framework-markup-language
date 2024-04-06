@@ -9,8 +9,8 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-enum DrawerPosition {top, bottom, left, right}
-enum DrawerDirection {vertical, horizontal}
+enum Drawers {top, bottom, left, right}
+enum DragDirection {vertical, horizontal}
 
 class DrawerModel extends ViewableWidgetModel {
 
@@ -49,7 +49,6 @@ class DrawerModel extends ViewableWidgetModel {
     }
   }
   bool get handle => _handle?.get() ?? false;
-
 
   DrawerItemModel? top;
   DrawerItemModel? bottom;
@@ -131,29 +130,29 @@ class DrawerModel extends ViewableWidgetModel {
           }
 
           // Assign ids
-          switch (toEnum(side, DrawerPosition.values)) {
-            case DrawerPosition.left:
+          switch (toEnum(side, Drawers.values)) {
+            case Drawers.left:
               idLeft = Xml.attribute(node: node, tag: 'id');
               handleLeft =
                   toBool(Xml.attribute(node: node, tag: 'handle')) == true;
               sizeLeft = toDouble(Xml.attribute(node: node, tag: 'size'));
               break;
 
-            case DrawerPosition.right:
+            case Drawers.right:
               idRight = Xml.attribute(node: node, tag: 'id');
               handleRight =
                   toBool(Xml.attribute(node: node, tag: 'handle')) == true;
               sizeRight = toDouble(Xml.attribute(node: node, tag: 'size'));
               break;
 
-            case DrawerPosition.top:
+            case Drawers.top:
               idTop = Xml.attribute(node: node, tag: 'id');
               handleTop =
                   toBool(Xml.attribute(node: node, tag: 'handle')) == true;
               sizeTop = toDouble(Xml.attribute(node: node, tag: 'size'));
               break;
 
-            case DrawerPosition.bottom:
+            case Drawers.bottom:
               idBottom = Xml.attribute(node: node, tag: 'id');
               handleBottom =
                   toBool(Xml.attribute(node: node, tag: 'handle')) == true;
@@ -216,22 +215,22 @@ class DrawerModel extends ViewableWidgetModel {
     // This grabs the deserializes xml generated from fromXmlList()
     element = Xml.getChildElement(node: xml, tag: "TOP");
     if (element != null) {
-      top = DrawerItemModel.fromXml(this, element, DrawerPosition.top);
+      top = DrawerItemModel.fromXml(this, element, Drawers.top);
     }
 
     element = Xml.getChildElement(node: xml, tag: "BOTTOM");
     if (element != null) {
-      bottom = DrawerItemModel.fromXml(this, element, DrawerPosition.bottom);
+      bottom = DrawerItemModel.fromXml(this, element, Drawers.bottom);
     }
 
     element = Xml.getChildElement(node: xml, tag: "LEFT");
     if (element != null) {
-      left = DrawerItemModel.fromXml(this, element, DrawerPosition.left);
+      left = DrawerItemModel.fromXml(this, element, Drawers.left);
     }
 
     element = Xml.getChildElement(node: xml, tag: "RIGHT");
     if (element != null) {
-      right = DrawerItemModel.fromXml(this, element, DrawerPosition.right);
+      right = DrawerItemModel.fromXml(this, element, Drawers.right);
     }
 
     // properties
@@ -239,15 +238,15 @@ class DrawerModel extends ViewableWidgetModel {
     rounded = Xml.get(node: xml, tag: 'rounded');
   }
 
-  bool drawerExists(DrawerPosition drawer) {
+  bool drawerExists(Drawers drawer) {
     switch (drawer) {
-      case DrawerPosition.top:
+      case Drawers.top:
         return top != null;
-      case DrawerPosition.bottom:
+      case Drawers.bottom:
         return bottom != null;
-      case DrawerPosition.left:
+      case Drawers.left:
         return left != null;
-      case DrawerPosition.right:
+      case Drawers.right:
         return right != null;
     }
   }

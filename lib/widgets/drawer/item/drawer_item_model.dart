@@ -8,12 +8,12 @@ import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class DrawerItemModel extends BoxModel {
-  final DrawerPosition position;
+  final Drawers position;
 
   DrawerItemModel(WidgetModel super.parent, super.id, this.position);
 
   static DrawerItemModel? fromXml(
-      WidgetModel parent, XmlElement? xml, DrawerPosition position) {
+      WidgetModel parent, XmlElement? xml, Drawers position) {
     DrawerItemModel? model;
     try {
       model = DrawerItemModel(parent, Xml.get(node: xml, tag: 'id'), position);

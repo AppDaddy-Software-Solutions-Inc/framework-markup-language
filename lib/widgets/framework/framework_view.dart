@@ -12,13 +12,11 @@ import 'package:fml/system.dart';
 import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/tabview/tab_view.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:fml/widgets/drawer/drawer_view.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/phrase.dart';
 
@@ -436,34 +434,8 @@ class FrameworkViewState extends State<FrameworkView>
     SystemChrome.setPreferredOrientations(myOrientation);
   }
 
-  Widget _buildDrawers(Widget view) {
-    // drawer defined
-    if (widget.model.drawer == null) return view;
-
-    // wrap view in stacked view
-    var drawer = DrawerView(widget.model.drawer!, view);
-
-    return GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () => WidgetModel.unfocus(),
-        onVerticalDragStart: (dragStartDetails) =>
-            drawer.onDragOpen(dragStartDetails, DrawerDirection.vertical),
-        onHorizontalDragStart: (dragStartDetails) =>
-            drawer.onDragOpen(dragStartDetails, DrawerDirection.horizontal),
-        onVerticalDragUpdate: (dragUpdateDetails) =>
-            drawer.onDragSheet(dragUpdateDetails, DrawerDirection.vertical, true),
-        onHorizontalDragUpdate: (dragUpdateDetails) =>
-            drawer.onDragSheet(dragUpdateDetails, DrawerDirection.horizontal, true),
-        onVerticalDragEnd: (dragEndDetails) =>
-            drawer.onDragEnd(dragEndDetails, DrawerDirection.vertical, false),
-        onHorizontalDragEnd: (dragEndDetails) =>
-            drawer.onDragEnd(dragEndDetails, DrawerDirection.horizontal, false),
-        onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
-        onLongPressEnd: kDebugMode ? (_) => onLongPressEnd() : null,
-        child: drawer);
-  }
-
   GestureDetector _setGestures(Widget view) {
+
     // simulate a swipe to move back on all desktop applications
     // and mobile IOS applications
     bool enableSwipeBack = FmlEngine.isDesktop ||
@@ -553,9 +525,7 @@ class FrameworkViewState extends State<FrameworkView>
     Widget view = Column(children: [header, body, footer]);
 
     // wrapped drawer view?
-    if (widget.model.drawer != null) {
-      view = _buildDrawers(view);
-    } else {
+    if (widget.model.drawer == null) {
       view = _setGestures(view);
     }
 

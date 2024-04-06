@@ -363,17 +363,17 @@ class _BoxViewState extends WidgetState<BoxView> {
         behavior: HitTestBehavior.translucent,
         onTap: () => WidgetModel.unfocus(),
         onVerticalDragStart: (dragStartDetails) =>
-            drawer.onDragOpen(dragStartDetails, DrawerDirection.vertical),
+            drawer.onDragStart(dragStartDetails, DragDirection.vertical),
         onHorizontalDragStart: (dragStartDetails) =>
-            drawer.onDragOpen(dragStartDetails, DrawerDirection.horizontal),
+            drawer.onDragStart(dragStartDetails, DragDirection.horizontal),
         onVerticalDragUpdate: (dragUpdateDetails) =>
-            drawer.onDragSheet(dragUpdateDetails, DrawerDirection.vertical, true),
+            drawer.onDragging(dragUpdateDetails, DragDirection.vertical, true),
         onHorizontalDragUpdate: (dragUpdateDetails) =>
-            drawer.onDragSheet(dragUpdateDetails, DrawerDirection.horizontal, true),
+            drawer.onDragging(dragUpdateDetails, DragDirection.horizontal, true),
         onVerticalDragEnd: (dragEndDetails) =>
-            drawer.onDragEnd(dragEndDetails, DrawerDirection.vertical, false),
+            drawer.onDragEnd(dragEndDetails, DragDirection.vertical, false),
         onHorizontalDragEnd: (dragEndDetails) =>
-            drawer.onDragEnd(dragEndDetails, DrawerDirection.horizontal, false),
+            drawer.onDragEnd(dragEndDetails, DragDirection.horizontal, false),
         child: drawer);
   }
 

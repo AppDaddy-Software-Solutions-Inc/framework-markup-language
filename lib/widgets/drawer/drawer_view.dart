@@ -4,13 +4,13 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/widgets/goback/goback.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/event/event.dart';
-import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class DrawerView extends StatefulWidget implements IDragListener, IWidgetView {
+
   final List<Widget> children = [];
   @override
   final DrawerModel model;
@@ -31,23 +31,23 @@ class DrawerView extends StatefulWidget implements IDragListener, IWidgetView {
   }
 
   @override
-  onDragOpen(DragStartDetails details, String dir) {
+  onDragOpen(DragStartDetails details, DrawerDirection direction) {
     for (var listener in listeners) {
-      listener.onDragOpen(details, dir);
+      listener.onDragOpen(details, direction);
     }
   }
 
   @override
-  onDragEnd(DragEndDetails details, String dir, bool isOpen) {
+  onDragEnd(DragEndDetails details, DrawerDirection direction, bool isOpen) {
     for (var listener in listeners) {
-      listener.onDragEnd(details, dir, isOpen);
+      listener.onDragEnd(details, direction, isOpen);
     }
   }
 
   @override
-  onDragSheet(DragUpdateDetails details, String dir, bool isOpen) {
+  onDragSheet(DragUpdateDetails details, DrawerDirection direction, bool isOpen) {
     for (var listener in listeners) {
-      listener.onDragSheet(details, dir, isOpen);
+      listener.onDragSheet(details, direction, isOpen);
     }
   }
 }
@@ -58,7 +58,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
   BoxView? bottom;
   BoxView? left;
   BoxView? right;
-  String? openSheet;
+  DrawerPosition? openSheet;
   double? fromTop;
   double? fromBottom;
   double? fromLeft;
@@ -126,16 +126,16 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
     if (!isNullOrEmpty(event.parameters!['url'])) {
       if (event.parameters!['url'] == widget.model.idLeft) {
         event.handled = true;
-        openDrawer('left');
+        openDrawer(DrawerPosition.left);
       } else if (event.parameters!['url'] == widget.model.idRight) {
         event.handled = true;
-        openDrawer('right');
+        openDrawer(DrawerPosition.right);
       } else if (event.parameters!['url'] == widget.model.idTop) {
         event.handled = true;
-        openDrawer('top');
+        openDrawer(DrawerPosition.top);
       } else if (event.parameters!['url'] == widget.model.idBottom) {
         event.handled = true;
-        openDrawer('bottom');
+        openDrawer(DrawerPosition.bottom);
       }
     }
   }
@@ -146,16 +146,16 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
     if (!isNullOrEmpty(event.parameters!['window'])) {
       if (event.parameters!['window'] == widget.model.idLeft) {
         event.handled = true;
-        closeDrawer('left');
+        closeDrawer(DrawerPosition.left);
       } else if (event.parameters!['window'] == widget.model.idRight) {
         event.handled = true;
-        closeDrawer('right');
+        closeDrawer(DrawerPosition.right);
       } else if (event.parameters!['window'] == widget.model.idTop) {
         event.handled = true;
-        closeDrawer('top');
+        closeDrawer(DrawerPosition.top);
       } else if (event.parameters!['window'] == widget.model.idBottom) {
         event.handled = true;
-        closeDrawer('bottom');
+        closeDrawer(DrawerPosition.bottom);
       }
     }
   }
@@ -194,9 +194,9 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
     }
     // });
   }
-
+  
   @override
-  onDragOpen(DragStartDetails dragStartDetails, String dir) {
+  onDragOpen(DragStartDetails dragStartDetails, DrawerDirection direction) {
     // print('drag open broadcast recieved');
     // if (animate == false) {
 
@@ -207,52 +207,52 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
     double screenHeight = h;
     double screenWidth = w;
 
-    if (dir == 'vertical') {
-      if (dragStartDetails.globalPosition.dy < dragEdge &&
+    if (direction == DrawerDirection.vertical) {
+      if (dragStartDetails.localPosition.dy < dragEdge &&
           openSheet == null &&
-          widget.model.drawerExists('top')) {
+          widget.model.drawerExists(DrawerPosition.top)) {
         setState(() {
           // fromLeft = fromRight = 0;
           fromBottom = screenHeight;
           // fromTop = screenHeight - fromBottom;
-          openSheet = 'top';
+          openSheet = DrawerPosition.top;
         });
         // print('open top sheet');
-      } else if (dragStartDetails.globalPosition.dy >
+      } else if (dragStartDetails.localPosition.dy >
               (screenHeight - dragEdge) &&
           openSheet == null &&
-          widget.model.drawerExists('bottom')) {
+          widget.model.drawerExists(DrawerPosition.bottom)) {
         setState(() {
           // fromLeft = fromRight = 0;
           fromTop = screenHeight;
           // fromBottom = screenHeight - fromTop;
-          openSheet = 'bottom';
+          openSheet = DrawerPosition.bottom;
         });
         // print('open bottom sheet');
       }
       // else
       // print('not dragging from top/bottom');
     }
-    if (dir == 'horizontal') {
-      if (dragStartDetails.globalPosition.dx < dragEdge &&
+    if (direction == DrawerDirection.horizontal) {
+      if (dragStartDetails.localPosition.dx < dragEdge &&
           openSheet == null &&
-          widget.model.drawerExists('left')) {
+          widget.model.drawerExists(DrawerPosition.left)) {
         setState(() {
           // fromTop = fromBottom = 0;
           fromRight = screenWidth;
           // fromLeft = screenWidth - fromRight;
-          openSheet = 'left';
+          openSheet = DrawerPosition.left;
         });
         // print('open left sheet');
-      } else if (dragStartDetails.globalPosition.dx >
+      } else if (dragStartDetails.localPosition.dx >
               (screenWidth - dragEdge) &&
           openSheet == null &&
-          widget.model.drawerExists('right')) {
+          widget.model.drawerExists(DrawerPosition.right)) {
         setState(() {
           // fromTop = fromBottom = 0;
           fromLeft = screenWidth;
           // fromRight = screenWidth - fromLeft;
-          openSheet = 'right';
+          openSheet = DrawerPosition.right;
         });
         // print('open right sheet');
       }
@@ -262,7 +262,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
   }
 
   @override
-  onDragEnd(dragEndDetails, String dir, bool isOpen) {
+  onDragEnd(dragEndDetails, DrawerDirection direction, bool isOpen) {
     const int dragLeeway =
         200; // drag leeway for completing open/closes on drag end
 
@@ -273,9 +273,9 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
     double screenHeight = h;
     double screenWidth = w;
     if (animate == false) {
-      if (dir == 'vertical') {
+      if (direction == DrawerDirection.vertical) {
         // TOP SHEET
-        if (openSheet == 'top') {
+        if (openSheet == DrawerPosition.top) {
           if (isOpen) {
             // should close ?
             if (dragEndDetails.primaryVelocity! < -300 ||
@@ -326,7 +326,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
           }
         }
         // BOTTOM SHEET
-        if (openSheet == 'bottom') {
+        if (openSheet == DrawerPosition.bottom) {
           if (isOpen) {
             // should close ?
             if (dragEndDetails.primaryVelocity! > 300 ||
@@ -376,9 +376,9 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
             }
           }
         }
-      } else if (dir == 'horizontal') {
+      } else if (direction == DrawerDirection.horizontal) {
         // LEFT SHEET
-        if (openSheet == 'left') {
+        if (openSheet == DrawerPosition.left) {
           if (isOpen) {
             // should close ?
             if (dragEndDetails.primaryVelocity! < -300 ||
@@ -429,7 +429,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
           }
         }
         // RIGHT SHEET
-        if (openSheet == 'right') {
+        if (openSheet == DrawerPosition.right) {
           if (isOpen) {
             // should close ?
             if (dragEndDetails.primaryVelocity! > 300 ||
@@ -484,7 +484,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
   }
 
   @override
-  onDragSheet(DragUpdateDetails dragUpdateDetails, String dir, bool opening) {
+  onDragSheet(DragUpdateDetails dragUpdateDetails, DrawerDirection direction, bool opening) {
     if (animate == false) {
       var constraints = widget.model.constraints;
       double h = constraints.maxHeight ?? MediaQuery.of(context).size.height;
@@ -497,10 +497,10 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
       } else {
         var animateEdge = dragEdge * 0.5;
         // TOP SHEET
-        if (openSheet == 'top' && dir == 'vertical') {
-          // print(dragUpdateDetails.globalPosition.dy.toString() + ' from top');
+        if (openSheet == DrawerPosition.top && direction == DrawerDirection.vertical) {
+
           // Animate top sheet closed when near edge
-          if (dragUpdateDetails.globalPosition.dy < animateEdge &&
+          if (dragUpdateDetails.localPosition.dy < animateEdge &&
               !opening &&
               dragUpdateDetails.primaryDelta! > 0) {
             setState(() {
@@ -511,7 +511,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
             // print('top sheet animated closed');
           }
           // Animate top sheet open when near edge
-          else if ((screenHeight - dragUpdateDetails.globalPosition.dy) <
+          else if ((screenHeight - dragUpdateDetails.localPosition.dy) <
                   (widget.model.sizeTop != null
                       ? screenHeight - widget.model.sizeTop! - animateEdge
                       : animateEdge) &&
@@ -528,7 +528,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
           else {
             // Determine if we are opening or closing
             var calcFromBottom = opening
-                ? screenHeight - dragUpdateDetails.globalPosition.dy
+                ? screenHeight - dragUpdateDetails.localPosition.dy
                 : fromBottom! - dragUpdateDetails.primaryDelta!;
             // Prevent dragging past open/close range
             if (widget.model.sizeTop != null &&
@@ -545,10 +545,10 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
           }
         }
         // BOTTOM SHEET
-        else if (openSheet == 'bottom' && dir == 'vertical') {
-          // print((screenHeight - dragUpdateDetails.globalPosition.dy).toString() + ' from bottom');
+        else if (openSheet == DrawerPosition.bottom && direction == DrawerDirection.vertical) {
+
           // Animate bottom sheet closed when near edge
-          if ((screenHeight - dragUpdateDetails.globalPosition.dy) <
+          if ((screenHeight - dragUpdateDetails.localPosition.dy) <
                   animateEdge &&
               !opening &&
               dragUpdateDetails.primaryDelta!.isNegative) {
@@ -560,7 +560,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
             // print('bottom sheet animated closed');
           }
           // Animate bottom sheet open when near edge
-          else if (dragUpdateDetails.globalPosition.dy <
+          else if (dragUpdateDetails.localPosition.dy <
                   (widget.model.sizeBottom != null
                       ? screenHeight - widget.model.sizeBottom! - animateEdge
                       : animateEdge) &&
@@ -577,7 +577,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
           else {
             // Determine if we are opening or closing
             var calcFromTop = opening
-                ? dragUpdateDetails.globalPosition.dy
+                ? dragUpdateDetails.localPosition.dy
                 : fromTop! + dragUpdateDetails.primaryDelta!;
             // Prevent dragging past open/close range
             if (widget.model.sizeBottom != null &&
@@ -594,10 +594,10 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
           }
         }
         // LEFT SHEET
-        else if (openSheet == 'left' && dir == 'horizontal') {
-          // print(dragUpdateDetails.globalPosition.dx.toString() + ' from left');
+        else if (openSheet == DrawerPosition.left && direction == DrawerDirection.horizontal) {
+
           // Animate left sheet closed when near edge
-          if (dragUpdateDetails.globalPosition.dx < animateEdge &&
+          if (dragUpdateDetails.localPosition.dx < animateEdge &&
               !opening &&
               dragUpdateDetails.primaryDelta!.isNegative) {
             setState(() {
@@ -608,7 +608,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
             // print('left sheet animated closed');
           }
           // Animate left sheet open when near edge
-          else if ((screenWidth - dragUpdateDetails.globalPosition.dx) <
+          else if ((screenWidth - dragUpdateDetails.localPosition.dx) <
                   (widget.model.sizeLeft != null
                       ? screenWidth - widget.model.sizeLeft! - animateEdge
                       : animateEdge) &&
@@ -625,7 +625,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
           else {
             // Determine if we are opening or closing
             var calcFromRight = opening
-                ? screenWidth - dragUpdateDetails.globalPosition.dx
+                ? screenWidth - dragUpdateDetails.localPosition.dx
                 : fromRight! - dragUpdateDetails.primaryDelta!;
             // Prevent dragging past open/close range
             if (widget.model.sizeLeft != null &&
@@ -642,10 +642,9 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
           }
         }
         // RIGHT SHEET
-        else if (openSheet == 'right' && dir == 'horizontal') {
-          // print((screenWidth - dragUpdateDetails.globalPosition.dx).toString() + ' from right');
+        else if (openSheet == DrawerPosition.right && direction == DrawerDirection.horizontal) {
           // Animate right sheet closed when near edge
-          if ((screenWidth - dragUpdateDetails.globalPosition.dx) <
+          if ((screenWidth - dragUpdateDetails.localPosition.dx) <
                   animateEdge &&
               !opening &&
               dragUpdateDetails.primaryDelta! > 0) {
@@ -657,7 +656,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
             // print('right sheet animated close');
           }
           // Animate right sheet open when near edge
-          else if (dragUpdateDetails.globalPosition.dx <
+          else if (dragUpdateDetails.localPosition.dx <
                   (widget.model.sizeRight != null
                       ? screenWidth - widget.model.sizeRight! - animateEdge
                       : animateEdge) &&
@@ -674,7 +673,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
           else {
             // Determine if we are opening or closing
             var calcFromLeft = opening
-                ? dragUpdateDetails.globalPosition.dx
+                ? dragUpdateDetails.localPosition.dx
                 : fromLeft! + dragUpdateDetails.primaryDelta!;
             // Prevent dragging past open/close range
             if (widget.model.sizeRight != null &&
@@ -698,27 +697,28 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
     }
   }
 
-  openDrawer(String? drawer) {
-    if (drawer == 'top' && widget.model.drawerExists('top')) {
-      if (openSheet != null && openSheet != 'top') {
+  openDrawer(DrawerPosition drawer) {
+
+    if (drawer == DrawerPosition.top && widget.model.drawerExists(DrawerPosition.top)) {
+      if (openSheet != null && openSheet != DrawerPosition.top) {
         closeDrawer(openSheet, cb: openTop);
       } else {
         openTop();
       }
-    } else if (drawer == 'bottom' && widget.model.drawerExists('bottom')) {
-      if (openSheet != null && openSheet != 'bottom') {
+    } else if (drawer == DrawerPosition.bottom && widget.model.drawerExists(DrawerPosition.bottom)) {
+      if (openSheet != null && openSheet != DrawerPosition.bottom) {
         closeDrawer(openSheet, cb: openBottom);
       } else {
         openBottom();
       }
-    } else if (drawer == 'left' && widget.model.drawerExists('left')) {
-      if (openSheet != null && openSheet != 'left') {
+    } else if (drawer == DrawerPosition.left && widget.model.drawerExists(DrawerPosition.left)) {
+      if (openSheet != null && openSheet != DrawerPosition.left) {
         closeDrawer(openSheet, cb: openLeft);
       } else {
         openLeft();
       }
-    } else if (drawer == 'right' && widget.model.drawerExists('right')) {
-      if (openSheet != null && openSheet != 'right') {
+    } else if (drawer == DrawerPosition.right && widget.model.drawerExists(DrawerPosition.right)) {
+      if (openSheet != null && openSheet != DrawerPosition.right) {
         closeDrawer(openSheet, cb: openRight);
       } else {
         openRight();
@@ -738,7 +738,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
       fromBottom = widget.model.sizeTop != null
           ? screenHeight - widget.model.sizeTop!
           : 0;
-      openSheet = 'top';
+      openSheet = DrawerPosition.top;
     });
   }
 
@@ -753,7 +753,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
       fromTop = widget.model.sizeBottom != null
           ? screenHeight - widget.model.sizeBottom!
           : 0;
-      openSheet = 'bottom';
+      openSheet = DrawerPosition.bottom;
     });
   }
 
@@ -769,7 +769,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
       fromRight = widget.model.sizeLeft != null
           ? screenWidth - widget.model.sizeLeft!
           : 0;
-      openSheet = 'left';
+      openSheet = DrawerPosition.left;
     });
   }
 
@@ -785,38 +785,38 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
       fromLeft = widget.model.sizeRight != null
           ? screenWidth - widget.model.sizeRight!
           : 0;
-      openSheet = 'right';
+      openSheet = DrawerPosition.right;
     });
   }
 
-  closeDrawer(String? drawer, {cb}) {
+  closeDrawer(DrawerPosition? drawer, {cb}) {
     var constraints = widget.model.constraints;
     double h = constraints.maxHeight ?? MediaQuery.of(context).size.height;
     double w = constraints.maxWidth ?? MediaQuery.of(context).size.width;
     var screenHeight = h;
     var screenWidth = w;
-    if (drawer == 'top') {
+    if (drawer == DrawerPosition.top) {
       afterAnimation = cb;
       setState(() {
         animate = true;
         animatingClose = true;
         fromBottom = screenHeight;
       });
-    } else if (drawer == 'bottom') {
+    } else if (drawer == DrawerPosition.bottom) {
       afterAnimation = cb;
       setState(() {
         animate = true;
         animatingClose = true;
         fromTop = screenHeight;
       });
-    } else if (drawer == 'left') {
+    } else if (drawer == DrawerPosition.left) {
       afterAnimation = cb;
       setState(() {
         animate = true;
         animatingClose = true;
         fromRight = screenWidth;
       });
-    } else if (drawer == 'right') {
+    } else if (drawer == DrawerPosition.right) {
       afterAnimation = cb;
       setState(() {
         animate = true;
@@ -830,11 +830,13 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
-    // save system constraints
-    onLayout(constraints);
 
-    double height = widget.model.myMaxHeightOrDefault;
-    double width = widget.model.myMaxWidthOrDefault;
+
+    double height = constraints.maxHeight;
+    double width = constraints.maxWidth;
+
+    widget.model.maxHeight = height;
+    widget.model.maxWidth = width;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
@@ -880,7 +882,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
     if (children.isEmpty) children.add(Container());
 
     BorderRadius drawerHandle = BorderRadius.zero;
-    if (openSheet == 'top') {
+    if (openSheet == DrawerPosition.top) {
       visibleDrawer = top;
       drawerHandle = widget.model.rounded == false
           ? BorderRadius.zero
@@ -901,7 +903,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
                               ? widget.model.sizeTop! / screenHeight
                               : 1)) *
                       0.05));
-    } else if (openSheet == 'bottom') {
+    } else if (openSheet == DrawerPosition.bottom) {
       visibleDrawer = bottom;
       drawerHandle = widget.model.rounded == false
           ? BorderRadius.zero
@@ -922,7 +924,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
                       0.05),
               bottomLeft: const Radius.elliptical(0, 0),
               bottomRight: const Radius.elliptical(0, 0));
-    } else if (openSheet == 'left') {
+    } else if (openSheet == DrawerPosition.left) {
       visibleDrawer = left;
       drawerHandle = widget.model.rounded == false
           ? BorderRadius.zero
@@ -943,7 +945,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
                               ? widget.model.sizeLeft! / screenHeight
                               : 1)) *
                       .5));
-    } else if (openSheet == 'right') {
+    } else if (openSheet == DrawerPosition.right) {
       visibleDrawer = right;
       drawerHandle = widget.model.rounded == false
           ? BorderRadius.zero
@@ -966,14 +968,14 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
               bottomRight: const Radius.elliptical(0, 0));
     }
 
-    double? containerSize(String? sheet) {
-      if (sheet == 'left') {
+    double? containerSize(DrawerPosition? sheet) {
+      if (sheet == DrawerPosition.left) {
         return widget.model.sizeLeft ?? screenWidth;
-      } else if (sheet == 'right') {
+      } else if (sheet == DrawerPosition.right) {
         return widget.model.sizeRight ?? screenWidth;
-      } else if (sheet == 'top') {
+      } else if (sheet == DrawerPosition.top) {
         return widget.model.sizeTop ?? screenHeight;
-      } else if (sheet == 'bottom') {
+      } else if (sheet == DrawerPosition.bottom) {
         return widget.model.sizeBottom ?? screenHeight;
       } else {
         return screenWidth as bool? ?? 300 < screenHeight
@@ -990,20 +992,20 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onHorizontalDragUpdate: (dragUpdateDetails) =>
-            onDragSheet(dragUpdateDetails, 'horizontal', false),
+            onDragSheet(dragUpdateDetails, DrawerDirection.horizontal, false),
         onHorizontalDragEnd: (dragEndDetails) =>
-            onDragEnd(dragEndDetails, 'horizontal', true),
+            onDragEnd(dragEndDetails, DrawerDirection.horizontal, true),
         child: ClipRRect(
           borderRadius: drawerHandle,
           child: SizedBox(
-              width: ((openSheet == 'left' || openSheet == 'right')
+              width: ((openSheet == DrawerPosition.left || openSheet == DrawerPosition.right)
                   ? containerSize(openSheet)
                   : screenWidth),
-              height: ((openSheet == 'top' || openSheet == 'bottom')
+              height: ((openSheet == DrawerPosition.top || openSheet == DrawerPosition.bottom)
                   ? containerSize(openSheet)
                   : screenHeight),
               child:
-                  openSheet == 'left' ? left ?? Container() : const Offstage()),
+                  openSheet == DrawerPosition.left ? left ?? Container() : const Offstage()),
         ),
       ),
     );
@@ -1016,19 +1018,19 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onHorizontalDragUpdate: (dragUpdateDetails) =>
-            onDragSheet(dragUpdateDetails, 'horizontal', false),
+            onDragSheet(dragUpdateDetails, DrawerDirection.horizontal, false),
         onHorizontalDragEnd: (dragEndDetails) =>
-            onDragEnd(dragEndDetails, 'horizontal', true),
+            onDragEnd(dragEndDetails, DrawerDirection.horizontal, true),
         child: ClipRRect(
           borderRadius: drawerHandle,
           child: SizedBox(
-              width: ((openSheet == 'left' || openSheet == 'right')
+              width: ((openSheet == DrawerPosition.left || openSheet == DrawerPosition.right)
                   ? containerSize(openSheet)
                   : screenWidth),
-              height: ((openSheet == 'top' || openSheet == 'bottom')
+              height: ((openSheet == DrawerPosition.top || openSheet == DrawerPosition.bottom)
                   ? containerSize(openSheet)
                   : screenHeight),
-              child: openSheet == 'right'
+              child: openSheet == DrawerPosition.right
                   ? right ?? Container()
                   : const Offstage()),
         ),
@@ -1043,20 +1045,20 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onVerticalDragUpdate: (dragUpdateDetails) =>
-            onDragSheet(dragUpdateDetails, 'vertical', false),
+            onDragSheet(dragUpdateDetails, DrawerDirection.vertical, false),
         onVerticalDragEnd: (dragEndDetails) =>
-            onDragEnd(dragEndDetails, 'vertical', true),
+            onDragEnd(dragEndDetails, DrawerDirection.vertical, true),
         child: ClipRRect(
           borderRadius: drawerHandle,
           child: SizedBox(
-              width: ((openSheet == 'left' || openSheet == 'right')
+              width: ((openSheet == DrawerPosition.left || openSheet == DrawerPosition.right)
                   ? containerSize(openSheet)
                   : screenWidth),
-              height: ((openSheet == 'top' || openSheet == 'bottom')
+              height: ((openSheet == DrawerPosition.top || openSheet == DrawerPosition.bottom)
                   ? containerSize(openSheet)
                   : screenHeight),
               child:
-                  openSheet == 'top' ? top ?? Container() : const Offstage()),
+                  openSheet == DrawerPosition.top ? top ?? Container() : const Offstage()),
         ),
       ),
     );
@@ -1069,19 +1071,19 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onVerticalDragUpdate: (dragUpdateDetails) =>
-            onDragSheet(dragUpdateDetails, 'vertical', false),
+            onDragSheet(dragUpdateDetails, DrawerDirection.vertical, false),
         onVerticalDragEnd: (dragEndDetails) =>
-            onDragEnd(dragEndDetails, 'vertical', true),
+            onDragEnd(dragEndDetails, DrawerDirection.vertical, true),
         child: ClipRRect(
           borderRadius: drawerHandle,
           child: SizedBox(
-              width: ((openSheet == 'left' || openSheet == 'right')
+              width: ((openSheet == DrawerPosition.left || openSheet == DrawerPosition.right)
                   ? containerSize(openSheet)
                   : screenWidth),
-              height: ((openSheet == 'top' || openSheet == 'bottom')
+              height: ((openSheet == DrawerPosition.top || openSheet == DrawerPosition.bottom)
                   ? containerSize(openSheet)
                   : screenHeight),
-              child: openSheet == 'bottom'
+              child: openSheet == DrawerPosition.bottom
                   ? bottom ?? Container()
                   : const Offstage()),
         ),
@@ -1173,7 +1175,10 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
                                   .onSurfaceVariant))))));
     }
 
+    var box = Container(width: width, height: height, color: Colors.red);
+
     dynamic view = Stack(children: [
+      box,
       widget.stackChildren,
       openSheet != null
           ? GestureDetector(onTap: () => closeDrawer(openSheet))
@@ -1195,4 +1200,10 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
 
     return view;
   }
+}
+
+abstract class IDragListener {
+  onDragOpen(DragStartDetails details, DrawerDirection direction);
+  onDragEnd(DragEndDetails details, DrawerDirection direction, bool isOpen);
+  onDragSheet(DragUpdateDetails details, DrawerDirection direction, bool isOpen);
 }

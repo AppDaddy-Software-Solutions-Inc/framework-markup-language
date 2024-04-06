@@ -7,6 +7,7 @@ import 'package:fml/widgets/box/decoration/labelled_box.dart';
 import 'package:fml/widgets/box/flex/flex_object.dart';
 import 'package:fml/widgets/box/stack/stack_object.dart';
 import 'package:fml/widgets/box/wrap/wrap_object.dart';
+import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/widgets/drawer/drawer_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -362,17 +363,17 @@ class _BoxViewState extends WidgetState<BoxView> {
         behavior: HitTestBehavior.translucent,
         onTap: () => WidgetModel.unfocus(),
         onVerticalDragStart: (dragStartDetails) =>
-            drawer.onDragOpen(dragStartDetails, 'vertical'),
+            drawer.onDragOpen(dragStartDetails, DrawerDirection.vertical),
         onHorizontalDragStart: (dragStartDetails) =>
-            drawer.onDragOpen(dragStartDetails, 'horizontal'),
+            drawer.onDragOpen(dragStartDetails, DrawerDirection.horizontal),
         onVerticalDragUpdate: (dragUpdateDetails) =>
-            drawer.onDragSheet(dragUpdateDetails, 'vertical', true),
+            drawer.onDragSheet(dragUpdateDetails, DrawerDirection.vertical, true),
         onHorizontalDragUpdate: (dragUpdateDetails) =>
-            drawer.onDragSheet(dragUpdateDetails, 'horizontal', true),
+            drawer.onDragSheet(dragUpdateDetails, DrawerDirection.horizontal, true),
         onVerticalDragEnd: (dragEndDetails) =>
-            drawer.onDragEnd(dragEndDetails, 'vertical', false),
+            drawer.onDragEnd(dragEndDetails, DrawerDirection.vertical, false),
         onHorizontalDragEnd: (dragEndDetails) =>
-            drawer.onDragEnd(dragEndDetails, 'horizontal', false),
+            drawer.onDragEnd(dragEndDetails, DrawerDirection.horizontal, false),
         child: drawer);
   }
 

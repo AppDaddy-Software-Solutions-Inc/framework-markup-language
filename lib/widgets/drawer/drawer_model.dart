@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/drawer/drawer_view.dart';
 import 'package:fml/widgets/drawer/item/drawer_item_model.dart';
@@ -9,7 +9,10 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class DrawerModel extends DecoratedWidgetModel {
+enum DrawerPosition {top, bottom, left, right}
+enum DrawerDirection {vertical, horizontal}
+
+class DrawerModel extends ViewableWidgetModel {
 
   // Side
   StringObservable? _side;
@@ -21,7 +24,6 @@ class DrawerModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get side => _side?.get();
 
   // Curved Edges
@@ -34,7 +36,6 @@ class DrawerModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get rounded => _rounded?.get() ?? false;
 
   // Edge Handles
@@ -47,8 +48,8 @@ class DrawerModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get handle => _handle?.get() ?? false;
+
 
   DrawerItemModel? top;
   DrawerItemModel? bottom;
@@ -70,7 +71,6 @@ class DrawerModel extends DecoratedWidgetModel {
   DrawerModel(
     WidgetModel super.parent,
     super.id, {
-    dynamic side,
     dynamic rounded,
     dynamic handle,
     this.handleLeft,
@@ -86,7 +86,6 @@ class DrawerModel extends DecoratedWidgetModel {
     this.idTop,
     this.idBottom,
   }) {
-    this.side = side;
     this.rounded = rounded;
     this.handle = handle;
   }
@@ -132,33 +131,36 @@ class DrawerModel extends DecoratedWidgetModel {
           }
 
           // Assign ids
-          switch (side) {
-            case 'left':
+          switch (toEnum(side, DrawerPosition.values)) {
+            case DrawerPosition.left:
               idLeft = Xml.attribute(node: node, tag: 'id');
               handleLeft =
                   toBool(Xml.attribute(node: node, tag: 'handle')) == true;
               sizeLeft = toDouble(Xml.attribute(node: node, tag: 'size'));
               break;
 
-            case 'right':
+            case DrawerPosition.right:
               idRight = Xml.attribute(node: node, tag: 'id');
               handleRight =
                   toBool(Xml.attribute(node: node, tag: 'handle')) == true;
               sizeRight = toDouble(Xml.attribute(node: node, tag: 'size'));
               break;
 
-            case 'top':
+            case DrawerPosition.top:
               idTop = Xml.attribute(node: node, tag: 'id');
               handleTop =
                   toBool(Xml.attribute(node: node, tag: 'handle')) == true;
               sizeTop = toDouble(Xml.attribute(node: node, tag: 'size'));
               break;
 
-            case 'bottom':
+            case DrawerPosition.bottom:
               idBottom = Xml.attribute(node: node, tag: 'id');
               handleBottom =
                   toBool(Xml.attribute(node: node, tag: 'handle')) == true;
               sizeBottom = toDouble(Xml.attribute(node: node, tag: 'size'));
+              break;
+
+            default:
               break;
           }
 
@@ -214,22 +216,22 @@ class DrawerModel extends DecoratedWidgetModel {
     // This grabs the deserializes xml generated from fromXmlList()
     element = Xml.getChildElement(node: xml, tag: "TOP");
     if (element != null) {
-      top = DrawerItemModel.fromXml(this, element, DrawerPositions.top);
+      top = DrawerItemModel.fromXml(this, element, DrawerPosition.top);
     }
 
     element = Xml.getChildElement(node: xml, tag: "BOTTOM");
     if (element != null) {
-      bottom = DrawerItemModel.fromXml(this, element, DrawerPositions.bottom);
+      bottom = DrawerItemModel.fromXml(this, element, DrawerPosition.bottom);
     }
 
     element = Xml.getChildElement(node: xml, tag: "LEFT");
     if (element != null) {
-      left = DrawerItemModel.fromXml(this, element, DrawerPositions.left);
+      left = DrawerItemModel.fromXml(this, element, DrawerPosition.left);
     }
 
     element = Xml.getChildElement(node: xml, tag: "RIGHT");
     if (element != null) {
-      right = DrawerItemModel.fromXml(this, element, DrawerPositions.right);
+      right = DrawerItemModel.fromXml(this, element, DrawerPosition.right);
     }
 
     // properties
@@ -237,19 +239,16 @@ class DrawerModel extends DecoratedWidgetModel {
     rounded = Xml.get(node: xml, tag: 'rounded');
   }
 
-  bool drawerExists(String drawer) {
-    if (drawer == 'top') {
-      return top != null;
-    } else if (drawer == 'bottom') {
-      return bottom != null;
-    } else if (drawer == 'left') {
-      return left != null;
-    } else if (drawer == 'right') {
-      return right != null;
-    } else {
-      Log().warning('No matching drawer type of: $drawer',
-          caller: 'Drawer.model -> drawerExists(String drawer)');
-      return false;
+  bool drawerExists(DrawerPosition drawer) {
+    switch (drawer) {
+      case DrawerPosition.top:
+        return top != null;
+      case DrawerPosition.bottom:
+        return bottom != null;
+      case DrawerPosition.left:
+        return left != null;
+      case DrawerPosition.right:
+        return right != null;
     }
   }
 

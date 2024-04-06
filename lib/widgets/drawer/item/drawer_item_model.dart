@@ -1,20 +1,19 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/widgets/drawer/drawer_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-enum DrawerPositions { top, bottom, left, right }
-
 class DrawerItemModel extends BoxModel {
-  final DrawerPositions position;
+  final DrawerPosition position;
 
   DrawerItemModel(WidgetModel super.parent, super.id, this.position);
 
   static DrawerItemModel? fromXml(
-      WidgetModel parent, XmlElement? xml, DrawerPositions position) {
+      WidgetModel parent, XmlElement? xml, DrawerPosition position) {
     DrawerItemModel? model;
     try {
       model = DrawerItemModel(parent, Xml.get(node: xml, tag: 'id'), position);
@@ -38,13 +37,13 @@ class DrawerItemModel extends BoxModel {
       case "open":
         DrawerViewState? drawer =
             parent?.findListenerOfExactType(DrawerViewState);
-        if (drawer != null) return await drawer.openDrawer(fromEnum(position));
+        if (drawer != null) return await drawer.openDrawer(position);
         break;
 
       case "close":
         DrawerViewState? drawer =
             parent?.findListenerOfExactType(DrawerViewState);
-        if (drawer != null) return await drawer.closeDrawer(fromEnum(position));
+        if (drawer != null) return await drawer.closeDrawer(position);
         break;
     }
     return super.execute(caller, propertyOrFunction, arguments);

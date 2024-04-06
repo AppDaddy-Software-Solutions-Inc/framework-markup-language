@@ -12,6 +12,7 @@ import 'package:fml/system.dart';
 import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/widgets/box/box_view.dart';
+import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/tabview/tab_view.dart';
@@ -446,17 +447,17 @@ class FrameworkViewState extends State<FrameworkView>
         behavior: HitTestBehavior.translucent,
         onTap: () => WidgetModel.unfocus(),
         onVerticalDragStart: (dragStartDetails) =>
-            drawer.onDragOpen(dragStartDetails, 'vertical'),
+            drawer.onDragOpen(dragStartDetails, DrawerDirection.vertical),
         onHorizontalDragStart: (dragStartDetails) =>
-            drawer.onDragOpen(dragStartDetails, 'horizontal'),
+            drawer.onDragOpen(dragStartDetails, DrawerDirection.horizontal),
         onVerticalDragUpdate: (dragUpdateDetails) =>
-            drawer.onDragSheet(dragUpdateDetails, 'vertical', true),
+            drawer.onDragSheet(dragUpdateDetails, DrawerDirection.vertical, true),
         onHorizontalDragUpdate: (dragUpdateDetails) =>
-            drawer.onDragSheet(dragUpdateDetails, 'horizontal', true),
+            drawer.onDragSheet(dragUpdateDetails, DrawerDirection.horizontal, true),
         onVerticalDragEnd: (dragEndDetails) =>
-            drawer.onDragEnd(dragEndDetails, 'vertical', false),
+            drawer.onDragEnd(dragEndDetails, DrawerDirection.vertical, false),
         onHorizontalDragEnd: (dragEndDetails) =>
-            drawer.onDragEnd(dragEndDetails, 'horizontal', false),
+            drawer.onDragEnd(dragEndDetails, DrawerDirection.horizontal, false),
         onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
         onLongPressEnd: kDebugMode ? (_) => onLongPressEnd() : null,
         child: drawer);

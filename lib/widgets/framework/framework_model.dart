@@ -54,7 +54,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
   HeaderModel? header;
   BoxModel? body;
   FooterModel? footer;
-  DrawerModel? drawer;
+
   bool hasHitBusy = false;
 
   // model is initialized

@@ -487,7 +487,7 @@ class _InputViewState extends WidgetState<InputView>
     }
     var padding = EdgeInsets.only(
         left: 10, top: paddingTop, right: 10, bottom: paddingBottom);
-    if (widget.model.dense == true) {
+    if (widget.model.dense) {
       padding = const EdgeInsets.only(left: 6, top: 0, right: 6, bottom: 0);
     }
 

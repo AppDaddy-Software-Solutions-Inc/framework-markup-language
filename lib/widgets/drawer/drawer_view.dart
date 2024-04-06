@@ -501,7 +501,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
           // print(dragUpdateDetails.globalPosition.dy.toString() + ' from top');
           // Animate top sheet closed when near edge
           if (dragUpdateDetails.globalPosition.dy < animateEdge &&
-              opening == false &&
+              !opening &&
               dragUpdateDetails.primaryDelta! > 0) {
             setState(() {
               animate = true;
@@ -515,7 +515,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
                   (widget.model.sizeTop != null
                       ? screenHeight - widget.model.sizeTop! - animateEdge
                       : animateEdge) &&
-              opening == true) {
+              opening) {
             setState(() {
               animate = true;
               fromBottom = widget.model.sizeTop != null
@@ -550,7 +550,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
           // Animate bottom sheet closed when near edge
           if ((screenHeight - dragUpdateDetails.globalPosition.dy) <
                   animateEdge &&
-              opening == false &&
+              !opening &&
               dragUpdateDetails.primaryDelta!.isNegative) {
             setState(() {
               animate = true;
@@ -564,7 +564,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
                   (widget.model.sizeBottom != null
                       ? screenHeight - widget.model.sizeBottom! - animateEdge
                       : animateEdge) &&
-              opening == true) {
+              opening) {
             setState(() {
               animate = true;
               fromTop = widget.model.sizeBottom != null
@@ -598,7 +598,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
           // print(dragUpdateDetails.globalPosition.dx.toString() + ' from left');
           // Animate left sheet closed when near edge
           if (dragUpdateDetails.globalPosition.dx < animateEdge &&
-              opening == false &&
+              !opening &&
               dragUpdateDetails.primaryDelta!.isNegative) {
             setState(() {
               animate = true;
@@ -612,7 +612,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
                   (widget.model.sizeLeft != null
                       ? screenWidth - widget.model.sizeLeft! - animateEdge
                       : animateEdge) &&
-              opening == true) {
+              opening) {
             setState(() {
               animate = true;
               fromRight = widget.model.sizeLeft != null
@@ -647,7 +647,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
           // Animate right sheet closed when near edge
           if ((screenWidth - dragUpdateDetails.globalPosition.dx) <
                   animateEdge &&
-              opening == false &&
+              !opening &&
               dragUpdateDetails.primaryDelta! > 0) {
             setState(() {
               animate = true;
@@ -661,7 +661,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
                   (widget.model.sizeRight != null
                       ? screenWidth - widget.model.sizeRight! - animateEdge
                       : animateEdge) &&
-              opening == true) {
+              opening) {
             setState(() {
               animate = true;
               fromLeft = widget.model.sizeRight != null

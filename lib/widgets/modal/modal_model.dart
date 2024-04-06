@@ -86,7 +86,6 @@ class ModalModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get modal => _modal?.get() ?? true;
 
   // dismissable
@@ -182,7 +181,7 @@ class ModalModel extends BoxModel {
     title = Xml.get(node: xml, tag: 'title');
     dismissable = Xml.get(node: xml, tag: 'dismissable');
     resizeable = Xml.get(node: xml, tag: 'resizeable');
-    closeable = Xml.get(node: xml, tag: 'closable');
+    closeable = Xml.get(node: xml, tag: 'closeable');
     modal = Xml.get(node: xml, tag: 'modal');
   }
 

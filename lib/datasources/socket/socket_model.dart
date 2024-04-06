@@ -338,7 +338,7 @@ class SocketModel extends DataSourceModel
   @override
   onMessage(String message) {
     // enabled?
-    if (enabled == false) return;
+    if (!enabled) return;
 
     // increment the number of messages received
     _received.set(received + 1);
@@ -425,7 +425,7 @@ class SocketModel extends DataSourceModel
 
   onUrlChange(Observable observable) async {
     // reconnect if the url changes
-    if ((initialized == true) && (autoexecute == true) && (enabled != false)) {
+    if (initialized && enabled && autoexecute == true) {
       await socket?.reconnect(url);
     }
   }

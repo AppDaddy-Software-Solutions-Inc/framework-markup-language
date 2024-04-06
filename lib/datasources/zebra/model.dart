@@ -66,7 +66,7 @@ class ZebraModel extends DataSourceModel
   @override
   onZebraData({Payload? payload}) {
     // enabled?
-    if (enabled == false) return;
+    if (!enabled) return;
 
     if ((payload == null) || (payload.barcodes.isEmpty)) return;
 

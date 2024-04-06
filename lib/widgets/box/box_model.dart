@@ -3,6 +3,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,8 @@ class BoxModel extends DecoratedWidgetModel {
 
   // Denotes whether box widgets (row, column) naturally expand or contract
   final bool expandDefault;
+
+  DrawerModel? drawer;
 
   // indicates if the widget will grow in
   // its horizontal axis
@@ -342,6 +345,13 @@ class BoxModel extends DecoratedWidgetModel {
     center = Xml.get(node: xml, tag: 'center');
     wrap = Xml.get(node: xml, tag: 'wrap');
     expand = Xml.get(node: xml, tag: 'expand');
+
+    // build drawers
+    List<XmlElement>? nodes;
+    nodes = Xml.getChildElements(node: xml, tag: "DRAWER");
+    if (nodes != null && nodes.isNotEmpty) {
+      drawer = DrawerModel.fromXmlList(this, nodes);
+    }
   }
 
   @override

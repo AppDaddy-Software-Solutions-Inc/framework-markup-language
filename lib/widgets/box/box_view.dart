@@ -7,7 +7,9 @@ import 'package:fml/widgets/box/decoration/labelled_box.dart';
 import 'package:fml/widgets/box/flex/flex_object.dart';
 import 'package:fml/widgets/box/stack/stack_object.dart';
 import 'package:fml/widgets/box/wrap/wrap_object.dart';
+import 'package:fml/widgets/drawer/drawer_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
@@ -264,6 +266,11 @@ class _BoxViewState extends WidgetState<BoxView> {
       view = DecoratedBox(decoration: decoration, child: view);
     }
 
+    // wrapped drawer view?
+    if (widget.model.drawer != null) {
+      view = _buildDrawers(view);
+    }
+
     return view;
   }
 
@@ -344,6 +351,32 @@ class _BoxViewState extends WidgetState<BoxView> {
     return view;
   }
 
+  Widget _buildDrawers(Widget view) {
+    // drawer defined
+    if (widget.model.drawer == null) return view;
+
+    // wrap view in stacked view
+    var drawer = DrawerView(widget.model.drawer!, view);
+
+    return GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => WidgetModel.unfocus(),
+        onVerticalDragStart: (dragStartDetails) =>
+            drawer.onDragOpen(dragStartDetails, 'vertical'),
+        onHorizontalDragStart: (dragStartDetails) =>
+            drawer.onDragOpen(dragStartDetails, 'horizontal'),
+        onVerticalDragUpdate: (dragUpdateDetails) =>
+            drawer.onDragSheet(dragUpdateDetails, 'vertical', true),
+        onHorizontalDragUpdate: (dragUpdateDetails) =>
+            drawer.onDragSheet(dragUpdateDetails, 'horizontal', true),
+        onVerticalDragEnd: (dragEndDetails) =>
+            drawer.onDragEnd(dragEndDetails, 'vertical', false),
+        onHorizontalDragEnd: (dragEndDetails) =>
+            drawer.onDragEnd(dragEndDetails, 'horizontal', false),
+        child: drawer);
+  }
+
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
@@ -386,6 +419,7 @@ class _BoxViewState extends WidgetState<BoxView> {
 
     // build the outer border box
     view = _buildOuterBox(view, radius, constraints);
+
 
     // set the view opacity
     if (widget.model.opacity != null) view = _getFadedView(view);

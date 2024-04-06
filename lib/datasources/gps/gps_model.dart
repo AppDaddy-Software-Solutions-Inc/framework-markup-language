@@ -57,7 +57,7 @@ class GpsModel extends DataSourceModel implements IDataSource, IGpsListener {
   @override
   onGpsData({Payload? payload}) {
     // enabled?
-    if (enabled == false) return;
+    if (!enabled) return;
 
     busy = false;
 

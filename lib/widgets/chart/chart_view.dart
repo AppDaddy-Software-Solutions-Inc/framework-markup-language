@@ -173,7 +173,7 @@ class _ChartViewState extends WidgetState<ChartView> {
           labelOffsetFromAxisPx:
               (sin(widget.model.xaxis.labelrotation.abs() * (pi / 180)) * 80)
                       .ceil() +
-                  (widget.model.horizontal == true
+                  (widget.model.horizontal
                       ? 28
                       : 8), // 80 is rough estimate of our text length
           labelOffsetFromTickPx: 10,
@@ -198,7 +198,7 @@ class _ChartViewState extends WidgetState<ChartView> {
         labelOffsetFromAxisPx:
             (sin(widget.model.xaxis.labelrotation.abs() * (pi / 180)) * 80)
                     .ceil() +
-                (widget.model.horizontal == true
+                (widget.model.horizontal
                     ? 28
                     : 8), // 80 is rough estimate of our text length
         labelOffsetFromTickPx: 10,
@@ -316,7 +316,7 @@ class _ChartViewState extends WidgetState<ChartView> {
       primaryMeasureAxis: yNumericAxisSpec(ticks: yTicksCount),
       domainAxis: xStringAxisSpec(),
       barGroupingType: barGroupingType,
-      vertical: widget.model.horizontal == true ? false : true,
+      vertical: widget.model.horizontal ? false : true,
       barRendererDecorator: charts_flutter.BarLabelDecorator<String>(
           labelPosition: charts_flutter.BarLabelPosition.inside,
           labelAnchor: charts_flutter.BarLabelAnchor.middle),
@@ -1355,7 +1355,7 @@ class _ChartViewState extends WidgetState<ChartView> {
                 code:
                     '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
           ),
-          behaviorPosition: widget.model.horizontal == true
+          behaviorPosition: widget.model.horizontal
               ? charts_flutter.BehaviorPosition.start
               : charts_flutter.BehaviorPosition.bottom,
           titleOutsideJustification:
@@ -1369,7 +1369,7 @@ class _ChartViewState extends WidgetState<ChartView> {
                 code:
                     '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
           ),
-          behaviorPosition: widget.model.horizontal == true
+          behaviorPosition: widget.model.horizontal
               ? charts_flutter.BehaviorPosition.bottom
               : charts_flutter.BehaviorPosition.start,
           titleOutsideJustification:

@@ -46,6 +46,7 @@ class PagerViewState extends WidgetState<PagerView> {
     if (pageNum == null && page is String) {
       switch (page.trim().toLowerCase()) {
         case 'previous':
+        case 'prev':
           pageNum = currentPage - 1;
           if (pageNum < 1) pageNum = pages;
           break;

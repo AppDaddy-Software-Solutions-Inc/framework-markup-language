@@ -48,7 +48,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T>
     }
   }
 
-  /// applies trabnsforms like rotate, flip, etc.
+  /// applies transforms like rotate, flip, etc.
   Widget applyTransforms(Widget view) {
 
     // opacity

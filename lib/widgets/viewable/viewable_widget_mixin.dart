@@ -1201,7 +1201,7 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     flexfit = Xml.get(node: xml, tag: 'flexfit');
     onscreen = Xml.get(node: xml, tag: 'onscreen');
     offscreen = Xml.get(node: xml, tag: 'offscreen');
-    rotation = Xml.get(node: xml, tag: 'rotation');
+    rotation = Xml.get(node: xml, tag: 'rotation') ?? Xml.get(node: xml, tag: 'rotate');
     _colors = Xml.get(node: xml, tag: 'color');
     opacity = Xml.get(node: xml, tag: 'opacity');
 
@@ -1376,12 +1376,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     // draggable?
     if (draggable && view is! DraggableView) {
       view = DraggableView(this, view);
-    }
-
-    /// rotation
-    if (rotation != null) {
-      view = RotationTransition(
-          turns: AlwaysStoppedAnimation(rotation! / 360), child: view);
     }
 
     // wrap animations.

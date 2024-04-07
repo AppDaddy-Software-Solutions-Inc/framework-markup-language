@@ -526,7 +526,7 @@ class WidgetModel implements IDataSourceListener {
     return false;
   }
 
-  static bool set(WidgetModel model, String caller, String propertyOrFunction,
+  static bool set(WidgetModel model, String id, String propertyOrFunction,
       List<dynamic> arguments, Scope scope) {
     // value
     var value = elementAt(arguments, 0);
@@ -535,10 +535,11 @@ class WidgetModel implements IDataSourceListener {
     // we can now use dot notation to specify the property
     // rather than pass it as an attribute
     var property = elementAt(arguments, 1);
-    property ??= Binding.fromString(caller)?.toString() ?? property;
+    var key = Binding.toKey(id, property);
 
-    // set the variable
-    scope.setObservable(property, value?.toString());
+    // set the binding value
+    scope.setObservable(key, value?.toString());
+
     return true;
   }
 }

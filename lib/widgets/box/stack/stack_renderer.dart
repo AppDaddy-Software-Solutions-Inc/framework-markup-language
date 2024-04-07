@@ -10,7 +10,6 @@ import 'package:fml/widgets/box/box_constraints.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_mixin.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/positioned/positioned_model.dart';
 
 /// Implements the stack layout algorithm.
 ///
@@ -215,14 +214,14 @@ class StackRenderer extends RenderBox
     assert(childParentData.isPositioned);
     assert(child.parentData == childParentData);
 
-    PositionedModel model = childParentData.model as PositionedModel;
+    var position = childParentData.position;
     
     bool hasVisualOverflow = false;
     BoxConstraints childConstraints = const BoxConstraints();
 
-    if (model.left != null && model.right != null) {
+    if (position.left != null && position.right != null) {
       childConstraints = childConstraints.tighten(
-          width: size.width - model.right! - model.left!);
+          width: size.width - position.right! - position.left!);
     } 
     else if (size.width.isFinite) {
       childConstraints = BoxConstraints(
@@ -232,14 +231,11 @@ class StackRenderer extends RenderBox
           maxHeight: childConstraints.maxHeight);
     }
 
-    if (model.top != null && model.bottom != null) {
+    if (position.top != null && position.bottom != null) {
       childConstraints = childConstraints.tighten(
-          height: size.height - model.bottom! - model.top!);
+          height: size.height - position.bottom! - position.top!);
     }
-    else if (model.height != null) {
-      childConstraints =
-          childConstraints.tighten(height: model.height);
-    }
+
     else if (size.height.isFinite) {
       childConstraints = BoxConstraints(
           minWidth: childConstraints.minWidth,
@@ -256,10 +252,10 @@ class StackRenderer extends RenderBox
         parentUsesSize: true);
 
     final double x;
-    if (model.left != null) {
-      x = model.left!;
-    } else if (model.right != null) {
-      x = size.width - model.right! - child.size.width;
+    if (position.left != null) {
+      x = position.left!;
+    } else if (position.right != null) {
+      x = size.width - position.right! - child.size.width;
     } else {
       x = alignment.alongOffset(size - child.size as Offset).dx;
     }
@@ -269,10 +265,10 @@ class StackRenderer extends RenderBox
     }
 
     final double y;
-    if (model.top != null) {
-      y = model.top!;
-    } else if (model.bottom != null) {
-      y = size.height - model.bottom! - child.size.height;
+    if (position.top != null) {
+      y = position.top!;
+    } else if (position.bottom != null) {
+      y = size.height - position.bottom! - child.size.height;
     } else {
       y = alignment.alongOffset(size - child.size as Offset).dy;
     }

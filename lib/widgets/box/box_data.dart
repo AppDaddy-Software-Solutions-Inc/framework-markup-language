@@ -17,4 +17,19 @@ class BoxData extends ContainerBoxParentData<RenderBox> {
   int runIndex = 0;
 
   bool get isPositioned => model is PositionedModel;
+
+  Position get position {
+    PositionedModel? model = isPositioned ? this.model as PositionedModel : null;
+    return Position(left: model?.left, right: model?.right, top: model?.top, bottom: model?.bottom);
+  }
+}
+
+class Position {
+
+  double? left;
+  double? right;
+  double? top;
+  double? bottom;
+
+  Position ({this.left, this.right, this.top, this.bottom});
 }

@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
+import 'package:quiver/strings.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -156,6 +157,7 @@ class WidgetModel implements IDataSourceListener {
 
   static WidgetModel? fromXml(WidgetModel parent, XmlElement node,
       {Scope? scope, dynamic data}) {
+
     // clone node?
     node = cloneNode(node, scope ?? parent.scope);
 

@@ -169,7 +169,7 @@ class StackRenderer extends RenderBox
     RenderBox? child = firstChild;
     while (child != null) {
       final BoxData childParentData = child.parentData! as BoxData;
-      if (childParentData.model is! PositionedModel) {
+      if (!childParentData.isPositioned) {
         extent = math.max(extent, mainChildSizeGetter(child));
       }
       assert(child.parentData == childParentData);
@@ -212,7 +212,7 @@ class StackRenderer extends RenderBox
   /// Returns true when the child has visual overflow.
   static bool layoutPositionedChild(RenderBox child, BoxData childParentData,
       Size size, Alignment alignment) {
-    assert(childParentData.model is PositionedModel);
+    assert(childParentData.isPositioned);
     assert(child.parentData == childParentData);
 
     PositionedModel model = childParentData.model as PositionedModel;
@@ -349,7 +349,7 @@ class StackRenderer extends RenderBox
     RenderBox? child = firstChild;
     while (child != null) {
       final BoxData childData = child.parentData! as BoxData;
-      if (childData.model is! PositionedModel) {
+      if (!childData.isPositioned) {
         // get child constraints
         var childConstraints = myConstraints;
         if (childData.model != null) {
@@ -389,7 +389,7 @@ class StackRenderer extends RenderBox
     while (child != null) {
       final BoxData childParentData = child.parentData! as BoxData;
 
-      if (childParentData.model is! PositionedModel) {
+      if (!childParentData.isPositioned) {
         childParentData.offset =
             _resolvedAlignment!.alongOffset(size - child.size as Offset);
       } else {

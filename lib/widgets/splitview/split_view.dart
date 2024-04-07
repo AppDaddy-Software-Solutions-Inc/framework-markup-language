@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/navigation/navigation_manager.dart';
-import 'package:fml/widgets/box/box_data.dart';
+import 'package:fml/widgets/box/box_layout.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/splitview/split_model.dart';
@@ -100,7 +100,7 @@ class SplitViewState extends WidgetState<SplitView> {
                             child: Icon(Icons.drag_handle,
                                 color: widget.model.dividerHandleColor))))));
 
-    return LayoutBoxChildData(
+    return BoxLayout(
         model: BoxModel(null, null, expandDefault: false), child: view);
   }
 
@@ -115,7 +115,7 @@ class SplitViewState extends WidgetState<SplitView> {
         box.model.setFlex(flex);
         break;
     }
-    return LayoutBoxChildData(model: box.model, child: box);
+    return BoxLayout(model: box.model, child: box);
   }
 
   BoxView get _missingView => BoxView(BoxModel(widget.model, null));

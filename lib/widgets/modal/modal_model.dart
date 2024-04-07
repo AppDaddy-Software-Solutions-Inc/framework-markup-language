@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/box/box_data.dart';
+import 'package:fml/widgets/box/box_layout.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/modal/modal_manager_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -197,7 +197,7 @@ class ModalModel extends BoxModel {
         // this is done for us in "positioned" if the child happens
         // to be a positioned widget and the layout is "stack" (see positioned_view.dart)
         if (view != null) {
-          view = LayoutBoxChildData(model: model, child: view);
+          view = BoxLayout(model: model, child: view);
           views.add(view);
         }
       }
@@ -205,7 +205,7 @@ class ModalModel extends BoxModel {
 
     // add the static child
     if (child != null) {
-      var view = LayoutBoxChildData(model: this, child: child!);
+      var view = BoxLayout(model: this, child: child!);
       views.add(view);
     }
 

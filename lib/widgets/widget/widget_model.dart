@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
-import 'package:quiver/strings.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -62,7 +61,6 @@ class WidgetModel implements IDataSourceListener {
       _data!.set(v);
     }
   }
-
   get data => _data?.get();
 
   void onDataChange() => _data?.notifyListeners();

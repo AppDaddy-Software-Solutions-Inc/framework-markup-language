@@ -98,6 +98,7 @@ class SplitModel extends BoxModel {
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
+
     // deserialize
     super.deserialize(xml);
 
@@ -107,8 +108,12 @@ class SplitModel extends BoxModel {
     dividerWidth = Xml.get(node: xml, tag: 'dividerwidth');
     dividerHandleColor = Xml.get(node: xml, tag: 'dividerhandlecolor');
 
-    // remove non view children
-    children?.removeWhere((element) => element is! BoxModel);
+    // remove and destroy all non-box children
+    if (children != null) {
+      var list = children!.where((child) => child is! BoxModel).cast<WidgetModel>();
+      list.forEach((child) => child.dispose());
+      children?.removeWhere((child) => list.contains(child));
+    }
   }
 
   @override

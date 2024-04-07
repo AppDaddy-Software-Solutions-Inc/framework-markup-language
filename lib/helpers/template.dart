@@ -350,6 +350,7 @@ Future<bool> _appendChild(
 }
 
 XmlElement cloneNode(XmlElement node, Scope? scope) {
+
   if (Xml.hasAttribute(node: node, tag: "clone")) {
     var id = Xml.attribute(node: node, tag: "clone");
     var model = Scope.findWidgetModel(id, scope);

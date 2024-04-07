@@ -54,7 +54,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
   HeaderModel? header;
   BoxModel? body;
   FooterModel? footer;
-  DrawerModel? drawer;
+
   bool hasHitBusy = false;
 
   // model is initialized
@@ -585,10 +585,4 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
 
   @override
   Widget getView({Key? key}) => FrameworkView(this);
-}
-
-abstract class IDragListener {
-  onDragOpen(DragStartDetails details, String dir);
-  onDragEnd(DragEndDetails details, String dir, bool isOpen);
-  onDragSheet(DragUpdateDetails details, String dir, bool isOpen);
 }

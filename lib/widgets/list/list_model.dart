@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart';
@@ -18,7 +18,7 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class ListModel extends DecoratedWidgetModel implements IForm, IScrollable {
+class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
   final HashMap<int, ListItemModel> items = HashMap<int, ListItemModel>();
 
   // full list of data

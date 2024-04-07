@@ -2,9 +2,9 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
-import 'package:fml/widgets/positioned/positioned_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -17,12 +17,14 @@ enum VerticalAlignmentType { top, bottom, center, around, between, evenly }
 
 enum HorizontalAlignmentType { left, right, center, around, between, evenly }
 
-class BoxModel extends DecoratedWidgetModel {
+class BoxModel extends ViewableWidgetModel {
   LayoutType get layoutType =>
       getLayoutType(layout, defaultLayout: LayoutType.column);
 
   // Denotes whether box widgets (row, column) naturally expand or contract
   final bool expandDefault;
+
+  DrawerModel? drawer;
 
   // indicates if the widget will grow in
   // its horizontal axis
@@ -343,6 +345,13 @@ class BoxModel extends DecoratedWidgetModel {
     center = Xml.get(node: xml, tag: 'center');
     wrap = Xml.get(node: xml, tag: 'wrap');
     expand = Xml.get(node: xml, tag: 'expand');
+
+    // build drawers
+    List<XmlElement>? nodes;
+    nodes = Xml.getChildElements(node: xml, tag: "DRAWER");
+    if (nodes != null && nodes.isNotEmpty) {
+      drawer = DrawerModel.fromXmlList(this, nodes);
+    }
   }
 
   @override
@@ -353,15 +362,10 @@ class BoxModel extends DecoratedWidgetModel {
       if (model is! ModalModel) {
         var view = model.getView();
 
-        // wrap child in child data widget
-        // This is already done for us in our "positioned" widget view
-        if (view is! PositionedView) {
-          view = LayoutBoxChildData(model: model, child: view!);
-        }
-
         // add the view to the
         // view list
         if (view != null) {
+          view = LayoutBoxChildData(model: model, child: view);
           views.add(view);
         }
       }

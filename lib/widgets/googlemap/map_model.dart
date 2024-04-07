@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -14,7 +14,7 @@ import 'package:fml/helpers/helpers.dart';
 
 enum MapTypes { satellite, hybrid, terrain, roadmap }
 
-class MapModel extends DecoratedWidgetModel {
+class MapModel extends ViewableWidgetModel {
   String? style;
   bool editmode = false;
 

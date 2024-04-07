@@ -5,13 +5,13 @@ import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/alarm/alarm_model.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/observable/observable_barrel.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class FormFieldModel extends DecoratedWidgetModel {
+class FormFieldModel extends ViewableWidgetModel {
   // override this getter and setter in your base class
   set value(dynamic v) {}
   dynamic get value => null;

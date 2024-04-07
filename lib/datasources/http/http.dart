@@ -225,7 +225,7 @@ class Http {
 
     Map<String, dynamic> parameters = {};
     parameters.addAll(uri.queryParameters);
-    if (refresh == true) parameters["refresh"] = newId();
+    if (refresh) parameters["refresh"] = newId();
     parameters.forEach((key, value) => Uri.encodeComponent(value));
     return uri.replace(queryParameters: parameters);
   }

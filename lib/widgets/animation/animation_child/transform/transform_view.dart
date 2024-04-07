@@ -48,11 +48,11 @@ class TransformViewState extends State<TransformView>
           reverseDuration: Duration(
             milliseconds: widget.model.reverseduration ?? widget.model.duration,
           ));
-      if (widget.model.controllerValue == 1 && widget.model.runonce == true) {
+      if (widget.model.controllerValue == 1 && widget.model.runonce) {
         _controller.animateTo(widget.model.controllerValue,
             duration: const Duration());
 
-        if (widget.model.autoplay == true && _controller.isAnimating != true) {
+        if (widget.model.autoplay && !_controller.isAnimating) {
           start();
         }
       }

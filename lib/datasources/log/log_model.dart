@@ -27,7 +27,7 @@ class LogModel extends DataSourceModel implements IDataSource {
 
   @override
   Future<bool> start({bool refresh = false, String? key}) async {
-    if (enabled == false) return false;
+    if (!enabled) return false;
     busy = true;
     Data data = Log().data;
     busy = false;

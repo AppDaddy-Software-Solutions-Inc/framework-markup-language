@@ -132,7 +132,7 @@ class BeaconModel extends DataSourceModel
   @override
   onBeaconData(List<Beacon> beacons) {
     // enabled?
-    if (enabled == false) return;
+    if (!enabled) return;
 
     // if no beacons found on last
     // iteration and none in this,

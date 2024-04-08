@@ -261,6 +261,9 @@ class ListLayoutViewState extends WidgetState<ListLayoutView>
     // apply user defined constraints
     view = applyConstraints(view, widget.model.tightestOrDefault);
 
+    // apply visual transforms
+    view = applyTransforms(view);
+
     return view;
   }
 

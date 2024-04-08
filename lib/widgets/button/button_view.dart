@@ -165,6 +165,9 @@ class _ButtonViewState extends WidgetState<ButtonView> {
     // add margins around the entire widget
     view = addMargins(view);
 
+    // apply visual transforms
+    view = applyTransforms(view);
+
     return view;
   }
 }

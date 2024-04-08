@@ -357,6 +357,9 @@ class GridViewState extends WidgetState<GridView> {
     // apply user defined constraints
     view = applyConstraints(view, widget.model.tightestOrDefault);
 
+    // apply visual transforms
+    view = applyTransforms(view);
+
     List<Widget> children = [];
 
     children.add(view);

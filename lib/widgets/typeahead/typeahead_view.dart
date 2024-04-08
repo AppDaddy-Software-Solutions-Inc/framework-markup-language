@@ -420,6 +420,9 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
     // apply constraints
     view = applyConstraints(view, modelConstraints);
 
+    // apply visual transforms
+    view = applyTransforms(view);
+
     return view;
   }
 }

@@ -1252,6 +1252,9 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
     // apply user defined constraints
     view = applyConstraints(view, widget.model.constraints);
 
+    // apply visual transforms
+    view = applyTransforms(view);
+
     view = GoBack(canGoBack: () async => preventPop(), child: view);
 
     return view;

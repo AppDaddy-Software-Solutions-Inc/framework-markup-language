@@ -1202,7 +1202,7 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     onscreen = Xml.get(node: xml, tag: 'onscreen');
     offscreen = Xml.get(node: xml, tag: 'offscreen');
 
-    // _colors array - sets color1, color2, colo3 and colo4
+    // _colors array - sets color1, color2, color3 and colo4
     _colors = Xml.get(node: xml, tag: 'color');
 
     // visual transforms

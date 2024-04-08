@@ -7,7 +7,6 @@ import 'package:fml/datasources/stash/stash_model.dart';
 import 'package:fml/datasources/log/log_model.dart';
 import 'package:fml/datasources/test/test_data_model.dart';
 import 'package:fml/datasources/transforms/subquery.dart';
-import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector_model.dart';
 import 'package:fml/datasources/detectors/text/text_detector_model.dart';
 import 'package:fml/datasources/data/model.dart';
@@ -350,7 +349,6 @@ Future<bool> _appendChild(
 }
 
 // XmlElement cloneNode(XmlElement node, Scope? scope) {
-//
 //   if (Xml.hasAttribute(node: node, tag: "clone")) {
 //     var id = Xml.attribute(node: node, tag: "clone");
 //     var model = Scope.findWidgetModel(id, scope);
@@ -387,8 +385,12 @@ bool excludeFromTemplate(XmlElement node, Scope? scope) {
   // exclude node from template?
   var value = node.getAttribute('exclude');
   if (value != null) {
+
+    // evaluate the bindable
     var bindable = BooleanObservable(null, value, scope: scope);
     exclude = bindable.get() ?? false;
+
+    // dispose of it
     bindable.dispose();
   }
   return exclude;

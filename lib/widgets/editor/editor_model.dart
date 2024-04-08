@@ -83,10 +83,5 @@ class EditorModel extends ViewableWidgetModel {
   }
 
   @override
-  void onPropertyChange(Observable observable) {
-    return super.onPropertyChange(observable);
-  }
-
-  @override
   Widget getView({Key? key}) => getReactiveView(EditorView(this));
 }

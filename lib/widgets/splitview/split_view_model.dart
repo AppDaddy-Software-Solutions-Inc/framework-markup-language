@@ -5,11 +5,11 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:fml/widgets/splitview/split_view.dart';
+import 'package:fml/widgets/splitview/split_view_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class SplitModel extends BoxModel {
+class SplitViewModel extends BoxModel {
   @override
   String? get layout => vertical ? "column" : "row";
 
@@ -78,14 +78,14 @@ class SplitModel extends BoxModel {
 
   Color? get dividerHandleColor => _dividerHandleColor?.get();
 
-  SplitModel(WidgetModel super.parent, super.id, {bool? vertical}) {
+  SplitViewModel(WidgetModel super.parent, super.id, {bool? vertical}) {
     if (vertical != null) _vertical = vertical;
   }
 
-  static SplitModel? fromXml(WidgetModel parent, XmlElement xml) {
-    SplitModel? model;
+  static SplitViewModel? fromXml(WidgetModel parent, XmlElement xml) {
+    SplitViewModel? model;
     try {
-      model = SplitModel(parent, Xml.get(node: xml, tag: 'id'),
+      model = SplitViewModel(parent, Xml.get(node: xml, tag: 'id'),
           vertical: Xml.get(node: xml, tag: 'direction') == "vertical");
       model.deserialize(xml);
     } catch (e) {
@@ -111,18 +111,20 @@ class SplitModel extends BoxModel {
     // remove and destroy all non-box children
     if (children != null) {
       var list = children!.where((child) => child is! BoxModel).cast<WidgetModel>();
-      list.forEach((child) => child.dispose());
+      for (var child in list) {
+        child.dispose();
+      }
       children?.removeWhere((child) => list.contains(child));
     }
   }
 
   @override
   List<Widget> inflate() {
-    SplitViewState? view = findListenerOfExactType(SplitViewState);
+    SplitViewViewState? view = findListenerOfExactType(SplitViewViewState);
     if (view == null) return [];
     return view.inflate();
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(SplitView(this));
+  Widget getView({Key? key}) => getReactiveView(SplitViewView(this));
 }

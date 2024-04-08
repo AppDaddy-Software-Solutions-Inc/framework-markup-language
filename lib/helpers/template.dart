@@ -91,7 +91,7 @@ import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/select/select_model.dart';
 import 'package:fml/widgets/shortcut/shortcut_model.dart';
 import 'package:fml/widgets/slider/slider_model.dart';
-import 'package:fml/widgets/splitview/split_model.dart';
+import 'package:fml/widgets/splitview/split_view_model.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
 import 'package:fml/widgets/switch/switch_model.dart';
 import 'package:fml/widgets/table/table_footer_cell_model.dart';
@@ -484,10 +484,19 @@ WidgetModel? fromXmlNode(
 
     case "BOX": // Preferred Case
     case "CONTAINER": // Container may be deprecated
+    case "SBOX":
+    case "SHRINKBOX":
+
+      // shrink by default?
+      bool shrink = node.localName == "SBOX" || node.localName == "SHRINKBOX";
+
+      // prototype?
       bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
+
+      // define model
       model = isPrototype
           ? PrototypeModel.fromXml(parent, node)
-          : BoxModel.fromXml(parent, node, scope: scope, data: data);
+          : BoxModel.fromXml(parent, node, scope: scope, data: data, expandDefault: !shrink);
       break;
 
     case "BREADCRUMB":
@@ -575,12 +584,17 @@ WidgetModel? fromXmlNode(
 
     case "COLUMN":
     case "COL": //shorthand case
+
+      // table row?
       if (parent is TableModel) {
-        model = TableHeaderModel.fromXml(parent, node);
+        model = TableRowModel.fromXml(parent, node);
         break;
       }
 
+      // prototype?
       bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
+
+      // define model
       model = isPrototype
           ? PrototypeModel.fromXml(parent, node)
           : ColumnModel.fromXml(parent, node, scope: scope, data: data);
@@ -822,11 +836,6 @@ WidgetModel? fromXmlNode(
       if (parent is OptionModel) model = TagModel.fromXml(parent, node);
       break;
 
-    case "SBOX":
-    case "SHRINKBOX":
-      model = BoxModel.fromXml(parent, node, expandDefault: false);
-      break;
-
     case "SHORTCUT":
       model = ShortcutModel.fromXml(parent, node);
       break;
@@ -942,12 +951,17 @@ WidgetModel? fromXmlNode(
       break;
 
     case "ROW":
+
+      // table row?
       if (parent is TableModel) {
         model = TableRowModel.fromXml(parent, node);
         break;
       }
 
+      // prototype?
       bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
+
+      // define model
       model = isPrototype
           ? PrototypeModel.fromXml(parent, node)
           : RowModel.fromXml(parent, node, scope: scope, data: data);
@@ -1000,11 +1014,19 @@ WidgetModel? fromXmlNode(
       break;
 
     case "STACK":
-      model = StackModel.fromXml(parent, node);
+
+      // prototype?
+      bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
+
+      // define model
+      model = isPrototype
+          ? PrototypeModel.fromXml(parent, node)
+          : StackModel.fromXml(parent, node, scope: scope, data: data);
+
       break;
 
     case "SPLITVIEW":
-      model = SplitModel.fromXml(parent, node);
+      model = SplitViewModel.fromXml(parent, node);
       break;
 
     case "TABLE":
@@ -1114,7 +1136,15 @@ WidgetModel? fromXmlNode(
       break;
 
     case "VIEW":
-      if (parent is SplitModel) {
+      if (parent is SplitViewModel) {
+
+        // ensure expand is set to true
+        Xml.setAttribute(node, "expand", "true");
+
+        // views have their own scope
+        // var scope = Scope(parent: parent.scope, id: Xml.get(node: node, tag: 'id'));
+
+        // splitter views are simple BoxModel's
         model = BoxModel.fromXml(parent, node);
       }
       break;

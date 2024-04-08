@@ -4,25 +4,26 @@ import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/widgets/box/box_layout.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/splitview/split_model.dart';
+import 'package:fml/widgets/splitview/split_view_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
-class SplitView extends StatefulWidget implements IWidgetView {
+class SplitViewView extends StatefulWidget implements IWidgetView {
+
   @override
-  final SplitModel model;
+  final SplitViewModel model;
 
   final List<BoxView> boxes = [];
 
-  SplitView(this.model) : super(key: ObjectKey(model));
+  SplitViewView(this.model) : super(key: ObjectKey(model));
 
   @override
-  State<SplitView> createState() => SplitViewState();
+  State<SplitViewView> createState() => SplitViewViewState();
 }
 
-class SplitViewState extends WidgetState<SplitView> {
+class SplitViewViewState extends WidgetState<SplitViewView> {
   ThemeData? theme;
 
   BoxConstraints constraints = const BoxConstraints();

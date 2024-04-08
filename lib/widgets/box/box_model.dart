@@ -298,9 +298,12 @@ class BoxModel extends ViewableWidgetModel {
       {bool expandDefault = true, Scope? scope, dynamic data}) {
     BoxModel? model;
     try {
+
       model = BoxModel(parent, Xml.get(node: xml, tag: 'id'),
           expandDefault: expandDefault, scope: scope, data: data);
+
       model.deserialize(xml);
+
     } catch (e) {
       Log().exception(e, caller: 'box.Model');
       model = null;

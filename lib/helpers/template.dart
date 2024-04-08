@@ -1143,9 +1143,6 @@ WidgetModel? fromXmlNode(
         // ensure expand is set to true
         Xml.setAttribute(node, "expand", "true");
 
-        // views have their own scope
-        // var scope = Scope(parent: parent.scope, id: Xml.get(node: node, tag: 'id'));
-
         // splitter views are simple BoxModel's
         model = BoxModel.fromXml(parent, node);
       }

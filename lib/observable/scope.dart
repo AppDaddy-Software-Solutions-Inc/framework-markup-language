@@ -51,6 +51,7 @@ class Scope {
   static Scope? of(WidgetModel? model) {
     if (model == null) return null;
     if (model.scope != null) return model.scope!;
+    if (model.parent?.subscope != null) return model.parent!.subscope!;
     return Scope.of(model.parent);
   }
 

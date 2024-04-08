@@ -19,6 +19,14 @@ class WidgetModel implements IDataSourceListener {
   // needs to be unique within the scope
   late final String id;
 
+  // scope
+  Scope? scope;
+  late final bool isLocalScope;
+
+  // child scope
+  Scope? _subscope;
+  Scope? get subscope => _subscope;
+
   // framework
   FrameworkModel? framework;
 
@@ -78,7 +86,6 @@ class WidgetModel implements IDataSourceListener {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get debug => _debug?.get() ?? false;
 
   // parent model
@@ -86,10 +93,6 @@ class WidgetModel implements IDataSourceListener {
 
   // children
   List<WidgetModel>? children;
-
-  // scope
-  Scope? scope;
-  late final bool isLocalScope;
 
   // context
   BuildContext? get context {
@@ -196,6 +199,11 @@ class WidgetModel implements IDataSourceListener {
     // set busy
     busy = true;
 
+    // inner scope
+    if (!isNullOrEmpty(Xml.get(node: xml, tag: 'scope'))) {
+      _subscope = Scope(parent: scope, id: Xml.get(node: xml, tag: 'scope'));
+    }
+
     // retain a pointer to the xml
     element = xml;
 
@@ -265,6 +273,9 @@ class WidgetModel implements IDataSourceListener {
 
     // dispose of the local scope
     if (isLocalScope) scope?.dispose();
+
+    // dispose of the sub-scope
+    _subscope?.dispose();
   }
 
   /// forces and associated views to rebuild

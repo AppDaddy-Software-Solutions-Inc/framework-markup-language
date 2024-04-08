@@ -1201,9 +1201,14 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     flexfit = Xml.get(node: xml, tag: 'flexfit');
     onscreen = Xml.get(node: xml, tag: 'onscreen');
     offscreen = Xml.get(node: xml, tag: 'offscreen');
-    rotation = Xml.get(node: xml, tag: 'rotation') ?? Xml.get(node: xml, tag: 'rotate');
+
+    // _colors array - sets color1, color2, color3 and colo4
     _colors = Xml.get(node: xml, tag: 'color');
+
+    // visual transforms
     opacity = Xml.get(node: xml, tag: 'opacity');
+    rotation = Xml.get(node: xml, tag: 'rotate');
+    flip = Xml.get(node: xml, tag: 'flip');
 
     // drag
     draggable = Xml.get(node: xml, tag: 'draggable');

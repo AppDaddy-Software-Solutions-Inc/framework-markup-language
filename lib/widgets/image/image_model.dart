@@ -114,7 +114,6 @@ class ImageModel extends ViewableWidgetModel {
     defaultvalue = Xml.get(node: xml, tag: 'default');
     fit = Xml.get(node: xml, tag: 'fit');
     filter = Xml.get(node: xml, tag: 'filter');
-    flip = Xml.get(node: xml, tag: 'flip');
     interactive = Xml.get(node: xml, tag: 'interactive');
   }
 

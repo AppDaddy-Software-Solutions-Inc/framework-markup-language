@@ -174,6 +174,10 @@ class TableViewState extends WidgetState<TableView> {
         // get value from data
         value ??= Data.read(data, column.field);
 
+        // null values must be set to a blank string
+        // otherwise they show as the word "null" on the grid
+        value ??= "";
+
         // create the cell
         cells[column.field] = PlutoCell(value: value);
         colIdx++;

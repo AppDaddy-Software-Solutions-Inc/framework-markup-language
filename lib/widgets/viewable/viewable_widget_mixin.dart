@@ -1207,7 +1207,7 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
 
     // visual transforms
     opacity = Xml.get(node: xml, tag: 'opacity');
-    rotation = Xml.get(node: xml, tag: 'rotation') ?? Xml.get(node: xml, tag: 'rotate');
+    rotation = Xml.get(node: xml, tag: 'rotate');
     flip = Xml.get(node: xml, tag: 'flip');
 
     // drag

@@ -64,7 +64,7 @@ class Event {
   /// When an event is processed and you want it to stop broadcasting set handled = true
   bool _handled = false;
   set handled(bool b) {
-    if ((cancellable != false) && (b == true)) _handled = true;
+    if (cancellable && b) _handled = true;
   }
 
   bool get handled {

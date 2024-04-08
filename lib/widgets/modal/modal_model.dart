@@ -1,10 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/box/box_data.dart';
+import 'package:fml/widgets/box/box_layout.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/modal/modal_manager_view.dart';
-import 'package:fml/widgets/positioned/positioned_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -87,7 +86,6 @@ class ModalModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get modal => _modal?.get() ?? true;
 
   // dismissable
@@ -183,7 +181,7 @@ class ModalModel extends BoxModel {
     title = Xml.get(node: xml, tag: 'title');
     dismissable = Xml.get(node: xml, tag: 'dismissable');
     resizeable = Xml.get(node: xml, tag: 'resizeable');
-    closeable = Xml.get(node: xml, tag: 'closable');
+    closeable = Xml.get(node: xml, tag: 'closeable');
     modal = Xml.get(node: xml, tag: 'modal');
   }
 
@@ -198,21 +196,17 @@ class ModalModel extends BoxModel {
         // wrap child in child data widget
         // this is done for us in "positioned" if the child happens
         // to be a positioned widget and the layout is "stack" (see positioned_view.dart)
-        if (view is! PositionedView) {
-          view = LayoutBoxChildData(model: model, child: view!);
+        if (view != null) {
+          view = BoxLayout(model: model, child: view);
+          views.add(view);
         }
-
-        if (view != null) views.add(view);
       }
     }
 
     // add the static child
     if (child != null) {
-      var view = child;
-      if (view is! PositionedView) {
-        view = LayoutBoxChildData(model: this, child: child!);
-      }
-      views.add(view!);
+      var view = BoxLayout(model: this, child: child!);
+      views.add(view);
     }
 
     return views;

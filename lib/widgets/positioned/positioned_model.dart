@@ -1,14 +1,20 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/column/column_model.dart';
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/widgets/positioned/positioned_view.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class PositionedModel extends DecoratedWidgetModel {
+class PositionedModel extends ColumnModel {
+
+  @override
+  bool get expand => false;
+
+  // defined child
+  final Widget? child;
+
   // left
   // bool _leftIsPercent = false;
   DoubleObservable? _left;
@@ -122,7 +128,7 @@ class PositionedModel extends DecoratedWidgetModel {
   @override
   double get depth => _depth?.get() ?? 1.0;
 
-  PositionedModel(WidgetModel super.parent, super.id,
+  PositionedModel(super.parent, super.id,
       {dynamic left,
       dynamic right,
       dynamic top,
@@ -130,6 +136,7 @@ class PositionedModel extends DecoratedWidgetModel {
       dynamic xoffset,
       dynamic yoffset,
       dynamic depth,
+      this.child,
       super.scope}) {
     this.top = top;
     this.bottom = bottom;
@@ -170,5 +177,5 @@ class PositionedModel extends DecoratedWidgetModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(PositionedView(this));
+  List<Widget> inflate() => child == null ? super.inflate() : [child!];
 }

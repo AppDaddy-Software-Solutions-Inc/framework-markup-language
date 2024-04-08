@@ -70,7 +70,7 @@ class DetectorModel extends DataSourceModel implements IDataSource {
 
   Future<bool> onDetected(Data data) async {
     // enabled?
-    if (enabled == false) return true;
+    if (!enabled) return true;
 
     // notify listeners
 

@@ -182,7 +182,7 @@ class ModalViewState extends WidgetState<ModalView> {
   }
 
   onResizeBR(DragUpdateDetails details) {
-    if (widget.model.resizeable == false) return;
+    if (!widget.model.resizeable) return;
     if (((width ?? 0) + details.delta.dx) < minimumWidth) return;
     if (((height ?? 0) + details.delta.dy) < minimumHeight) return;
 
@@ -199,7 +199,7 @@ class ModalViewState extends WidgetState<ModalView> {
   }
 
   onResizeBL(DragUpdateDetails details) {
-    if (widget.model.resizeable == false) return;
+    if (!widget.model.resizeable) return;
     if (((width ?? 0) - details.delta.dx) < minimumWidth) return;
     if (((height ?? 0) + details.delta.dy) < minimumHeight) return;
 
@@ -216,7 +216,7 @@ class ModalViewState extends WidgetState<ModalView> {
   }
 
   onResizeTL(DragUpdateDetails details) {
-    if (widget.model.resizeable == false) return;
+    if (!widget.model.resizeable) return;
     if (((width ?? 0) - details.delta.dx) < minimumWidth) return;
     if (((height ?? 0) + details.delta.dy) < minimumHeight) return;
 
@@ -236,7 +236,7 @@ class ModalViewState extends WidgetState<ModalView> {
   }
 
   onResizeTR(DragUpdateDetails details) {
-    if (widget.model.resizeable == false) return;
+    if (!widget.model.resizeable) return;
     if (((width ?? 0) + details.delta.dx) < minimumWidth) return;
     if (((height ?? 0) - details.delta.dy) < minimumHeight) return;
 
@@ -253,7 +253,7 @@ class ModalViewState extends WidgetState<ModalView> {
   }
 
   onResizeT(DragUpdateDetails details) {
-    if (widget.model.resizeable == false) return;
+    if (!widget.model.resizeable) return;
     if (((height ?? 0) - details.delta.dy) < minimumHeight) return;
     setState(() {
       height = (height ?? 0) - details.delta.dy;
@@ -264,7 +264,7 @@ class ModalViewState extends WidgetState<ModalView> {
   }
 
   onResizeB(DragUpdateDetails details) {
-    if (widget.model.resizeable == false) return;
+    if (!widget.model.resizeable) return;
     if (((height ?? 0) + details.delta.dy) < minimumHeight) return;
 
     setState(() {
@@ -274,7 +274,7 @@ class ModalViewState extends WidgetState<ModalView> {
   }
 
   onResizeL(DragUpdateDetails details) {
-    if (widget.model.resizeable == false) return;
+    if (!widget.model.resizeable) return;
     if (((width ?? 0) - details.delta.dx) < minimumWidth) return;
     setState(() {
       width = (width ?? 0) - details.delta.dx;
@@ -285,7 +285,7 @@ class ModalViewState extends WidgetState<ModalView> {
   }
 
   onResizeR(DragUpdateDetails details) {
-    if (widget.model.resizeable == false) return;
+    if (!widget.model.resizeable) return;
     if (((width ?? 0) + details.delta.dx) < minimumWidth) return;
     setState(() {
       width = (width ?? 0) + details.delta.dx;
@@ -299,7 +299,7 @@ class ModalViewState extends WidgetState<ModalView> {
     setState(() {
       dx = dx! + details.delta.dx;
       dy = dy! + details.delta.dy;
-      if (widget.model.modal == true) {
+      if (widget.model.modal) {
         var viewport = MediaQuery.of(context).size;
         if (dx!.isNegative) dx = 0;
         if (dy!.isNegative) dy = 0;
@@ -362,7 +362,7 @@ class ModalViewState extends WidgetState<ModalView> {
     bool isMaximized = atMaxHeight && atMaxWidth;
 
     // Build View
-    Widget close = (widget.model.closeable == false)
+    Widget close = (!widget.model.closeable)
         ? Container()
         : GestureDetector(
             onTap: () => onClose(),
@@ -379,7 +379,7 @@ class ModalViewState extends WidgetState<ModalView> {
                             color: !closeHovered ? c1 : c2)))));
 
     Widget minimize =
-        ((widget.model.closeable == false) || (widget.model.modal == true))
+        (!widget.model.closeable || widget.model.modal)
             ? Container()
             : GestureDetector(
                 onTap: () => onMinimize(),
@@ -395,8 +395,7 @@ class ModalViewState extends WidgetState<ModalView> {
                                 size: headerIconSize - 4,
                                 color: !minimizeHovered ? c1 : c2)))));
 
-    Widget maximize = ((widget.model.closeable == false) ||
-            (widget.model.modal == true))
+    Widget maximize = (!widget.model.closeable || widget.model.modal)
         ? Container()
         : GestureDetector(
             onTap: () => isMaximized ? onRestoreToLast() : onMaximizeWindow(),
@@ -484,7 +483,7 @@ class ModalViewState extends WidgetState<ModalView> {
     if (!minimized) {
       Widget resize =
           const Icon(Icons.apps, size: 24, color: Colors.transparent);
-      Widget resizeableBR = (widget.model.resizeable == false)
+      Widget resizeableBR = !widget.model.resizeable
           ? Container()
           : GestureDetector(
               onPanUpdate: onResizeBR,
@@ -492,7 +491,7 @@ class ModalViewState extends WidgetState<ModalView> {
               child: MouseRegion(
                   cursor: SystemMouseCursors.resizeUpLeftDownRight,
                   child: resize));
-      Widget resizeableBL = (widget.model.resizeable == false)
+      Widget resizeableBL = !widget.model.resizeable
           ? Container()
           : GestureDetector(
               onPanUpdate: onResizeBL,
@@ -500,7 +499,7 @@ class ModalViewState extends WidgetState<ModalView> {
               child: MouseRegion(
                   cursor: SystemMouseCursors.resizeUpRightDownLeft,
                   child: resize));
-      Widget resizeableTL = (widget.model.resizeable == false)
+      Widget resizeableTL = !widget.model.resizeable
           ? Container()
           : GestureDetector(
               onPanUpdate: onResizeTL,
@@ -508,7 +507,7 @@ class ModalViewState extends WidgetState<ModalView> {
               child: MouseRegion(
                   cursor: SystemMouseCursors.resizeUpLeftDownRight,
                   child: resize));
-      Widget resizeableTR = (widget.model.resizeable == false)
+      Widget resizeableTR = !widget.model.resizeable
           ? Container()
           : GestureDetector(
               onPanUpdate: onResizeTR,
@@ -519,14 +518,14 @@ class ModalViewState extends WidgetState<ModalView> {
 
       Widget resize2 =
           SizedBox(width: FmlEngine.isMobile ? 34 : 24, height: height);
-      Widget resizeableL = (widget.model.resizeable == false)
+      Widget resizeableL = !widget.model.resizeable
           ? Container()
           : GestureDetector(
               onPanUpdate: onResizeL,
               onTapDown: onBringToFront,
               child: MouseRegion(
                   cursor: SystemMouseCursors.resizeLeftRight, child: resize2));
-      Widget resizeableR = (widget.model.resizeable == false)
+      Widget resizeableR = !widget.model.resizeable
           ? Container()
           : GestureDetector(
               onPanUpdate: onResizeR,
@@ -536,14 +535,14 @@ class ModalViewState extends WidgetState<ModalView> {
 
       Widget resize3 =
           SizedBox(width: width, height: FmlEngine.isMobile ? 34 : 24);
-      Widget resizeableT = (widget.model.resizeable == false)
+      Widget resizeableT = !widget.model.resizeable
           ? Container()
           : GestureDetector(
               onPanUpdate: onResizeT,
               onTapDown: onBringToFront,
               child: MouseRegion(
                   cursor: SystemMouseCursors.resizeUpDown, child: resize3));
-      Widget resizeableB = (widget.model.resizeable == false)
+      Widget resizeableB = !widget.model.resizeable
           ? Container()
           : GestureDetector(
               onPanUpdate: onResizeB,

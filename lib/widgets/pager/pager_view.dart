@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/box/box_data.dart';
+import 'package:fml/widgets/box/box_layout.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/positioned/positioned_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
@@ -46,6 +46,7 @@ class PagerViewState extends WidgetState<PagerView> {
     if (pageNum == null && page is String) {
       switch (page.trim().toLowerCase()) {
         case 'previous':
+        case 'prev':
           pageNum = currentPage - 1;
           if (pageNum < 1) pageNum = pages;
           break;
@@ -92,7 +93,7 @@ class PagerViewState extends WidgetState<PagerView> {
       // Build Pages
       _pages = [];
       for (PageModel model in widget.model.pages) {
-        var view = LayoutBoxChildData(model: model, child: model.getView());
+        var view = BoxLayout(model: model, child: model.getView());
         _pages.add(view);
       }
       pageView = PageView.builder(
@@ -100,13 +101,13 @@ class PagerViewState extends WidgetState<PagerView> {
           itemBuilder: buildPage,
           itemCount: _pages.length,
           onPageChanged: (int page) => widget.model.currentpage = page + 1);
-      pageView = LayoutBoxChildData(model: widget.model, child: pageView!);
+      pageView = BoxLayout(model: widget.model, child: pageView!);
     }
     list.add(pageView!);
 
     // create pager
     if (pager == null && widget.model.pager) {
-      var model = ViewableWidgetModel(widget.model, null);
+
       pager = DotsIndicator(
           controller: _controller!,
           itemCount: _pages.length,
@@ -114,7 +115,10 @@ class PagerViewState extends WidgetState<PagerView> {
               widget.model.color ?? Theme.of(context).colorScheme.onBackground,
           onPageSelected: (int page) =>
               pageTo(page + 1, widget.model.transition));
-      pager = LayoutBoxChildData(model: model, bottom: 8, child: pager!);
+
+      var model = PositionedModel(widget.model, null, bottom: 8, child: pager);
+
+      pager = BoxLayout(model: model, child: pager!);
     }
     if (pager != null) {
       list.add(pager!);
@@ -125,7 +129,7 @@ class PagerViewState extends WidgetState<PagerView> {
       var model = BusyModel(widget.model,
           visible: widget.model.busy, observable: widget.model.busyObservable);
       busy = model.getView();
-      busy = LayoutBoxChildData(model: model, child: busy!);
+      busy = BoxLayout(model: model, child: busy!);
     }
     list.add(busy!);
 
@@ -174,6 +178,7 @@ class DotsIndicator extends AnimatedWidget {
             (index == (controller.page ?? controller.initialPage) ? 1 : 0);
     return SizedBox(
       width: _kDotSpacing,
+      height: (_kDotSize * zoom),
       child: Center(
         child: Material(
           color: color,

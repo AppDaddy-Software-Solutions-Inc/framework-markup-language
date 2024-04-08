@@ -214,22 +214,34 @@ class StackRenderer extends RenderBox
     assert(childParentData.isPositioned);
     assert(child.parentData == childParentData);
 
+    var position = childParentData.position;
+    
     bool hasVisualOverflow = false;
     BoxConstraints childConstraints = const BoxConstraints();
 
-    if (childParentData.left != null && childParentData.right != null) {
+    if (position.left != null && position.right != null) {
       childConstraints = childConstraints.tighten(
-          width: size.width - childParentData.right! - childParentData.left!);
-    } else if (childParentData.width != null) {
-      childConstraints = childConstraints.tighten(width: childParentData.width);
+          width: size.width - position.right! - position.left!);
+    } 
+    else if (size.width.isFinite) {
+      childConstraints = BoxConstraints(
+          minWidth: childConstraints.minWidth,
+          maxWidth: size.width,
+          minHeight: childConstraints.minHeight,
+          maxHeight: childConstraints.maxHeight);
     }
 
-    if (childParentData.top != null && childParentData.bottom != null) {
+    if (position.top != null && position.bottom != null) {
       childConstraints = childConstraints.tighten(
-          height: size.height - childParentData.bottom! - childParentData.top!);
-    } else if (childParentData.height != null) {
-      childConstraints =
-          childConstraints.tighten(height: childParentData.height);
+          height: size.height - position.bottom! - position.top!);
+    }
+
+    else if (size.height.isFinite) {
+      childConstraints = BoxConstraints(
+          minWidth: childConstraints.minWidth,
+          maxWidth: childConstraints.maxWidth,
+          minHeight: childConstraints.minHeight,
+          maxHeight: size.height);
     }
 
     // calculate the child's size by performing
@@ -240,10 +252,10 @@ class StackRenderer extends RenderBox
         parentUsesSize: true);
 
     final double x;
-    if (childParentData.left != null) {
-      x = childParentData.left!;
-    } else if (childParentData.right != null) {
-      x = size.width - childParentData.right! - child.size.width;
+    if (position.left != null) {
+      x = position.left!;
+    } else if (position.right != null) {
+      x = size.width - position.right! - child.size.width;
     } else {
       x = alignment.alongOffset(size - child.size as Offset).dx;
     }
@@ -253,10 +265,10 @@ class StackRenderer extends RenderBox
     }
 
     final double y;
-    if (childParentData.top != null) {
-      y = childParentData.top!;
-    } else if (childParentData.bottom != null) {
-      y = size.height - childParentData.bottom! - child.size.height;
+    if (position.top != null) {
+      y = position.top!;
+    } else if (position.bottom != null) {
+      y = size.height - position.bottom! - child.size.height;
     } else {
       y = alignment.alongOffset(size - child.size as Offset).dy;
     }

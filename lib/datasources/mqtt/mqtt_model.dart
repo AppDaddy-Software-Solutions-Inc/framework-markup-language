@@ -294,7 +294,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener {
   @override
   onMessage(Payload payload) {
     // enabled?
-    if (enabled == false) return;
+    if (!enabled) return;
 
     // increment the number of messages received
     _received.set(received + 1);

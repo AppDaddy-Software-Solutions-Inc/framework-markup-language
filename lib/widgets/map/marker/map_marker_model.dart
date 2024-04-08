@@ -5,13 +5,13 @@ import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/map/map_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class MapMarkerModel extends DecoratedWidgetModel {
+class MapMarkerModel extends ViewableWidgetModel {
   /// latitude
   DoubleObservable? _latitude;
   set latitude(dynamic v) {

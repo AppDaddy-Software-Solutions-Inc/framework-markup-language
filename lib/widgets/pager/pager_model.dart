@@ -165,12 +165,12 @@ class PagerModel extends BoxModel {
       case "page":
         var view = findListenerOfExactType(PagerViewState);
         if (view is PagerViewState) {
-          int page = 0;
+          dynamic page;
           String transition = this.transition;
 
           // page
           if (arguments.isNotEmpty) {
-            page = toInt(arguments[0]) ?? 0;
+            page = arguments[0];
           }
 
           // transition
@@ -178,6 +178,7 @@ class PagerModel extends BoxModel {
             transition = toStr(arguments[1]) ?? this.transition;
           }
 
+          // go to page
           view.pageTo(page, transition);
         }
         break;
@@ -186,12 +187,12 @@ class PagerModel extends BoxModel {
       case "jump":
         var view = findListenerOfExactType(PagerViewState);
         if (view is PagerViewState) {
-          int page = 0;
+          dynamic page;
           String transition = "jump";
 
           // page
           if (arguments.isNotEmpty) {
-            page = toInt(arguments[0]) ?? 0;
+            page = arguments[0];
           }
           view.pageTo(page, transition);
         }
@@ -201,12 +202,12 @@ class PagerModel extends BoxModel {
       case "slide":
         var view = findListenerOfExactType(PagerViewState);
         if (view is PagerViewState) {
-          int page = 0;
+          dynamic page;
           String transition = "slide";
 
           // page
           if (arguments.isNotEmpty) {
-            page = toInt(arguments[0]) ?? 0;
+            page = arguments[0];
           }
           view.pageTo(page, transition);
         }

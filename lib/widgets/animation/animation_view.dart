@@ -34,21 +34,25 @@ class AnimationViewState extends WidgetState<AnimationView>
   @override
   void initState() {
     super.initState();
+
+    // build the controller
     _controller = AnimationController(
         vsync: this,
         duration: Duration(milliseconds: widget.model.duration),
         reverseDuration: Duration(
           milliseconds: widget.model.reverseduration ?? widget.model.duration,
         ));
-    if (widget.model.controllerValue == 1 && widget.model.runonce == true) {
+
+    if (widget.model.controllerValue == 1 && widget.model.runonce) {
       _controller?.animateTo(widget.model.controllerValue,
           duration: const Duration());
     }
+
     _controller?.addStatusListener((status) {
       _animationListener(status);
     });
 
-    if (widget.model.autoplay == true && _controller?.isAnimating != true) {
+    if (widget.model.autoplay && !_controller!.isAnimating) {
       start();
     }
   }

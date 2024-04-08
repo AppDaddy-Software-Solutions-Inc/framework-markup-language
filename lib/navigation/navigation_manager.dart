@@ -341,7 +341,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
     parameters ??= <String, String>{};
 
     String url = fromMap(parameters, 'url', defaultValue: "");
-    bool? modal = fromMapAsBool(parameters, 'modal', defaultValue: false);
+    bool modal = fromMapAsBool(parameters, 'modal', defaultValue: false) ?? false;
 
     String? transition = fromMap(parameters, 'transition');
     String? width = fromMap(parameters, 'width');
@@ -374,7 +374,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
     if (!local) return _openBrowser(url);
 
     // open new page in modal window?
-    if (modal == true && model != null) {
+    if (modal && model != null) {
       bool ok = false;
       var framework = model.findParentOfExactType(FrameworkModel);
       if (framework != null) {

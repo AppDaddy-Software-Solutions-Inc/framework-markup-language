@@ -2,7 +2,7 @@
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/menu/item/menu_item_view.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
@@ -13,7 +13,7 @@ import 'package:fml/event/handler.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class MenuItemModel extends DecoratedWidgetModel {
+class MenuItemModel extends ViewableWidgetModel {
   // url
   StringObservable? _url;
   set url(dynamic v) {

@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/widgets/box/box_data.dart';
+import 'package:fml/widgets/box/box_layout.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/treeview/tree_model.dart';
 import 'package:fml/widgets/treeview/node/tree_node_view.dart';
@@ -66,7 +66,7 @@ class _TreeViewState extends WidgetState<TreeView> {
 
     // create as Box
     view = BoxView(widget.model,
-        children: [LayoutBoxChildData(model: widget.model, child: view)]);
+        children: [BoxLayout(model: widget.model, child: view)]);
 
     return view;
   }

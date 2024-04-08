@@ -38,6 +38,9 @@ class _IconViewState extends WidgetState<IconView> {
     // add margins
     view = addMargins(view);
 
+    // apply visual transforms
+    view = applyTransforms(view);
+
     return view;
   }
 }

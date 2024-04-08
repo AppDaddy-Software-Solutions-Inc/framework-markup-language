@@ -43,7 +43,7 @@ class Query extends TransformModel implements ITransform {
         ds!.autoexecute = false;
         ds!.autoquery = false;
         ds!.timetolive = 0;
-        ds!.background = false;
+        ds!.canRunInBackground = false;
       }
       if (ds != null) break;
     }

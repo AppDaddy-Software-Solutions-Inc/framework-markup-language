@@ -5,14 +5,14 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/span/span_model.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/text/text_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TextModel extends DecoratedWidgetModel {
+class TextModel extends ViewableWidgetModel {
   @override
   FlexFit? get flexFit {
     return super.flexFit ?? FlexFit.loose;

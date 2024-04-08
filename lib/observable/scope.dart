@@ -237,6 +237,7 @@ class Scope {
   }
 
   void setObservable(String? key, dynamic value) {
+
     Binding? binding = Binding.fromString(key);
 
     if (binding == null) return;

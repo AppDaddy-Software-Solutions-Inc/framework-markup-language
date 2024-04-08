@@ -157,7 +157,7 @@ class WidgetModel implements IDataSourceListener {
       {Scope? scope, dynamic data}) {
 
     // clone node?
-    node = cloneNode(node, scope ?? parent.scope);
+    // node = cloneNode(node, scope ?? parent.scope);
 
     // exclude this element?
     if (excludeFromTemplate(node, parent.scope)) return null;

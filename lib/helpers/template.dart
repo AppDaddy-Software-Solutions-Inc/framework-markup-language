@@ -349,37 +349,37 @@ Future<bool> _appendChild(
   return (model != null);
 }
 
-XmlElement cloneNode(XmlElement node, Scope? scope) {
-
-  if (Xml.hasAttribute(node: node, tag: "clone")) {
-    var id = Xml.attribute(node: node, tag: "clone");
-    var model = Scope.findWidgetModel(id, scope);
-    if (model != null) {
-      if (model.element != null) {
-        var n1 = model.element!.localName.trim();
-        var n2 = node.localName.trim();
-
-        if (n1.toLowerCase() == n2.toLowerCase()) {
-          // copy element
-          var element = model.element!.copy();
-          for (var attribute in node.attributes) {
-            Xml.setAttribute(element, attribute.localName, attribute.value);
-          }
-          node.replace(element);
-          node = element;
-        } else {
-          Log().exception(
-              "A model of type <$n2/> cannot be cloned from a model of type <$n1/>");
-        }
-      } else {
-        Log().exception("Model $id has no element to copy from");
-      }
-    } else {
-      Log().exception("Error attempting to clone model $id. Model not found.");
-    }
-  }
-  return node;
-}
+// XmlElement cloneNode(XmlElement node, Scope? scope) {
+//
+//   if (Xml.hasAttribute(node: node, tag: "clone")) {
+//     var id = Xml.attribute(node: node, tag: "clone");
+//     var model = Scope.findWidgetModel(id, scope);
+//     if (model != null) {
+//       if (model.element != null) {
+//         var n1 = model.element!.localName.trim();
+//         var n2 = node.localName.trim();
+//
+//         if (n1.toLowerCase() == n2.toLowerCase()) {
+//           // copy element
+//           var element = model.element!.copy();
+//           for (var attribute in node.attributes) {
+//             Xml.setAttribute(element, attribute.localName, attribute.value);
+//           }
+//           node.replace(element);
+//           node = element;
+//         } else {
+//           Log().exception(
+//               "A model of type <$n2/> cannot be cloned from a model of type <$n1/>");
+//         }
+//       } else {
+//         Log().exception("Model $id has no element to copy from");
+//       }
+//     } else {
+//       Log().exception("Error attempting to clone model $id. Model not found.");
+//     }
+//   }
+//   return node;
+// }
 
 bool excludeFromTemplate(XmlElement node, Scope? scope) {
   bool exclude = false;

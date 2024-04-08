@@ -274,7 +274,7 @@ class WidgetModel implements IDataSourceListener {
     // dispose of the local scope
     if (isLocalScope) scope?.dispose();
 
-    // dispose of sub-scope
+    // dispose of the sub-scope
     _subscope?.dispose();
   }
 

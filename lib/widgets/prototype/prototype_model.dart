@@ -52,7 +52,8 @@ class PrototypeModel extends BoxModel {
 
     // add the datasource attribute to the root node
     root.attributes.add(XmlAttribute(
-        XmlName("data"), Xml.attribute(node: xml, tag: 'data') ?? "missing"));
+        XmlName("data"),
+        Xml.attribute(node: xml, tag: 'data') ?? "missing"));
 
     // remove the data attribute from the child
     Xml.removeAttribute(child, "data");

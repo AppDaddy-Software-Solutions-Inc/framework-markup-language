@@ -173,6 +173,9 @@ class _CheckboxViewState extends WidgetState<CheckboxView> {
     // apply constraints
     view = applyConstraints(view, widget.model.constraints);
 
+    // apply visual transforms
+    view = applyTransforms(view);
+
     // return view
     return view;
   }

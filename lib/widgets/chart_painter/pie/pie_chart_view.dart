@@ -89,6 +89,9 @@ class _PieChartViewState extends WidgetState<PieChartView> {
     // apply user defined constraints
     view = applyConstraints(view, widget.model.tightestOrDefault);
 
+    // add margins around the entire widget
+    view = addMargins(view);
+
     return view;
   }
 

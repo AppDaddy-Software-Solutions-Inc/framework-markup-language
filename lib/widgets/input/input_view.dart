@@ -643,6 +643,9 @@ class _InputViewState extends WidgetState<InputView>
     // apply constraints
     view = applyConstraints(view, modelConstraints);
 
+    // apply visual transforms
+    view = applyTransforms(view);
+
     return view;
   }
 }

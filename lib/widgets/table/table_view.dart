@@ -1197,6 +1197,9 @@ class TableViewState extends WidgetState<TableView> {
     // add margins around the entire widget
     view = addMargins(view);
 
+    // apply visual transforms
+    view = applyTransforms(view);
+
     // display busy widget over table
     if (widget.model.showBusy) {
       view = Stack(children: [view, Center(child: busy)]);

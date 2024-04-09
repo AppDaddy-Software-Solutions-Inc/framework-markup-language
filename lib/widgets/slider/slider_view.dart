@@ -154,11 +154,11 @@ class _SliderViewState extends WidgetState<SliderView>
     // add margins
     view = addMargins(view);
 
-    // apply constraints
-    view = applyConstraints(view, modelConstraints);
-
     // apply visual transforms
     view = applyTransforms(view);
+
+    // apply constraints
+    view = applyConstraints(view, modelConstraints);
 
     return view;
   }

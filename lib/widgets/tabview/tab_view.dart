@@ -504,6 +504,9 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin {
     // add margins
     view = addMargins(view);
 
+    // apply visual transforms
+    view = applyTransforms(view);
+
     // apply user defined constraints
     view = applyConstraints(view, widget.model.constraints);
 

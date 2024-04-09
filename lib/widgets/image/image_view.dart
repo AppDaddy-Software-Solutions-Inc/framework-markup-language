@@ -261,11 +261,11 @@ class _ImageViewState extends WidgetState<ImageView> {
     // add margins
     view = addMargins(view);
 
-    // apply constraints
-    view = applyConstraints(view, widget.model.constraints);
-
     // apply visual transforms
     view = applyTransforms(view);
+
+    // apply constraints
+    view = applyConstraints(view, widget.model.constraints);
 
     // apply user defined constraints
     return view;

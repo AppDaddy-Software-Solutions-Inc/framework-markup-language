@@ -1,6 +1,7 @@
 3.0.0+16
 - Attempt to resolve anaysis issue for "unknown platforms"
 - Added Icon Change Option 
+- Added ApplicationType.branded functionality
 - Updated packages
 
 3.0.0+15

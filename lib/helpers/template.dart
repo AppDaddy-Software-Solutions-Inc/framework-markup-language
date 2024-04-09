@@ -589,7 +589,7 @@ WidgetModel? fromXmlNode(
 
       // table row?
       if (parent is TableModel) {
-        model = TableRowModel.fromXml(parent, node);
+        model = TableHeaderModel.fromXml(parent, node);
         break;
       }
 

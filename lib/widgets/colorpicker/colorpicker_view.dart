@@ -1,18 +1,25 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:async';
+
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/colorpicker/colorpicker_model.dart';
 import 'package:fml/helpers/string.dart';
 
 class ColorPickerView {
+
+  static Color? colorSelected;
+
   static launchPicker(ColorpickerModel model, BuildContext? context) async {
     if (context == null) return;
 
-    var buttons = const ColorPickerActionButtons(dialogActionButtons: false);
+    colorSelected = null;
+
+    var buttons = const ColorPickerActionButtons(dialogActionButtons: false, closeButton: true);
 
     var view = ColorPicker(
         color: toColor(model.value) ?? Colors.transparent,
-        onColorChanged: (Color color) => onColorChange(model, color),
+        onColorChanged: (Color color) => colorSelected = color,
         width: model.width ?? 44,
         height: model.height ?? 44,
         hasBorder: model.border != 'none',
@@ -24,10 +31,12 @@ class ColorPickerView {
         subheading: Text('Select color shade',
             style: Theme.of(context).textTheme.titleSmall));
 
-    view.showPickerDialog(context);
-  }
+    // wait for the dialog to be dismissed
+    await view.showPickerDialog(context);
 
-  static Future onColorChange(ColorpickerModel model, Color? color) async {
-    await model.setSelectedColor(color);
+    // selected?
+    if (colorSelected != null) {
+      model.setSelectedColor(colorSelected);
+    }
   }
 }

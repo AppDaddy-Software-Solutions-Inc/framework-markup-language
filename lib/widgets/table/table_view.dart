@@ -442,8 +442,16 @@ class TableViewState extends WidgetState<TableView> {
   }
 
   // called when a field changes via edit.
+  // we need to do this in a post change callback since
+  // it causes lag when running in release. Not sure why?
+  void onChangedHandler(final PlutoGridOnChangedEvent event) {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _onChangedHandler(event));
+  }
+
+  // called when a field changes via edit.
   // only applies to simple grid
-  void onChangedHandler(final PlutoGridOnChangedEvent event) async {
+  void _onChangedHandler(final PlutoGridOnChangedEvent event) async {
 
     var rowIdx = rows.indexOf(event.row);
     var colIdx = map.containsKey(event.column) ? map[event.column]!.index : -1;

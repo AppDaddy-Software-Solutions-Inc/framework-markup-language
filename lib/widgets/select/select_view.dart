@@ -242,11 +242,11 @@ class _SelectViewState extends WidgetState<SelectView> {
     // add margins
     view = addMargins(view);
 
-    // apply constraints
-    view = applyConstraints(view, modelConstraints);
-
     // apply visual transforms
     view = applyTransforms(view);
+
+    // apply constraints
+    view = applyConstraints(view, modelConstraints);
 
     // unfocus
     focus.unfocus();

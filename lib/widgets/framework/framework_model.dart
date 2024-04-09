@@ -258,13 +258,6 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
     this.onreturn = onreturn;
   }
 
-  /// notifies listeners of any changes to a property
-  void onPropertyChange2(Observable observable) {
-    if (notificationsEnabled) {
-      notifyListeners(observable.key, observable.get());
-    }
-  }
-
   static FrameworkModel? fromXml(WidgetModel parent, XmlElement xml) {
     FrameworkModel? model;
     try {

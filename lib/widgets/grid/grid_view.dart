@@ -354,11 +354,12 @@ class GridViewState extends WidgetState<GridView> {
     // add margins
     view = addMargins(view);
 
+    // apply visual transforms
+    view = applyTransforms(view);
+
     // apply user defined constraints
     view = applyConstraints(view, widget.model.tightestOrDefault);
 
-    // apply visual transforms
-    view = applyTransforms(view);
 
     List<Widget> children = [];
 

@@ -121,9 +121,8 @@ On your fml engine constructor in main.dart, change:
 
 ```
 FmlEngine(
-...
+ApplicationType.single,
 domain: example2,
-multiApp: false,
 ...);
 ```
 
@@ -136,8 +135,7 @@ On your fml engine constructor in main.dart, change:
 
 ```
 FmlEngine(
-...
-multiApp: true,
+ApplicationType.multi,
 ...);
 ```
 

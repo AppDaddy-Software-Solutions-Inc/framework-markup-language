@@ -1,21 +1,20 @@
-<FML linkable="true" onstart="theme({STASH.FmlPadMode} ?? {THEME.brightness} == 'dark' ?'dark':'light');"
-    title="FmlPad">
+<FML linkable="true" onstart="theme({STASH.FmlPadMode} ?? {THEME.brightness} == 'dark' ?'dark':'light');" title="FmlPad">
 
     <VAR id="root" value="https://pad.fml.dev/" />
     <VAR id="p1" onchange="dbExample.url.set(join({root.value},{p1.value}))" value="{example}" />
     <VAR id="xml" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null" value="{editor}" />
 
-    <GET id="dbWidgets" root="WIDGETS.WIDGET" ttl="1m" url="=join({root},'templates/widgets.xml')" />
+    <GET id="dbWidgets" root="WIDGETS.WIDGET" ttl="1h" url="=join({root},'templates/widgets.xml')" />
     <GET id="dbStyles" root="STYLES.STYLE" ttl="1d" url="=join({root},'templates/styles.xml')" />
     <GET id="dbExamples" root="EXAMPLES.EXAMPLE" url="=join({root},'templates/examples.xml')" />
     <GET id="dbExample" onsuccess="editor.set({this.response})" refresh="true" url="{p1}" />
 
-    <CONST id="default">
+    <VAR id="default">
         <value>
             <![CDATA[<!-- Welcome to FmlPad! -->
 <FML>
     <!-- Remember, the template is a STACK by default and non scrollable! -->
-    <!-- For scrolling, try out the SCROLL widget! -->
+    <SCROLL>
     <BOX center="true" pad="40">
         <!-- title bar -->
         <ROW center="true">
@@ -25,114 +24,142 @@
         </ROW>
         <!-- text block -->
         <PAD top="20"/>
-        <TEXT  value="***FmlPad** allows you to test and develop FML templates **realtime** _without the need to compile_ any code.*" size="14"/>
+        <TEXT value="**FmlPad** allows you to test and develop FML templates **realtime** _without the need to compile_." size="16"/>
         <!-- text block -->
         <PAD top="10"/>
-        <TEXT value="*Try adding, removing or changing any of the markup text in the left editor window and see your changes reflected here instantly.*" size="14"/>
+        <TEXT value="Try adding, removing or changing any of the markup text in the left editor window and see your changes reflected here instantly." size="16"/>
         <!-- text block -->
         <PAD top="10"/>
-        <TEXT value="***FmlPad** itself it written entirely in **FML** with less than a few dozen simple lines of markup text!*" size="14"/>
+        <TEXT value="**FmlPad** itself it written entirely in **FML** in just ~200 lines of markup text for all interfaces and functionalities!" size="16"/>
         <!-- text block -->
         <PAD top="20"/>
-        <ICON icon="face" color="{THEME.primary}"/>
+        <TEXT value=":coffee: Happy Templating :computer:" size="18"/>
+        <PAD top="20"/>
+        <TEXT italic="true" value="The FML Development Team" size="14"/>
         <PAD top="5"/>
-        <TEXT value="*Happy Templating ...*" size="14"/>
-        <PAD top="5"/>
-        <TEXT italic="true" value="**The FML Development Team**" size="14"/>
+        <ICON icon="appdaddy" color="{THEME.primary}"/>
     </BOX>
+    </SCROLL>
 </FML>
 
 ]]>
         </value>
-    </CONST>
+    </VAR>
 
     <HEADER height="50">
-        <VAR id="isSmall" value="={SYSTEM.screenwidth}&lt;800" />
-        <BOX color="{THEME.oninversesurface}" halign="left" layout="row" valign="center">
+        <BOX height="52" color="{THEME.oninversesurface}" valign="center" halign="left" layout="row">
 
             <!-- logo -->
-            <PAD left="20" />
-            <IMAGE height="30" url="assets://images/logo.png" />
-            <PAD left="10" />
-            <TEXT size="20" value="FmlPad" visible="=!{isSmall}" />
-            <PAD left="50" visible="=!{isSmall}" />
+            <PAD left="12"/>
+            <IMAGE url="assets://images/fml-logo.png" height="30"/>
+            <PAD left="8"/>
+            <TEXT value="fmlpad" size="22" color="{THEME.onBackground}"/>
+            <PAD left="12"/>
 
-            <!-- widgets -->
-            <SELECT bordercolor="transparent" data="dbWidgets" hint="Widgets"
-                onchange="copy({this})" visible="=!{isSmall}" width="150">
-                <OPTION label="&lt;{data.title}/&gt;" value="{data.value}" />
-            </SELECT>
 
-            <PAD left="20" />
+            <FILEPICKER id="fp1" onsuccess="editor.set({fp1.data.text})" allow=".xml"/>
+
+            <POPOVER icon="smart_button" label="Actions" visible="={SYSTEM.screenwidth} &lt; 1000">
+                <ITEM label="Import" onclick="fp1.start()" />
+                <ITEM label="Save" onclick="saveas({editor},'fmlpad.xml')" />
+                <ITEM label="Copy" onclick="copy({editor});" />
+                <ITEM label="Clear" onclick="continue('info', 'Are you sure?', 'Clicking Yes will clear the editor text');editor.set({default});examples.set(null);" />
+            </POPOVER>
+
+            <ROW height="100%" expand="false" visible="={SYSTEM.screenwidth} &gt; 999">
+                <!-- Import button -->
+                <BUTTON onclick="fp1.start()" radius="0">
+                    <COL center="true" width="60" height="100%">
+                        <ICON icon="drive_folder_upload" size="24"/>
+                        <TEXT value="Import" size="10" />
+                    </COL>
+                </BUTTON>
+
+                <!-- Save button -->
+                <BUTTON onclick="saveas({editor},'fmlpad.xml')" radius="0">
+                    <COL center="true" width="60" height="100%">
+                        <ICON icon="save_alt" size="24"/>
+                        <TEXT value="Save" size="10" />
+                    </COL>
+                </BUTTON>
+
+                <!-- Copy button -->
+                <BUTTON onclick="copy({editor});" visible1="={default} != {editor}" radius="0">
+                    <COL center="true" width="60" height="100%">
+                        <ICON icon="copy" size="24"/>
+                        <TEXT value="Copy" size="10" />
+                    </COL>
+                </BUTTON>
+
+                <!-- Clear button -->
+                <BUTTON onclick="continue('info', 'Are you sure?', 'Clicking Yes will clear the editor text');editor.set({default});examples.set(null);" visible1="={default} != {editor}" radius="0">
+                    <COL center="true" width="60" height="100%">
+                        <ICON icon="format_clear" size="24"/>
+                        <TEXT value="Clear" size="10" />
+                    </COL>
+                </BUTTON>
+            </ROW>
+
+            <!-- <PAD left="20"/>
+
+            <POPOVER icon="code" label="Snippets" data="dbWidgets">
+                <ITEM label="&lt;{data.title} /&gt;" onclick="copy({data.value})" />
+            </POPOVER> -->
+
+            <PAD left="20"/>
 
             <!-- examples -->
-            <TYPEAHEAD bordercolor="transparent" data="dbExamples" hint="Examples" id="examples"
-                onchange="p1.set({this.value})" value="" width="250">
+            <TYPEAHEAD id="examples" bordercolor="transparent" value="" data="dbExamples" hint="Examples" width="250"
+                onchange="noe({this.value}) ? editor.set({default});fmlpad.replaceChildren({xml},false); : p1.set({this.value})">
                 <OPTION value="{data.url}">
-                    <label>
-                        <ROW expand="false" valign="center">
-                            <ICON color="{data.color}" icon="{data.icon}" size="16" />
-                            <PAD left="10" />
-                            <TEXT value="{data.title}" />
-                        </ROW>
-                    </label>
+                    <ROW expand="false" valign="center">
+                        <ICON color="{data.color}" icon="{data.icon}" size="16" />
+                        <PAD left="10" />
+                        <TEXT value="{data.title}" />
+                    </ROW>
                 </OPTION>
             </TYPEAHEAD>
 
             <!-- realtime slider -->
-            <EXPAND>
-                <ROW halign="end" valign="center">
-
-                    <!-- Reset button -->
-                    <BUTTON onclick="editor.set({default});examples.set(null);"
-                        visible="={default} != {editor}">
-                        <ICON icon="refresh" size="24" />
-                    </BUTTON>
-
-                    <PAD left="20" />
-
-                    <!-- Save button -->
-                    <BUTTON onclick="saveas({editor},'fmlpad.xml')" visible="=!{isSmall}">
-                        <ICON icon="save" size="24" />
-                    </BUTTON>
-
-                    <PAD left="20" />
-
-                    <!-- Open button -->
-                    <FILEPICKER allow=".xml" id="fp1" onsuccess="editor.set({fp1.data.text})" />
-                    <BUTTON onclick="fp1.start()" visible="=!{isSmall}">
-                        <ICON icon="folder" size="24" />
-                    </BUTTON>
-
-                    <PAD left="40" />
-
-                    <!-- Realtime Parsing button -->
-                    <TEXT color="={r1} ? '{THEME.primary}' : '{THEME.outline}'" value="Realtime:"
-                        visible="=!{isSmall}" />
-                    <PAD left="20" />
-                    <SWITCH id="r1" onchange="{this} ? fmlpad.replaceChildren({xml},false) : null"
-                        value="true"
-                        visible="=!{isSmall}" />
-                    <PAD left="20" />
-
+            <ROW height="100%" halign="end" valign="center">
+                <!-- Realtime Parsing button -->
+                <ROW expand="false" valign="center">
+                    <ICON icon="bolt" color="={r1} ? 'amber' : {THEME.outline}" size="28" />
+                    <PAD right="5" />
+                    <SWITCH id="r1" value="true" onchange="{this} ? fmlpad.replaceChildren({xml},false) : null">
+                    </SWITCH>
+                    <PAD left="20"/>
+                    <TIP>
+                        <TEXT value="Realtime Parsing" size="14" />
+                    </TIP>
                 </ROW>
-            </EXPAND>
+            </ROW>
+
         </BOX>
     </HEADER>
 
     <FOOTER height="50">
-        <BOX color="{THEME.oninversesurface}" halign="end" layout="row" valign="center">
-            <LOG id="log1" />
-            <EXPAND>
+        <BOX height="50" color="{THEME.oninversesurface}" halign="end" layout="row" valign="center">
+            <ROW valign="center">
+                <!-- Pad View Code/Examples -->
+                <PAD left="12" />
+                <TEXT label="View" size="14" />
+                <ICON icon="vertical_split_outlined" size="20"/>
+                <PAD left="6" />
+                <RADIO id="viewtype" value="code" layout="row" onchange="flipbox.animate()">
+                    <OPTION value="code" label="Code"/>
+                    <OPTION value="examples" label="Examples"/>
+                </RADIO>
+
                 <!--Error text display here-->
+                <LOG id="log1" />
                 <TEXT color="{THEME.error}" value="{log1.xml}" />
-            </EXPAND>
+            </ROW>
             <!-- themes -->
             <PAD right="10" />
-            <SELECT border="none" data="dbStyles" hint="Select an Editor Theme" id="theme"
-                onchange="stash('FmlPadTheme',{this.value})" value="=nvl({STASH.FmlPadTheme},'solarized-dark')"
-                width="180">
-                <OPTION label='{data.label}' />
+            <SELECT id="theme" hint="Select a Theme" icon="theme" width="180" bordercolor="transparent" data="dbStyles"
+                onchange="stash('FmlPadTheme',{this.value})" value="=nvl({STASH.FmlPadTheme},'solarized-dark')">
+                <OPTION label="{data.label}" />
             </SELECT>
             <PAD right="40" />
             <ICON color="=!{mode} ? '#e6cc00' : 'grey'" icon="light_mode" />
@@ -148,9 +175,8 @@
     <SPLITVIEW dividercolor="" dividerhandlecolor="{THEME.primary}" dividerwidth="6.0" ratio=".50">
 
         <VIEW>
-            <STACK>
-                <BOX color="{THEME.background}" height="100%" id="flipbox" layout="stack"
-                    width="100%">
+            <STACK expand="true">
+                <BOX color="{THEME.background}" height="100%" id="flipbox" layout="stack" width="100%">
 
                     <FLIP id="boxflip" duration="600" />
 
@@ -165,17 +191,17 @@
                                             layout="stack"
                                             opacity="0.8" pad="10" radius="3">
                                             <FLIP duration="600" id="cardflip" />
-                                            <CENTER>
+                                            <BOX center="true">
                                                 <SCROLLER>
                                                     <TEXT size="12" value="{data.description}" />
                                                 </SCROLLER>
-                                            </CENTER>
-                                            <CENTER>
+                                            </BOX>
+                                            <BOX center="true">
                                                 <COL expand="false" halign="center">
                                                     <ICON color="{data.color}" icon="{data.icon}" />
                                                     <TEXT size="12" value="{data.title}" />
                                                 </COL>
-                                            </CENTER>
+                                            </BOX>
 
                                         </BOX>
                                     </LINK>
@@ -200,35 +226,20 @@
 
                 <POSITIONED right="15" top="5">
                     <COL expand="false">
-                        <!-- Code / Example Toggle Button -->
-                        <BUTTON onclick="flipbox.animate()">
-                            <BOX bordercolor="{THEME.shadow}" color="{THEME.inverseprimary}" halign="center"
-                                height="35" layout="row" radius="5" valign="center"
-                                width="100">
-                                <ICON
-                                    icon="={boxflip.side} == 'back' ? 'code' : 'calendar_view_month'"
-                                    size="20" />
-                                <PAD left="5" />
-                                <TEXT value="={boxflip.side} == 'back' ? 'Code' : 'Examples'" />
-                            </BOX>
-                        </BUTTON>
-
                         <!-- Parse Code Button -->
-                        <BUTTON onclick="fmlpad.replaceChildren({xml},false)" visible="=!{r1}">
-                            <BOX bordercolor="{THEME.shadow}" color="{THEME.inverseprimary}" halign="center"
-                                height="35" layout="row" radius="5" valign="center"
-                                width="100">
-                                <ICON icon="play_arrow" size="20" />
-                                <PAD left="5" />
-                                <TEXT value="Parse" />
-                            </BOX>
+                        <BUTTON onclick="fmlpad.replaceChildren({xml},false)" visible="=!{r1}" type="outlined" color="{THEME.primary}" >
+                            <ICON icon="play_arrow" size="20" />
+                            <PAD left="5" />
+                            <TEXT bold="true" value="Parse" />
+                            <PAD left="5" />
                         </BUTTON>
                     </COL>
                 </POSITIONED>
             </STACK>
         </VIEW>
 
-        <VIEW id="fmlpad" />
+        <VIEW id="fmlpad" scope="rightpane"/>
+
 
     </SPLITVIEW>
 </FML>

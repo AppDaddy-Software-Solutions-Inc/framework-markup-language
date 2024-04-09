@@ -430,14 +430,14 @@ class _BoxViewState extends WidgetState<BoxView> {
       view = _getFrostedView(view, radius);
     }
 
-    // apply constraints
-    view = applyConstraints(view, widget.model.constraints);
-
-    // add margins around the entire widget
+    // add margins
     view = addMargins(view);
 
     // apply visual transforms
     view = applyTransforms(view);
+
+    // apply constraints
+    view = applyConstraints(view, widget.model.constraints);
 
     return view;
   }

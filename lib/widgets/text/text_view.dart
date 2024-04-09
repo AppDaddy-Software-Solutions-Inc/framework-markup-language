@@ -499,11 +499,11 @@ class _TextViewState extends WidgetState<TextView> {
     // add margins
     view = addMargins(view);
 
-    // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints);
-
     // apply visual transforms
     view = applyTransforms(view);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints);
 
     return view;
   }

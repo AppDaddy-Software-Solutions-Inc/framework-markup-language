@@ -275,11 +275,11 @@ class _LineChartViewState extends WidgetState<LineChartView> {
     // add margins
     view = addMargins(view);
 
+    // apply visual transforms
+    view = applyTransforms(view);
+
     // apply user defined constraints
     view = applyConstraints(view, widget.model.tightestOrDefault);
-
-    // add margins around the entire widget
-    view = addMargins(view);
 
     return view;
   }

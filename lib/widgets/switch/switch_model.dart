@@ -11,17 +11,14 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class SwitchModel extends FormFieldModel implements IFormField {
-  ///////////
-  /* Width */
-  ///////////
+
+  // width of the switch
   @override
   double get width {
-    return super.width ?? 56;
+    return super.width ?? 56 + (marginLeft ?? 0) + (marginRight ?? 0);
   }
 
-  ///////////
-  /* value */
-  ///////////
+  // value of the switch
   BooleanObservable? _value;
   @override
   set value(dynamic v) {
@@ -43,9 +40,7 @@ class SwitchModel extends FormFieldModel implements IFormField {
     return false;
   }
 
-  ///////////
-  /* label */
-  ///////////
+  // label of the switch
   StringObservable? _label;
   set label(dynamic v) {
     if (_label != null) {
@@ -55,7 +50,6 @@ class SwitchModel extends FormFieldModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get label => _label?.get();
 
   SwitchModel(

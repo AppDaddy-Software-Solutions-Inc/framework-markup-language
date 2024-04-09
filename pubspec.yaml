@@ -34,15 +34,13 @@ dependencies:
 
   # to check package status, run -> flutter pub outdated
 
-  expressions: 0.2.5+1
-
   audioplayers: ^6.0.0
   # MIT
 
   camera: ^0.10.3
   # BSD-3-Clause
 
-  camera_windows: ^0.2.1+9
+  camera_windows: ^0.2.2
   # BSD-3-Clause
 
   changeicon: ^1.0.0
@@ -76,12 +74,12 @@ dependencies:
   # MIT
 
   # Microsoft Logon - Newer versions of these packages require web < 0.5.0
-  firebase_auth: ^4.18.0
-  firebase_core: ^2.27.2
+  firebase_auth: ^4.19.0
+  firebase_core: ^2.28.0
   # firebase_core_platform_interface: ^4.8.0
   # BSD-3-Clause
 
-  fl_chart: ^0.66.1
+  fl_chart: ^0.67.0
 
   flutter_code_editor: ^0.3.1
   # Apache-2.0, MIT
@@ -190,7 +188,7 @@ dependencies:
   pluto_grid_plus_export: ^1.0.4
   # MIT
 
-  pointycastle: ^3.7.3
+  pointycastle: ^3.8.0
   # MIT
 
   provider: ^6.0.3
@@ -220,7 +218,7 @@ dependencies:
   validators: ^3.0.0
   # MIT
 
-  video_player: ^2.8.3
+  video_player: ^2.8.5
   # BSD-3-Clause
 
   video_player_win: ^2.3.5

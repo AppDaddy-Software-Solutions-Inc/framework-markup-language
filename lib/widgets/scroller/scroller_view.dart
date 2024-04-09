@@ -221,11 +221,14 @@ class ScrollerViewState extends WidgetState<ScrollerView> {
     // build the scroll bar
     Widget view = _buildScrollbar(contents);
 
+    // add margins
+    view = addMargins(view);
+
+    // apply visual transforms
+    view = applyTransforms(view);
+
     // apply constraints
     view = applyConstraints(view, widget.model.constraints);
-
-    // add margins around the entire widget
-    view = addMargins(view);
 
     // expand in both axis
     if (widget.model.expand) {

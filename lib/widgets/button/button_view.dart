@@ -159,14 +159,14 @@ class _ButtonViewState extends WidgetState<ButtonView> {
     // Build the Button Types
     var view = _buildButton(body);
 
-    // apply constraints
-    view = applyConstraints(view, widget.model.constraints);
-
-    // add margins around the entire widget
+    // add margins
     view = addMargins(view);
 
     // apply visual transforms
     view = applyTransforms(view);
+
+    // apply constraints
+    view = applyConstraints(view, widget.model.constraints);
 
     return view;
   }

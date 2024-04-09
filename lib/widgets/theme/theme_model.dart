@@ -32,7 +32,6 @@ class ThemeModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   Color? get colorScheme => _colorScheme?.get();
 
   StringObservable? _font;

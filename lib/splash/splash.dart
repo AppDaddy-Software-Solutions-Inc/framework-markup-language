@@ -8,7 +8,7 @@ import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 
 // platform
-import 'package:fml/platform/platform.web.dart'
+import 'package:fml/platform/platform.vm.dart'
 if (dart.library.io) 'package:fml/platform/platform.vm.dart'
 if (dart.library.html) 'package:fml/platform/platform.web.dart';
 

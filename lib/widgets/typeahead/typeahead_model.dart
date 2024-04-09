@@ -175,6 +175,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
   }
 
   void _setSelectedOption({bool setValue = true}) {
+    var x = value;
     selectedOption = null;
     if (options.isNotEmpty) {
       for (var option in options) {
@@ -267,7 +268,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
 
     // announce data for late binding
     var datasource = scope?.getDataSource(this.datasource);
-    if (datasource != null) onDataSourceSuccess(datasource, datasource.data);
+    if (datasource != null && datasource.initialized) onDataSourceSuccess(datasource, datasource.data);
   }
 
   void _clearOptions() {

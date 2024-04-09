@@ -169,12 +169,23 @@ class ApplicationModel extends WidgetModel {
     if (!uri.hasScheme) uri = Uri.tryParse("https://${uri.url}");
     if (uri == null) return;
 
+    // file uri - must start in the applications root
+    if (uri.scheme == "file") {
+      var host = uri.host;
+      if (host.toLowerCase().trim() != "applications") {
+        var url = uri.url.replaceFirst(host, "applications/$host");
+        uri = Uri.tryParse(url);
+        if (uri == null) return;
+      }
+    }
+
     // set the url
-    this.url = uri.url;
+    this.url = uri.removeEmptySegments().url;
 
     // set database key
     _dbKey = key ?? this.url;
 
+    // set the scheme and host
     _scheme = uri.scheme;
     _host = uri.host;
 

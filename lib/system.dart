@@ -1,5 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:convert';
 import 'dart:core';
 import 'package:changeicon/changeicon.dart';
 import 'package:collection/collection.dart';
@@ -33,7 +32,7 @@ import 'widgets/framework/framework_model.dart';
 import 'dart:io' as io show Platform;
 
 // platform
-import 'package:fml/platform/platform.web.dart'
+import 'package:fml/platform/platform.vm.dart'
     if (dart.library.io) 'package:fml/platform/platform.vm.dart'
     if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
@@ -165,11 +164,8 @@ class System extends WidgetModel implements IEventManager {
     // used past this point
     baseUrl = Uri.base.toString();
 
-    // initialize folders
-    await _initFolders();
-
     // initialize platform
-    await Platform.init();
+    await Platform.initialize();
 
     // initialize System Globals
     await _initBindables();
@@ -215,8 +211,6 @@ class System extends WidgetModel implements IEventManager {
   }
 
   Future<bool> _initBindables() async {
-    // platform root path
-    URI.rootPath = await Platform.path ?? "";
     _rootpath =
         StringObservable(Binding.toKey('rootpath'), URI.rootPath, scope: scope);
 
@@ -289,36 +283,6 @@ class System extends WidgetModel implements IEventManager {
 
     // initialize hive
     return await Database.initialize(hiveFolder);
-  }
-
-  static Future<bool> _initFolders() async {
-    bool ok = true;
-    if (FmlEngine.isWeb) return ok;
-
-    try {
-      // create applications folder
-      String? folderpath = normalize(join(URI.rootPath, "applications"));
-      folderpath = await Platform.createFolder(folderpath);
-
-      // read asset manifest
-      Map<String, dynamic> manifest =
-          json.decode(await rootBundle.loadString('AssetManifest.json'));
-
-      // copy assets
-      for (String key in manifest.keys) {
-        if (key.startsWith("assets/applications")) {
-          var folder = key.replaceFirst("assets/", "");
-          var filepath = normalize(join(URI.rootPath, folder));
-          await Platform.writeFile(filepath, await rootBundle.load(key));
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print("Error building application assets. Error is $e");
-      }
-      ok = false;
-    }
-    return ok;
   }
 
   static toast(String? msg, {int? duration}) {

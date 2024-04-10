@@ -17,6 +17,7 @@ class TooltipModel extends ViewableWidgetModel {
 
   OpenMethods? openMethod;
 
+  // position of the tooltip display
   StringObservable? _position;
   set position(dynamic v) {
     if (_position != null) {
@@ -26,7 +27,6 @@ class TooltipModel extends ViewableWidgetModel {
           StringObservable(Binding.toKey(id, 'position'), v, scope: scope);
     }
   }
-
   String? get position => _position?.get();
 
   /// [distance] Space between the tooltip and the trigger.

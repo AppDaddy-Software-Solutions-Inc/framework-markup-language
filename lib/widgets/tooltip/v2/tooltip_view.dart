@@ -27,6 +27,7 @@ class TooltipView extends StatefulWidget implements IWidgetView {
         myPos = TooltipPosition.leftStart;
         break;
 
+      case 'left':
       case 'leftcenter':
         myPos = TooltipPosition.leftCenter;
         break;
@@ -39,6 +40,7 @@ class TooltipView extends StatefulWidget implements IWidgetView {
         myPos = TooltipPosition.rightStart;
         break;
 
+      case 'right':
       case 'rightcenter':
         myPos = TooltipPosition.rightCenter;
         break;
@@ -51,12 +53,26 @@ class TooltipView extends StatefulWidget implements IWidgetView {
         myPos = TooltipPosition.topStart;
         break;
 
+      case 'top':
       case 'topcenter':
         myPos = TooltipPosition.topCenter;
         break;
 
       case 'topend':
         myPos = TooltipPosition.topEnd;
+        break;
+
+      case 'bottomstart':
+        myPos = TooltipPosition.bottomStart;
+        break;
+
+      case 'bottom':
+      case 'bottomcenter':
+        myPos = TooltipPosition.bottomCenter;
+        break;
+
+      case 'bottomend':
+        myPos = TooltipPosition.bottomEnd;
         break;
     }
     position = myPos;

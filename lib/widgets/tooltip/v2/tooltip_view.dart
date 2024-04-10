@@ -21,45 +21,70 @@ class TooltipView extends StatefulWidget implements IWidgetView {
 
   TooltipView(this.model, this.child) : super(key: ObjectKey(model)) {
     // set tooltip position
-    var myPos = TooltipPosition.rightCenter;
+    var position = TooltipPosition.rightCenter;
     switch (model.position?.toLowerCase().trim()) {
+
+      case 'lefttop':
       case 'leftstart':
-        myPos = TooltipPosition.leftStart;
+        position = TooltipPosition.leftStart;
         break;
 
+      case 'left':
       case 'leftcenter':
-        myPos = TooltipPosition.leftCenter;
+        position = TooltipPosition.leftCenter;
         break;
 
+      case 'leftbottom':
       case 'leftend':
-        myPos = TooltipPosition.leftEnd;
+        position = TooltipPosition.leftEnd;
         break;
 
+      case 'righttop':
       case 'rightstart':
-        myPos = TooltipPosition.rightStart;
+        position = TooltipPosition.rightStart;
         break;
 
+      case 'right':
       case 'rightcenter':
-        myPos = TooltipPosition.rightCenter;
+        position = TooltipPosition.rightCenter;
         break;
 
+      case 'rightbottom':
       case 'rightend':
-        myPos = TooltipPosition.rightEnd;
+        position = TooltipPosition.rightEnd;
         break;
 
+      case 'topleft':
       case 'topstart':
-        myPos = TooltipPosition.topStart;
+        position = TooltipPosition.topStart;
         break;
 
+      case 'top':
       case 'topcenter':
-        myPos = TooltipPosition.topCenter;
+        position = TooltipPosition.topCenter;
         break;
 
+      case 'topright':
       case 'topend':
-        myPos = TooltipPosition.topEnd;
+        position = TooltipPosition.topEnd;
+        break;
+
+      case 'bottomleft':
+      case 'bottomstart':
+        position = TooltipPosition.bottomStart;
+        break;
+
+      case 'bottom':
+      case 'bottomcenter':
+        position = TooltipPosition.bottomCenter;
+        break;
+
+      case 'bottomright':
+      case 'bottomend':
+        position = TooltipPosition.bottomEnd;
         break;
     }
-    position = myPos;
+    this.position = position;
 
     // set tooltip content
     List<Widget> children = model.inflate();

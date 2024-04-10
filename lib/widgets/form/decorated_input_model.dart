@@ -227,6 +227,7 @@ class DecoratedInputModel extends FormFieldModel {
     borderColor = Xml.get(node: xml, tag: 'bordercolor');
     borderWidth = Xml.get(node: xml, tag: 'borderwidth');
     radius = Xml.get(node: xml, tag: 'radius');
+    dense = Xml.get(node: xml, tag: 'dense');
   }
 
   // set the field color based on the error state

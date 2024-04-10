@@ -325,14 +325,14 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
 
     // pad
     if (!widget.model.dense) {
-      view = Padding(padding: EdgeInsets.all(8), child: view);
+      view = Padding(padding: const EdgeInsets.all(8), child: view);
     }
 
     // selected color
     var color = option == widget.model.selectedOption ? Theme.of(context).focusColor : null;
 
     // set min height
-    var constraints = widget.model.dense ? null : BoxConstraints(minHeight: 48);
+    var constraints = widget.model.dense ? null : const BoxConstraints(minHeight: 48);
 
     view = Container(color: color, constraints: constraints, child: view);
 

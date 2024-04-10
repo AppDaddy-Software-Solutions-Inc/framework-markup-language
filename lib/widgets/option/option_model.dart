@@ -32,22 +32,7 @@ class OptionModel extends RowModel {
       _label = StringObservable(null, v, scope: scope);
     }
   }
-  String? get label => _label?.get() ?? labelInner ?? value;
-
-  // list of labels from child text widgets
-  String? get labelInner {
-    String? label;
-    List<TextModel> models =
-        findDescendantsOfExactType(TextModel).cast<TextModel>();
-    for (var model in models) {
-      var text = model.value;
-      if (!isNullOrEmpty(text)) {
-        label ??= "";
-        label = "$label $text";
-      }
-    }
-    return label;
-  }
+  String? get label => _label?.get() ?? value;
 
   // value
   StringObservable? _value;
@@ -58,7 +43,6 @@ class OptionModel extends RowModel {
       _value = StringObservable(null, v, scope: scope);
     }
   }
-
   String? get value => _value?.get();
 
   // string to search on

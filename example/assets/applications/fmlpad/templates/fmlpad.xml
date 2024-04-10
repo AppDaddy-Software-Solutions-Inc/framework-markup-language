@@ -127,7 +127,7 @@
         <PAD left="20"/>
 
         <!-- Realtime Parsing button -->
-        <ROW expand="false" valign="center" borderlabel="Parsing1" bordercolor="{THEME.primary}" radius="5" padding="10">
+        <ROW expand="false" valign="center" borderlabel="Parsing" bordercolor="{THEME.primary}" radius="5" padding="10">
             <ICON icon="bolt" color="={r1} ? 'amber' : {THEME.outline}" size="28" />
             <PAD right="5" />
             <SWITCH id="r1" value="true" onchange="{this} ? fmlpad.replaceChildren({xml},false) : null"/>

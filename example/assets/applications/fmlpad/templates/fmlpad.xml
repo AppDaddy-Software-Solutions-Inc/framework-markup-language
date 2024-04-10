@@ -61,23 +61,35 @@
             <ROW bordercolor="{THEME.primary}" borderlabel="Controls" halign="between" expand="true" maxwidth="200" margin="10" padding="10" radius="5">
 
                 <!-- Import button -->
-                <LINK onclick="fp1.start()" tip="Import from File" >
+                <LINK onclick="fp1.start()" >
                     <ICON icon="upload_file_rounded" color="{THEME.primary}" size="36"/>
+                    <TIP position="bottom">
+                        <TEXT value="Import from File"/>
+                    </TIP>
                 </LINK>
 
                 <!-- Save button -->
-                <LINK onclick="saveas({editor},'{examples.data.title}')" tip="Save to File">
+                <LINK onclick="saveas({editor},'{examples.data.title}')">
                     <ICON icon="save" size="36" color="{THEME.primary}"/>
+                    <TIP position="bottom">
+                        <TEXT value="Save to File"/>
+                    </TIP>
                 </LINK>
 
                 <!-- Copy button -->
                 <LINK onclick="copy({editor});">
-                    <ICON icon="file_copy" size="36" color="{THEME.primary}" tip="Copy"/>
+                    <ICON icon="file_copy" size="36" color="{THEME.primary}"/>
+                    <TIP position="bottom">
+                        <TEXT value="Copy Edit Window"/>
+                    </TIP>
                 </LINK>
 
                 <!-- Clear button -->
                 <LINK onclick="continue('info', 'Are you sure?', 'Clicking Yes will clear the editor text'); editor.set('');examples.set(null);">
-                    <ICON icon="content_cut" size="36" color="{THEME.primary}" tip="Clear"/>
+                    <ICON icon="content_cut" size="36" color="{THEME.primary}"/>
+                    <TIP position="bottom">
+                        <TEXT value="Clear Edit Window"/>
+                    </TIP>
                 </LINK>
 
             </ROW>
@@ -97,7 +109,11 @@
                     <COLORPICKER id="cp1" value="toStr({colorscheme})" onchange="colorscheme.set(toStr({this}));"/>
                     <PAD left="20"/>
                     <LINK onclick="cp1.start()">
-                        <ICON icon="palette_sharp" color="{THEME.primary}" type="outline" size="36" tip="Change Theme Color"/>
+                        <ICON icon="palette_sharp" color="{THEME.primary}" type="outline" size="36">
+                            <TIP position="leftbottom">
+                                <TEXT value="Change Theme Color x"/>
+                            </TIP>
+                        </ICON>
                     </LINK>
                 </ROW>
             </ROW>
@@ -132,8 +148,8 @@
             <PAD right="5" />
             <SWITCH id="r1" value="true" onchange="{this} ? fmlpad.replaceChildren({xml},false) : null"/>
             <PAD left="20"/>
-            <TIP>
-                <TEXT value="= {r1} ? 'Turn Off Parsing' : 'Turn On Parsing'" size="14" />
+            <TIP position="top">
+                <TEXT value="={r1} ? 'Turn Off Parsing' : 'Turn On Parsing'" size="14" />
             </TIP>
         </ROW>
 

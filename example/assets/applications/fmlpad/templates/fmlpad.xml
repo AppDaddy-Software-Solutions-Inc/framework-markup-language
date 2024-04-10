@@ -1,52 +1,25 @@
-<FML linkable="true" onstart="theme({STASH.brightness} ?? {THEME.brightness}, {STASH.colorscheme} ?? {THEME.colorscheme});" title="FmlPad">
+<FML linkable="true" onstart="theme({STASH.brightness} ?? {THEME.brightness}, {STASH.colorscheme} ?? {THEME.colorscheme}); noe('{example}') ? p2.set({STASH.example}) : p2.set('{example}');" title="FmlPad">
 
+    <CONST id="splash" value="templates/examples/form-example1.xml"/>
+
+    <!-- root url of fmlpad -->
+    <VAR id="root" value="https://pad.fml.dev/" />
+
+    <!-- theme -->
     <VAR id="brightness" value="={STASH.brightness} ?? {THEME.brightness}" onchange="stash('brightness',{this}); theme({brightness},{colorscheme});"/>
     <VAR id="colorscheme" value="=toStr({STASH.colorscheme} ?? {THEME.colorscheme})" onchange="stash('colorscheme',{this}); theme({brightness},{colorscheme});"/>
 
-    <VAR id="root" value="https://pad.fml.dev/" />
-    <VAR id="p1" onchange="dbExample.url.set(join({root.value},{p1.value}))" value="{example}" />
+
     <VAR id="xml" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null" value="{editor}" />
 
-    <GET id="dbWidgets" root="WIDGETS.WIDGET" ttl="1h" url="=join({root},'templates/widgets.xml')" />
-    <GET id="dbStyles" root="STYLES.STYLE" ttl="1d" url="=join({root},'templates/styles.xml')" />
-    <GET id="dbExamples" root="EXAMPLES.EXAMPLE" url="=join({root},'templates/examples.xml')" />
-    <GET id="dbExample" onsuccess="editor.set({this.response})" refresh="true" url="{p1}" />
+    <GET id="dbWidgets"  root="WIDGETS.WIDGET" ttl="1h" url="=join({root},'templates/widgets.xml')" />
+    <GET id="dbStyles"   root="STYLES.STYLE" ttl="1d" url="=join({root},'templates/styles.xml')" />
+    <GET id="dbExamples" root="EXAMPLES.EXAMPLE" url="=join({root},'templates/examples.xml')" refresh="true"/>
 
-    <VAR id="default">
-        <value>
-            <![CDATA[<!-- Welcome to FmlPad! -->
-<FML>
-    <!-- Remember, the template is a STACK by default and non scrollable! -->
-    <SCROLL>
-    <BOX center="true" pad="40">
-        <!-- title bar -->
-        <ROW center="true">
-            <IMAGE height="50" url="/images/fmlpad.png"/>
-            <PAD right="10"/>
-            <TEXT value="**Welcome to FMLPad!**" style="h4" color="{THEME.primary}"/>
-        </ROW>
-        <!-- text block -->
-        <PAD top="20"/>
-        <TEXT value="**FmlPad** allows you to test and develop FML templates **realtime** _without the need to compile_." size="16"/>
-        <!-- text block -->
-        <PAD top="10"/>
-        <TEXT value="Try adding, removing or changing any of the markup text in the left editor window and see your changes reflected here instantly." size="16"/>
-        <!-- text block -->
-        <PAD top="10"/>
-        <TEXT value="**FmlPad** itself it written entirely in **FML** in just ~200 lines of markup text for all interfaces and functionalities!" size="16"/>
-        <!-- text block -->
-        <PAD top="20"/>
-        <TEXT value=":coffee: Happy Templating :computer:" size="18"/>
-        <PAD top="20"/>
-        <TEXT italic="true" value="The FML Development Team" size="14"/>
-        <PAD top="5"/>
-        <ICON icon="appdaddy" color="{THEME.primary}"/>
-    </BOX>
-    </SCROLL>
-</FML>
-]]>
-        </value>
-    </VAR>
+    <VAR id="p2" onchange="p1.set(nvl({this},'templates/examples/splash.xml'))"/>
+    <VAR id="p1" onchange="dbExample.url.set(join({root.value},{p1.value}))" />
+
+    <GET id="dbExample" onsuccess="editor.set({this.response})" refresh="true" url="{p1}" />
 
     <HEADER height="75" color="{THEME.oninversesurface}" valign="center" halign="left" layout="row">
 
@@ -62,18 +35,18 @@
 
         <POPOVER icon="smart_button" label="Actions" visible="={SYSTEM.screenwidth} &lt; 1000">
             <ITEM label="Import" onclick="fp1.start()" />
-            <ITEM label="Save" onclick="saveas({editor},'fmlpad.xml')" />
+            <ITEM label="Save" onclick="saveas({editor},'{examples.data.title}')" />
             <ITEM label="Copy" onclick="copy({editor});" />
-            <ITEM label="Clear" onclick="continue('info', 'Are you sure?', 'Clicking Yes will clear the editor text');editor.set({default});examples.set(null);" />
+            <ITEM label="Clear" onclick="continue('info', 'Are you sure?', 'Clicking Yes will clear the editor text');editor.set('');examples.set(null);" />
         </POPOVER>
 
         <PAD left="20"/>
 
         <!-- examples -->
         <ROW expand="false" bordercolor="{THEME.primary}" borderlabel="Examples" radius="5">
-            <TYPEAHEAD id="examples" value="{STASH.padexample}" border="none" data="dbExamples" width="250"
-                onchange="noe({this.value}) ? editor.set({default}); fmlpad.replaceChildren({xml},false); : p1.set({this.value}); stash('padexample',{this.value});">
-                <OPTION value="{data.url}">
+            <TYPEAHEAD id="examples" value="{p2}" border="none" data="dbExamples" width="250"
+                onchange="p1.set(nvl({this},{splash})); stash('example',{this.value});" addempty="false">
+                <OPTION value="{data.url}" label="{data.title}">
                     <ROW expand="false" valign="center">
                         <ICON color="{data.color}" icon="{data.icon}" size="16" />
                         <PAD left="10" />
@@ -93,7 +66,7 @@
                 </LINK>
 
                 <!-- Save button -->
-                <LINK onclick="saveas({editor},'fmlpad.xml')" tip="Save to File">
+                <LINK onclick="saveas({editor},'{examples.data.title}')" tip="Save to File">
                     <ICON icon="save" size="36" color="{THEME.primary}"/>
                 </LINK>
 
@@ -103,7 +76,7 @@
                 </LINK>
 
                 <!-- Clear button -->
-                <LINK onclick="continue('info', 'Are you sure?', 'Clicking Yes will clear the editor text');editor.set({default});examples.set(null);">
+                <LINK onclick="continue('info', 'Are you sure?', 'Clicking Yes will clear the editor text'); editor.set('');examples.set(null);">
                     <ICON icon="content_cut" size="36" color="{THEME.primary}" tip="Clear"/>
                 </LINK>
 
@@ -129,17 +102,6 @@
                 </ROW>
             </ROW>
 
-            <!-- Realtime Parsing button -->
-            <ROW expand="false" valign="center" borderlabel="Parsing" bordercolor="{THEME.primary}" radius="5" margin="10" padding="10">
-                <ICON icon="bolt" color="={r1} ? 'amber' : {THEME.outline}" size="28" />
-                <PAD right="5" />
-                <SWITCH id="r1" value="true" onchange="{this} ? fmlpad.replaceChildren({xml},false) : null">
-                </SWITCH>
-                <PAD left="20"/>
-                <TIP>
-                    <TEXT value="Realtime Parsing" size="14" />
-                </TIP>
-            </ROW>
         </ROW>
     </HEADER>
 
@@ -160,6 +122,19 @@
                 onchange="stash('editortheme',{this.value})" value="=nvl('{STASH.editortheme}','solarized-dark')">
                 <OPTION label="{data.label}" />
             </TYPEAHEAD>
+        </ROW>
+
+        <PAD left="20"/>
+
+        <!-- Realtime Parsing button -->
+        <ROW expand="false" valign="center" borderlabel="Parsing1" bordercolor="{THEME.primary}" radius="5" padding="10">
+            <ICON icon="bolt" color="={r1} ? 'amber' : {THEME.outline}" size="28" />
+            <PAD right="5" />
+            <SWITCH id="r1" value="true" onchange="{this} ? fmlpad.replaceChildren({xml},false) : null"/>
+            <PAD left="20"/>
+            <TIP>
+                <TEXT value="= {r1} ? 'Turn Off Parsing' : 'Turn On Parsing'" size="14" />
+            </TIP>
         </ROW>
 
     </FOOTER>
@@ -209,8 +184,7 @@
                     </GRID>
 
                     <SCROLLER>
-                        <EDITOR id="editor" language="xml" theme="={theme} ?? solarized-light"
-                            value="{default}" />
+                        <EDITOR id="editor" language="xml" theme="={theme} ?? solarized-light" value=""/>
                     </SCROLLER>
 
 

@@ -1,4 +1,7 @@
-<FML linkable="true" onstart="theme({STASH.FmlPadMode} ?? {THEME.brightness} == 'dark' ?'dark':'light');" title="FmlPad">
+<FML linkable="true" onstart="theme({STASH.brightness} ?? {THEME.brightness}, {STASH.colorscheme} ?? {THEME.colorscheme});" title="FmlPad">
+
+    <VAR id="brightness" value="={STASH.brightness} ?? {THEME.brightness}" onchange="stash('brightness',{this}); theme({brightness},{colorscheme});"/>
+    <VAR id="colorscheme" value="=toStr({STASH.colorscheme} ?? {THEME.colorscheme})" onchange="stash('colorscheme',{this}); theme({brightness},{colorscheme});"/>
 
     <VAR id="root" value="https://pad.fml.dev/" />
     <VAR id="p1" onchange="dbExample.url.set(join({root.value},{p1.value}))" value="{example}" />
@@ -18,7 +21,7 @@
     <BOX center="true" pad="40">
         <!-- title bar -->
         <ROW center="true">
-            <IMAGE height="50" url="assets://applications/fmlpad/fmlpad.png"/>
+            <IMAGE height="50" url="/images/fmlpad.png"/>
             <PAD right="10"/>
             <TEXT value="**Welcome to FMLPad!**" style="h4" color="{THEME.primary}"/>
         </ROW>
@@ -41,75 +44,34 @@
     </BOX>
     </SCROLL>
 </FML>
-
 ]]>
         </value>
     </VAR>
 
-    <HEADER height="50">
-        <BOX height="52" color="{THEME.oninversesurface}" valign="center" halign="left" layout="row">
+    <HEADER height="75" color="{THEME.oninversesurface}" valign="center" halign="left" layout="row">
 
-            <!-- logo -->
-            <PAD left="12"/>
-            <IMAGE url="assets://images/fml-logo.png" height="30"/>
-            <PAD left="8"/>
-            <TEXT value="fmlpad" size="22" color="{THEME.onBackground}"/>
-            <PAD left="12"/>
+        <!-- logo -->
+        <PAD left="12"/>
+        <IMAGE url="assets://images/fml-logo.png" height="30"/>
+        <PAD left="8"/>
+        <TEXT value="fmlpad" size="22" color="{THEME.onBackground}"/>
+        <PAD left="12"/>
 
 
-            <FILEPICKER id="fp1" onsuccess="editor.set({fp1.data.text})" allow=".xml"/>
+        <FILEPICKER id="fp1" onsuccess="editor.set({fp1.data.text})" allow=".xml"/>
 
-            <POPOVER icon="smart_button" label="Actions" visible="={SYSTEM.screenwidth} &lt; 1000">
-                <ITEM label="Import" onclick="fp1.start()" />
-                <ITEM label="Save" onclick="saveas({editor},'fmlpad.xml')" />
-                <ITEM label="Copy" onclick="copy({editor});" />
-                <ITEM label="Clear" onclick="continue('info', 'Are you sure?', 'Clicking Yes will clear the editor text');editor.set({default});examples.set(null);" />
-            </POPOVER>
+        <POPOVER icon="smart_button" label="Actions" visible="={SYSTEM.screenwidth} &lt; 1000">
+            <ITEM label="Import" onclick="fp1.start()" />
+            <ITEM label="Save" onclick="saveas({editor},'fmlpad.xml')" />
+            <ITEM label="Copy" onclick="copy({editor});" />
+            <ITEM label="Clear" onclick="continue('info', 'Are you sure?', 'Clicking Yes will clear the editor text');editor.set({default});examples.set(null);" />
+        </POPOVER>
 
-            <ROW height="100%" expand="false" visible="={SYSTEM.screenwidth} &gt; 999">
-                <!-- Import button -->
-                <BUTTON onclick="fp1.start()" radius="0">
-                    <COL center="true" width="60" height="100%">
-                        <ICON icon="drive_folder_upload" size="24"/>
-                        <TEXT value="Import" size="10" />
-                    </COL>
-                </BUTTON>
+        <PAD left="20"/>
 
-                <!-- Save button -->
-                <BUTTON onclick="saveas({editor},'fmlpad.xml')" radius="0">
-                    <COL center="true" width="60" height="100%">
-                        <ICON icon="save_alt" size="24"/>
-                        <TEXT value="Save" size="10" />
-                    </COL>
-                </BUTTON>
-
-                <!-- Copy button -->
-                <BUTTON onclick="copy({editor});" visible1="={default} != {editor}" radius="0">
-                    <COL center="true" width="60" height="100%">
-                        <ICON icon="copy" size="24"/>
-                        <TEXT value="Copy" size="10" />
-                    </COL>
-                </BUTTON>
-
-                <!-- Clear button -->
-                <BUTTON onclick="continue('info', 'Are you sure?', 'Clicking Yes will clear the editor text');editor.set({default});examples.set(null);" visible1="={default} != {editor}" radius="0">
-                    <COL center="true" width="60" height="100%">
-                        <ICON icon="format_clear" size="24"/>
-                        <TEXT value="Clear" size="10" />
-                    </COL>
-                </BUTTON>
-            </ROW>
-
-            <!-- <PAD left="20"/>
-
-            <POPOVER icon="code" label="Snippets" data="dbWidgets">
-                <ITEM label="&lt;{data.title} /&gt;" onclick="copy({data.value})" />
-            </POPOVER> -->
-
-            <PAD left="20"/>
-
-            <!-- examples -->
-            <TYPEAHEAD id="examples" bordercolor="transparent" value="" data="dbExamples" hint="Examples" width="250"
+        <!-- examples -->
+        <ROW expand="false" bordercolor="{THEME.primary}" borderlabel="Examples" radius="5">
+            <TYPEAHEAD id="examples" value="" border="none" data="dbExamples" width="250"
                 onchange="noe({this.value}) ? editor.set({default});fmlpad.replaceChildren({xml},false); : p1.set({this.value})">
                 <OPTION value="{data.url}">
                     <ROW expand="false" valign="center">
@@ -119,57 +81,86 @@
                     </ROW>
                 </OPTION>
             </TYPEAHEAD>
+        </ROW>
 
-            <!-- realtime slider -->
-            <ROW height="100%" halign="end" valign="center">
-                <!-- Realtime Parsing button -->
+        <ROW halign="end" valign="center">
+
+            <ROW bordercolor="{THEME.primary}" borderlabel="Controls" halign="between" expand="true" maxwidth="200" margin="10" padding="10" radius="5">
+
+                <!-- Import button -->
+                <LINK onclick="fp1.start()" tip="Import from File" >
+                    <ICON icon="drive_folder_upload" color="{THEME.primary}" size="36"/>
+                </LINK>
+
+                <!-- Save button -->
+                <LINK onclick="saveas({editor},'fmlpad.xml')" tip="Save to File">
+                    <ICON icon="save" size="36" color="{THEME.primary}"/>
+                </LINK>
+
+                <!-- Copy button -->
+                <LINK onclick="copy({editor});">
+                    <ICON icon="copy" size="36" color="{THEME.primary}" tip="Copy"/>
+                </LINK>
+
+                <!-- Clear button -->
+                <LINK onclick="continue('info', 'Are you sure?', 'Clicking Yes will clear the editor text');editor.set({default});examples.set(null);">
+                    <ICON icon="format_clear" size="36" color="{THEME.primary}" tip="Clear"/>
+                </LINK>
+
+            </ROW>
+
+            <!-- Theme -->
+            <ROW border="all" margin="10" padding="10,5,5,5" radius="5" expand="false" bordercolor="{THEME.primary}" borderlabel="Theme" valign="center">
+
+                <!-- brightness -->
                 <ROW expand="false" valign="center">
-                    <ICON icon="bolt" color="={r1} ? 'amber' : {THEME.outline}" size="28" />
-                    <PAD right="5" />
-                    <SWITCH id="r1" value="true" onchange="{this} ? fmlpad.replaceChildren({xml},false) : null">
-                    </SWITCH>
+                    <ICON color="={brightness} == 'light' ? '#e6cc00' : 'grey'" icon="light_mode"/>
+                    <SWITCH value="={brightness} == 'dark'" onchange="brightness.set({this} ? 'dark' : 'light');" margin="0,10,0,10"/>
+                    <ICON color="={brightness} == 'dark' ? '{THEME.primary}' : 'grey'" icon="dark_mode"/>
+                </ROW>
+
+                <!-- primary color -->
+                <ROW expand="false" valign="center">
+                    <COLORPICKER id="cp1" value="toStr({colorscheme})" onchange="colorscheme.set(toStr({this}));"/>
                     <PAD left="20"/>
-                    <TIP>
-                        <TEXT value="Realtime Parsing" size="14" />
-                    </TIP>
+                    <LINK onclick="cp1.start()">
+                        <ICON icon="palette_sharp" color="{THEME.primary}" type="outline" size="36" tip="Change Theme Color"/>
+                    </LINK>
                 </ROW>
             </ROW>
 
-        </BOX>
+            <!-- Realtime Parsing button -->
+            <ROW expand="false" valign="center" borderlabel="Parsing" bordercolor="{THEME.primary}" radius="5" margin="10" padding="10">
+                <ICON icon="bolt" color="={r1} ? 'amber' : {THEME.outline}" size="28" />
+                <PAD right="5" />
+                <SWITCH id="r1" value="true" onchange="{this} ? fmlpad.replaceChildren({xml},false) : null">
+                </SWITCH>
+                <PAD left="20"/>
+                <TIP>
+                    <TEXT value="Realtime Parsing" size="14" />
+                </TIP>
+            </ROW>
+        </ROW>
     </HEADER>
 
-    <FOOTER height="50">
-        <BOX height="50" color="{THEME.oninversesurface}" halign="end" layout="row" valign="center">
-            <ROW valign="center">
-                <!-- Pad View Code/Examples -->
-                <PAD left="12" />
-                <TEXT label="View" size="14" />
-                <ICON icon="vertical_split_outlined" size="20"/>
-                <PAD left="6" />
-                <RADIO id="viewtype" value="code" layout="row" onchange="flipbox.animate()">
-                    <OPTION value="code" label="Code"/>
-                    <OPTION value="examples" label="Examples"/>
-                </RADIO>
+    <FOOTER height="75" color="{THEME.oninversesurface}" layout="row" valign="center" padding="10">
 
-                <!--Error text display here-->
-                <LOG id="log1" />
-                <TEXT color="{THEME.error}" value="{log1.xml}" />
-            </ROW>
-            <!-- themes -->
-            <PAD right="10" />
-            <SELECT id="theme" hint="Select a Theme" icon="theme" width="180" bordercolor="transparent" data="dbStyles"
+        <ROW expand="false" radius="5" borderlabel="Show" bordercolor="{THEME.primary}" padding="10">
+            <RADIO id="viewtype" value="code" layout="row" onchange="flipbox.animate()">
+                <OPTION value="code" label="Code"/>
+                <OPTION value="examples" label="Examples"/>
+            </RADIO>
+        </ROW>
+
+        <PAD left="20"/>
+
+        <ROW expand="false" radius="5" borderlabel="Editor Theme" bordercolor="{THEME.primary}">
+            <TYPEAHEAD id="theme" bordercolor="transparent" icon="theme" width="180" height="75" data="dbStyles"
                 onchange="stash('FmlPadTheme',{this.value})" value="=nvl({STASH.FmlPadTheme},'solarized-dark')">
                 <OPTION label="{data.label}" />
-            </SELECT>
-            <PAD right="40" />
-            <ICON color="=!{mode} ? '#e6cc00' : 'grey'" icon="light_mode" />
-            <PAD right="6" />
-            <SWITCH id="mode" onchange="stash('FmlPadMode',{this.value});theme({this}?'dark':'light');"
-                value="={STASH.FmlPadMode} ?? {THEME.brightness} == 'dark'" />
-            <PAD right="6" />
-            <ICON color="={mode} ? '{THEME.primary}' : 'grey'" icon="dark_mode" />
-            <PAD right="20" />
-        </BOX>
+            </TYPEAHEAD>
+        </ROW>
+
     </FOOTER>
 
     <SPLITVIEW dividercolor="" dividerhandlecolor="{THEME.primary}" dividerwidth="6.0" ratio=".50">

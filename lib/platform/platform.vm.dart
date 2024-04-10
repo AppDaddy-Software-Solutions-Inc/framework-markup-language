@@ -1,15 +1,17 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/helpers/mime.dart';
+import 'package:fml/helpers/uri.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/material.dart';
 import 'dart:io' as io;
 
 class Platform {
@@ -23,17 +25,45 @@ class Platform {
     return null;
   }
 
-  // application root path
-  static Future<String?> get path async {
+  static initialize() async
+  {
     // initialize the app root folder
-    if (FmlEngine.isWeb) return null;
     if (FmlEngine.isMobile || (FmlEngine.isDesktop && useragent == "macos")) {
       return (await getApplicationDocumentsDirectory()).path;
     }
-    return dirname(io.Platform.resolvedExecutable);
+
+    // copy the applications folder
+    FmlEngine.type == ApplicationType.multi ?
+      _copyApplicationFolder(URI.rootPath) : await _copyApplicationFolder(URI.rootPath);
   }
 
-  static init() async {}
+  // copies the assets/applications folder to the
+  // rooted /applications folder
+  static Future<void> _copyApplicationFolder(final String path) async
+  {
+    try {
+      // create applications folder
+      String? folderpath = normalize(join(path, "applications"));
+      folderpath = await createFolder(folderpath);
+
+      // read asset manifest
+      Map<String, dynamic> manifest =
+      json.decode(await rootBundle.loadString('AssetManifest.json'));
+
+      // copy assets
+      for (String key in manifest.keys) {
+        if (key.startsWith("assets/applications")) {
+          var folder = key.replaceFirst("assets/", "");
+          var filepath = normalize(join(URI.rootPath, folder));
+          await writeFile(filepath, await rootBundle.load(key));
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error building application assets. Error is $e");
+      }
+    }
+  }
 
   static Future<dynamic> fileSaveAs(List<int> bytes, String filepath) async {
     // make the file name safe

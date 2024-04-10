@@ -6,6 +6,7 @@ import 'package:fml/event/event.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/helpers/mime.dart';
 import 'package:fml/helpers/string.dart';
+import 'package:fml/helpers/uri.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:universal_html/html.dart';
 import 'package:flutter/foundation.dart';
@@ -15,8 +16,6 @@ import 'package:universal_html/js.dart';
 import 'package:fml/event/manager.dart';
 
 class Platform {
-  // application root path
-  static Future<String?> get path async => null;
 
   static String? get useragent {
     const appleType = "ios";
@@ -39,8 +38,12 @@ class Platform {
 
   static final dynamic iframe = window.document.getElementById('invisible');
 
-  static init() async {
+  static initialize() async {
     try {
+      // set the root path for the specified platform
+      URI.rootPath = "";
+
+      // hide the logo
       window.document.getElementById("logo")!.style.visibility = "hidden";
     } catch (e) {
       Log().debug('$e');

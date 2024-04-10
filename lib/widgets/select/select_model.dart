@@ -204,7 +204,7 @@ class SelectModel extends DecoratedInputModel implements IFormField {
 
     // announce data for late binding
     var datasource = scope?.getDataSource(this.datasource);
-    if (datasource != null) onDataSourceSuccess(datasource, datasource.data);
+    if (datasource != null && datasource.initialized) onDataSourceSuccess(datasource, datasource.data);
   }
 
   @override

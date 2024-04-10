@@ -311,7 +311,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
     allow = Xml.get(node: xml, tag: 'allow');
     deny = Xml.get(node: xml, tag: 'deny');
     capitalization = Xml.get(node: xml, tag: 'case');
-    dense = Xml.get(node: xml, tag: 'dense');
     border = Xml.get(node: xml, tag: 'border');
     radius = Xml.get(node: xml, tag: 'radius');
     borderColor = Xml.get(node: xml, tag: 'bordercolor');

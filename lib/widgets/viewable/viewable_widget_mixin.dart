@@ -767,7 +767,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
           DoubleObservable(Binding.toKey(id, 'visiblewidth'), v, scope: scope);
     }
   }
-
   double? get visibleWidth => _visibleWidth?.get();
 
   set margins(dynamic v) {
@@ -819,7 +818,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get marginTop => _marginTop?.get();
 
   // margins right
@@ -832,7 +830,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get marginRight => _marginRight?.get();
 
   // margins bottom
@@ -845,7 +842,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get marginBottom => _marginBottom?.get();
 
   // margins left
@@ -858,7 +854,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get marginLeft => _marginLeft?.get();
 
   set padding(dynamic v) {

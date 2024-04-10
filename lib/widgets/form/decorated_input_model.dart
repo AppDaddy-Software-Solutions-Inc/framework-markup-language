@@ -162,19 +162,6 @@ class DecoratedInputModel extends FormFieldModel {
 
   bool get expand => _expand?.get() ?? false;
 
-  // label
-  StringObservable? _label;
-  set label(dynamic v) {
-    if (_label != null) {
-      _label!.set(v);
-    } else if (v != null) {
-      _label = StringObservable(Binding.toKey(id, 'label'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get label => _label?.get();
-
   // font size
   DoubleObservable? _size;
   set size(dynamic v) {
@@ -227,7 +214,6 @@ class DecoratedInputModel extends FormFieldModel {
     if (borderColor != null) this.borderColor = borderColor;
     if (borderWidth != null) this.borderWidth = borderWidth;
     if (textcolor != null) this.textcolor = textcolor;
-    if (label != null) this.label = label;
   }
 
   /// Deserializes the FML template elements, attributes and children

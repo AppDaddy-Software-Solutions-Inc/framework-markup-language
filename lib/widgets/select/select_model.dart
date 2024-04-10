@@ -128,7 +128,6 @@ class SelectModel extends DecoratedInputModel implements IFormField {
     // set values
     if (setValue) value = selectedOption?.value;
     data = selectedOption?.data;
-    label = selectedOption?.value;
   }
 
   void _buildOptions() {

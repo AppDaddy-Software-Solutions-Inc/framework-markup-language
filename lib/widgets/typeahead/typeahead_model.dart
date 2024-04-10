@@ -91,9 +91,20 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get clear => _clear?.get() ?? false;
 
+  /// If the input is dense layout.
+  BooleanObservable? _dense;
+  set dense(dynamic v) {
+    if (_dense != null) {
+      _dense!.set(v);
+    } else if (v != null) {
+      _dense = BooleanObservable(Binding.toKey(id, 'dense'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get dense => _dense?.get() ?? false;
+  
   //  maximum number of match results to show
   IntegerObservable? _rows;
   set rows(dynamic v) {
@@ -161,10 +172,11 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
     obscure = Xml.get(node: xml, tag: 'obscure');
     readonly = Xml.get(node: xml, tag: 'readonly');
     clear = Xml.get(node: xml, tag: 'clear');
+    dense = Xml.get(node: xml, tag: 'dense');
 
     // automatically add an empty widget to the list?
     var addempty = toBool(Xml.get(node: xml, tag: 'addempty'));
-    if (addempty == null && emptyOption != null) addempty = true;
+      if (addempty == null && emptyOption != null) addempty = true;
     this.addempty = addempty ?? true;
 
     // build select options
@@ -175,7 +187,6 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
   }
 
   void _setSelectedOption({bool setValue = true}) {
-    var x = value;
     selectedOption = null;
     if (options.isNotEmpty) {
       for (var option in options) {
@@ -192,7 +203,6 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
     // set values
     if (setValue) value = selectedOption?.value;
     data = selectedOption?.data;
-    label = selectedOption?.value;
   }
 
   void _buildOptions() {

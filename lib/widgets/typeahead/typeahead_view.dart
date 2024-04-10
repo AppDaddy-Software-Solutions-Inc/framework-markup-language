@@ -214,7 +214,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
         widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
 
     var decoration = InputDecoration(
-      isDense: false,
+      isDense: widget.model.dense,
       errorMaxLines: 8,
       hintMaxLines: 8,
       fillColor: widget.model.getFieldColor(context),
@@ -320,12 +320,23 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
   }
 
   Widget itemBuilder(BuildContext context, OptionModel option) {
+
     Widget? view = option.getView();
-    if (option == widget.model.selectedOption) {
-      view = Container(color: Theme.of(context).focusColor, child: view);
+
+    // pad
+    if (!widget.model.dense) {
+      view = Padding(padding: EdgeInsets.all(8), child: view);
     }
-    view = Padding(padding: const EdgeInsets.all(8), child: view);
-    return DropdownMenuItem(child: view);
+
+    // selected color
+    var color = option == widget.model.selectedOption ? Theme.of(context).focusColor : null;
+
+    // set min height
+    var constraints = widget.model.dense ? null : BoxConstraints(minHeight: 48);
+
+    view = Container(color: color, constraints: constraints, child: view);
+
+    return view;
   }
 
   OptionModel? getSelectedOption() {

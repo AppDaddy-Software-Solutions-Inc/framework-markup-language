@@ -1,8 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 // ignore_for_file: non_nullable_equals_parameter
-
-library expressions.core;
-
 import 'package:quiver/core.dart';
 import 'package:fml/eval/parser.dart';
 import 'package:petitparser/petitparser.dart';

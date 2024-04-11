@@ -61,6 +61,8 @@ class Eval {
     'isnumeric': _isNumeric,
     'join': _join,
     'length': _length,
+    'lpad': _lpad,
+    'rpad': _rpad,
     'mod': _mod,
     'noe': _isNullOrEmpty,
     'number': _number,
@@ -84,6 +86,8 @@ class Eval {
     'tolower': _toLower,
     'tonum': _toNum,
     'tonumber': _toNum,
+    'toint': _toInt,
+    'todouble': _toDouble,
     'tostr': _toString,
     'tostring': _toString,
     'toupper': _toUpper,
@@ -299,10 +303,14 @@ class Eval {
     return toBool(value);
   }
 
-  /// Returns a Nul from a dynamic value using [toNum]
-  static dynamic _toNum(dynamic value) {
-    return toNum(value);
-  }
+  /// Returns a Number from a dynamic value using [toNum]
+  static dynamic _toNum(dynamic value) => toNum(value);
+
+  /// Returns an integer from a dynamic value using [toNum]
+  static dynamic _toInt(dynamic value) => toNum(value)?.toInt();
+
+  /// Returns a double from a dynamic value using [toNum]
+  static dynamic _toDouble(dynamic value) => toNum(value)?.toDouble();
 
   /// Returns the nearest integer value rounding up
   static dynamic _ceil(dynamic value) {
@@ -718,6 +726,42 @@ class Eval {
     if (_toString(s9) != null) myString += _toString(s9);
     if (_toString(s10) != null) myString += _toString(s10);
     return myString;
+  }
+
+  static dynamic _lpad(dynamic string, dynamic length, dynamic character) {
+
+    var s = _toString(string);
+    if (s == null) return s;
+
+    var l = toInt(length);
+    if (l == null || l < s.length) return s;
+
+    var c = (toStr(character) ?? " ").substring(0,1);
+
+    // pad left
+    while (s.length < l) {
+      s = c + s;
+    }
+
+    return s;
+  }
+
+  static dynamic _rpad(dynamic string, dynamic length, [dynamic character]) {
+
+    var s = _toString(string);
+    if (s == null) return s;
+
+    var l = toInt(length);
+    if (l == null || l < s.length) return s;
+
+    var c = (toStr(character) ?? " ").substring(0,1);
+
+    // pad right
+    while (s.length < l) {
+      s = s + c;
+    }
+
+    return s;
   }
 
   /// null-safe object length

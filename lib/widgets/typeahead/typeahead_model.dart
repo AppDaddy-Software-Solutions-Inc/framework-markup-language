@@ -5,6 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/option/tag_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -51,19 +52,6 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
   bool get readonly => _readonly?.get() ?? false;
 
   // value
-  BooleanObservable? _caseSensitive;
-  set caseSensitive(dynamic v) {
-    if (_caseSensitive != null) {
-      _caseSensitive!.set(v);
-    } else if (v != null) {
-      _caseSensitive = BooleanObservable(Binding.toKey(id, 'casesensitive'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  bool get caseSensitive => _caseSensitive?.get() ?? false;
-
-  // value
   StringObservable? _value;
   @override
   set value(dynamic v) {
@@ -105,23 +93,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
       }
     }
   }
-
   int get rows => _rows?.get() ?? 5;
-
-  //  match type
-  StringObservable? _matchType;
-  set matchType(dynamic v) {
-    if (_matchType != null) {
-      _matchType!.set(v);
-    } else {
-      if (v != null) {
-        _matchType = StringObservable(Binding.toKey(id, 'matchtype'), v,
-            scope: scope, listener: onPropertyChange);
-      }
-    }
-  }
-
-  String get matchType => _matchType?.get() ?? 'contains';
 
   /// if the input will obscure its characters.
   BooleanObservable? _obscure;
@@ -133,7 +105,6 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get obscure => _obscure?.get() ?? false;
 
   TypeaheadModel(WidgetModel super.parent, super.id);
@@ -153,10 +124,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
 
     // set properties
     value = Xml.get(node: xml, tag: 'value');
-    matchType = Xml.get(node: xml, tag: 'matchtype') ??
-        Xml.get(node: xml, tag: 'searchtype');
     rows = Xml.get(node: xml, tag: 'rows');
-    caseSensitive = Xml.get(node: xml, tag: 'casesensitive');
     obscure = Xml.get(node: xml, tag: 'obscure');
     readonly = Xml.get(node: xml, tag: 'readonly');
     clear = Xml.get(node: xml, tag: 'clear');
@@ -316,9 +284,6 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
     // trim
     pattern.trim();
 
-    // case insensitive pattern
-    if (!caseSensitive) pattern = pattern.toLowerCase();
-
     // return visible options
     if (isNullOrEmpty(pattern)) {
       return options.where((option) => option.visible).toList();
@@ -331,29 +296,38 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
         .toList();
   }
 
-  bool compare(OptionModel option, String pattern) {
+  bool compare(OptionModel option, String value) {
+
     // not text matches all
-    if (isNullOrEmpty(pattern)) return true;
+    if (isNullOrEmpty(value)) return true;
 
     // get option search tags
     for (var tag in option.tags) {
-      if (isNullOrEmpty(tag)) return false;
-      tag = tag.trim();
-      if (!caseSensitive) tag = tag.toLowerCase();
 
-      var type = matchType.trim();
-      if (!caseSensitive) type = type.toLowerCase();
+      // set search values
+      var v1 = (tag.ignoreCase ? value.toLowerCase() : value).trim();
+      var v2 = (tag.ignoreCase ? tag.value?.toLowerCase() : tag.value)?.trim();
 
-      switch (type) {
-        case 'contains':
-          if (tag.contains(pattern)) return true;
-          break;
-        case 'startswith':
-          if (tag.startsWith(pattern)) return true;
-          break;
-        case 'endswith':
-          if (tag.endsWith(pattern)) return true;
-          break;
+      // specify search
+      if (v2 != null) {
+        switch (tag.type) {
+
+          case TagType.contains:
+            if (v2.contains(v1)) return true;
+            break;
+
+          case TagType.startswith:
+            if (v2.startsWith(v1)) return true;
+            break;
+
+          case TagType.endwith:
+            if (v2.endsWith(v1)) return true;
+            break;
+
+          case TagType.equal:
+            if (v2 == v1) return true;
+            break;
+        }
       }
     }
     return false;

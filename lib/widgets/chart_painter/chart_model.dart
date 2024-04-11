@@ -35,24 +35,37 @@ class ChartPainterModel extends BoxModel {
     if (_title != null) {
       _title!.set(v);
     } else if (v != null) {
-      _title = StringObservable(Binding.toKey(id, 'title'), v,
-          scope: scope, listener: onPropertyChange);
+      _title = StringObservable(Binding.toKey(id, 'title'), v, scope: scope, listener: onPropertyChange);
     }
   }
 
   String? get title => _title?.get();
 
-  ChartPainterModel(
-    WidgetModel super.parent,
-    super.id, {
-    dynamic type,
-    dynamic showlegend,
-    dynamic title,
-    dynamic horizontal,
-    dynamic animated,
-    dynamic selected,
-    dynamic legendsize,
-  }) : super(scope: Scope(parent: parent.scope)) {
+  /// Contains the data map from the row (point) that is selected
+  // data map from the row that is currently selected
+  ListObservable? _selected;
+  set selected(dynamic v) {
+    if (_selected != null) {
+      _selected!.set(v);
+    } else if (v != null) {
+      // we don't want this to update the table view so don't add listener: onPropertyChange
+      _selected = ListObservable(Binding.toKey(id, 'selected'), null, scope: scope, listener: onPropertyChange);
+      _selected!.set(v);
+    }
+  }
+
+  dynamic get selected => _selected?.get();
+
+  ChartPainterModel(WidgetModel super.parent, super.id,
+      {dynamic type,
+      dynamic showlegend,
+      dynamic title,
+      dynamic horizontal,
+      dynamic animated,
+      dynamic selected,
+      dynamic legendsize,
+      dynamic onclick})
+      : super(scope: Scope(parent: parent.scope)) {
     this.selected = selected;
     this.title = title;
     this.animated = animated;
@@ -60,16 +73,13 @@ class ChartPainterModel extends BoxModel {
     this.showlegend = showlegend;
     this.legendsize = legendsize;
     this.type = type?.trim()?.toLowerCase();
-
     busy = false;
   }
 
-  static ChartPainterModel? fromTemplate(
-      WidgetModel parent, Template template) {
+  static ChartPainterModel? fromTemplate(WidgetModel parent, Template template) {
     ChartPainterModel? model;
     try {
-      XmlElement? xml =
-          Xml.getElement(node: template.document!.rootElement, tag: "CHART");
+      XmlElement? xml = Xml.getElement(node: template.document!.rootElement, tag: "CHART");
       xml ??= template.document!.rootElement;
       model = ChartPainterModel.fromXml(parent, xml);
     } catch (e) {
@@ -109,37 +119,13 @@ class ChartPainterModel extends BoxModel {
     title = Xml.get(node: xml, tag: 'title');
   }
 
-  /// Contains the data map from the row (point) that is selected
-  ListObservable? _selected;
-  set selected(dynamic v) {
-    if (_selected != null) {
-      _selected!.set(v);
-    } else if (v != null) {
-      _selected = ListObservable(Binding.toKey(id, 'selected'), null,
-          scope: scope, listener: onPropertyChange);
-      _selected!.set(v);
-    }
-  }
-
-  get selected => _selected?.get();
-
-  setSelected(dynamic v) {
-    if (_selected == null) {
-      _selected =
-          ListObservable(Binding.toKey(id, 'selected'), null, scope: scope);
-      _selected!.registerListener(onPropertyChange);
-    }
-    _selected?.set(v, notify: false);
-  }
-
   /// If the chart should animate it's series
   BooleanObservable? _animated;
   set animated(dynamic v) {
     if (_animated != null) {
       _animated!.set(v);
     } else if (v != null) {
-      _animated = BooleanObservable(Binding.toKey(id, 'animated'), v,
-          scope: scope, listener: onPropertyChange);
+      _animated = BooleanObservable(Binding.toKey(id, 'animated'), v, scope: scope, listener: onPropertyChange);
     }
   }
 
@@ -151,8 +137,7 @@ class ChartPainterModel extends BoxModel {
     if (_horizontal != null) {
       _horizontal!.set(v);
     } else if (v != null) {
-      _horizontal = BooleanObservable(Binding.toKey(id, 'horizontal'), v,
-          scope: scope, listener: onPropertyChange);
+      _horizontal = BooleanObservable(Binding.toKey(id, 'horizontal'), v, scope: scope, listener: onPropertyChange);
     }
   }
 
@@ -164,8 +149,7 @@ class ChartPainterModel extends BoxModel {
     if (_showlegend != null) {
       _showlegend!.set(v);
     } else if (v != null) {
-      _showlegend = StringObservable(Binding.toKey(id, 'showlegend'), v,
-          scope: scope, listener: onPropertyChange);
+      _showlegend = StringObservable(Binding.toKey(id, 'showlegend'), v, scope: scope, listener: onPropertyChange);
     }
   }
 
@@ -177,8 +161,7 @@ class ChartPainterModel extends BoxModel {
     if (_legendsize != null) {
       _legendsize!.set(v);
     } else if (v != null) {
-      _legendsize = IntegerObservable(Binding.toKey(id, 'legendsize'), v,
-          scope: scope, listener: onPropertyChange);
+      _legendsize = IntegerObservable(Binding.toKey(id, 'legendsize'), v, scope: scope, listener: onPropertyChange);
     }
   }
 
@@ -197,8 +180,7 @@ class ChartPainterModel extends BoxModel {
     if (_type != null) {
       _type!.set(v);
     } else if (v != null) {
-      _type = StringObservable(Binding.toKey(id, 'type'), v,
-          scope: scope, listener: onPropertyChange);
+      _type = StringObservable(Binding.toKey(id, 'type'), v, scope: scope, listener: onPropertyChange);
     }
   }
 
@@ -211,12 +193,10 @@ class ChartPainterModel extends BoxModel {
   /// to populate the label data from the datasource data.
 
   // must be implemented
-  List<Widget> getTooltips(List<IExtendedSeriesInterface> spots) =>
-      throw UnimplementedError("Not implemented");
+  List<Widget> getTooltips(List<IExtendedSeriesInterface> spots) => throw UnimplementedError("Not implemented");
 
   // build the tooltip view
-  List<Widget> buildTooltip(
-      ChartPainterSeriesModel? series, IExtendedSeriesInterface spot) {
+  List<Widget> buildTooltip(ChartPainterSeriesModel? series, IExtendedSeriesInterface spot) {
     List<Widget> views = [];
     if (series == null) return views;
 

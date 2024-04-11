@@ -51,9 +51,7 @@ class _LineChartViewState extends WidgetState<LineChartView> {
   }
 
   Widget bottomTitles(double value, TitleMeta meta) {
-    var style = TextStyle(
-        fontSize: widget.model.xaxis.labelsize ?? 8,
-        color: Theme.of(context).colorScheme.outline);
+    var style = TextStyle(fontSize: widget.model.xaxis.labelsize ?? 8, color: Theme.of(context).colorScheme.outline);
     //int? index = toInt(value);
     String text = "";
     if (widget.model.xaxis.type == 'date') {
@@ -62,13 +60,10 @@ class _LineChartViewState extends WidgetState<LineChartView> {
             .format(DateTime.fromMillisecondsSinceEpoch(value.toInt()))
             .toString();
       } catch (e) {
-        Log().exception(
-            'Error formatting date when creating bottom titles widget');
+        Log().exception('Error formatting date when creating bottom titles widget');
       }
-    } else if (widget.model.xaxis.type == 'category' ||
-        widget.model.xaxis.type == 'raw') {
-      text = value.toInt() <= widget.model.uniqueValues.length &&
-              widget.model.uniqueValues.isNotEmpty
+    } else if (widget.model.xaxis.type == 'category' || widget.model.xaxis.type == 'raw') {
+      text = value.toInt() <= widget.model.uniqueValues.length && widget.model.uniqueValues.isNotEmpty
           ? widget.model.uniqueValues.elementAt(value.toInt()).toString()
           : value.toString();
     } else {
@@ -84,9 +79,7 @@ class _LineChartViewState extends WidgetState<LineChartView> {
   }
 
   Widget leftTitles(double value, TitleMeta meta) {
-    var style = TextStyle(
-        fontSize: widget.model.yaxis.labelsize ?? 8,
-        color: Theme.of(context).colorScheme.outline);
+    var style = TextStyle(fontSize: widget.model.yaxis.labelsize ?? 8, color: Theme.of(context).colorScheme.outline);
     return SideTitleWidget(
       axisSide: meta.axisSide,
       space: 8,
@@ -101,9 +94,7 @@ class _LineChartViewState extends WidgetState<LineChartView> {
       LineChartData(
         lineBarsData: widget.model.lineDataList,
         lineTouchData: LineTouchData(
-            touchCallback: onLineTouch,
-            touchTooltipData:
-                LineTouchTooltipData(getTooltipItems: getTooltipItems)),
+            touchCallback: onLineTouch, touchTooltipData: LineTouchTooltipData(getTooltipItems: getTooltipItems)),
 
         //the series must determine the min and max y
         minY: toDouble(widget.model.yaxis.min),
@@ -126,8 +117,7 @@ class _LineChartViewState extends WidgetState<LineChartView> {
                   )
                 : null,
           ),
-          rightTitles:
-              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           leftTitles: AxisTitles(
               axisNameWidget: !isNullOrEmpty(widget.model.yaxis.title)
                   ? Text(
@@ -149,8 +139,7 @@ class _LineChartViewState extends WidgetState<LineChartView> {
                     )
                   : null,
               sideTitles: SideTitles(
-                interval: widget.model.xaxis.type == 'category' ||
-                        widget.model.xaxis.type == 'raw'
+                interval: widget.model.xaxis.type == 'category' || widget.model.xaxis.type == 'raw'
                     ? 1
                     : toDouble(widget.model.xaxis.interval),
                 showTitles: true,
@@ -165,9 +154,27 @@ class _LineChartViewState extends WidgetState<LineChartView> {
   }
 
   void onLineTouch(FlTouchEvent event, LineTouchResponse? response) {
-    bool exit = (response?.lineBarSpots?.isEmpty ?? true) ||
-        event is FlPointerExitEvent;
+    bool exit = (response?.lineBarSpots?.isEmpty ?? true) || event is FlPointerExitEvent;
     bool enter = !exit;
+
+    //check if the response is a tap event
+    if (event is FlTapUpEvent) {
+      if (response != null && response.lineBarSpots != null) {
+        //find the series that corresponds with the response that has been clicked
+        for (var spot in response.lineBarSpots!) {
+          var mySpot = spot.bar.spots[spot.spotIndex];
+          //check that the series is an extended series interface
+          if (mySpot is IExtendedSeriesInterface) {
+            //set the selected on the chart model to the series spot data that was clicked
+            widget.model.selected = (mySpot as IExtendedSeriesInterface).data;
+            //set the selected on the series that was click to the series spot data that was clicked
+            (mySpot as IExtendedSeriesInterface).series.selected = (mySpot as IExtendedSeriesInterface).data;
+            //execute the onclick method of the series
+            (mySpot as IExtendedSeriesInterface).series.onClick(context);
+          }
+        }
+      }
+    }
 
     if (enter) {
       List<IExtendedSeriesInterface> spots = [];
@@ -185,8 +192,8 @@ class _LineChartViewState extends WidgetState<LineChartView> {
       }
 
       // show tooltip in post frame callback
-      WidgetsBinding.instance.addPostFrameCallback((_) => showTooltip(
-          widget.model.getTooltips(spots), point?.dx ?? 0, point?.dy ?? 0));
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => showTooltip(widget.model.getTooltips(spots), point?.dx ?? 0, point?.dy ?? 0));
 
       // ensure screen updates
       WidgetsBinding.instance.ensureVisualUpdate();
@@ -222,10 +229,8 @@ class _LineChartViewState extends WidgetState<LineChartView> {
     // show new tooltip
     if (views.isNotEmpty) {
       tooltip = OverlayEntry(
-          builder: (context) => Positioned(
-              left: x,
-              top: y + 25,
-              child: Column(mainAxisSize: MainAxisSize.min, children: views)));
+          builder: (context) =>
+              Positioned(left: x, top: y + 25, child: Column(mainAxisSize: MainAxisSize.min, children: views)));
       Overlay.of(context).insert(tooltip!);
     }
   }
@@ -246,8 +251,7 @@ class _LineChartViewState extends WidgetState<LineChartView> {
     if (!widget.model.visible) return const Offstage();
 
     // Busy / Loading Indicator
-    busy ??= BusyView(BusyModel(widget.model,
-        visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     Widget? view;
 

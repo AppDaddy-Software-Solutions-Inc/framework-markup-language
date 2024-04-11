@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
+import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fml/widgets/box/box_model.dart';
@@ -59,6 +60,18 @@ class ChartPainterSeriesModel extends WidgetModel {
 
   bool get tooltips => _tooltips?.get() ?? true;
 
+  StringObservable? _onclick;
+  set onclick(dynamic v) {
+    if (_onclick != null) {
+      _onclick!.set(v);
+    } else if (v != null) {
+      _onclick = StringObservable(Binding.toKey(id, 'onclick'), v,
+          scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+
+  String? get onclick => _onclick?.get();
+
   BoxModel? tooltip;
 
   ChartPainterSeriesModel(
@@ -81,6 +94,7 @@ class ChartPainterSeriesModel extends WidgetModel {
     dynamic showline,
     dynamic showpoints,
     dynamic curved,
+        dynamic onclick
   }) {
     data = Data();
     this.x = x;
@@ -98,6 +112,7 @@ class ChartPainterSeriesModel extends WidgetModel {
     this.showarea = showarea;
     this.showline = showline;
     this.showpoints = showpoints;
+    this.onclick = onclick;
   }
 
   static ChartPainterSeriesModel? fromXml(WidgetModel parent, XmlElement xml) {
@@ -153,6 +168,7 @@ class ChartPainterSeriesModel extends WidgetModel {
     showpoints = Xml.get(node: xml, tag: 'showpoints');
     curved = Xml.get(node: xml, tag: 'curved');
     tooltips = Xml.get(node: xml, tag: 'tooltips');
+    onclick = Xml.get(node: xml, tag: 'onclick');
 
     // Remove datasource listener. The parent chart will take care of this.
     if ((datasource != null) &&
@@ -373,6 +389,10 @@ class ChartPainterSeriesModel extends WidgetModel {
     plotFunction = null;
   }
 
+
+  Future<bool> onClick(BuildContext context) async {
+    return await EventHandler(this).execute(_onclick);
+  }
   @override
   void dispose() {
     // dispose of the tooltip

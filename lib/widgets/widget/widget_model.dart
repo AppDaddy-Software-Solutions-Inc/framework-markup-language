@@ -304,9 +304,11 @@ class WidgetModel implements IDataSourceListener {
           listener.onModelChange(this, property: property, value: value));
 
   /// notifies property listeners of any changes to a property
-  void onPropertyChange(Observable observable) => notificationsEnabled
-      ? notifyListeners(observable.key, observable.get())
-      : null;
+  void onPropertyChange(Observable observable) {
+    if(notificationsEnabled) {
+      notifyListeners(observable.key, observable.get());
+    }
+  }
 
   /// initializes the model by starting brokers
   Future<void> initialize() async {

@@ -50,7 +50,7 @@
 
                     <!-- Tags are used in the typeahead -->
                     <TAG value="{data.title}"/>
-                    <TAG value="{data.tags}"/>
+                    <TAG value="{data.keywords}"/>
                     <TAG value="{data.category}" type="equal"/>
 
                     <ROW expand="false" valign="center">

@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
@@ -296,40 +297,59 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
         .toList();
   }
 
-  bool compare(OptionModel option, String value) {
+  bool compare(OptionModel option, String pattern) {
 
     // not text matches all
-    if (isNullOrEmpty(value)) return true;
+    if (isNullOrEmpty(pattern.trim())) return true;
 
     // get option search tags
     for (var tag in option.tags) {
 
       // set search values
-      var v1 = (tag.ignoreCase ? value.toLowerCase() : value).trim();
+      var v1 = (tag.ignoreCase ? pattern.toLowerCase() : pattern).trim();
       var v2 = (tag.ignoreCase ? tag.value?.toLowerCase() : tag.value)?.trim();
 
       // specify search
       if (v2 != null) {
         switch (tag.type) {
 
+          // contains
           case TagType.contains:
             if (v2.contains(v1)) return true;
             break;
 
+          // starts with
           case TagType.startswith:
             if (v2.startsWith(v1)) return true;
             break;
 
+          // ends with
           case TagType.endwith:
             if (v2.endsWith(v1)) return true;
             break;
 
+          // exact match
           case TagType.equal:
             if (v2 == v1) return true;
             break;
+
+          // compares space separated keywords
+          case TagType.keyword:
+            var keywords = v1.split(" ");
+            var values = v2.split(" ");
+            bool ok = true;
+            for (var keyword in keywords) {
+              var match = values.firstWhereOrNull((value) => value.trim() == keyword.trim());
+              if (match == null) {
+                ok = false;
+                break;
+              }
+            }
+            if (ok) return true;
         }
       }
     }
+
     return false;
   }
 

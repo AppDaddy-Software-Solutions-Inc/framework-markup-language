@@ -4,7 +4,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-enum TagType {contains, startswith, endwith, equal}
+enum TagType {contains, startswith, endwith, equal, keyword}
 
 class TagModel extends WidgetModel {
 

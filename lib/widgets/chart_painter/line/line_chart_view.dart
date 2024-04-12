@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
@@ -88,13 +90,21 @@ class _LineChartViewState extends WidgetState<LineChartView> {
     );
   }
 
+  double calculateDistance(Offset touchPoint, Offset spotPixelCoordinates) {
+    if(touchPoint.dx - spotPixelCoordinates.dx > 3) return 2000;
+    var distance = sqrt(pow((touchPoint.dx - spotPixelCoordinates.dx), 2) + pow((touchPoint.dy - spotPixelCoordinates.dy),2)).abs();
+      return distance;
+  }
+
   //Comes in as list of series
   LineChart buildLineChart(List<ChartPainterSeriesModel> seriesData) {
     LineChart chart = LineChart(
       LineChartData(
         lineBarsData: widget.model.lineDataList,
         lineTouchData: LineTouchData(
-            touchCallback: onLineTouch, touchTooltipData: LineTouchTooltipData(getTooltipItems: getTooltipItems)),
+          distanceCalculator: calculateDistance,
+          touchSpotThreshold: 10,
+          touchCallback: onLineTouch, touchTooltipData: LineTouchTooltipData(getTooltipItems: getTooltipItems)),
 
         //the series must determine the min and max y
         minY: toDouble(widget.model.yaxis.min),
@@ -157,20 +167,29 @@ class _LineChartViewState extends WidgetState<LineChartView> {
     bool exit = (response?.lineBarSpots?.isEmpty ?? true) || event is FlPointerExitEvent;
     bool enter = !exit;
 
+    RenderBox? render = context.findRenderObject() as RenderBox?;
+    Offset? point = event.localPosition;
+    if (render != null && point != null) {
+      point = render.localToGlobal(point);
+    }
+
     //check if the response is a tap event
     if (event is FlTapUpEvent) {
       if (response != null && response.lineBarSpots != null) {
         //find the series that corresponds with the response that has been clicked
+        var closest;
         for (var spot in response.lineBarSpots!) {
           var mySpot = spot.bar.spots[spot.spotIndex];
           //check that the series is an extended series interface
           if (mySpot is IExtendedSeriesInterface) {
+            // get the height of the render
             //set the selected on the chart model to the series spot data that was clicked
             widget.model.selected = (mySpot as IExtendedSeriesInterface).data;
             //set the selected on the series that was click to the series spot data that was clicked
             (mySpot as IExtendedSeriesInterface).series.selected = (mySpot as IExtendedSeriesInterface).data;
             //execute the onclick method of the series
             (mySpot as IExtendedSeriesInterface).series.onClick(context);
+            break;
           }
         }
       }
@@ -182,14 +201,10 @@ class _LineChartViewState extends WidgetState<LineChartView> {
         var mySpot = spot.bar.spots[spot.spotIndex];
         if (mySpot is IExtendedSeriesInterface) {
           spots.add(mySpot as IExtendedSeriesInterface);
+          break;
         }
       }
 
-      RenderBox? render = context.findRenderObject() as RenderBox?;
-      Offset? point = event.localPosition;
-      if (render != null && point != null) {
-        point = render.localToGlobal(point);
-      }
 
       // show tooltip in post frame callback
       WidgetsBinding.instance

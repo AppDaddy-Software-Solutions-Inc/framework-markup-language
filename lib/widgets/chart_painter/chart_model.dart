@@ -65,7 +65,7 @@ class ChartPainterModel extends BoxModel {
       dynamic selected,
       dynamic legendsize,
       dynamic onclick})
-      : super(scope: Scope(parent: parent.scope)) {
+      : super(scope: parent.scope) {
     this.selected = selected;
     this.title = title;
     this.animated = animated;

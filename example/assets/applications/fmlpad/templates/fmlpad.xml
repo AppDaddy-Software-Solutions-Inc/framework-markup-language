@@ -12,14 +12,14 @@
 
     <VAR id="xml" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null" value="{editor}" />
 
-    <GET id="dbWidgets"  root="WIDGETS.WIDGET" ttl="1h" url="=join({root},'templates/widgets.xml')" />
-    <GET id="dbStyles"   root="STYLES.STYLE" ttl="1d" url="=join({root},'templates/styles.xml')" />
-    <GET id="dbExamples" root="EXAMPLES.EXAMPLE" url="=join({root},'templates/examples.xml')" refresh="true"/>
+    <GET id="dbWidgets"  root="WIDGETS.WIDGET" ttl="1h" url="=join({root},'templates/widgets.xml?refresh={SYSTEM.uuid}')" />
+    <GET id="dbStyles"   root="STYLES.STYLE" ttl="1d" url="=join({root},'templates/styles.xml?refresh={SYSTEM.uuid}')" />
+    <GET id="dbExamples" root="EXAMPLES.EXAMPLE" url="=join({root},'templates/examples.xml?refresh={SYSTEM.uuid}')"/>
 
     <VAR id="p2" onchange="p1.set(nvl({this},'templates/examples/splash.xml'))"/>
-    <VAR id="p1" onchange="dbExample.url.set(join({root.value},{p1.value}))" />
+    <VAR id="p1" onchange="dbExample.url.set(join({root.value},{p1.value},'?refresh={SYSTEM.uuid}'))" />
 
-    <GET id="dbExample" onsuccess="editor.set({this.response})" refresh="true" url="{p1}" />
+    <GET id="dbExample" onsuccess="editor.set({this.response})" url="{p1}?refresh={SYSTEM.uuid}" />
 
     <HEADER height="75" color="{THEME.oninversesurface}" valign="center" halign="left" layout="row">
 
@@ -44,9 +44,15 @@
 
         <!-- examples -->
         <ROW expand="false" bordercolor="{THEME.primary}" borderlabel="Examples" radius="5">
-            <TYPEAHEAD id="examples" value="{p2}" border="none" data="dbExamples" width="250"
-                onchange="p1.set(nvl({this},{splash})); stash('example',{this.value});" addempty="false">
+            <TYPEAHEAD id="examples" value="{p2}" border="none" data="dbExamples" width="300"
+                onchange="p1.set(nvl({this},{splash})); stash('example',{this.value});" addempty="false" rows="25">
                 <OPTION value="{data.url}" label="{data.title}">
+
+                    <!-- Tags are used in the typeahead -->
+                    <TAG value="{data.title}"/>
+                    <TAG value="{data.keywords}"/>
+                    <TAG value="{data.category}" type="equal"/>
+
                     <ROW expand="false" valign="center">
                         <ICON color="{data.color}" icon="{data.icon}" size="16" />
                         <PAD left="10" />

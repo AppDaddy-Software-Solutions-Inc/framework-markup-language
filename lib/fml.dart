@@ -47,6 +47,7 @@ class FmlEngine {
   static bool get isMobile =>
       !isWeb && (io.Platform.isAndroid || io.Platform.isIOS);
   static bool get isDesktop => !isWeb && !isMobile;
+  static bool get isTouchDevice => (io.Platform.isAndroid || io.Platform.isIOS);
 
   /// This url is used to locate config.xml on startup
   /// Used in Single Application mode only and on Web when developing on localhost

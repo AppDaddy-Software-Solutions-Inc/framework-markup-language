@@ -45,27 +45,10 @@ class OptionModel extends RowModel {
   }
   String? get value => _value?.get();
 
+
   // string to search on
-  List<String> get tags {
-    List<String> list = [];
-
-    // child search tags specified
-    List<TagModel> tags = findChildrenOfExactType(TagModel).cast<TagModel>();
-    if (tags.isNotEmpty) {
-      for (var tag in tags) {
-        if (!isNullOrEmpty(tag.value)) list.add(tag.value!);
-      }
-      return list;
-    }
-
-    // search on label
-    if (!isNullOrEmpty(label)) {
-      list.add(label!);
-      return list;
-    }
-
-    return list;
-  }
+  final List<TagModel> _tags = [];
+  List<TagModel> get tags => _tags.toList();
 
   OptionModel(super.parent, super.id, {dynamic data, String? value})
       : super(scope: Scope(parent: parent.scope)) {
@@ -121,6 +104,31 @@ class OptionModel extends RowModel {
       children ??= [];
       children!.add(TextModel(this,null,value: label ?? value));
     }
+
+    // assign tags
+    _tags.addAll(findChildrenOfExactType(TagModel).cast<TagModel>());
+
+    // remove child tags
+    if (_tags.isNotEmpty) {
+      removeChildrenOfExactType(TagModel);
+    }
+
+    // no tags specified? default is label
+    if (_tags.isEmpty) {
+      _tags.add(TagModel(this,null,value: label ?? value));
+    }
+  }
+
+  @override
+  void dispose() {
+
+    // dispose of tags
+    for (var tag in _tags) {
+      tag.dispose();
+    }
+
+    // dispose
+    super.dispose();
   }
 
   Widget? cachedView;

@@ -185,8 +185,6 @@ class _LineChartViewState extends WidgetState<LineChartView> {
             // get the height of the render
             //set the selected on the chart model to the series spot data that was clicked
             widget.model.selected = (mySpot as IExtendedSeriesInterface).data;
-            //set the selected on the series that was click to the series spot data that was clicked
-            (mySpot as IExtendedSeriesInterface).series.selected = (mySpot as IExtendedSeriesInterface).data;
             //execute the onclick method of the series
             (mySpot as IExtendedSeriesInterface).series.onClick(context);
             break;

@@ -84,7 +84,7 @@ class LabelledContainerRenderer extends RenderBox
   @override
   void performLayout() {
 
-    if (this.container == null) {
+    if (container == null) {
       size = Size.zero;
       return;
     }

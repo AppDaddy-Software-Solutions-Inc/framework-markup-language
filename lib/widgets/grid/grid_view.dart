@@ -108,7 +108,12 @@ class GridViewState extends WidgetState<GridView> {
 
       // scroll up/left
       if (pixels < 0) {
-        pixels = controller.offset - pixels;
+
+        // already at the start of the list
+        if (controller.offset == 0) return;
+
+        // calculate pixels
+        pixels = controller.offset - pixels.abs();
         if (pixels < 0) pixels = 0;
 
         if (animate) {
@@ -124,7 +129,14 @@ class GridViewState extends WidgetState<GridView> {
 
       // scroll down/right
       if (pixels > 0) {
+
+        // already at the end of the list
+        if (controller.position.maxScrollExtent == controller.offset) return;
+
+        // calculate pixels
         pixels = controller.offset + pixels;
+        if (pixels > controller.position.maxScrollExtent) pixels = controller.position.maxScrollExtent;
+
         if (animate) {
           controller.animateTo(pixels,
               duration: const Duration(milliseconds: 300),

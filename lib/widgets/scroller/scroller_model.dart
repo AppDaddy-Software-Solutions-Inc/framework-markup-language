@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
@@ -169,7 +170,7 @@ class ScrollerModel extends BoxModel implements IScrollable {
 
   /// scroll +/- pixels or to an item
   @override
-  void scroll(double? pixels, {required bool animate}) {
+  void scroll(double? pixels, {bool animate = false}) {
 
     // get the view
     ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
@@ -179,14 +180,23 @@ class ScrollerModel extends BoxModel implements IScrollable {
     view?.scroll(pixels, animate: animate);
   }
 
-  /// scroll to specified item by id
+  /// scroll to specified item by id and value
   @override
-  void scrollTo(String? id, {required bool animate}) {
+  void scrollTo(String? id, String? value, {bool animate = false}) {
     if (isNullOrEmpty(id)) return;
-    var item = findDescendantOfExactType(null, id: id);
-    if (item?.context != null) {
+
+    // find the first child with the specified
+    // id and matching value
+    BuildContext? context;
+    var child = descendants?.toList().firstWhereOrNull((child) => child.id == id && child.value == (value ?? child.value));
+    if (child != null) {
+      context = child.context;
+    }
+
+    // context defined?
+    if (context != null) {
       ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
-      view?.scrollTo(item!.context!, animate: animate);
+      view?.scrollTo(context, animate: animate);
     }
   }
 
@@ -208,7 +218,7 @@ class ScrollerModel extends BoxModel implements IScrollable {
 
     // scroll to item by id
       case "scrollto":
-        scrollTo(toStr(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 2)) ?? false);
         return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);

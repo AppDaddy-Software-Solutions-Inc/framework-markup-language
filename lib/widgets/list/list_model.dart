@@ -478,7 +478,7 @@ class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
 
   /// scroll +/- pixels or to an item
   @override
-  void scroll(double? pixels, {required bool animate}) {
+  void scroll(double? pixels, {bool animate = false}) {
 
     // get the view
     ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
@@ -490,23 +490,27 @@ class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
 
   /// scroll +/- pixels or to an item
   @override
-  void scrollTo(String? id, {required bool animate}) {
-    // get the view
-    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
-    if (view == null) return;
+  void scrollTo(String? id, String? value, {bool animate = false}) {
 
-    // find the item by id
-    var item = items.values.firstWhereOrNull((item) => item.id == id);
-    if (item != null) {
+    // build out the items
 
-      // get the size of the first item
-      var size = items.isEmpty ? Size.zero : Size(items.values.first.viewWidth ?? 0,items.values.first.viewHeight ?? 0);
+    // find the first item containing a child with the specified
+    // id and matching value
+    for (var item in items.values) {
+      var child = item.descendants?.toList().firstWhereOrNull((child) => child.id == id && child.value == (value ?? child.value));
+      if (child != null) {
+        // get the size of the first item
+        var size = Size(item.viewWidth ?? 0,item.viewHeight ?? 0);
 
-      // get the item's position in the list
-      int i = items.values.toList().indexOf(item);
+        // get the item's position in the list
+        int i = items.values.toList().indexOf(item);
 
-      // scroll to that item
-      view.scrollTo(i * size.height, animate: animate);
+        // get the view
+        ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
+
+        // scroll to that item
+        view?.scrollTo((i * size.height) + 100, animate: animate);
+      }
     }
   }
 
@@ -684,7 +688,7 @@ class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
 
       // scroll to item by id
       case "scrollto":
-        scrollTo(toStr(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 2)) ?? false);
         return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);

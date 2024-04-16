@@ -179,7 +179,7 @@ class MenuModel extends ViewableWidgetModel implements IScrollable {
 
   /// scroll +/- pixels or to an item
   @override
-  void scroll(double? pixels, {required bool animate}) {
+  void scroll(double? pixels, {bool animate = false}) {
 
     // get the view
     MenuViewState? view = findListenerOfExactType(MenuViewState);
@@ -189,14 +189,26 @@ class MenuModel extends ViewableWidgetModel implements IScrollable {
     view?.scroll(pixels, animate: animate);
   }
 
-  /// scroll to specified item by id
+  /// scroll to specified item by id and value
   @override
-  void scrollTo(String? id, {required bool animate}) {
+  void scrollTo(String? id, String? value, {bool animate = false}) {
     if (isNullOrEmpty(id)) return;
-    var item = items.firstWhereOrNull((item) => item.findDescendantOfExactType(null, id: id) != null);
-    if (item?.context != null) {
+
+    // find the first item containing a child with the specified
+    // id and matching value
+    BuildContext? context;
+    for (var item in items) {
+      var child = item.descendants?.toList().firstWhereOrNull((child) => child.id == id && child.value == (value ?? child.value));
+      if (child != null) {
+        context = item.context;
+        break;
+      }
+    }
+
+    // context defined?
+    if (context != null) {
       MenuViewState? view = findListenerOfExactType(MenuViewState);
-      view?.scrollTo(item!.context!, animate: animate);
+      view?.scrollTo(context, animate: animate);
     }
   }
 
@@ -261,7 +273,7 @@ class MenuModel extends ViewableWidgetModel implements IScrollable {
 
     // scroll to item by id
       case "scrollto":
-        scrollTo(toStr(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 1)) ?? false);
         return true;
     }
 

@@ -2,8 +2,8 @@ import 'dart:ui';
 
 abstract class IScrollable {
 
-  void scrollTo(String? id, {required bool animate});
-  void scroll(double? pixels, {required bool animate});
+  void scrollTo(String? id, String? value, {bool animate = false});
+  void scroll(double? pixels, {bool animate = false});
 
   Offset? positionOf();
   Size? sizeOf();

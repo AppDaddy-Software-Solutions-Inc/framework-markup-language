@@ -209,7 +209,7 @@ class WidgetModel implements IDataSourceListener {
 
     // properties
     debug = Xml.get(node: xml, tag: 'debug');
-    datasource = Xml.get(node: xml, tag: 'data');
+    datasource = Xml.get(node: xml, tag: 'datasource') ?? Xml.get(node: xml, tag: 'data');
 
     // register a listener to the datasource if specified
     IDataSource? source = scope?.getDataSource(datasource);

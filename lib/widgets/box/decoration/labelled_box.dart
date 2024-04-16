@@ -83,27 +83,31 @@ class LabelledContainerRenderer extends RenderBox
 
   @override
   void performLayout() {
-    // layout main container
-    if (container != null) {
-      container!.layout(constraints, parentUsesSize: true);
-      _positionChild(container!, Offset.zero);
+
+    if (container == null) {
+      size = Size.zero;
+      return;
     }
+
+    // layout main container
+    container!.layout(constraints, parentUsesSize: true);
+    _positionChild(container!, Offset.zero);
 
     // layout the label
     if (label != null) {
-      label!.layout(
-          constraints.copyWith(
-              maxWidth: math.max(
-                  0.0,
-                  ((container?.size.width ?? 0.0) -
-                      gapStart -
-                      (gapPadding * 4)))),
-          parentUsesSize: true);
+
+      var constraints = BoxConstraints(
+          minWidth: 0,
+          maxWidth: math.max(container!.size.width - gapStart - (gapPadding * 4),0.0),
+          minHeight: 0,
+          maxHeight: container!.size.height/2);
+
+      label!.layout(constraints, parentUsesSize: true);
       _positionChild(label!, labelOffset);
     }
 
     // calculate the overall size
-    size = Size(container?.size.width ?? 0.0, (container?.size.height ?? 0.0));
+    size = Size(container!.size.width, container!.size.height);
   }
 
   void _positionChild(RenderBox child, Offset offset) {

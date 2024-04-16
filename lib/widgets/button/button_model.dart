@@ -50,13 +50,12 @@ class ButtonModel extends BoxModel {
     if (_onclick != null) {
       _onclick!.set(v);
     } else if (v != null) {
-      _onclick = StringObservable(Binding.toKey(id, 'onclick'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+      _onclick =
+          StringObservable(Binding.toKey(id, 'onclick'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
 
   String? get onclick => _onclick?.get();
-
 
   /// Text value for Button
   ///
@@ -67,8 +66,7 @@ class ButtonModel extends BoxModel {
     if (_label != null) {
       _label!.set(v);
     } else if (v != null) {
-      _label = StringObservable(Binding.toKey(id, 'label'), v,
-          scope: scope, listener: onPropertyChange);
+      _label = StringObservable(Binding.toKey(id, 'label'), v, scope: scope, listener: onPropertyChange);
     }
   }
 
@@ -94,12 +92,22 @@ class ButtonModel extends BoxModel {
     if (_buttontype != null) {
       _buttontype!.set(v);
     } else if (v != null) {
-      _buttontype = StringObservable(Binding.toKey(id, 'type'), v,
-          scope: scope, listener: onPropertyChange);
+      _buttontype = StringObservable(Binding.toKey(id, 'type'), v, scope: scope, listener: onPropertyChange);
     }
   }
 
   String? get buttontype => _buttontype?.get();
+
+  // The debounce time on clicking buttons in MS
+  DoubleObservable? _debounce;
+  set debounce(dynamic v) {
+    if (_debounce != null) {
+      _debounce!.set(v);
+    } else if (v != null) {
+      _debounce = DoubleObservable(Binding.toKey(id, 'debounce'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  double get debounce => _debounce?.get() ?? 300;
 
   BooleanObservable? _expand;
   @override
@@ -107,8 +115,7 @@ class ButtonModel extends BoxModel {
     if (_expand != null) {
       _expand!.set(v);
     } else if (v != null) {
-      _expand = BooleanObservable(Binding.toKey(id, 'expand'), v,
-          scope: scope, listener: onPropertyChange);
+      _expand = BooleanObservable(Binding.toKey(id, 'expand'), v, scope: scope, listener: onPropertyChange);
     }
   }
 
@@ -131,6 +138,7 @@ class ButtonModel extends BoxModel {
       dynamic minheight,
       dynamic maxheight,
       dynamic layout,
+      dynamic debounce,
       List<WidgetModel>? children}) {
     // constraints
     if (width != null) this.width = width;
@@ -148,13 +156,13 @@ class ButtonModel extends BoxModel {
     this.radius = radius;
     this.enabled = enabled;
     this.children = children;
+    this.debounce = debounce;
   }
 
   static ButtonModel? fromXml(WidgetModel parent, XmlElement xml) {
     ButtonModel? model;
     try {
-      model = ButtonModel(parent, Xml.get(node: xml, tag: 'id'),
-          layout: Xml.get(node: xml, tag: 'layout'));
+      model = ButtonModel(parent, Xml.get(node: xml, tag: 'id'), layout: Xml.get(node: xml, tag: 'layout'));
       model.deserialize(xml);
     } catch (e) {
       Log().exception(e, caller: 'button.Model');
@@ -170,12 +178,11 @@ class ButtonModel extends BoxModel {
     super.deserialize(xml);
 
     // properties
-    label = Xml.get(node: xml, tag: 'value') ??
-        Xml.get(node: xml, tag: 'label') ??
-        Xml.getText(xml);
+    label = Xml.get(node: xml, tag: 'value') ?? Xml.get(node: xml, tag: 'label') ?? Xml.getText(xml);
     onclick = Xml.get(node: xml, tag: 'onclick');
     buttontype = Xml.get(node: xml, tag: 'type');
     radius = Xml.get(node: xml, tag: 'radius');
+    debounce = Xml.get(node: xml, tag: 'debounce');
 
     // create text model bound to this label as default
     if (viewableChildren.isEmpty && label != null) {
@@ -190,8 +197,7 @@ class ButtonModel extends BoxModel {
   onPress(BuildContext context) async {
     if (preventClicking != true) {
       if (allowClicking?.isActive ?? false) allowClicking!.cancel();
-      allowClicking = Timer(
-          const Duration(milliseconds: 300), () => preventClicking = false);
+      allowClicking = Timer( Duration(milliseconds: debounce.toInt()), () => preventClicking = false);
       preventClicking = true;
 
       WidgetModel.unfocus();

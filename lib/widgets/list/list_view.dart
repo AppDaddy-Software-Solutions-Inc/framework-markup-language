@@ -200,7 +200,7 @@ class ListLayoutViewState extends WidgetState<ListLayoutView>
         .getView();
 
     // Direction
-    dynamic direction = Axis.vertical;
+    var direction = Axis.vertical;
     if (widget.model.direction == 'horizontal') direction = Axis.horizontal;
 
     List<Widget> children = [];

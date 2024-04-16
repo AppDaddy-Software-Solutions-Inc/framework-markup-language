@@ -19,6 +19,20 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
+
+  @override
+  bool get canExpandInfinitelyWide => !hasBoundedWidth && direction == 'horizontal';
+
+  @override
+  bool get canExpandInfinitelyHigh => !hasBoundedHeight && direction != 'horizontal';
+
+  @override
+  bool get expandHorizontally => direction == 'horizontal';
+
+  @override
+  bool get expandVertically => direction != 'horizontal';
+
+  // maintains list of items
   final HashMap<int, ListItemModel> items = HashMap<int, ListItemModel>();
 
   // full list of data
@@ -187,8 +201,7 @@ class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  dynamic get direction => _direction?.get();
+  String get direction => _direction?.get()?.toLowerCase().trim() ?? 'vertical';
 
   BooleanObservable? _collapsed;
   set collapsed(dynamic v) {

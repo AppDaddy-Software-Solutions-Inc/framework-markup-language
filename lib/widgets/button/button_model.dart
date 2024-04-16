@@ -57,31 +57,6 @@ class ButtonModel extends BoxModel {
 
   String? get onclick => _onclick?.get();
 
-  // onenter
-  StringObservable? _onenter;
-  set onenter(dynamic v) {
-    if (_onenter != null) {
-      _onenter!.set(v);
-    } else if (v != null) {
-      _onenter = StringObservable(Binding.toKey(id, 'onenter'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
-    }
-  }
-
-  String? get onenter => _onenter?.get();
-
-  // onexit
-  StringObservable? _onexit;
-  set onexit(dynamic v) {
-    if (_onexit != null) {
-      _onexit!.set(v);
-    } else if (v != null) {
-      _onexit = StringObservable(Binding.toKey(id, 'onexit'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
-    }
-  }
-
-  String? get onexit => _onexit?.get();
 
   /// Text value for Button
   ///
@@ -167,8 +142,6 @@ class ButtonModel extends BoxModel {
 
     this.layout = layout;
     this.onclick = onclick;
-    this.onenter = onenter;
-    this.onexit = onexit;
     this.label = label;
     this.color = color;
     this.buttontype = buttontype;
@@ -201,8 +174,6 @@ class ButtonModel extends BoxModel {
         Xml.get(node: xml, tag: 'label') ??
         Xml.getText(xml);
     onclick = Xml.get(node: xml, tag: 'onclick');
-    onenter = Xml.get(node: xml, tag: 'onenter');
-    onexit = Xml.get(node: xml, tag: 'onexit');
     buttontype = Xml.get(node: xml, tag: 'type');
     radius = Xml.get(node: xml, tag: 'radius');
 
@@ -231,14 +202,6 @@ class ButtonModel extends BoxModel {
 
   Future<bool> onClick(BuildContext context) async {
     return await EventHandler(this).execute(_onclick);
-  }
-
-  Future<bool> onEnter(BuildContext context) async {
-    return await EventHandler(this).execute(_onenter);
-  }
-
-  Future<bool> onExit(BuildContext context) async {
-    return await EventHandler(this).execute(_onexit);
   }
 
   // returns the inner content model

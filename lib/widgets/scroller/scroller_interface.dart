@@ -1,8 +1,10 @@
 import 'dart:ui';
 
 abstract class IScrollable {
-  void scrollUp(int pixels);
-  void scrollDown(int pixels);
+
+  void scrollTo(String? id, {required bool animate});
+  void scroll(double? pixels, {required bool animate});
+
   Offset? positionOf();
   Size? sizeOf();
 

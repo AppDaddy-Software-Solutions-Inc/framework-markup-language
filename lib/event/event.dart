@@ -2,10 +2,6 @@
 import 'package:fml/event/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
-abstract class IEventScrolling {
-  onScroll(Event event);
-}
-
 enum EventTypes {
   alert,
   animate,
@@ -38,13 +34,10 @@ enum EventTypes {
   reset,
   saveas,
   save,
-  scroll,
-  scrollto,
   set,
   showdebug,
   showlog,
   showtemplate,
-  sort,
   sound,
   start,
   stash,

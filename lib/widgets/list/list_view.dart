@@ -1,10 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:ui';
-import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/event/event.dart';
 import 'package:fml/widgets/dragdrop/draggable_view.dart';
 import 'package:fml/widgets/dragdrop/droppable_view.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
@@ -25,102 +23,73 @@ class ListLayoutView extends StatefulWidget implements IWidgetView {
   State<ListLayoutView> createState() => ListLayoutViewState();
 }
 
-class ListLayoutViewState extends WidgetState<ListLayoutView>
-    implements IEventScrolling {
+class ListLayoutViewState extends WidgetState<ListLayoutView> {
+
   Future<ListModel>? listViewModel;
   Widget? busy;
   final ScrollController controller = ScrollController();
 
   @override
-  didChangeDependencies() {
-    // register event listeners
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.scroll, onScroll);
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
-
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(ListLayoutView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model)) {
-      // remove old event listeners
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.scroll, onScroll);
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.scrollto, onScrollTo);
-
-      // register new event listeners
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.scroll, onScroll);
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
-    }
-  }
-
-  @override
   void dispose() {
-    // remove event listeners
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.scroll, onScroll);
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.scrollto, onScrollTo);
-
     controller.dispose();
     super.dispose();
   }
 
-  /// Takes an event (onscroll) and uses the id to scroll to that widget
-  onScrollTo(Event event) {
-    // BuildContext context;
-    event.handled = true;
-    if (event.parameters!.containsKey('id')) {
-      String? id = event.parameters!['id'];
-      var child = widget.model.findDescendantOfExactType(null, id: id);
+  /// scrolls the widget with the specified context into view
+  scrollTo(double? position, {bool animate = false}) {
+    if (position == null) return;
+    if (position < 0) position = 0;
+    if (position > controller.position.maxScrollExtent) position = controller.position.maxScrollExtent;
 
-      // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
-      if ((child != null) && (child.context != null)) {
-        Scrollable.ensureVisible(child.context,
-            duration: const Duration(seconds: 1), alignment: 0.2);
-      }
+    if (animate) {
+    controller.animateTo(position,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut);
+    }
+    else {
+      controller.jumpTo(position);
     }
   }
 
-  @override
-  void onScroll(Event event) async {
-    scroll(event, controller);
-    event.handled = true;
-  }
+  /// moves the scroller by the specified pixels in the specified direction
+  void scroll(double? pixels, {required bool animate})  {
 
-  scroll(Event event, ScrollController? sc) async {
     try {
-      if (event.parameters!.containsKey("direction") &&
-          event.parameters!.containsKey("pixels")) {
-        String? direction = event.parameters!["direction"];
-        double distance = double.parse(event.parameters!["pixels"]!);
-        if (direction != null) {
-          if (direction == 'left' || direction == 'right') {
-            double offset = sc!.offset;
-            double moveToPosition =
-                offset + (direction == 'left' ? -distance : distance);
-            sc.animateTo(moveToPosition,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOut);
-          } else if (direction == 'up' || direction == 'down') {
-            double offset = sc!.offset;
-            double moveToPosition =
-                offset + (direction == 'up' ? -distance : distance);
-            sc.animateTo(moveToPosition,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOut);
-          }
+      // check if pixels is null
+      pixels ??= 0;
+
+      // scroll up/left
+      if (pixels < 0) {
+        pixels = controller.offset - pixels;
+        if (pixels < 0) pixels = 0;
+
+        if (animate) {
+          controller.animateTo(pixels,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut);
         }
+        else {
+          controller.jumpTo(pixels);
+        }
+        return;
       }
-    } catch (e) {
-      Log().error('onScroll Error: ');
-      Log().exception(e, caller: 'table.View');
+
+      // scroll down/right
+      if (pixels > 0) {
+        pixels = controller.offset + pixels;
+        if (animate) {
+          controller.animateTo(pixels,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut);
+        }
+        else {
+          controller.jumpTo(pixels);
+        }
+        return;
+      }
+    }
+    catch (e) {
+      Log().exception(e, caller: 'grid.View');
     }
   }
 
@@ -187,6 +156,16 @@ class ListLayoutViewState extends WidgetState<ListLayoutView>
       }
     } while (itemModel != null);
     return items;
+  }
+
+  Offset? positionOf() {
+    RenderBox? render = context.findRenderObject() as RenderBox?;
+    return render?.localToGlobal(Offset.zero);
+  }
+
+  Size? sizeOf() {
+    RenderBox? render = context.findRenderObject() as RenderBox?;
+    return render?.size;
   }
 
   @override
@@ -265,15 +244,5 @@ class ListLayoutViewState extends WidgetState<ListLayoutView>
     view = applyConstraints(view, widget.model.tightestOrDefault);
 
     return view;
-  }
-
-  Offset? positionOf() {
-    RenderBox? render = context.findRenderObject() as RenderBox?;
-    return render?.localToGlobal(Offset.zero);
-  }
-
-  Size? sizeOf() {
-    RenderBox? render = context.findRenderObject() as RenderBox?;
-    return render?.size;
   }
 }

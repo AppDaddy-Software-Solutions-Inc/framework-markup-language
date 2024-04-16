@@ -156,36 +156,6 @@ class ScrollerModel extends BoxModel implements IScrollable {
   }
 
   @override
-  void scrollUp(int pixels) {
-    ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
-    if (view == null) return;
-
-    // already at top
-    if (view.controller.offset == 0) return;
-
-    var to = view.controller.offset - pixels;
-    to = (to < 0) ? 0 : to;
-
-    view.controller.jumpTo(to);
-  }
-
-  @override
-  void scrollDown(int pixels) {
-    ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
-    if (view == null) return;
-
-    if (view.controller.position.pixels >=
-        view.controller.position.maxScrollExtent) return;
-
-    var to = view.controller.offset + pixels;
-    to = (to > view.controller.position.maxScrollExtent)
-        ? view.controller.position.maxScrollExtent
-        : to;
-
-    view.controller.jumpTo(to);
-  }
-
-  @override
   Offset? positionOf() {
     ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
     return view?.positionOf();
@@ -195,6 +165,53 @@ class ScrollerModel extends BoxModel implements IScrollable {
   Size? sizeOf() {
     ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
     return view?.sizeOf();
+  }
+
+  /// scroll +/- pixels or to an item
+  @override
+  void scroll(double? pixels, {required bool animate}) {
+
+    // get the view
+    ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
+
+    // scroll specified number of pixels
+    // from current position
+    view?.scroll(pixels, animate: animate);
+  }
+
+  /// scroll to specified item by id
+  @override
+  void scrollTo(String? id, {required bool animate}) {
+    if (isNullOrEmpty(id)) return;
+    var item = findDescendantOfExactType(null, id: id);
+    if (item?.context != null) {
+      ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
+      view?.scrollTo(item!.context!, animate: animate);
+    }
+  }
+
+  @override
+  Future<bool?> execute(String caller,
+      String propertyOrFunction,
+      List<dynamic> arguments) async {
+
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function) {
+
+    // scroll +/- pixels
+      case "scroll":
+        scroll(toDouble(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        return true;
+
+    // scroll to item by id
+      case "scrollto":
+        scrollTo(toStr(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   @override

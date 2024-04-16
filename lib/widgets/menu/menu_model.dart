@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
@@ -176,34 +177,27 @@ class MenuModel extends ViewableWidgetModel implements IScrollable {
     super.dispose();
   }
 
+  /// scroll +/- pixels or to an item
   @override
-  void scrollUp(int pixels) {
+  void scroll(double? pixels, {required bool animate}) {
+
+    // get the view
     MenuViewState? view = findListenerOfExactType(MenuViewState);
-    if (view == null) return;
 
-    // already at top
-    if (view.controller.offset == 0) return;
-
-    var to = view.controller.offset - pixels;
-    to = (to < 0) ? 0 : to;
-
-    view.controller.jumpTo(to);
+    // scroll specified number of pixels
+    // from current position
+    view?.scroll(pixels, animate: animate);
   }
 
+  /// scroll to specified item by id
   @override
-  void scrollDown(int pixels) {
-    MenuViewState? view = findListenerOfExactType(MenuViewState);
-    if (view == null) return;
-
-    if (view.controller.position.pixels >=
-        view.controller.position.maxScrollExtent) return;
-
-    var to = view.controller.offset + pixels;
-    to = (to > view.controller.position.maxScrollExtent)
-        ? view.controller.position.maxScrollExtent
-        : to;
-
-    view.controller.jumpTo(to);
+  void scrollTo(String? id, {required bool animate}) {
+    if (isNullOrEmpty(id)) return;
+    var item = items.firstWhereOrNull((item) => item.findDescendantOfExactType(null, id: id) != null);
+    if (item?.context != null) {
+      MenuViewState? view = findListenerOfExactType(MenuViewState);
+      view?.scrollTo(item!.context!, animate: animate);
+    }
   }
 
   @override
@@ -251,6 +245,29 @@ class MenuModel extends ViewableWidgetModel implements IScrollable {
       }
     }
   }
+
+  @override
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function) {
+    // scroll +/- pixels
+      case "scroll":
+        scroll(toDouble(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        return true;
+
+    // scroll to item by id
+      case "scrollto":
+        scrollTo(toStr(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        return true;
+    }
+
+    return super.execute(caller, propertyOrFunction, arguments);
+  }
+
 
   @override
   Widget getView({Key? key}) => getReactiveView(MenuView(this));

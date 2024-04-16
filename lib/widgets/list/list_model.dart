@@ -476,85 +476,38 @@ class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
     }
   }
 
+  /// scroll +/- pixels or to an item
   @override
-  Future<bool?> execute(
-      String caller, String propertyOrFunction, List<dynamic> arguments) async {
-    /// setter
-    if (scope == null) return null;
-    var function = propertyOrFunction.toLowerCase().trim();
+  void scroll(double? pixels, {required bool animate}) {
 
-    switch (function) {
-      // selects the item by index
-      case "select":
-        int index = toInt(elementAt(arguments, 0)) ?? -1;
-        if (index >= 0 && index < items.length) {
-          var model = items[index];
-          if (model != null && model.selected == false) onTap(model);
-        }
-        return true;
+    // get the view
+    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
 
-      // de-selects the item by index
-      case "deselect":
-        int index = toInt(elementAt(arguments, 0)) ?? -1;
-        if (index >= 0 && _dataset != null && index < _dataset!.length) {
-          var model = items[index];
-          if (model != null && model.selected == true) onTap(model);
-        }
-        return true;
+    // scroll specified number of pixels
+    // from current position
+    view?.scroll(pixels, animate: animate);
+  }
 
-      // move an item
-      case "move":
-        moveItem(toInt(elementAt(arguments, 0)) ?? 0,
-            toInt(elementAt(arguments, 1)) ?? 0);
-        return true;
+  /// scroll +/- pixels or to an item
+  @override
+  void scrollTo(String? id, {required bool animate}) {
+    // get the view
+    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
+    if (view == null) return;
 
-      // delete an item
-      case "delete":
-        deleteItem(toInt(elementAt(arguments, 0)));
-        return true;
+    // find the item by id
+    var item = items.values.firstWhereOrNull((item) => item.id == id);
+    if (item != null) {
 
-      // add an item
-      case "insert":
-        insertItem(
-            toStr(elementAt(arguments, 0)), toInt(elementAt(arguments, 1)));
-        return true;
+      // get the size of the first item
+      var size = items.isEmpty ? Size.zero : Size(items.values.first.viewWidth ?? 0,items.values.first.viewHeight ?? 0);
 
-      // de-selects the item by index
-      case "clear":
-        onTap(null);
-        return true;
+      // get the item's position in the list
+      int i = items.values.toList().indexOf(item);
+
+      // scroll to that item
+      view.scrollTo(i * size.height, animate: animate);
     }
-    return super.execute(caller, propertyOrFunction, arguments);
-  }
-
-  @override
-  void scrollUp(int pixels) {
-    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
-    if (view == null) return;
-
-    // already at top
-    if (view.controller.offset == 0) return;
-
-    var to = view.controller.offset - pixels;
-    to = (to < 0) ? 0 : to;
-
-    view.controller.jumpTo(to);
-  }
-
-  @override
-  void scrollDown(int pixels) {
-    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
-    if (view == null) return;
-
-    if (view.controller.position.pixels >=
-        view.controller.position.maxScrollExtent) return;
-
-    var to = view.controller.offset + pixels;
-    to = (to > view.controller.position.maxScrollExtent)
-        ? view.controller.position.maxScrollExtent
-        : to;
-
-    view.controller.jumpTo(to);
   }
 
   @override
@@ -674,6 +627,67 @@ class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
       Log().exception(e);
     }
     return true;
+  }
+
+  @override
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function) {
+    // selects the item by index
+      case "select":
+        int index = toInt(elementAt(arguments, 0)) ?? -1;
+        if (index >= 0 && index < items.length) {
+          var model = items[index];
+          if (model != null && model.selected == false) onTap(model);
+        }
+        return true;
+
+    // de-selects the item by index
+      case "deselect":
+        int index = toInt(elementAt(arguments, 0)) ?? -1;
+        if (index >= 0 && _dataset != null && index < _dataset!.length) {
+          var model = items[index];
+          if (model != null && model.selected == true) onTap(model);
+        }
+        return true;
+
+    // move an item
+      case "move":
+        moveItem(toInt(elementAt(arguments, 0)) ?? 0,
+            toInt(elementAt(arguments, 1)) ?? 0);
+        return true;
+
+    // delete an item
+      case "delete":
+        deleteItem(toInt(elementAt(arguments, 0)));
+        return true;
+
+    // add an item
+      case "insert":
+        insertItem(
+            toStr(elementAt(arguments, 0)), toInt(elementAt(arguments, 1)));
+        return true;
+
+    // de-selects the item by index
+      case "clear":
+        onTap(null);
+        return true;
+
+      // scroll +/- pixels
+      case "scroll":
+        scroll(toDouble(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        return true;
+
+      // scroll to item by id
+      case "scrollto":
+        scrollTo(toStr(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   @override

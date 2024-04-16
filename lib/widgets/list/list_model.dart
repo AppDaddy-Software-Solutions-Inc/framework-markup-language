@@ -19,6 +19,14 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
+
+  @override
+  bool get canExpandInfinitelyWide => !hasBoundedWidth && direction == 'horizontal';
+
+  @override
+  bool get canExpandInfinitelyHigh => !hasBoundedHeight && direction != 'vertical';
+
+  // maintains list of items
   final HashMap<int, ListItemModel> items = HashMap<int, ListItemModel>();
 
   // full list of data

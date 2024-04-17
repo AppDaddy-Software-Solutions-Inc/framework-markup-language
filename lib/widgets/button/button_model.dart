@@ -147,7 +147,6 @@ class ButtonModel extends BoxModel {
       dynamic label,
       dynamic buttontype,
       dynamic color,
-      dynamic radius,
       dynamic enabled,
       dynamic width,
       dynamic height,
@@ -172,7 +171,6 @@ class ButtonModel extends BoxModel {
     this.label = label;
     this.color = color;
     this.buttontype = buttontype;
-    this.borderRadius = radius;
     this.enabled = enabled;
     this.children = children;
   }
@@ -204,7 +202,6 @@ class ButtonModel extends BoxModel {
     onenter = Xml.get(node: xml, tag: 'onenter');
     onexit = Xml.get(node: xml, tag: 'onexit');
     buttontype = Xml.get(node: xml, tag: 'type');
-    borderRadius = Xml.get(node: xml, tag: 'radius');
 
     // create text model bound to this label as default
     if (viewableChildren.isEmpty && label != null) {

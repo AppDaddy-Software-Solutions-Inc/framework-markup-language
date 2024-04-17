@@ -390,19 +390,13 @@ class BoxModel extends ViewableWidgetModel {
     // deserialize
     super.deserialize(xml);
 
-    /// Style Attributes
-    gradientStart = Xml.get(node: xml, tag: 'gradientstart') ??
-        Xml.get(node: xml, tag: 'start');
-    gradientEnd = Xml.get(node: xml, tag: 'gradientend') ??
-        Xml.get(node: xml, tag: 'end');
-    blur = Xml.get(node: xml, tag: 'blur');
-
-    /// Set Border Attributes
-    borderRadius = Xml.get(node: xml, tag: 'radius') ?? Xml.get(node: xml, tag: 'borderradius');
-    borderColor = Xml.get(node: xml, tag: 'bordercolor');
-    borderWidth = Xml.get(node: xml, tag: 'borderwidth');
-    borderLabel = Xml.get(node: xml, tag: 'borderlabel');
-    border = Xml.get(node: xml, tag: 'border');
+    /// border attributes
+    border       = Xml.get(node: xml, tag: 'border');
+    borderRadius = Xml.get(node: xml, tag: 'borderradius') ?? Xml.get(node: xml, tag: 'radius');
+    borderColor  = Xml.get(node: xml, tag: 'bordercolor');
+    borderWidth  = Xml.get(node: xml, tag: 'borderwidth');
+    borderLabel  = Xml.get(node: xml, tag: 'borderlabel');
+    // set default border on any border property specified
     if (_border == null &&
         (_borderRadius != null ||
          _borderColor != null ||
@@ -411,12 +405,13 @@ class BoxModel extends ViewableWidgetModel {
       border = "all";
     }
 
+    // shadow attributes
     elevation = Xml.get(node: xml, tag: 'elevation');
     shadowColor = Xml.get(node: xml, tag: 'shadowcolor');
     shadowX = Xml.get(node: xml, tag: 'shadowx');
     shadowY = Xml.get(node: xml, tag: 'shadowy');
 
-    /// Build the layout
+    /// layout
     layout = Xml.get(node: xml, tag: 'layout');
     center = Xml.get(node: xml, tag: 'center');
     wrap = Xml.get(node: xml, tag: 'wrap');
@@ -427,6 +422,13 @@ class BoxModel extends ViewableWidgetModel {
     var padding = Xml.attribute(node: xml, tag: 'pad') ??
         Xml.attribute(node: xml, tag: 'padding');
     this.padding = padding;
+
+    /// other style attributes
+    gradientStart = Xml.get(node: xml, tag: 'gradientstart') ??
+        Xml.get(node: xml, tag: 'start');
+    gradientEnd = Xml.get(node: xml, tag: 'gradientend') ??
+        Xml.get(node: xml, tag: 'end');
+    blur = Xml.get(node: xml, tag: 'blur');
 
     // build drawers
     List<XmlElement>? nodes;

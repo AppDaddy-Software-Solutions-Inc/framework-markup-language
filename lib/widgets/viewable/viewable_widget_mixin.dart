@@ -617,7 +617,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     // The observable is only created in deserialize if its bound
     if (_viewWidthObservable != null) _viewWidthObservable!.set(v);
   }
-
   double? get viewWidth => _viewWidth;
 
   // view height
@@ -631,7 +630,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     // The observable is only created in deserialize if its bound
     if (_viewHeightObservable != null) _viewHeightObservable!.set(v);
   }
-
   double? get viewHeight => _viewHeight;
 
   // view global X position
@@ -1309,7 +1307,7 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
         size.height != viewHeight ||
         offset.dx != viewX ||
         offset.dy != viewY) {
-      viewWidth = size.width;
+      viewWidth  = size.width;
       viewHeight = size.height;
       viewX = offset.dx;
       viewY = offset.dy;

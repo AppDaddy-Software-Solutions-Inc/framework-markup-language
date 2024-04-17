@@ -109,7 +109,7 @@ class ButtonModel extends BoxModel {
   }
 
   @override
-  String get radius => super.radius ?? '20';
+  String get borderRadius => super.borderRadius ?? '20';
 
   /// Type of button
   ///
@@ -172,7 +172,7 @@ class ButtonModel extends BoxModel {
     this.label = label;
     this.color = color;
     this.buttontype = buttontype;
-    this.radius = radius;
+    this.borderRadius = radius;
     this.enabled = enabled;
     this.children = children;
   }
@@ -204,7 +204,7 @@ class ButtonModel extends BoxModel {
     onenter = Xml.get(node: xml, tag: 'onenter');
     onexit = Xml.get(node: xml, tag: 'onexit');
     buttontype = Xml.get(node: xml, tag: 'type');
-    radius = Xml.get(node: xml, tag: 'radius');
+    borderRadius = Xml.get(node: xml, tag: 'radius');
 
     // create text model bound to this label as default
     if (viewableChildren.isEmpty && label != null) {

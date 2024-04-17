@@ -191,7 +191,6 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
     clear = Xml.get(node: xml, tag: 'clear');
     size = Xml.get(node: xml, tag: 'size');
     icon = Xml.get(node: xml, tag: 'icon');
-    padding = Xml.get(node: xml, tag: 'padding');
   }
 
   @override

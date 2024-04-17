@@ -268,12 +268,12 @@ class MenuModel extends ViewableWidgetModel implements IScrollable {
     switch (function) {
     // scroll +/- pixels
       case "scroll":
-        scroll(toDouble(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        scroll(toDouble(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? true);
         return true;
 
     // scroll to item by id
       case "scrollto":
-        scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 1)) ?? true);
         return true;
     }
 

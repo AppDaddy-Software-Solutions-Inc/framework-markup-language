@@ -186,13 +186,13 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
 
   EdgeInsets _getTextPadding() {
     // set padding
-    double paddingTop = 0; //widget.model.paddingTop ?? 15;
-    double paddingBottom = widget.model.paddingBottom ?? 15;
-    double paddingLeft = widget.model.paddingLeft ?? 10;
-    double paddingRight = widget.model.paddingRight ?? 10;
+    double paddingTop = 0;
+    double paddingBottom = widget.model.dense ? 0 : 15;
+    double paddingLeft = widget.model.dense ? 0 : 10;
+    double paddingRight = widget.model.dense ? 0 : 10;
     if (widget.model.border == "bottom" || widget.model.border == "underline") {
-      paddingTop = widget.model.paddingTop ?? 3;
-      paddingBottom = widget.model.paddingBottom ?? 14;
+      paddingTop = widget.model.dense ? 0 : 3;
+      paddingBottom = widget.model.dense ? 0 : 14;
     }
     var padding = EdgeInsets.only(
         left: paddingLeft,

@@ -87,50 +87,48 @@ class _BoxViewState extends WidgetState<BoxView> {
   late ThemeData theme;
 
   Border? _getBorder() {
-    Border? border;
-    bool hasBorder =
-        widget.model.border != null && widget.model.border != 'none';
-    if (hasBorder) {
-      var width = widget.model.borderWidth ?? 1;
-      if (widget.model.border == 'all') {
-        border = Border.all(
-            color:
-                widget.model.borderColor ?? theme.colorScheme.onInverseSurface,
-            width: width);
-      } else {
-        border = Border(
-          top: (widget.model.border == 'top' ||
-                  widget.model.border == 'vertical')
-              ? BorderSide(
-                  width: width,
-                  color: widget.model.borderColor ??
-                      theme.colorScheme.onInverseSurface)
-              : const BorderSide(width: 0, color: Colors.transparent),
-          bottom: (widget.model.border == 'bottom' ||
-                  widget.model.border == 'vertical')
-              ? BorderSide(
-                  width: width,
-                  color: widget.model.borderColor ??
-                      theme.colorScheme.onInverseSurface)
-              : const BorderSide(width: 0, color: Colors.transparent),
-          left: (widget.model.border == 'left' ||
-                  widget.model.border == 'horizontal')
-              ? BorderSide(
-                  width: width,
-                  color: widget.model.borderColor ??
-                      theme.colorScheme.onInverseSurface)
-              : const BorderSide(width: 0, color: Colors.transparent),
-          right: (widget.model.border == 'right' ||
-                  widget.model.border == 'horizontal')
-              ? BorderSide(
-                  width: width,
-                  color: widget.model.borderColor ??
-                      theme.colorScheme.onInverseSurface)
-              : const BorderSide(width: 0, color: Colors.transparent),
-        );
-      }
+
+    // no border
+    if (widget.model.border == 'none') return null;
+
+    var width = widget.model.borderWidth;
+    var color = widget.model.borderColor ?? theme.colorScheme.onInverseSurface;
+
+    // simple border on all sides
+    if (widget.model.border == 'all') {
+        return Border.all(color: color, width: width);
     }
-    return border;
+
+    var defaultBorder = const BorderSide(width: 1, color: Colors.transparent);
+
+    // top border
+    var top = (widget.model.border == 'top' ||
+        widget.model.border == 'vertical')
+        ? BorderSide(
+        width: width,
+        color: color)
+        : defaultBorder;
+
+    // bottom border
+    var bottom = (widget.model.border == 'bottom' ||
+        widget.model.border == 'vertical')
+        ? BorderSide(width: width, color: color)
+        : defaultBorder;
+
+    // left border
+    var left =  (widget.model.border == 'left' ||
+        widget.model.border == 'horizontal')
+        ? BorderSide(width: width, color: color)
+        : defaultBorder;
+
+    // right border
+    var right = (widget.model.border == 'right' ||
+        widget.model.border == 'horizontal')
+        ? BorderSide(width: width, color: color)
+        : defaultBorder;
+
+    // return border
+    return Border(top: top, bottom: bottom, left: left, right: right);
   }
 
   BoxShadow? _getShadow() {
@@ -276,12 +274,11 @@ class _BoxViewState extends WidgetState<BoxView> {
   }
 
   Widget _buildOuterBox(
-      Widget view, BorderRadius radius, BoxConstraints constraints) {
+      Widget view, BorderRadius radius) {
     Border? border = _getBorder();
     if (border == null) return view;
 
-    var hasLabel =
-        (widget.model.borderLabel != null && widget.model.border == "all");
+    var hasLabel = widget.model.border == "all";
     if (hasLabel) {
       var lbl = TextModel(null, null,
               value: widget.model.borderLabel, overflow: "ellipsis")
@@ -295,8 +292,7 @@ class _BoxViewState extends WidgetState<BoxView> {
         child: view);
   }
 
-  Widget _buildInnerContent(
-      BoxConstraints constraints, WidgetAlignment alignment) {
+  Widget _buildInnerContent(WidgetAlignment alignment) {
     /// Build the Layout
     var children = widget.children ?? widget.model.inflate();
 
@@ -396,7 +392,7 @@ class _BoxViewState extends WidgetState<BoxView> {
         widget.model.center, widget.model.halign, widget.model.valign);
 
     // build the inner content
-    Widget view = _buildInnerContent(constraints, alignment);
+    Widget view = _buildInnerContent(alignment);
 
     // add padding around inner content
     view = addPadding(view);
@@ -419,8 +415,7 @@ class _BoxViewState extends WidgetState<BoxView> {
         view, constraints, decoration, alignment.aligned, Clip.antiAlias);
 
     // build the outer border box
-    view = _buildOuterBox(view, radius, constraints);
-
+    view = _buildOuterBox(view, radius);
 
     // set the view opacity
     if (widget.model.opacity != null) view = _getFadedView(view);

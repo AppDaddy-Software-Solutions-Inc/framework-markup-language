@@ -349,7 +349,7 @@ class GridModel extends BoxModel implements IScrollable {
 
   /// scroll +/- pixels or to an item
   @override
-  void scroll(double? pixels, {bool animate = false}) {
+  void scroll(double? pixels, {bool animate = true}) {
 
     // get the view
     GridViewState? view = findListenerOfExactType(GridViewState);
@@ -486,12 +486,12 @@ class GridModel extends BoxModel implements IScrollable {
 
     // scroll +/- pixels
       case "scroll":
-        scroll(toDouble(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        scroll(toDouble(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? true);
         return true;
 
     // scroll to item by id
       case "scrollto":
-        scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 2)) ?? false);
+        scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 2)) ?? true);
         return true;
 
     // de-selects the item by index

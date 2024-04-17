@@ -20,17 +20,25 @@ import 'package:fml/helpers/helpers.dart';
 
 class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
 
+  // indicates if the widget expands infinitely in
+  // it's horizontal axis if not constrained
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth && direction == 'horizontal';
 
+  // indicates if the widget expands infinitely in
+  // it's vertical axis if not constrained
   @override
   bool get canExpandInfinitelyHigh => !hasBoundedHeight && direction != 'horizontal';
 
+  // indicates if the widget will grow in
+  // its horizontal axis
   @override
-  bool get expandHorizontally => direction == 'horizontal';
+  bool get expandHorizontally => !hasBoundedWidth && direction == 'horizontal';
 
+  // indicates if the widget will grow in
+  // its vertical axis
   @override
-  bool get expandVertically => direction != 'horizontal';
+  bool get expandVertically => !hasBoundedHeight && direction != 'horizontal';
 
   // maintains list of items
   final HashMap<int, ListItemModel> items = HashMap<int, ListItemModel>();
@@ -39,7 +47,25 @@ class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
   // pointing to data broker data
   Data? _dataset;
 
-  // data sourced prototype
+  // item extent
+  double get itemExtent {
+   if (items.isEmpty) return 0;
+   switch (direction) {
+     case 'horizontal':
+       return items.values.first.viewWidth ?? items.values.first.width ?? 0;
+     case 'vertical':
+     default:
+       return items.values.first.viewHeight ?? items.values.first.height ?? 0;
+   }
+  }
+
+  // max extent - items * item extent
+  double get maxExtent {
+    int i = isNullOrEmpty(datasource) ? items.length : _dataset?.length ?? 0;
+    return itemExtent * i;
+  }
+
+  // the list item prototype
   XmlElement? prototype;
 
   // returns the number of records in the dataset
@@ -47,30 +73,6 @@ class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
 
   // IDataSource
   IDataSource? myDataSource;
-
-  BooleanObservable? _scrollShadows;
-  set scrollShadows(dynamic v) {
-    if (_scrollShadows != null) {
-      _scrollShadows!.set(v);
-    } else if (v != null) {
-      _scrollShadows = BooleanObservable(Binding.toKey(id, 'scrollshadows'), v,
-          scope: scope);
-    }
-  }
-
-  bool get scrollShadows => _scrollShadows?.get() ?? false;
-
-  BooleanObservable? _scrollButtons;
-  set scrollButtons(dynamic v) {
-    if (_scrollButtons != null) {
-      _scrollButtons!.set(v);
-    } else if (v != null) {
-      _scrollButtons = BooleanObservable(Binding.toKey(id, 'scrollbuttons'), v,
-          scope: scope);
-    }
-  }
-
-  bool get scrollButtons => _scrollButtons?.get() ?? false;
 
   /// Post tells the form whether or not to include the field in the posting body. If post is null, visible determines post.
   BooleanObservable? _post;
@@ -257,7 +259,6 @@ class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
       {dynamic direction,
       dynamic reverse,
       dynamic allowDrag,
-      dynamic scrollShadows,
       dynamic onpulldown}) {
     // instantiate busy observable
     busy = false;
@@ -266,9 +267,6 @@ class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
     this.reverse = reverse;
     this.allowDrag = allowDrag;
     this.onpulldown = onpulldown;
-    this.scrollShadows = scrollShadows;
-    scrollButtons = scrollButtons;
-    collapsed = collapsed;
     moreUp = false;
     moreDown = false;
     moreLeft = false;
@@ -297,8 +295,6 @@ class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
     // properties
     direction = Xml.get(node: xml, tag: 'direction');
     allowDrag = Xml.get(node: xml, tag: 'allowDrag');
-    scrollShadows = Xml.get(node: xml, tag: 'scrollshadows');
-    scrollButtons = Xml.get(node: xml, tag: 'scrollbuttons');
     collapsed = Xml.get(node: xml, tag: 'collapsed');
     onpulldown = Xml.get(node: xml, tag: 'onpulldown');
     reverse = Xml.get(node: xml, tag: 'reverse');
@@ -317,7 +313,9 @@ class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
         findChildrenOfExactType(ListItemModel).cast<ListItemModel>();
 
     // set prototype
-    if ((!isNullOrEmpty(datasource)) && (items.isNotEmpty)) {
+    if (!isNullOrEmpty(datasource) && items.isNotEmpty) {
+
+      // set prototype
       prototype = prototypeOf(items.first.element);
       items.removeAt(0);
     }
@@ -492,24 +490,47 @@ class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
   @override
   void scrollTo(String? id, String? value, {bool animate = false}) {
 
+    if (id == null) return;
+
+    // get the view
+    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
+
+    // scroll to top
+    if (id.trim().toLowerCase() == 'top') {
+      view?.scrollTo(0, animate: false);
+      return;
+    }
+
+    // scroll to top
+    if (id.trim().toLowerCase() == 'bottom') {
+      view?.scrollTo(double.maxFinite, animate: false);
+      return;
+    }
+
     // build out the items
+    // this may lag the system if the list is large
+    if (items.length != _dataset?.length) {
+      for (int i = 0; i < _dataset!.length; i++) {
+        if (!items.containsKey(i)) {
+          var item = getItemModel(i);
+          if (item != null) {
+            items[i] = item;
+          }
+        }
+      }
+    }
 
     // find the first item containing a child with the specified
     // id and matching value
     for (var item in items.values) {
       var child = item.descendants?.toList().firstWhereOrNull((child) => child.id == id && child.value == (value ?? child.value));
       if (child != null) {
-        // get the size of the first item
-        var size = Size(item.viewWidth ?? 0,item.viewHeight ?? 0);
 
         // get the item's position in the list
         int i = items.values.toList().indexOf(item);
 
-        // get the view
-        ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
-
         // scroll to that item
-        view?.scrollTo((i * size.height) + 100, animate: animate);
+        view?.scrollTo(i * itemExtent, animate: animate);
       }
     }
   }
@@ -683,12 +704,12 @@ class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
 
       // scroll +/- pixels
       case "scroll":
-        scroll(toDouble(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        scroll(toDouble(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? true);
         return true;
 
       // scroll to item by id
       case "scrollto":
-        scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 2)) ?? false);
+        scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 2)) ?? true);
         return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);

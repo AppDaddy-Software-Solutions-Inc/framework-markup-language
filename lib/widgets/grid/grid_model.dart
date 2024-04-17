@@ -336,16 +336,50 @@ class GridModel extends BoxModel implements IScrollable {
     return true;
   }
 
-  void sort(String? field, String? type, bool? ascending) async {
-    if (_dataset == null || _dataset!.isEmpty || field == null) return;
-
+  // sort the list
+  Future<bool> _sort(String? field, String type, bool ascending) async {
+    if (_dataset == null || _dataset!.isEmpty || field == null) return true;
     busy = true;
-
     sort_transform.Sort sort = sort_transform.Sort(null,
         field: field, type: type, ascending: ascending);
     await sort.apply(_dataset);
-
     busy = false;
+    return true;
+  }
+
+  /// scroll +/- pixels or to an item
+  @override
+  void scroll(double? pixels, {bool animate = false}) {
+
+    // get the view
+    GridViewState? view = findListenerOfExactType(GridViewState);
+
+    // scroll specified number of pixels
+    // from current position
+    view?.scroll(pixels, animate: animate);
+  }
+
+  /// scroll to specified item by id and value
+  @override
+  void scrollTo(String? id, String? value, {bool animate = false}) {
+    if (isNullOrEmpty(id)) return;
+
+    // find the first item containing a child with the specified
+    // id and matching value
+    BuildContext? context;
+    for (var item in items.values) {
+      var child = item.descendants?.toList().firstWhereOrNull((child) => child.id == id && child.value == (value ?? child.value));
+      if (child != null) {
+        context = item.context;
+        break;
+      }
+    }
+
+    // context defined?
+    if (context != null) {
+      GridViewState? view = findListenerOfExactType(GridViewState);
+      view?.scrollTo(context, animate: animate);
+    }
   }
 
   // export to excel
@@ -375,76 +409,6 @@ class GridModel extends BoxModel implements IScrollable {
 
   Future<void> onPull(BuildContext context) async {
     await EventHandler(this).execute(_onpulldown);
-  }
-
-  @override
-  Future<bool?> execute(
-      String caller, String propertyOrFunction, List<dynamic> arguments) async {
-    /// setter
-    if (scope == null) return null;
-    var function = propertyOrFunction.toLowerCase().trim();
-
-    switch (function) {
-      // export the data
-      case "export":
-        await export();
-        return true;
-
-      // selects the item by index
-      case "select":
-        int index = toInt(elementAt(arguments, 0)) ?? -1;
-        if (index >= 0 && index < items.length) {
-          var model = items[index];
-          if (model != null && model.selected == false) onTap(model);
-        }
-        return true;
-
-      // de-selects the item by index
-      case "deselect":
-        int index = toInt(elementAt(arguments, 0)) ?? -1;
-        if (index >= 0 && _dataset != null && index < _dataset!.length) {
-          var model = items[index];
-          if (model != null && model.selected == true) onTap(model);
-        }
-        return true;
-
-      // de-selects the item by index
-      case "clear":
-        onTap(null);
-        return true;
-    }
-
-    return super.execute(caller, propertyOrFunction, arguments);
-  }
-
-  @override
-  void scrollUp(int pixels) {
-    GridViewState? view = findListenerOfExactType(GridViewState);
-    if (view == null) return;
-
-    // already at top
-    if (view.controller.offset == 0) return;
-
-    var to = view.controller.offset - pixels;
-    to = (to < 0) ? 0 : to;
-
-    view.controller.jumpTo(to);
-  }
-
-  @override
-  void scrollDown(int pixels) {
-    GridViewState? view = findListenerOfExactType(GridViewState);
-    if (view == null) return;
-
-    if (view.controller.position.pixels >=
-        view.controller.position.maxScrollExtent) return;
-
-    var to = view.controller.offset + pixels;
-    to = (to > view.controller.position.maxScrollExtent)
-        ? view.controller.position.maxScrollExtent
-        : to;
-
-    view.controller.jumpTo(to);
   }
 
   @override
@@ -488,6 +452,64 @@ class GridModel extends BoxModel implements IScrollable {
         notifyListeners('list', items);
       }
     }
+  }
+
+  @override
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function) {
+    // export the data
+      case "export":
+        await export();
+        return true;
+
+    // selects the item by index
+      case "select":
+        int index = toInt(elementAt(arguments, 0)) ?? -1;
+        if (index >= 0 && index < items.length) {
+          var model = items[index];
+          if (model != null && model.selected == false) onTap(model);
+        }
+        return true;
+
+    // sort the grid
+      case "sort":
+        var field = elementAt(arguments, 0);
+        var type  = elementAt(arguments, 1) ?? 'string';
+        var ascending = toBool(elementAt(arguments, 2)) ?? true;
+        _sort(field, type, ascending);
+        return true;
+
+    // scroll +/- pixels
+      case "scroll":
+        scroll(toDouble(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        return true;
+
+    // scroll to item by id
+      case "scrollto":
+        scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 2)) ?? false);
+        return true;
+
+    // de-selects the item by index
+      case "deselect":
+        int index = toInt(elementAt(arguments, 0)) ?? -1;
+        if (index >= 0 && _dataset != null && index < _dataset!.length) {
+          var model = items[index];
+          if (model != null && model.selected == true) onTap(model);
+        }
+        return true;
+
+    // de-selects the item by index
+      case "clear":
+        onTap(null);
+        return true;
+    }
+
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   @override

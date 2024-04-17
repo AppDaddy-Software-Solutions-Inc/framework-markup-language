@@ -1,13 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/event/manager.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/scroller/scroller_shadow_view.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/event/event.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 /// Scroll View
@@ -38,50 +37,67 @@ class ScrollerViewState extends WidgetState<ScrollerView> {
   }
 
   @override
-  didChangeDependencies() {
-    // register event listeners
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(ScrollerView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (oldWidget.model != widget.model) {
-      // remove old event listeners
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.scrollto, onScrollTo);
-
-      // register new event listeners
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
-    }
-  }
-
-  @override
   void dispose() {
-    // remove event listeners
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.scrollto, onScrollTo);
     controller.dispose();
     super.dispose();
   }
 
-  /// Takes an event (onscroll) and uses the id to scroll to that widget
-  onScrollTo(Event event) {
-    // BuildContext context;
-    if (event.parameters!.containsKey('id')) {
-      String? id = event.parameters!['id'];
-      var child = widget.model.findDescendantOfExactType(null, id: id);
+  /// scrolls the widget with the specified context into view
+  scrollTo(BuildContext context, {required bool animate}) {
+    Scrollable.ensureVisible(context, duration: animate ? const Duration(seconds: 1) : Duration.zero, alignment: 0.2);
+  }
 
-      // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
-      if ((child != null) && (child.context != null)) {
-        event.handled = true;
-        Scrollable.ensureVisible(child.context,
-            duration: const Duration(seconds: 1), alignment: 0.2);
+  /// moves the scroller by the specified pixels in the specified direction
+  void scroll(double? pixels, {required bool animate})  {
+
+    try {
+      // check if pixels is null
+      pixels ??= 0;
+
+      // scroll up/left
+      if (pixels < 0) {
+
+        // already at the start of the list
+        if (controller.offset == 0) return;
+
+        // calculate pixels
+        pixels = controller.offset - pixels.abs();
+        if (pixels < 0) pixels = 0;
+
+        if (animate) {
+          controller.animateTo(pixels,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut);
+        }
+        else {
+          controller.jumpTo(pixels);
+        }
+        return;
       }
+
+      // scroll down/right
+      if (pixels > 0) {
+
+        // already at the end of the list
+        if (controller.position.maxScrollExtent == controller.offset) return;
+
+        // calculate pixels
+        pixels = controller.offset + pixels;
+        if (pixels > controller.position.maxScrollExtent) pixels = controller.position.maxScrollExtent;
+
+        if (animate) {
+          controller.animateTo(pixels,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut);
+        }
+        else {
+          controller.jumpTo(pixels);
+        }
+        return;
+      }
+    }
+    catch (e) {
+      Log().exception(e, caller: 'scroller.View');
     }
   }
 

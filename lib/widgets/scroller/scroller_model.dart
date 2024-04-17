@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
@@ -156,36 +157,6 @@ class ScrollerModel extends BoxModel implements IScrollable {
   }
 
   @override
-  void scrollUp(int pixels) {
-    ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
-    if (view == null) return;
-
-    // already at top
-    if (view.controller.offset == 0) return;
-
-    var to = view.controller.offset - pixels;
-    to = (to < 0) ? 0 : to;
-
-    view.controller.jumpTo(to);
-  }
-
-  @override
-  void scrollDown(int pixels) {
-    ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
-    if (view == null) return;
-
-    if (view.controller.position.pixels >=
-        view.controller.position.maxScrollExtent) return;
-
-    var to = view.controller.offset + pixels;
-    to = (to > view.controller.position.maxScrollExtent)
-        ? view.controller.position.maxScrollExtent
-        : to;
-
-    view.controller.jumpTo(to);
-  }
-
-  @override
   Offset? positionOf() {
     ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
     return view?.positionOf();
@@ -195,6 +166,62 @@ class ScrollerModel extends BoxModel implements IScrollable {
   Size? sizeOf() {
     ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
     return view?.sizeOf();
+  }
+
+  /// scroll +/- pixels or to an item
+  @override
+  void scroll(double? pixels, {bool animate = false}) {
+
+    // get the view
+    ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
+
+    // scroll specified number of pixels
+    // from current position
+    view?.scroll(pixels, animate: animate);
+  }
+
+  /// scroll to specified item by id and value
+  @override
+  void scrollTo(String? id, String? value, {bool animate = false}) {
+    if (isNullOrEmpty(id)) return;
+
+    // find the first child with the specified
+    // id and matching value
+    BuildContext? context;
+    var child = descendants?.toList().firstWhereOrNull((child) => child.id == id && child.value == (value ?? child.value));
+    if (child != null) {
+      context = child.context;
+    }
+
+    // context defined?
+    if (context != null) {
+      ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
+      view?.scrollTo(context, animate: animate);
+    }
+  }
+
+  @override
+  Future<bool?> execute(String caller,
+      String propertyOrFunction,
+      List<dynamic> arguments) async {
+
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function) {
+
+    // scroll +/- pixels
+      case "scroll":
+        scroll(toDouble(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        return true;
+
+    // scroll to item by id
+      case "scrollto":
+        scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 2)) ?? false);
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   @override

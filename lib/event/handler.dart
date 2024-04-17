@@ -176,8 +176,6 @@ class EventHandler extends Eval {
       functions[fromEnum(EventTypes.refresh)] = _handleEventRefresh;
       functions[fromEnum(EventTypes.reset)] = _handleEventReset;
       functions[fromEnum(EventTypes.saveas)] = _handleEventSaveAs;
-      functions[fromEnum(EventTypes.scroll)] = _handleEventScroll;
-      functions[fromEnum(EventTypes.scrollto)] = _handleEventScrollTo;
       functions[fromEnum(EventTypes.set)] = _handleEventSet;
       functions[fromEnum(EventTypes.showdebug)] = _handleEventShowDebug;
       functions[fromEnum(EventTypes.showlog)] = _handleEventShowLog;
@@ -694,16 +692,6 @@ class EventHandler extends Eval {
     return true;
   }
 
-  /// Broadcasts the scroll event to be handled by individual widgets
-  Future<bool> _handleEventScroll([dynamic direction, dynamic pixels]) async {
-    Map<String, String?> parameters = <String, String?>{};
-    parameters['direction'] = toStr(direction);
-    parameters['pixels'] = toStr(pixels);
-    EventManager.of(model)?.broadcastEvent(
-        model, Event(EventTypes.scroll, parameters: parameters));
-    return true;
-  }
-
   /// Broadcasts the animate event to be handled by individual widgets
   Future<bool> _handleEventAnimate([dynamic id, dynamic enabled]) async {
     Map<String, String?> parameters = <String, String?>{};
@@ -721,15 +709,6 @@ class EventHandler extends Eval {
     parameters['enabled'] = toStr(enabled);
     EventManager.of(model)?.broadcastEvent(
         model, Event(EventTypes.reset, parameters: parameters));
-    return true;
-  }
-
-  /// Broadcasts the scrollto event to be handled by individual widgets
-  Future<bool> _handleEventScrollTo([dynamic id]) async {
-    Map<String, String?> parameters = <String, String?>{};
-    parameters['id'] = toStr(id);
-    EventManager.of(model)?.broadcastEvent(
-        model, Event(EventTypes.scrollto, parameters: parameters));
     return true;
   }
 

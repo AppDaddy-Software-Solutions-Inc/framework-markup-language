@@ -121,18 +121,18 @@ class _DraggableViewState extends WidgetState<DraggableView> {
       double topY = position.dy;
       double bottomY = topY + size.height;
 
-      const detectedRange = 100;
-      const pixels = 3;
+      const detectedRange = 100.0;
+      const pixels = 3.0;
       if (event.position.dy < topY + detectedRange) {
-        scroller.scrollUp(pixels);
+        scroller.scroll(-1 * pixels, animate: true);
         autoscroll = Timer.periodic(const Duration(milliseconds: 100),
-            (_) => scroller.scrollUp(detectedRange));
+            (_) => scroller.scroll(-1 * detectedRange, animate: true));
       }
 
       if (event.position.dy > bottomY - detectedRange) {
-        scroller.scrollDown(pixels);
+        scroller.scroll(pixels, animate: true);
         autoscroll = Timer.periodic(const Duration(milliseconds: 100),
-            (_) => scroller.scrollDown(detectedRange));
+            (_) => scroller.scroll(detectedRange, animate: true));
       }
     }
   }

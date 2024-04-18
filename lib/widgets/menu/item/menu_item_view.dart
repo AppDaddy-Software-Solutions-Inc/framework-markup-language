@@ -4,11 +4,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/helpers/color.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 
-class MenuItemView extends StatefulWidget implements IWidgetView {
+class MenuItemView extends StatefulWidget implements ViewableWidgetView {
   @override
   final MenuItemModel model;
 
@@ -22,7 +22,7 @@ class MenuItemView extends StatefulWidget implements IWidgetView {
   State<MenuItemView> createState() => _MenuItemViewState();
 }
 
-class _MenuItemViewState extends WidgetState<MenuItemView> {
+class _MenuItemViewState extends ViewableWidgetState<MenuItemView> {
   bool isHovered = false;
 
   @override
@@ -225,6 +225,4 @@ class _MenuItemViewState extends WidgetState<MenuItemView> {
     WidgetModel.unfocus();
     widget.model.onClick();
   }
-
-  Widget? getView() => throw ("getView() Not Implemented");
 }

@@ -5,11 +5,11 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/scroller/scroller_behavior.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 
-class MenuView extends StatefulWidget implements IWidgetView {
+class MenuView extends StatefulWidget implements ViewableWidgetView {
   @override
   final MenuModel model;
   const MenuView(this.model, {super.key});
@@ -18,7 +18,7 @@ class MenuView extends StatefulWidget implements IWidgetView {
   State<MenuView> createState() => MenuViewState();
 }
 
-class MenuViewState extends WidgetState<MenuView>  {
+class MenuViewState extends ViewableWidgetState<MenuView>  {
   Widget? busy;
   final ScrollController controller = ScrollController();
 

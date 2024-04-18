@@ -7,8 +7,8 @@ import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 import 'dart:ui' as ui;
 import 'package:fml/datasources/file/file.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
@@ -27,7 +27,7 @@ import 'package:fml/platform/platform.vm.dart'
 
 View getView(model) => View(model);
 
-class View extends StatefulWidget implements IWidgetView, StreamView {
+class View extends StatefulWidget implements ViewableWidgetView, StreamView {
   @override
   final CameraModel model;
 
@@ -37,7 +37,7 @@ class View extends StatefulWidget implements IWidgetView, StreamView {
   ViewState createState() => ViewState();
 }
 
-class ViewState extends WidgetState<View> {
+class ViewState extends ViewableWidgetState<View> {
   List<dynamic> cameras = [];
   int selectedCamera = 0;
 

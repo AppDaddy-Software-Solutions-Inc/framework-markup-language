@@ -9,13 +9,13 @@ import 'package:fml/widgets/text/text_view.dart';
 import 'package:fml/widgets/video/ivideo_player.dart';
 import 'package:fml/widgets/video/video_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_player_win/video_player_win_plugin.dart';
 
-class VideoView extends StatefulWidget implements IWidgetView {
+class VideoView extends StatefulWidget implements ViewableWidgetView {
   @override
   final VideoModel model;
 
@@ -25,7 +25,7 @@ class VideoView extends StatefulWidget implements IWidgetView {
   VideoViewState createState() => VideoViewState();
 }
 
-class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer {
+class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPlayer {
   VideoPlayerController? _controller;
   IconView? playButton;
   IconModel playButtonModel =

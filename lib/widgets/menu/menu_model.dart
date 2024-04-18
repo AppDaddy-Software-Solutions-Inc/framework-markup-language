@@ -6,6 +6,7 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
+import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
@@ -291,10 +292,23 @@ class MenuModel extends ViewableWidgetModel implements IScrollable {
         scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 1)) ?? true);
         return true;
     }
-
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
+  /// this routine creates views for all
+  /// of its children
+  @override
+  List<Widget> inflate() {
+    // process children
+    List<Widget> views = [];
+    for (var model in viewableChildren) {
+      if (model is! ModalModel) {
+        var view = model.getView();
+        if (view != null) views.add(view);
+      }
+    }
+    return views;
+  }
 
   @override
   Widget getView({Key? key}) => getReactiveView(MenuView(this));

@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/iframe/inline_frame_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'inline_frame_view.dart' as widget_view;
 import 'package:fml/helpers/helpers.dart';
@@ -12,7 +12,7 @@ import 'package:fml/helpers/helpers.dart';
 InlineFrameView getView(model) => InlineFrameView(model);
 
 class InlineFrameView extends StatefulWidget
-    implements widget_view.View, IWidgetView {
+    implements widget_view.View, ViewableWidgetView {
   @override
   final InlineFrameModel model;
 
@@ -22,7 +22,7 @@ class InlineFrameView extends StatefulWidget
   State<InlineFrameView> createState() => _InlineFrameViewState();
 }
 
-class _InlineFrameViewState extends WidgetState<InlineFrameView> {
+class _InlineFrameViewState extends ViewableWidgetState<InlineFrameView> {
   WebViewWidget? iframe;
   late WebViewController controller;
 

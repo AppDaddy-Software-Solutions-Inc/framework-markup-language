@@ -2,11 +2,11 @@
 import 'package:fml/fml.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/tooltip/v1/tooltip_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 
-class TooltipView extends StatefulWidget implements IWidgetView {
+class TooltipView extends StatefulWidget implements ViewableWidgetView {
   final List<Widget> children = [];
   @override
   final TooltipModel model;
@@ -16,7 +16,7 @@ class TooltipView extends StatefulWidget implements IWidgetView {
   State<TooltipView> createState() => _TooltipViewState();
 }
 
-class _TooltipViewState extends WidgetState<TooltipView> {
+class _TooltipViewState extends ViewableWidgetState<TooltipView> {
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it

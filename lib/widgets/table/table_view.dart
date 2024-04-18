@@ -15,17 +15,17 @@ import 'package:fml/widgets/table/table_footer_cell_model.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
 import 'package:fml/widgets/table/table_header_group_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 import 'package:pluto_grid_plus_export/pluto_grid_plus_export.dart'
 as pluto_grid_export;
 
 enum Toggle { on, off }
 
-class TableView extends StatefulWidget implements IWidgetView {
+class TableView extends StatefulWidget implements ViewableWidgetView {
   @override
   final TableModel model;
   TableView(this.model) : super(key: ObjectKey(model));
@@ -34,7 +34,7 @@ class TableView extends StatefulWidget implements IWidgetView {
   State<TableView> createState() => TableViewState();
 }
 
-class TableViewState extends WidgetState<TableView> {
+class TableViewState extends ViewableWidgetState<TableView> {
   Widget? busy;
 
   // indicates if grid is paged or not

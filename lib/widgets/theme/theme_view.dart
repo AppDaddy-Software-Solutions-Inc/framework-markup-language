@@ -1,11 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/theme/theme.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 
-class ThemeView extends StatefulWidget implements IWidgetView {
+class ThemeView extends StatefulWidget implements ViewableWidgetView {
   @override
   final ThemeModel model;
   final List<Widget> children = [];
@@ -16,7 +16,7 @@ class ThemeView extends StatefulWidget implements IWidgetView {
   State<ThemeView> createState() => _ThemeViewState();
 }
 
-class _ThemeViewState extends WidgetState<ThemeView> {
+class _ThemeViewState extends ViewableWidgetState<ThemeView> {
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it

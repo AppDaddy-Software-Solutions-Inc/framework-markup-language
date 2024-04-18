@@ -8,10 +8,10 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/modal/modal_manager_view.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 
-class ModalView extends StatefulWidget implements IWidgetView {
+class ModalView extends StatefulWidget implements ViewableWidgetView {
   @override
   final ModalModel model;
 
@@ -21,7 +21,7 @@ class ModalView extends StatefulWidget implements IWidgetView {
   State<ModalView> createState() => ModalViewState();
 }
 
-class ModalViewState extends WidgetState<ModalView> {
+class ModalViewState extends ViewableWidgetState<ModalView> {
   static double headerSize = 30;
   static double headerIconSize = headerSize - 10;
   static double headerIconDividerSize = 5;

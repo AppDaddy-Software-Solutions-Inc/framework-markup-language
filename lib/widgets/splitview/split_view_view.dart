@@ -6,10 +6,10 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/splitview/split_view_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 
-class SplitViewView extends StatefulWidget implements IWidgetView {
+class SplitViewView extends StatefulWidget implements ViewableWidgetView {
 
   @override
   final SplitViewModel model;
@@ -22,7 +22,7 @@ class SplitViewView extends StatefulWidget implements IWidgetView {
   State<SplitViewView> createState() => SplitViewViewState();
 }
 
-class SplitViewViewState extends WidgetState<SplitViewView> {
+class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
   ThemeData? theme;
 
   BoxConstraints constraints = const BoxConstraints();
@@ -158,12 +158,5 @@ class SplitViewViewState extends WidgetState<SplitViewView> {
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    theme = Theme.of(context);
-
-    this.constraints = constraints;
-    return BoxView(widget.model);
-  }
+  Widget build(BuildContext context) => BoxView(widget.model);
 }

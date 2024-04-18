@@ -2,10 +2,10 @@
 import 'package:fml/widgets/popover/item/popover_item_model.dart';
 import 'package:fml/widgets/popover/popover_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 
-class PopoverView extends StatefulWidget implements IWidgetView {
+class PopoverView extends StatefulWidget implements ViewableWidgetView {
   @override
   final PopoverModel model;
   final Widget? child;
@@ -16,7 +16,7 @@ class PopoverView extends StatefulWidget implements IWidgetView {
   State<PopoverView> createState() => _PopoverViewState();
 }
 
-class _PopoverViewState extends WidgetState<PopoverView> {
+class _PopoverViewState extends ViewableWidgetState<PopoverView> {
   Widget _buildPopover() {
     var color = Theme.of(context).colorScheme.onSecondaryContainer;
 

@@ -3,14 +3,14 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
-abstract class WidgetState<T extends StatefulWidget> extends State<T>
+abstract class ViewableWidgetState<T extends StatefulWidget> extends State<T>
     implements IModelListener {
   ViewableWidgetMixin? get model =>
-      (widget is IWidgetView) ? (widget as IWidgetView).model : null;
+      (widget is ViewableWidgetView) ? (widget as ViewableWidgetView).model : null;
 
   @override
   void initState() {
@@ -27,7 +27,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T>
   @override
   void didUpdateWidget(dynamic oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget is IWidgetView && oldWidget.model != model) {
+    if (oldWidget is ViewableWidgetView && oldWidget.model != model) {
       oldWidget.model?.removeListener(this);
       model?.registerListener(this);
     }

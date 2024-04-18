@@ -2,14 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/widgets/goback/goback.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 
-class DrawerView extends StatefulWidget implements IDragListener, IWidgetView {
+class DrawerView extends StatefulWidget implements IDragListener, ViewableWidgetView {
 
   @override
   final DrawerModel model;
@@ -51,7 +51,7 @@ class DrawerView extends StatefulWidget implements IDragListener, IWidgetView {
   }
 }
 
-class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
+class DrawerViewState extends ViewableWidgetState<DrawerView> implements IDragListener {
 
   // drag leeway for completing open/closes on drag end
   static int dragLeeway = 200;

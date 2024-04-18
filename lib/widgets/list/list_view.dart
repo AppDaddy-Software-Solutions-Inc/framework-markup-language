@@ -3,20 +3,19 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/box/box_layout.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/dragdrop/draggable_view.dart';
 import 'package:fml/widgets/dragdrop/droppable_view.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/list/list_model.dart';
 import 'package:fml/widgets/list/item/list_item_view.dart';
 import 'package:fml/widgets/list/item/list_item_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 
-class ListLayoutView extends StatefulWidget implements IWidgetView {
+class ListLayoutView extends StatefulWidget implements ViewableWidgetView {
   @override
   final ListModel model;
   ListLayoutView(this.model) : super(key: ObjectKey(model));
@@ -25,16 +24,11 @@ class ListLayoutView extends StatefulWidget implements IWidgetView {
   State<ListLayoutView> createState() => ListLayoutViewState();
 }
 
-class ListLayoutViewState extends WidgetState<ListLayoutView> {
+class ListLayoutViewState extends ViewableWidgetState<ListLayoutView> {
 
   Future<ListModel>? listViewModel;
   Widget? busy;
   final ScrollController controller = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -188,9 +182,8 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> {
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+  Widget build(BuildContext context) {
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
@@ -262,7 +255,7 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> {
     view = Stack(children: children);
 
     // create as Box
-    view = BoxView(widget.model, children: [BoxLayout(model: widget.model, child: view)]);
+    view = BoxView(widget.model, children: [view]);
 
     return view;
   }

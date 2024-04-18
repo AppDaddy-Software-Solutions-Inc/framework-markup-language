@@ -1,11 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 import 'package:fml/widgets/list/item/list_item_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 
-class ListItemView extends StatefulWidget implements IWidgetView {
+class ListItemView extends StatefulWidget implements ViewableWidgetView {
   @override
   final ListItemModel model;
 
@@ -15,11 +15,11 @@ class ListItemView extends StatefulWidget implements IWidgetView {
   State<ListItemView> createState() => _ListItemViewState();
 }
 
-class _ListItemViewState extends WidgetState<ListItemView> {
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+class _ListItemViewState extends ViewableWidgetState<ListItemView> {
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
+  @override
+  Widget build(BuildContext context) {
+    return Text('hello world');
     return BoxView(widget.model);
   }
 }

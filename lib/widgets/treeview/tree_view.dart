@@ -5,10 +5,10 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/treeview/tree_model.dart';
 import 'package:fml/widgets/treeview/node/tree_node_view.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 
-class TreeView extends StatefulWidget implements IWidgetView {
+class TreeView extends StatefulWidget implements ViewableWidgetView {
   @override
   final TreeModel model;
   TreeView(this.model) : super(key: ObjectKey(model));
@@ -17,7 +17,7 @@ class TreeView extends StatefulWidget implements IWidgetView {
   State<TreeView> createState() => _TreeViewState();
 }
 
-class _TreeViewState extends WidgetState<TreeView> {
+class _TreeViewState extends ViewableWidgetState<TreeView> {
   @override
   didChangeDependencies() {
     // register event listeners

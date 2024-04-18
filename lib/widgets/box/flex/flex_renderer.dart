@@ -632,9 +632,12 @@ class FlexRenderer extends RenderBox
 
     RenderBox? child = firstChild;
     while (child != null) {
+
+      bool isBox = child.parentData is BoxData && (child.parentData as BoxData).model != null;
+
       // perform layout
-      if (child.parentData is BoxData &&
-          (child.parentData as BoxData).model != null) {
+      if (isBox) {
+
         var childData = (child.parentData as BoxData);
         var childModel = childData.model!;
 
@@ -654,18 +657,24 @@ class FlexRenderer extends RenderBox
           // override isTight, which is used in Layout() to determine if a
           // child size change forces a parent to resize.
           doLayout(child, childConstraints, layoutChild);
-
-          // set width
-          allocatedWidth = _direction == Axis.horizontal
-              ? (allocatedWidth + (child.size.width))
-              : max(allocatedWidth, (child.size.width));
-
-          // set height
-          allocatedHeight = _direction == Axis.horizontal
-              ? max(allocatedHeight, (child.size.height))
-              : allocatedHeight + (child.size.height);
         }
       }
+
+      // regular flutter widget
+      else {
+        layoutChild(child, constraints);
+      }
+
+      // set width
+      allocatedWidth = _direction == Axis.horizontal
+          ? (allocatedWidth + (child.size.width))
+          : max(allocatedWidth, (child.size.width));
+
+      // set height
+      allocatedHeight = _direction == Axis.horizontal
+          ? max(allocatedHeight, (child.size.height))
+          : allocatedHeight + (child.size.height);
+
       // get next child
       child = childAfter(child);
     }

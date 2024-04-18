@@ -11,12 +11,12 @@ import 'package:fml/widgets/box/wrap/wrap_object.dart';
 import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/widgets/drawer/drawer_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 
-abstract class BoxViewWidgetState<T extends StatefulWidget> extends WidgetState<T>
+abstract class BoxViewWidgetState<T extends StatefulWidget> extends ViewableWidgetState<T>
     implements IModelListener {
 
   /// Function to find gradient alignment
@@ -286,14 +286,11 @@ abstract class BoxViewWidgetState<T extends StatefulWidget> extends WidgetState<
 
   static List<Widget> _wrapParentData(List<Widget> children)
   {
-    // wrap unwrapped IWidgetView children in BoxData
+    // wrap unwrapped IWidgetView's in BoxLayout
     List<Widget> wrapped = [];
     for (Widget child in children) {
-      if (child is IWidgetView) {
-        var model = (child as IWidgetView).model;
-        if (model != null) {
-          child = BoxLayout(model: model, child: child);
-        }
+      if (child is ViewableWidgetView && (child as ViewableWidgetView).model != null) {
+        child = BoxLayout(model: (child as ViewableWidgetView).model!, child: child);
       }
       wrapped.add(child);
     }

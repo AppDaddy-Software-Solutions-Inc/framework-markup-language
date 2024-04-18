@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 import 'package:universal_html/html.dart' as universal_html;
 import 'package:universal_html/js.dart' as universal_js;
 import 'dart:ui' as dart_ui;
@@ -16,7 +16,7 @@ import 'package:fml/helpers/helpers.dart';
 InlineFrameView getView(model) => InlineFrameView(model);
 
 class InlineFrameView extends StatefulWidget
-    implements widget_view.View, IWidgetView {
+    implements widget_view.View, ViewableWidgetView {
   @override
   final InlineFrameModel model;
 
@@ -26,7 +26,7 @@ class InlineFrameView extends StatefulWidget
   State<InlineFrameView> createState() => _InlineFrameViewState();
 }
 
-class _InlineFrameViewState extends WidgetState<InlineFrameView> {
+class _InlineFrameViewState extends ViewableWidgetState<InlineFrameView> {
   IFrameWidget? iframe;
 
   @override

@@ -2,10 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view_state.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 
 /// [BOX] view
-class BoxView extends StatefulWidget implements IWidgetView {
+class BoxView extends StatefulWidget implements ViewableWidgetView {
   @override
   final BoxModel model;
   final List<Widget>? children;
@@ -17,14 +17,8 @@ class BoxView extends StatefulWidget implements IWidgetView {
 }
 
 class BoxViewState extends BoxViewWidgetState<BoxView> {
+
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-
-    // build the box
-    var view = buildBox(constraints, widget.model, children: widget.children);
-
-    return view;
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: (_,constraints) =>
+      buildBox(constraints, widget.model, children: widget.children));
 }

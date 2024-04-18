@@ -2,14 +2,14 @@
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/button/button_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 
 /// Button View
 ///
 /// Builds the Button View from [ButtonModel] properties
-class ButtonView extends StatefulWidget implements IWidgetView {
+class ButtonView extends StatefulWidget implements ViewableWidgetView {
   @override
   final ButtonModel model;
   final Widget? child;
@@ -20,7 +20,7 @@ class ButtonView extends StatefulWidget implements IWidgetView {
   State<ButtonView> createState() => _ButtonViewState();
 }
 
-class _ButtonViewState extends WidgetState<ButtonView> {
+class _ButtonViewState extends ViewableWidgetState<ButtonView> {
   ButtonStyle _getStyle() {
     var model = widget.model;
 

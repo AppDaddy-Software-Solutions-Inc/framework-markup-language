@@ -2,11 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/treeview/node/tree_node_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 
-class TreeNodeView extends StatefulWidget implements IWidgetView {
+class TreeNodeView extends StatefulWidget implements ViewableWidgetView {
   @override
   final TreeNodeModel model;
 
@@ -16,7 +16,7 @@ class TreeNodeView extends StatefulWidget implements IWidgetView {
   State<TreeNodeView> createState() => _TreeNodeViewState();
 }
 
-class _TreeNodeViewState extends WidgetState<TreeNodeView> {
+class _TreeNodeViewState extends ViewableWidgetState<TreeNodeView> {
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it

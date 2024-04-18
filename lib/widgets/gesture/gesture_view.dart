@@ -1,11 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 import 'gesture_model.dart';
 
-class GestureView extends StatefulWidget implements IWidgetView {
+class GestureView extends StatefulWidget implements ViewableWidgetView {
   @override
   final GestureModel model;
   GestureView(this.model) : super(key: ObjectKey(model));
@@ -14,7 +14,7 @@ class GestureView extends StatefulWidget implements IWidgetView {
   State<GestureView> createState() => _GestureViewState();
 }
 
-class _GestureViewState extends WidgetState<GestureView> {
+class _GestureViewState extends ViewableWidgetState<GestureView> {
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it

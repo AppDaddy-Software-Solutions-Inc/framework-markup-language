@@ -2,16 +2,16 @@
 import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/widgets/editor/editor_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/viewable_widget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_highlight/theme_map.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/viewable_widget_state.dart';
 import 'package:highlight/languages/http.dart';
 import 'package:highlight/languages/dart.dart';
 import 'package:highlight/languages/xml.dart';
 
-class EditorView extends StatefulWidget implements IWidgetView {
+class EditorView extends StatefulWidget implements ViewableWidgetView {
   @override
   final EditorModel model;
   EditorView(this.model) : super(key: ObjectKey(model));
@@ -20,7 +20,7 @@ class EditorView extends StatefulWidget implements IWidgetView {
   State<EditorView> createState() => _EditorViewState();
 }
 
-class _EditorViewState extends WidgetState<EditorView> {
+class _EditorViewState extends ViewableWidgetState<EditorView> {
   CodeController? _controller;
 
   @override

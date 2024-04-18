@@ -43,8 +43,26 @@ class ScrollerViewState extends WidgetState<ScrollerView> {
   }
 
   /// scrolls the widget with the specified context into view
-  scrollTo(BuildContext context, {required bool animate}) {
+  scrollToContext(BuildContext context, {required bool animate}) {
     Scrollable.ensureVisible(context, duration: animate ? const Duration(seconds: 1) : Duration.zero, alignment: 0.2);
+  }
+
+  /// scrolls the widget with the specified context into view
+  scrollTo(double? position, {bool animate = false}) {
+    if (position == null) return;
+    if (position < 0) position = 0;
+
+    var max = controller.position.maxScrollExtent;
+    if (position > max) position = max;
+
+    if (animate) {
+      controller.animateTo(position,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.easeOut);
+    }
+    else {
+      controller.jumpTo(position);
+    }
   }
 
   /// moves the scroller by the specified pixels in the specified direction

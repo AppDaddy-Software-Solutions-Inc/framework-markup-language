@@ -638,6 +638,8 @@ class FlexRenderer extends RenderBox
         var childData = (child.parentData as BoxData);
         var childModel = childData.model!;
 
+        //var idChild = childModel.id;
+
         // assign flex value
         _setChildFlex(childData, childModel);
 
@@ -799,6 +801,7 @@ class FlexRenderer extends RenderBox
   _LayoutSizes _computeSizes(
       {required BoxConstraints constraints,
       required ChildLayouter layoutChild}) {
+
     // size fixed children
     var fixedSize = calculateFixedChildSizes(layoutChild);
 

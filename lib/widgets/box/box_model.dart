@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/box/box_layout.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/drawer/drawer_model.dart';
@@ -444,12 +443,13 @@ class BoxModel extends ViewableWidgetModel {
     List<Widget> views = [];
     for (var model in viewableChildren) {
       if (model is! ModalModel) {
+
+        // build the view
         var view = model.getView();
 
         // add the view to the
         // view list
         if (view != null) {
-          view = BoxLayout(model: model, child: view);
           views.add(view);
         }
       }

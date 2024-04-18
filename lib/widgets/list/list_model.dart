@@ -5,10 +5,10 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart';
@@ -18,27 +18,27 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
+class ListModel extends BoxModel implements IForm, IScrollable {
 
   // indicates if the widget expands infinitely in
   // it's horizontal axis if not constrained
   @override
-  bool get canExpandInfinitelyWide => !hasBoundedWidth && direction == 'horizontal';
+  bool get canExpandInfinitelyWide => expand && !hasBoundedWidth && direction == 'horizontal';
 
   // indicates if the widget expands infinitely in
   // it's vertical axis if not constrained
   @override
-  bool get canExpandInfinitelyHigh => !hasBoundedHeight && direction != 'horizontal';
+  bool get canExpandInfinitelyHigh => expand && !hasBoundedHeight && direction != 'horizontal';
 
   // indicates if the widget will grow in
   // its horizontal axis
   @override
-  bool get expandHorizontally => !hasBoundedWidth && direction == 'horizontal';
+  bool get expandHorizontally => expand && !hasBoundedWidth && direction == 'horizontal';
 
   // indicates if the widget will grow in
   // its vertical axis
   @override
-  bool get expandVertically => !hasBoundedHeight && direction != 'horizontal';
+  bool get expandVertically => expand && !hasBoundedHeight && direction != 'horizontal';
 
   // maintains list of items
   final HashMap<int, ListItemModel> items = HashMap<int, ListItemModel>();
@@ -308,6 +308,11 @@ class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
     _buildItems();
   }
 
+  @override
+  List<Widget> inflate() {
+    return [];
+  }
+
   void _buildItems() {
     List<ListItemModel> items =
         findChildrenOfExactType(ListItemModel).cast<ListItemModel>();
@@ -496,15 +501,20 @@ class ListModel extends ViewableWidgetModel implements IForm, IScrollable {
     ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
 
     // scroll to top
-    if (id.trim().toLowerCase() == 'top') {
+    if (id.trim().toLowerCase() == 'top' && isNullOrEmpty(value)) {
       view?.scrollTo(0, animate: false);
       return;
     }
 
-    // scroll to top
-    if (id.trim().toLowerCase() == 'bottom') {
+    // scroll to bottom
+    if (id.trim().toLowerCase() == 'bottom' && isNullOrEmpty(value)) {
       view?.scrollTo(double.maxFinite, animate: false);
       return;
+    }
+
+    // scroll to specific pixel position
+    if (isNumeric(id) && isNullOrEmpty(value)) {
+      view?.scrollTo(toDouble(id), animate: false);
     }
 
     // build out the items

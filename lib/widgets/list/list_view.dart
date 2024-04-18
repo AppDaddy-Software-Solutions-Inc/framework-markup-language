@@ -3,6 +3,8 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/box/box_layout.dart';
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/dragdrop/draggable_view.dart';
 import 'package:fml/widgets/dragdrop/droppable_view.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
@@ -28,6 +30,11 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> {
   Future<ListModel>? listViewModel;
   Widget? busy;
   final ScrollController controller = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -181,7 +188,9 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
@@ -249,16 +258,11 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> {
     // add busy
     children.add(Center(child: busy));
 
+    // show busy spinner over list
     view = Stack(children: children);
 
-    // add margins
-    view = addMargins(view);
-
-    // apply visual transforms
-    view = applyTransforms(view);
-
-    // apply user defined constraints
-    view = applyConstraints(view, widget.model.tightestOrDefault);
+    // create as Box
+    view = BoxView(widget.model, children: [BoxLayout(model: widget.model, child: view)]);
 
     return view;
   }

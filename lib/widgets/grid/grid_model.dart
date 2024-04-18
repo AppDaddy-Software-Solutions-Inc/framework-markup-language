@@ -362,23 +362,36 @@ class GridModel extends BoxModel implements IScrollable {
   /// scroll to specified item by id and value
   @override
   void scrollTo(String? id, String? value, {bool animate = false}) {
-    if (isNullOrEmpty(id)) return;
+
+    if (id == null) return;
+
+    // get the view
+    GridViewState? view = findListenerOfExactType(GridViewState);
+
+    // scroll to top
+    if (id.trim().toLowerCase() == 'top' && isNullOrEmpty(value)) {
+      view?.scrollTo(0, animate: false);
+      return;
+    }
+
+    // scroll to bottom
+    if (id.trim().toLowerCase() == 'bottom' && isNullOrEmpty(value)) {
+      view?.scrollTo(double.maxFinite, animate: false);
+      return;
+    }
+
+    // scroll to specific pixel position
+    if (isNumeric(id) && isNullOrEmpty(value)) {
+      view?.scrollTo(toDouble(id), animate: false);
+    }
 
     // find the first item containing a child with the specified
     // id and matching value
-    BuildContext? context;
     for (var item in items.values) {
       var child = item.descendants?.toList().firstWhereOrNull((child) => child.id == id && child.value == (value ?? child.value));
       if (child != null) {
-        context = item.context;
-        break;
+        view?.scrollToContext(child.context, animate: animate);
       }
-    }
-
-    // context defined?
-    if (context != null) {
-      GridViewState? view = findListenerOfExactType(GridViewState);
-      view?.scrollTo(context, animate: animate);
     }
   }
 

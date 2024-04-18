@@ -17,6 +17,18 @@ class TooltipModel extends ViewableWidgetModel {
 
   OpenMethods? openMethod;
 
+  /// [padding] Padding within the tooltip.
+  DoubleObservable? _padding;
+  set padding(dynamic v) {
+    if (_padding != null) {
+      _padding!.set(v);
+    } else if (v != null) {
+      _padding = DoubleObservable(Binding.toKey(id, 'padding'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double get padding => _padding?.get() ?? 10.0;
+  
   // position of the tooltip display
   StringObservable? _position;
   set position(dynamic v) {
@@ -39,7 +51,6 @@ class TooltipModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double get distance => _distance?.get() ?? 8.0;
 
   /// [radius] Border radius around the tooltip.
@@ -52,7 +63,6 @@ class TooltipModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double get radius => _radius?.get() ?? 8.0;
 
   /// [modal] Shows a dark layer behind the tooltip.
@@ -65,7 +75,6 @@ class TooltipModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get modal => _modal?.get() ?? false;
 
   /// [arrow] Show the tip arrow?

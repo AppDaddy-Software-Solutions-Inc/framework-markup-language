@@ -3,6 +3,8 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/box/box_layout.dart';
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/dragdrop/draggable_view.dart';
 import 'package:fml/widgets/dragdrop/droppable_view.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
@@ -30,6 +32,11 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> {
   final ScrollController controller = ScrollController();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   void dispose() {
     controller.dispose();
     super.dispose();
@@ -39,11 +46,13 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> {
   scrollTo(double? position, {bool animate = false}) {
     if (position == null) return;
     if (position < 0) position = 0;
-    if (position > controller.position.maxScrollExtent) position = controller.position.maxScrollExtent;
+
+    var max = widget.model.maxExtent;
+    if (position > max) position = max;
 
     if (animate) {
     controller.animateTo(position,
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 100),
         curve: Curves.easeOut);
     }
     else {
@@ -55,6 +64,7 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> {
   void scroll(double? pixels, {required bool animate})  {
 
     try {
+
       // check if pixels is null
       pixels ??= 0;
 
@@ -70,7 +80,7 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> {
 
         if (animate) {
           controller.animateTo(pixels,
-              duration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 100),
               curve: Curves.easeOut);
         }
         else {
@@ -82,16 +92,13 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> {
       // scroll down/right
       if (pixels > 0) {
 
-        // already at the end of the list
-        if (controller.position.maxScrollExtent == controller.offset) return;
-
         // calculate pixels
         pixels = controller.offset + pixels;
-        if (pixels > controller.position.maxScrollExtent) pixels = controller.position.maxScrollExtent;
+        //if (pixels > controller.position.maxScrollExtent) pixels = controller.position.maxScrollExtent;
 
         if (animate) {
           controller.animateTo(pixels,
-              duration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 100),
               curve: Curves.easeOut);
         }
         else {
@@ -181,7 +188,9 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
@@ -198,27 +207,32 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> {
 
     // View
     Widget view;
+    switch (widget.model.collapsed) {
+      // collapsed list
+      case true:
+        view = SingleChildScrollView(
+            physics: widget.model.onpulldown != null
+                ? const AlwaysScrollableScrollPhysics()
+                : null,
+            child: ExpansionPanelList.radio(
+                dividerColor: Theme.of(context).colorScheme.onInverseSurface,
+                initialOpenPanelValue: 0,
+                elevation: 2,
+                expandedHeaderPadding: const EdgeInsets.all(4),
+                children: expansionItems(context)));
+        break;
 
-    if (widget.model.collapsed) {
-      view = SingleChildScrollView(
-          physics: widget.model.onpulldown != null
-              ? const AlwaysScrollableScrollPhysics()
-              : null,
-          child: ExpansionPanelList.radio(
-              dividerColor: Theme.of(context).colorScheme.onInverseSurface,
-              initialOpenPanelValue: 0,
-              elevation: 2,
-              expandedHeaderPadding: const EdgeInsets.all(4),
-              children: expansionItems(context)));
-    } else {
-      view = ListView.builder(
-          reverse: widget.model.reverse,
-          physics: widget.model.onpulldown != null
-              ? const AlwaysScrollableScrollPhysics()
-              : null,
-          scrollDirection: direction,
-          controller: controller,
-          itemBuilder: itemBuilder);
+      // regular list
+      case false:
+        view = ListView.builder(
+            reverse: widget.model.reverse,
+            physics: widget.model.onpulldown != null
+                ? const AlwaysScrollableScrollPhysics()
+                : null,
+            scrollDirection: direction,
+            controller: controller,
+            itemBuilder: itemBuilder);
+        break;
     }
 
     if (widget.model.onpulldown != null) {
@@ -244,16 +258,11 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> {
     // add busy
     children.add(Center(child: busy));
 
+    // show busy spinner over list
     view = Stack(children: children);
 
-    // add margins
-    view = addMargins(view);
-
-    // apply visual transforms
-    view = applyTransforms(view);
-
-    // apply user defined constraints
-    view = applyConstraints(view, widget.model.tightestOrDefault);
+    // create as Box
+    view = BoxView(widget.model, children: [BoxLayout(model: widget.model, child: view)]);
 
     return view;
   }

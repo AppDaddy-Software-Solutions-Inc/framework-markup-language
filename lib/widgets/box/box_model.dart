@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/box/box_layout.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/drawer/drawer_model.dart';
@@ -46,7 +45,6 @@ class BoxModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get expand => _expand?.get() ?? expandDefault;
 
   /// layout
@@ -71,7 +69,6 @@ class BoxModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool? get center => _center?.get();
 
   /// wrap determines the widget, if layout is row or col, how it will wrap.
@@ -84,7 +81,6 @@ class BoxModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get wrap => _wrap?.get() ?? false;
 
   // box blur
@@ -97,7 +93,6 @@ class BoxModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get blur => _blur?.get() ?? false;
 
   /// The start of the gradient in location, this will be the first `color` position if two colors are given
@@ -110,7 +105,6 @@ class BoxModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String get gradientStart => _gradientStart?.get()?.toLowerCase() ?? 'top';
 
   /// The end of the gradient in location, this will be the second `color` position if two colors are given
@@ -123,32 +117,30 @@ class BoxModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String get gradientEnd => _gradientEnd?.get()?.toLowerCase() ?? 'bottom';
 
   // box radius
-  StringObservable? _radius;
-  set radius(dynamic v) {
-    if (_radius != null) {
-      _radius!.set(v);
+  StringObservable? _borderRadius;
+  set borderRadius(dynamic v) {
+    if (_borderRadius != null) {
+      _borderRadius!.set(v);
     } else if (v != null) {
-      _radius = StringObservable(Binding.toKey(id, 'radius'), v,
+      _borderRadius = StringObservable(Binding.toKey(id, 'borderradius'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  String? get radius => _radius?.get()?.toLowerCase();
+  String? get borderRadius => _borderRadius?.get()?.toLowerCase();
 
   double get radiusTopRight {
-    if (radius == null) return 0;
-    var radii = radius!.split(',');
+    if (borderRadius == null) return 0;
+    var radii = borderRadius!.split(',');
     if (radii.isEmpty) return 0;
     return toDouble(radii[0]) ?? 0;
   }
 
   double get radiusBottomRight {
-    if (radius == null) return 0;
-    var radii = radius!.split(',');
+    if (borderRadius == null) return 0;
+    var radii = borderRadius!.split(',');
     if (radii.isEmpty) return 0;
     if (radii.length == 1) {
       return toDouble(radii[0]) ?? 0;
@@ -160,8 +152,8 @@ class BoxModel extends ViewableWidgetModel {
   }
 
   double get radiusBottomLeft {
-    if (radius == null) return 0;
-    var radii = radius!.split(',');
+    if (borderRadius == null) return 0;
+    var radii = borderRadius!.split(',');
     if (radii.isEmpty) return 0;
     if (radii.length == 1) {
       return toDouble(radii[0]) ?? 0;
@@ -173,8 +165,8 @@ class BoxModel extends ViewableWidgetModel {
   }
 
   double get radiusTopLeft {
-    if (radius == null) return 0;
-    var radii = radius!.split(',');
+    if (borderRadius == null) return 0;
+    var radii = borderRadius!.split(',');
     if (radii.isEmpty) return 0;
     if (radii.length == 1) {
       return toDouble(radii[0]) ?? 0;
@@ -195,7 +187,6 @@ class BoxModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   Color? get borderColor => _borderColor?.get();
 
   /// The width of the containers border, defaults to 0
@@ -208,8 +199,7 @@ class BoxModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  double? get borderWidth => _borderWidth?.get();
+  double get borderWidth => _borderWidth?.get() ?? 1;
 
   /// The border label
   StringObservable? _borderLabel;
@@ -221,7 +211,6 @@ class BoxModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get borderLabel => _borderLabel?.get();
 
   /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
@@ -234,8 +223,7 @@ class BoxModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  String? get border => _border?.get()?.toLowerCase();
+  String get border => _border?.get()?.toLowerCase() ?? 'none';
 
   /// shadow attributes
   ///
@@ -249,7 +237,6 @@ class BoxModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   Color get shadowColor => _shadowColor?.get() ?? Colors.black26;
 
   /// the elevation of the box. The blur radius is 2* the elevation. This is combined with the offsets when constraining the size.
@@ -262,7 +249,6 @@ class BoxModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get elevation => _elevation?.get();
 
   /// The x offset of the box FROM the shadow. 0,0 is center. This is combined with `elevation` when determining the size.
@@ -275,7 +261,6 @@ class BoxModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double get shadowX => _shadowX?.get() ?? 4;
 
   /// The x offset of the box FROM the shadow. 0,0 is center. This is combined with `elevation` when determining the size.
@@ -288,8 +273,94 @@ class BoxModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double get shadowY => _shadowY?.get() ?? 4;
+
+  // set padding
+  set padding(dynamic v) {
+    if (v is String) {
+      var s = v.split(',');
+
+      // all
+      if (s.length == 1) {
+        paddingTop = s[0];
+        paddingRight = s[0];
+        paddingBottom = s[0];
+        paddingLeft = s[0];
+      }
+
+      // top/bottom
+      else if (s.length == 2) {
+        paddingTop = s[0];
+        paddingRight = s[1];
+        paddingBottom = s[0];
+        paddingLeft = s[1];
+      }
+
+      // top/bottom
+      else if (s.length == 3) {
+        paddingTop = s[0];
+        paddingRight = s[1];
+        paddingBottom = s[2];
+        paddingLeft = s[1];
+      }
+
+      // top/bottom
+      else if (s.length > 3) {
+        paddingTop = s[0];
+        paddingRight = s[1];
+        paddingBottom = s[2];
+        paddingLeft = s[3];
+      }
+    }
+  }
+
+  // paddings top
+  DoubleObservable? _paddingTop;
+  set paddingTop(dynamic v) {
+    if (_paddingTop != null) {
+      _paddingTop!.set(v);
+    } else if (v != null) {
+      _paddingTop = DoubleObservable(Binding.toKey(id, 'paddingtop'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get paddingTop => _paddingTop?.get();
+
+  // paddings right
+  DoubleObservable? _paddingRight;
+  set paddingRight(dynamic v) {
+    if (_paddingRight != null) {
+      _paddingRight!.set(v);
+    } else if (v != null) {
+      _paddingRight = DoubleObservable(Binding.toKey(id, 'paddingright'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get paddingRight => _paddingRight?.get();
+
+  // paddings bottom
+  DoubleObservable? _paddingBottom;
+  set paddingBottom(dynamic v) {
+    if (_paddingBottom != null) {
+      _paddingBottom!.set(v);
+    } else if (v != null) {
+      _paddingBottom = DoubleObservable(Binding.toKey(id, 'paddingbottom'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get paddingBottom => _paddingBottom?.get();
+
+  // paddings left
+  DoubleObservable? _paddingLeft;
+  set paddingLeft(dynamic v) {
+    if (_paddingLeft != null) {
+      _paddingLeft!.set(v);
+    } else if (v != null) {
+      _paddingLeft = DoubleObservable(Binding.toKey(id, 'paddingleft'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get paddingLeft => _paddingLeft?.get();
 
   BoxModel(super.parent, super.id,
       {super.scope, this.expandDefault = true, super.data});
@@ -318,37 +389,45 @@ class BoxModel extends ViewableWidgetModel {
     // deserialize
     super.deserialize(xml);
 
-    /// Style Attributes
-    gradientStart = Xml.get(node: xml, tag: 'gradientstart') ??
-        Xml.get(node: xml, tag: 'start');
-    gradientEnd = Xml.get(node: xml, tag: 'gradientend') ??
-        Xml.get(node: xml, tag: 'end');
-    blur = Xml.get(node: xml, tag: 'blur');
-
-    /// Set Border Attributes
-    radius = Xml.get(node: xml, tag: 'radius');
-    borderColor = Xml.get(node: xml, tag: 'bordercolor');
-    borderWidth = Xml.get(node: xml, tag: 'borderwidth');
-    borderLabel = Xml.get(node: xml, tag: 'borderlabel');
-    border = Xml.get(node: xml, tag: 'border');
+    /// border attributes
+    border       = Xml.get(node: xml, tag: 'border');
+    borderRadius = Xml.get(node: xml, tag: 'borderradius') ?? Xml.get(node: xml, tag: 'radius');
+    borderColor  = Xml.get(node: xml, tag: 'bordercolor');
+    borderWidth  = Xml.get(node: xml, tag: 'borderwidth');
+    borderLabel  = Xml.get(node: xml, tag: 'borderlabel');
+    // set default border on any border property specified
     if (_border == null &&
-        (_radius != null ||
-            _borderColor != null ||
-            _borderWidth != null ||
-            _borderLabel != null)) {
+        (_borderRadius != null ||
+         _borderColor != null ||
+         _borderWidth != null ||
+         _borderLabel != null)) {
       border = "all";
     }
 
+    // shadow attributes
     elevation = Xml.get(node: xml, tag: 'elevation');
     shadowColor = Xml.get(node: xml, tag: 'shadowcolor');
     shadowX = Xml.get(node: xml, tag: 'shadowx');
     shadowY = Xml.get(node: xml, tag: 'shadowy');
 
-    /// Build the layout
+    /// layout
     layout = Xml.get(node: xml, tag: 'layout');
     center = Xml.get(node: xml, tag: 'center');
     wrap = Xml.get(node: xml, tag: 'wrap');
     expand = Xml.get(node: xml, tag: 'expand');
+
+    // set padding. Can be comma separated top,left,bottom,right
+    // space around the widget's children
+    var padding = Xml.attribute(node: xml, tag: 'pad') ??
+        Xml.attribute(node: xml, tag: 'padding');
+    this.padding = padding;
+
+    /// other style attributes
+    gradientStart = Xml.get(node: xml, tag: 'gradientstart') ??
+        Xml.get(node: xml, tag: 'start');
+    gradientEnd = Xml.get(node: xml, tag: 'gradientend') ??
+        Xml.get(node: xml, tag: 'end');
+    blur = Xml.get(node: xml, tag: 'blur');
 
     // build drawers
     List<XmlElement>? nodes;
@@ -364,12 +443,13 @@ class BoxModel extends ViewableWidgetModel {
     List<Widget> views = [];
     for (var model in viewableChildren) {
       if (model is! ModalModel) {
+
+        // build the view
         var view = model.getView();
 
         // add the view to the
         // view list
         if (view != null) {
-          view = BoxLayout(model: model, child: view);
           views.add(view);
         }
       }
@@ -393,6 +473,14 @@ class BoxModel extends ViewableWidgetModel {
       default:
         return defaultLayout;
     }
+  }
+
+  @override
+  void layoutComplete(Size size, Offset offset) {
+    // we need to adjust the size and position to account for padding, margin, and border
+    var w = size.width  + (paddingLeft ?? 0) + (paddingRight  ?? 0)  + (marginLeft ?? 0) + (marginRight ?? 0);// + (borderWidth * 2);
+    var h = size.height + (paddingTop ?? 0)  + (paddingBottom ?? 0) + (marginTop ?? 0)  + (marginBottom ?? 0);// + (borderWidth * 2);
+    super.layoutComplete(Size(w,h), offset);
   }
 
   @override

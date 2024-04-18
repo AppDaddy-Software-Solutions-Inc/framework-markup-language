@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/box/box_layout.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:fml/widgets/positioned/positioned_model.dart';
@@ -90,19 +89,23 @@ class PagerViewState extends WidgetState<PagerView> {
 
     // create page view
     if (pageView == null) {
+
       // Build Pages
       _pages = [];
       for (PageModel model in widget.model.pages) {
-        var view = BoxLayout(model: model, child: model.getView());
+        var view = model.getView();
         _pages.add(view);
       }
+
       pageView = PageView.builder(
           controller: _controller,
           itemBuilder: buildPage,
           itemCount: _pages.length,
           onPageChanged: (int page) => widget.model.currentpage = page + 1);
-      pageView = BoxLayout(model: widget.model, child: pageView!);
+
+      pageView = BoxView(widget.model, children: [pageView!]);
     }
+
     list.add(pageView!);
 
     // create pager
@@ -118,7 +121,7 @@ class PagerViewState extends WidgetState<PagerView> {
 
       var model = PositionedModel(widget.model, null, bottom: 8, child: pager);
 
-      pager = BoxLayout(model: model, child: pager!);
+      pager = BoxView(model, children: [pager!]);
     }
     if (pager != null) {
       list.add(pager!);
@@ -129,7 +132,6 @@ class PagerViewState extends WidgetState<PagerView> {
       var model = BusyModel(widget.model,
           visible: widget.model.busy, observable: widget.model.busyObservable);
       busy = model.getView();
-      busy = BoxLayout(model: model, child: busy!);
     }
     list.add(busy!);
 

@@ -17,5 +17,9 @@ class ListItemView extends StatefulWidget implements IWidgetView {
 
 class _ListItemViewState extends WidgetState<ListItemView> {
   @override
-  Widget build(BuildContext context) => BoxView(widget.model);
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints) {
+    return BoxView(widget.model);
+  }
 }

@@ -801,6 +801,7 @@ class FlexRenderer extends RenderBox
   _LayoutSizes _computeSizes(
       {required BoxConstraints constraints,
       required ChildLayouter layoutChild}) {
+
     // size fixed children
     var fixedSize = calculateFixedChildSizes(layoutChild);
 

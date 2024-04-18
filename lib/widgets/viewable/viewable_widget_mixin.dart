@@ -617,7 +617,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     // The observable is only created in deserialize if its bound
     if (_viewWidthObservable != null) _viewWidthObservable!.set(v);
   }
-
   double? get viewWidth => _viewWidth;
 
   // view height
@@ -631,7 +630,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     // The observable is only created in deserialize if its bound
     if (_viewHeightObservable != null) _viewHeightObservable!.set(v);
   }
-
   double? get viewHeight => _viewHeight;
 
   // view global X position
@@ -770,7 +768,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
   double? get visibleWidth => _visibleWidth?.get();
 
   set margins(dynamic v) {
-    // build PADDINGS array
     if (v is String) {
       var s = v.split(',');
 
@@ -855,97 +852,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     }
   }
   double? get marginLeft => _marginLeft?.get();
-
-  set padding(dynamic v) {
-    // build PADDINGS array
-    if (v is String) {
-      var s = v.split(',');
-
-      // all
-      if (s.length == 1) {
-        paddingTop = s[0];
-        paddingRight = s[0];
-        paddingBottom = s[0];
-        paddingLeft = s[0];
-      }
-
-      // top/bottom
-      else if (s.length == 2) {
-        paddingTop = s[0];
-        paddingRight = s[1];
-        paddingBottom = s[0];
-        paddingLeft = s[1];
-      }
-
-      // top/bottom
-      else if (s.length == 3) {
-        paddingTop = s[0];
-        paddingRight = s[1];
-        paddingBottom = s[2];
-        paddingLeft = s[1];
-      }
-
-      // top/bottom
-      else if (s.length > 3) {
-        paddingTop = s[0];
-        paddingRight = s[1];
-        paddingBottom = s[2];
-        paddingLeft = s[3];
-      }
-    }
-  }
-
-  // paddings top
-  DoubleObservable? _paddingTop;
-  set paddingTop(dynamic v) {
-    if (_paddingTop != null) {
-      _paddingTop!.set(v);
-    } else if (v != null) {
-      _paddingTop = DoubleObservable(Binding.toKey(id, 'paddingtop'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double? get paddingTop => _paddingTop?.get();
-
-  // paddings right
-  DoubleObservable? _paddingRight;
-  set paddingRight(dynamic v) {
-    if (_paddingRight != null) {
-      _paddingRight!.set(v);
-    } else if (v != null) {
-      _paddingRight = DoubleObservable(Binding.toKey(id, 'paddingright'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double? get paddingRight => _paddingRight?.get();
-
-  // paddings bottom
-  DoubleObservable? _paddingBottom;
-  set paddingBottom(dynamic v) {
-    if (_paddingBottom != null) {
-      _paddingBottom!.set(v);
-    } else if (v != null) {
-      _paddingBottom = DoubleObservable(Binding.toKey(id, 'paddingbottom'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double? get paddingBottom => _paddingBottom?.get();
-
-  // paddings left
-  DoubleObservable? _paddingLeft;
-  set paddingLeft(dynamic v) {
-    if (_paddingLeft != null) {
-      _paddingLeft!.set(v);
-    } else if (v != null) {
-      _paddingLeft = DoubleObservable(Binding.toKey(id, 'paddingleft'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double? get paddingLeft => _paddingLeft?.get();
 
   // visible
   BooleanObservable? _visible;
@@ -1253,13 +1159,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
         Xml.attribute(node: xml, tag: 'margins');
     this.margins = margins;
 
-    // set padding. Can be comma separated top,left,bottom,right
-    // space around the widget's children
-    var padding = Xml.attribute(node: xml, tag: 'pad') ??
-        Xml.attribute(node: xml, tag: 'padding') ??
-        Xml.attribute(node: xml, tag: 'padd');
-    this.padding = padding;
-
     // tooltip
     var tooltip = Xml.attribute(node: xml, tag: 'tip') ??
         Xml.attribute(node: xml, tag: 'tootip');
@@ -1408,7 +1307,7 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
         size.height != viewHeight ||
         offset.dx != viewX ||
         offset.dy != viewY) {
-      viewWidth = size.width;
+      viewWidth  = size.width;
       viewHeight = size.height;
       viewX = offset.dx;
       viewY = offset.dy;

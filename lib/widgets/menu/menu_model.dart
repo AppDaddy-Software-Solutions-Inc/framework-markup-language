@@ -192,23 +192,38 @@ class MenuModel extends ViewableWidgetModel implements IScrollable {
   /// scroll to specified item by id and value
   @override
   void scrollTo(String? id, String? value, {bool animate = false}) {
-    if (isNullOrEmpty(id)) return;
+
+    if (id == null) return;
+
+    // get the view
+    MenuViewState? view = findListenerOfExactType(MenuViewState);
+
+    // scroll to top
+    if (id.trim().toLowerCase() == 'top' && isNullOrEmpty(value)) {
+      view?.scrollTo(0, animate: false);
+      return;
+    }
+
+    // scroll to bottom
+    if (id.trim().toLowerCase() == 'bottom' && isNullOrEmpty(value)) {
+      view?.scrollTo(double.maxFinite, animate: false);
+      return;
+    }
+
+    // scroll to specific pixel position
+    if (isNumeric(id) && isNullOrEmpty(value)) {
+      view?.scrollTo(toDouble(id), animate: false);
+    }
+
 
     // find the first item containing a child with the specified
     // id and matching value
-    BuildContext? context;
     for (var item in items) {
       var child = item.descendants?.toList().firstWhereOrNull((child) => child.id == id && child.value == (value ?? child.value));
       if (child != null) {
-        context = item.context;
+        view?.scrollToContext(child.context, animate: animate);
         break;
       }
-    }
-
-    // context defined?
-    if (context != null) {
-      MenuViewState? view = findListenerOfExactType(MenuViewState);
-      view?.scrollTo(context, animate: animate);
     }
   }
 
@@ -268,12 +283,12 @@ class MenuModel extends ViewableWidgetModel implements IScrollable {
     switch (function) {
     // scroll +/- pixels
       case "scroll":
-        scroll(toDouble(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        scroll(toDouble(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? true);
         return true;
 
     // scroll to item by id
       case "scrollto":
-        scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 1)) ?? false);
+        scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 1)) ?? true);
         return true;
     }
 

@@ -10,7 +10,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TreeNodeModel extends ViewableWidgetModel {
+class TreeNodeModel extends ViewableModel {
   TreeModel? treeview;
 
   /////////////

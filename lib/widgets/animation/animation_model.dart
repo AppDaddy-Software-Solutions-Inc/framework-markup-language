@@ -11,7 +11,7 @@ import 'package:fml/helpers/helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class AnimationModel extends ViewableWidgetModel {
+class AnimationModel extends ViewableModel {
   bool hasrun = false;
 
   /// Transition Curve

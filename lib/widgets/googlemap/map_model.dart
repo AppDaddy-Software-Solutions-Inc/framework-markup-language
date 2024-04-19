@@ -14,7 +14,7 @@ import 'package:fml/helpers/helpers.dart';
 
 enum MapTypes { satellite, hybrid, terrain, roadmap }
 
-class MapModel extends ViewableWidgetModel {
+class MapModel extends ViewableModel {
   String? style;
   bool editmode = false;
 

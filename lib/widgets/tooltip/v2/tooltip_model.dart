@@ -13,7 +13,7 @@ import 'package:fml/helpers/helpers.dart';
 
 enum OpenMethods { tap, longpress, hover, manual }
 
-class TooltipModel extends ViewableWidgetModel {
+class TooltipModel extends ViewableModel {
 
   OpenMethods? openMethod;
 

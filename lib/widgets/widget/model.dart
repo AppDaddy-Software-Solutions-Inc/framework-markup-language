@@ -244,7 +244,7 @@ class Model implements IDataSourceListener {
         // add model to the child list
         // in cases like camera, it is both a viewable widget as well
         // as a data source.
-        if (model is! IDataSource || model is ViewableWidgetMixin) {
+        if (model is! IDataSource || model is ViewableMixin) {
           (children ??= []).add(model);
         }
       }

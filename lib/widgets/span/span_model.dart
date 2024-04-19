@@ -10,7 +10,7 @@ import 'package:fml/system.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class SpanModel extends ViewableWidgetModel {
+class SpanModel extends ViewableModel {
   //TODO: make text spans pass properties to text
   
   // Value 

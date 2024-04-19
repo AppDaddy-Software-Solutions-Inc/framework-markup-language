@@ -11,7 +11,7 @@ import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class FormFieldModel extends ViewableWidgetModel {
+class FormFieldModel extends ViewableModel {
   // override this getter and setter in your base class
   set value(dynamic v) {}
   dynamic get value => null;

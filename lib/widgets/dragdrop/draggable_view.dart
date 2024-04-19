@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 
 class DraggableView extends StatefulWidget implements ViewableWidgetView {
   @override
-  final ViewableWidgetMixin model;
+  final ViewableMixin model;
   final Widget view;
 
   DraggableView(this.model, this.view) : super(key: ObjectKey(model));

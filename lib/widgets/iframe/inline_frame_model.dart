@@ -7,7 +7,7 @@ import 'package:fml/widgets/iframe/inline_frame_view.dart' as widget_view;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class InlineFrameModel extends ViewableWidgetModel {
+class InlineFrameModel extends ViewableModel {
   // url
   StringObservable? _url;
   set url(dynamic v) {

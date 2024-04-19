@@ -69,7 +69,7 @@ mixin BoxMixin {
   }
 
   BoxConstraints getChildLayoutConstraints(
-      BoxConstraints constraints, RenderBox child, ViewableWidgetMixin model) {
+      BoxConstraints constraints, RenderBox child, ViewableMixin model) {
     // get the child's width from the model
     // and tighten the child's width constraint
     var parentWidth = widthOf(child.parent);

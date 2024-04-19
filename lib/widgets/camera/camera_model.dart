@@ -21,7 +21,7 @@ import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
     if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
     if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
-class CameraModel extends CameraImageModel with ViewableWidgetMixin {
+class CameraModel extends CameraImageModel with ViewableMixin {
   bool fullscreen = true;
   bool stream = false;
 

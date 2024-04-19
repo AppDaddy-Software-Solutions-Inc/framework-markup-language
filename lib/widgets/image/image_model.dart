@@ -8,7 +8,7 @@ import 'package:fml/widgets/image/image_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class ImageModel extends ViewableWidgetModel {
+class ImageModel extends ViewableModel {
   // url
   StringObservable? _url;
   set url(dynamic v) {

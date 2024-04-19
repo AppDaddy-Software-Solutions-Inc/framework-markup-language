@@ -19,12 +19,12 @@ import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'dart:math';
 
-class ViewableWidgetModel extends Model with ViewableWidgetMixin {
+class ViewableModel extends Model with ViewableMixin {
 
-  ViewableWidgetModel(super.parent, super.id, {super.scope, super.data});
+  ViewableModel(super.parent, super.id, {super.scope, super.data});
 }
 
-mixin ViewableWidgetMixin on Model implements IDragDrop {
+mixin ViewableMixin on Model implements IDragDrop {
 
   // model holding the tooltip
   TooltipModel? tipModel;
@@ -33,11 +33,11 @@ mixin ViewableWidgetMixin on Model implements IDragDrop {
   List<AnimationModel>? animations;
 
   // viewable children
-  List<ViewableWidgetMixin> get viewableChildren {
-    List<ViewableWidgetMixin> list = [];
+  List<ViewableMixin> get viewableChildren {
+    List<ViewableMixin> list = [];
     if (children != null) {
       for (var child in children!) {
-        if (child is ViewableWidgetMixin) list.add(child);
+        if (child is ViewableMixin) list.add(child);
       }
     }
     return list;
@@ -491,8 +491,8 @@ mixin ViewableWidgetMixin on Model implements IDragDrop {
   /// the first system non-null minWidth value
   double get myMinWidth {
     if (system.minWidth != null) return system.minWidth!;
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMinWidth;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMinWidth;
     }
     return 0;
   }
@@ -505,8 +505,8 @@ mixin ViewableWidgetMixin on Model implements IDragDrop {
     }
     if (width != null) return width!;
     if (maxWidth != null) return maxWidth!;
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMaxWidth;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMaxWidth;
     }
     return 0;
   }
@@ -517,8 +517,8 @@ mixin ViewableWidgetMixin on Model implements IDragDrop {
     if (system.minHeight != null && system.minHeight != double.infinity) {
       return system.minHeight!;
     }
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMinHeight;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMinHeight;
     }
     return 0;
   }
@@ -531,8 +531,8 @@ mixin ViewableWidgetMixin on Model implements IDragDrop {
     }
     if (height != null) return height!;
     if (maxHeight != null) return maxHeight!;
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMaxHeight;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMaxHeight;
     }
     return 0;
   }
@@ -557,8 +557,8 @@ mixin ViewableWidgetMixin on Model implements IDragDrop {
     if (system.maxWidth != null && system.maxWidth != double.infinity) {
       return system.maxWidth!;
     }
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMaxWidth;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMaxWidth;
     }
     if (maxWidth == null || maxWidth == double.infinity) {
       maxWidth = System().screenwidth.toDouble();
@@ -572,8 +572,8 @@ mixin ViewableWidgetMixin on Model implements IDragDrop {
     if (system.maxHeight != null && maxHeight != double.infinity) {
       return system.maxHeight!;
     }
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMaxHeight;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMaxHeight;
     }
     if (maxHeight == null || maxHeight == double.infinity) {
       return System().screenheight.toDouble();
@@ -1320,7 +1320,7 @@ mixin ViewableWidgetMixin on Model implements IDragDrop {
   }
 
   // animate the model
-  static bool animate(ViewableWidgetMixin model, String caller,
+  static bool animate(ViewableMixin model, String caller,
       String propertyOrFunction, List<dynamic> arguments) {
     var animations = model.animations;
     if (animations != null) {

@@ -8,7 +8,7 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class EditorModel extends ViewableWidgetModel {
+class EditorModel extends ViewableModel {
   // theme
   StringObservable? _theme;
   set theme(dynamic v) {

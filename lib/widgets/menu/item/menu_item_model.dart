@@ -13,7 +13,7 @@ import 'package:fml/event/handler.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class MenuItemModel extends ViewableWidgetModel {
+class MenuItemModel extends ViewableModel {
   // url
   StringObservable? _url;
   set url(dynamic v) {

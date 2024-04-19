@@ -6,7 +6,7 @@ import 'package:fml/widgets/viewable/viewable_view.dart';
 
 class DroppableView extends StatefulWidget implements ViewableWidgetView {
   @override
-  final ViewableWidgetMixin model;
+  final ViewableMixin model;
   final Widget view;
 
   DroppableView(this.model, this.view) : super(key: ObjectKey(model));

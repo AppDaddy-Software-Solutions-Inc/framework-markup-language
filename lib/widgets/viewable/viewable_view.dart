@@ -6,12 +6,12 @@ import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:fml/widgets/widget/model.dart';
 
 abstract class ViewableWidgetView {
-  ViewableWidgetMixin? get model;
+  ViewableMixin? get model;
 }
 
 abstract class ViewableWidgetState<T extends StatefulWidget> extends State<T>
     implements IModelListener {
-  ViewableWidgetMixin? get model =>
+  ViewableMixin? get model =>
       (widget is ViewableWidgetView) ? (widget as ViewableWidgetView).model : null;
 
   @override

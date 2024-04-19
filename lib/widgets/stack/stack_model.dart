@@ -35,7 +35,7 @@ class StackModel extends BoxModel {
     // sort children by depth
     if (children != null) {
       children!.sort((a, b) {
-        if (a is ViewableWidgetMixin && b is ViewableWidgetMixin) {
+        if (a is ViewableMixin && b is ViewableMixin) {
           if (a.depth != null && b.depth != null) {
             return a.depth?.compareTo(b.depth!) ?? 0;
           }

@@ -9,7 +9,7 @@ import 'package:fml/widgets/gesture/gesture_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class GestureModel extends ViewableWidgetModel {
+class GestureModel extends ViewableModel {
   /// On click/tap call event
   StringObservable? _onclick;
   set onclick(dynamic v) {

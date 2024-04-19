@@ -4,7 +4,7 @@ import 'package:fml/widgets/viewable/viewable_model.dart';
 
 class BoxLayout extends ParentDataWidget<BoxData> {
 
-  final ViewableWidgetMixin model;
+  final ViewableMixin model;
 
   const BoxLayout({
     super.key,

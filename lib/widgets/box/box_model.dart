@@ -16,7 +16,7 @@ enum VerticalAlignmentType { top, bottom, center, around, between, evenly }
 
 enum HorizontalAlignmentType { left, right, center, around, between, evenly }
 
-class BoxModel extends ViewableWidgetModel {
+class BoxModel extends ViewableModel {
   LayoutType get layoutType =>
       getLayoutType(layout, defaultLayout: LayoutType.column);
 

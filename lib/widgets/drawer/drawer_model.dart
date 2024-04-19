@@ -12,7 +12,7 @@ import 'package:fml/helpers/helpers.dart';
 enum Drawers {top, bottom, left, right}
 enum DragDirection {vertical, horizontal}
 
-class DrawerModel extends ViewableWidgetModel {
+class DrawerModel extends ViewableModel {
 
   // Side
   StringObservable? _side;

@@ -8,7 +8,7 @@ import 'package:fml/widgets/tooltip/v1/tooltip_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TooltipModel extends ViewableWidgetModel {
+class TooltipModel extends ViewableModel {
   // background color
   ColorObservable? _backgroundcolor;
   set backgroundcolor(dynamic v) {

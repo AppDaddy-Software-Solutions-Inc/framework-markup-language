@@ -28,7 +28,7 @@ class _TreeNodeViewState extends ViewableWidgetState<TreeNodeView> {
       for (var model in widget.model.children!) {
         if (model is TreeNodeModel) {
           nodes.add(TreeNodeView(model));
-        } else if (model is ViewableWidgetMixin) {
+        } else if (model is ViewableMixin) {
           var view = model.getView();
           if (view != null) children.add(view);
         }

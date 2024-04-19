@@ -12,7 +12,7 @@ import 'package:fml/widgets/text/text_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TextModel extends ViewableWidgetModel {
+class TextModel extends ViewableModel {
   @override
   FlexFit? get flexFit {
     return super.flexFit ?? FlexFit.loose;

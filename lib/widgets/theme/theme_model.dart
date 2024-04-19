@@ -8,7 +8,7 @@ import 'package:fml/widgets/theme/theme_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class ThemeModel extends ViewableWidgetModel {
+class ThemeModel extends ViewableModel {
   static String myId = 'THEME';
 
   StringObservable? _brightness;

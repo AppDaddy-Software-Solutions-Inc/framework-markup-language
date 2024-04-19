@@ -11,7 +11,7 @@ import 'package:fml/helpers/helpers.dart';
 /// Breadcrumb Model
 ///
 /// Defines the properties of [BREADCRUMB.BreadcrumbView] widget
-class BreadcrumbModel extends ViewableWidgetModel {
+class BreadcrumbModel extends ViewableModel {
   
   /// background color of the breadcrumb bar
   ColorObservable? _backgroundcolor;

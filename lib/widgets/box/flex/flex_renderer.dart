@@ -573,7 +573,7 @@ class FlexRenderer extends RenderBox
   }
 
   BoxConstraints _getChildLayoutConstraints(
-      RenderBox child, ViewableWidgetMixin model, double maxExtent) {
+      RenderBox child, ViewableMixin model, double maxExtent) {
     BoxConstraints constraints = BoxConstraints(
         maxHeight: this.constraints.maxHeight,
         maxWidth: this.constraints.maxWidth);
@@ -594,7 +594,7 @@ class FlexRenderer extends RenderBox
     return getChildLayoutConstraints(constraints, child, model);
   }
 
-  void _setChildFlex(BoxData data, ViewableWidgetMixin model) {
+  void _setChildFlex(BoxData data, ViewableMixin model) {
     data.flex = null;
     data.fit = null;
     switch (_direction) {

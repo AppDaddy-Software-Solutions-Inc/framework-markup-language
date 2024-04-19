@@ -8,7 +8,7 @@ import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class IconModel extends ViewableWidgetModel {
+class IconModel extends ViewableModel {
   // icon
   IconObservable? _icon;
   set icon(dynamic v) {

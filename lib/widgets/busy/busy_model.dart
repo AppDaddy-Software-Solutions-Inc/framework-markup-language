@@ -13,7 +13,7 @@ import 'package:fml/helpers/helpers.dart';
 /// Busy Model
 ///
 /// Defines the properties of a [BUSY.BusyView]
-class BusyModel extends ViewableWidgetModel {
+class BusyModel extends ViewableModel {
   // visible
   BooleanObservable? _visible;
 

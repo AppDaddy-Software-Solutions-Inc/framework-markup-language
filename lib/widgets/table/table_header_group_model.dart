@@ -152,9 +152,9 @@ class TableHeaderGroupModel extends BoxModel {
   }
 
   @override
-  List<ViewableWidgetMixin> get viewableChildren {
+  List<ViewableMixin> get viewableChildren {
     // we dont want to render TD and TG cells in the table group header
-    List<ViewableWidgetMixin> list = super.viewableChildren;
+    List<ViewableMixin> list = super.viewableChildren;
     list.removeWhere((child) =>
         child is TableHeaderCellModel || child is TableHeaderGroupModel);
     return list;

@@ -13,7 +13,7 @@ import 'package:fml/widgets/popover/item/popover_item_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class PopoverModel extends ViewableWidgetModel implements IModelListener {
+class PopoverModel extends ViewableModel implements IModelListener {
   List<PopoverItemModel> items = [];
 
   // data sourced prototype

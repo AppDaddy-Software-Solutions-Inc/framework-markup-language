@@ -10,7 +10,7 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class MapLocationModel extends ViewableWidgetModel {
+class MapLocationModel extends ViewableModel {
   dynamic onTap;
   String? description;
   String? label;

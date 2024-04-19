@@ -11,7 +11,7 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class MapMarkerModel extends ViewableWidgetModel {
+class MapMarkerModel extends ViewableModel {
   /// latitude
   DoubleObservable? _latitude;
   set latitude(dynamic v) {

@@ -150,7 +150,7 @@ class ScribbleModel extends FormFieldModel implements IFormField {
   Widget getView({Key? key}) => getReactiveView(ScribbleView(this));
 }
 
-class SignatureModel extends ViewableWidgetModel {
+class SignatureModel extends ViewableModel {
   final List<PointVector> points = [];
   Color backgroundColor;
   Color penColor;

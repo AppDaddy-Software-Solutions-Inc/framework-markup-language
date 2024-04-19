@@ -17,7 +17,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class MenuModel extends ViewableWidgetModel implements IScrollable {
+class MenuModel extends ViewableModel implements IScrollable {
   static const String typeList = "list";
   static const String typeButton = "button";
 

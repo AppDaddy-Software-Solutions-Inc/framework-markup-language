@@ -7,7 +7,7 @@ enum FlexType { shrinking, fixed, expanding }
 /// Parent data for use with [BoxRenderer].
 class BoxData extends ContainerBoxParentData<RenderBox> {
 
-  ViewableWidgetMixin? model;
+  ViewableMixin? model;
 
   Size? parentSize;
 

@@ -3,8 +3,8 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model_interface.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -48,7 +48,7 @@ class PopoverModel extends ViewableWidgetModel implements IModelListener {
   IconData? get icon => _icon?.get();
 
   PopoverModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     dynamic enabled,
     dynamic color,
@@ -61,7 +61,7 @@ class PopoverModel extends ViewableWidgetModel implements IModelListener {
     this.icon = icon;
   }
 
-  static PopoverModel? fromXml(WidgetModel parent, XmlElement xml,
+  static PopoverModel? fromXml(Model parent, XmlElement xml,
       {String? type}) {
     PopoverModel? model;
     try {
@@ -151,7 +151,7 @@ class PopoverModel extends ViewableWidgetModel implements IModelListener {
   }
 
   @override
-  onModelChange(WidgetModel model, {String? property, value}) {
+  onModelChange(Model model, {String? property, value}) {
     // TODO missing setState?
     onPropertyChange(StringObservable(
         null, null)); // Allow us to rebuild the child model when it changes

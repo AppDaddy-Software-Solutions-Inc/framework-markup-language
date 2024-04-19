@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view_state.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
 
 /// [BOX] view
 class BoxView extends StatefulWidget implements ViewableWidgetView {

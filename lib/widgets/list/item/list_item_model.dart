@@ -7,7 +7,7 @@ import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/list/list_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -191,7 +191,7 @@ class ListItemModel extends BoxModel {
 
   String? get onDelete => _onDelete?.get();
 
-  ListItemModel(WidgetModel super.parent, super.id,
+  ListItemModel(Model super.parent, super.id,
       {super.data,
       dynamic selected,
       dynamic onclick,
@@ -208,7 +208,7 @@ class ListItemModel extends BoxModel {
     this.onclick = onclick;
   }
 
-  static ListItemModel? fromXml(WidgetModel parent, XmlElement? xml,
+  static ListItemModel? fromXml(Model parent, XmlElement? xml,
       {dynamic data}) {
     ListItemModel? model;
     try {

@@ -7,7 +7,7 @@ import 'package:fml/observable/observables/integer.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -105,9 +105,9 @@ class TooltipModel extends ViewableWidgetModel {
 
   int get timeout => _timeout?.get() ?? 0;
 
-  TooltipModel(WidgetModel super.parent, super.id);
+  TooltipModel(Model super.parent, super.id);
 
-  static TooltipModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TooltipModel? fromXml(Model parent, XmlElement xml) {
     TooltipModel? model;
     try {
       model = TooltipModel(parent, Xml.get(node: xml, tag: 'id'));

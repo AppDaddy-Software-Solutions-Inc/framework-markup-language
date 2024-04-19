@@ -17,7 +17,7 @@ import 'package:fml/template/template_manager.dart';
 import 'package:fml/token/token.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/eval/eval.dart';
 import 'package:fml/widgets/trigger/trigger_model.dart';
@@ -42,7 +42,7 @@ class EventHandler extends Eval {
   static final RegExp nonQuotedSemiColons =
       RegExp(r"\;(?=([^'\\]*(\\.|'([^'\\]*\\.)*[^'\\]*'))*[^']*$)");
 
-  final WidgetModel model;
+  final Model model;
 
   static const ExpressionEvaluator evaluator = ExpressionEvaluator();
   bool initialized = false;
@@ -103,7 +103,7 @@ class EventHandler extends Eval {
 
   // returns a list of variables based on source and target alias names
   static Map<String, dynamic> getVariables(
-      List<Binding>? bindings, WidgetModel local, WidgetModel remote,
+      List<Binding>? bindings, Model local, Model remote,
       {List<String> localAliasNames = const ['this', 'source', 'src'],
       List<String> remoteAliasNames = const ['target', 'trg']}) {
     var variables = <String, dynamic>{};
@@ -808,7 +808,7 @@ class EventHandler extends Eval {
   Future<bool?> _handleEventExecute(
       String id, String function, dynamic arguments) async {
     // get widget model
-    WidgetModel? model = Scope.findWidgetModel(id, this.model.scope);
+    Model? model = Scope.findWidgetModel(id, this.model.scope);
 
     // execute the function
     if (model != null) {

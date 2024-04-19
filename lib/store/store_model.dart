@@ -2,9 +2,9 @@
 import 'dart:async';
 import 'package:fml/application/application_model.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 
-class StoreModel extends WidgetModel {
+class StoreModel extends Model {
 
   bool initialized = false;
 

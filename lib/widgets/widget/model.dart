@@ -9,12 +9,12 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
-import 'package:fml/widgets/widget/widget_model_interface.dart';
+import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class WidgetModel implements IDataSourceListener {
+class Model implements IDataSourceListener {
   // primary identifier
   // needs to be unique within the scope
   late final String id;
@@ -89,10 +89,10 @@ class WidgetModel implements IDataSourceListener {
   bool get debug => _debug?.get() ?? false;
 
   // parent model
-  WidgetModel? parent;
+  Model? parent;
 
   // children
-  List<WidgetModel>? children;
+  List<Model>? children;
 
   // context
   BuildContext? get context {
@@ -121,7 +121,7 @@ class WidgetModel implements IDataSourceListener {
 
   bool get busy => _busy?.get() ?? false;
 
-  WidgetModel(this.parent, String? id, {Scope? scope, dynamic data}) {
+  Model(this.parent, String? id, {Scope? scope, dynamic data}) {
     // set the id
     this.id = getUniqueId(id);
 
@@ -156,7 +156,7 @@ class WidgetModel implements IDataSourceListener {
     return newId(prefix: prefix);
   }
 
-  static WidgetModel? fromXml(WidgetModel parent, XmlElement node,
+  static Model? fromXml(Model parent, XmlElement node,
       {Scope? scope, dynamic data}) {
 
     // clone node?
@@ -232,7 +232,7 @@ class WidgetModel implements IDataSourceListener {
     children?.clear();
     for (var element in elements) {
       // deserialize the model
-      var model = WidgetModel.fromXml(this, element);
+      var model = Model.fromXml(this, element);
 
       if (model != null)
       {
@@ -335,7 +335,7 @@ class WidgetModel implements IDataSourceListener {
   }
 
   /// Returns true if the template references observable => key
-  static bool isBound(WidgetModel model, String? key) {
+  static bool isBound(Model model, String? key) {
     if ((model.framework == null) || (isNullOrEmpty(key))) return false;
     return model.framework!.bindables!.contains(key);
   }
@@ -537,7 +537,7 @@ class WidgetModel implements IDataSourceListener {
     return false;
   }
 
-  static bool set(WidgetModel model, String id, String propertyOrFunction,
+  static bool set(Model model, String id, String propertyOrFunction,
       List<dynamic> arguments, Scope scope) {
     // value
     var value = elementAt(arguments, 0);

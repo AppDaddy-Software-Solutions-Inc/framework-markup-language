@@ -7,8 +7,8 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:fml/widgets/goback/goback.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -16,7 +16,7 @@ import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/datasources/gps/gps_listener_interface.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 
 class FormView extends StatefulWidget implements ViewableWidgetView {
   @override
@@ -56,7 +56,7 @@ class FormViewState extends ViewableWidgetState<FormView> implements IGpsListene
   }
 
   Future<bool> quit() async {
-    WidgetModel.unfocus();
+    Model.unfocus();
     bool exit = true;
 
     // model is dirty?
@@ -87,7 +87,7 @@ class FormViewState extends ViewableWidgetState<FormView> implements IGpsListene
           found = true;
           try {
             List<dynamic>? pagers =
-                (field as WidgetModel).findAncestorsOfExactType(PageModel);
+                (field as Model).findAncestorsOfExactType(PageModel);
             if (pagers != null) {
               Log().debug('found ${pagers.length} page(s)');
               for (PageModel page in pagers as Iterable<PageModel>) {

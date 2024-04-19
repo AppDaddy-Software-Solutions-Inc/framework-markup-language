@@ -15,8 +15,8 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/tabview/tab_view.dart';
-import 'package:fml/widgets/widget/widget_model_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model_interface.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/phrase.dart';
 
@@ -192,7 +192,7 @@ class FrameworkViewState extends State<FrameworkView>
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
     var b = Binding.fromString(property);
     if (mounted && widget.model.initialized && b?.property != 'busy') {
       setState(() {});
@@ -465,7 +465,7 @@ class FrameworkViewState extends State<FrameworkView>
 
   void onTapHandler() {
     System().setActiveFramework(widget.model);
-    WidgetModel.unfocus();
+    Model.unfocus();
   }
 
   // holds the current view

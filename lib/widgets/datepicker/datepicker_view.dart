@@ -1,12 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/datepicker/datepicker_model.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 
 class DatepickerView extends StatefulWidget implements ViewableWidgetView {
   @override
@@ -74,7 +74,7 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
     if ((cont!.text != widget.model.value) &&
         (widget.model.isPicking != true)) {
       widget.model.onChange(context);

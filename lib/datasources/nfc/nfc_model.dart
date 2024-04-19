@@ -4,7 +4,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:xml/xml.dart';
@@ -84,7 +84,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener {
 
   String? get ontimeout => _ontimeout?.get();
 
-  NcfModel(WidgetModel parent, String? id) : super(parent, id) {
+  NcfModel(Model parent, String? id) : super(parent, id) {
     _received =
         IntegerObservable(Binding.toKey(id, 'received'), 0, scope: scope);
     _serial = StringObservable(Binding.toKey(id, 'serial'), null, scope: scope);
@@ -92,7 +92,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener {
         StringObservable(Binding.toKey(id, 'payload'), null, scope: scope);
   }
 
-  static NcfModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static NcfModel? fromXml(Model parent, XmlElement xml) {
     NcfModel? model;
     try {
       model = NcfModel(parent, Xml.get(node: xml, tag: 'id'));

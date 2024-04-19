@@ -9,7 +9,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/hive/post.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -97,7 +97,7 @@ class HttpModel extends DataSourceModel implements IDataSource {
 
   HttpModel(super.parent, super.id);
 
-  static HttpModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static HttpModel? fromXml(Model parent, XmlElement xml) {
     HttpModel? model;
     try {
       model = HttpModel(parent, Xml.get(node: xml, tag: 'id'));

@@ -7,7 +7,7 @@ import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:fml/observable/binding.dart';
 
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class Query extends TransformModel implements ITransform {
@@ -16,10 +16,10 @@ class Query extends TransformModel implements ITransform {
   final String? target;
   HttpModel? ds;
 
-  Query(WidgetModel parent, {String? id, this.source, this.target})
+  Query(Model parent, {String? id, this.source, this.target})
       : super(parent, id);
 
-  static Query? fromXml(WidgetModel parent, XmlElement xml) {
+  static Query? fromXml(Model parent, XmlElement xml) {
     Query model = Query(parent,
         id: Xml.get(node: xml, tag: 'id'),
         target: Xml.get(node: xml, tag: 'target'));

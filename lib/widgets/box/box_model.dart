@@ -4,7 +4,7 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -365,7 +365,7 @@ class BoxModel extends ViewableWidgetModel {
   BoxModel(super.parent, super.id,
       {super.scope, this.expandDefault = true, super.data});
 
-  static BoxModel? fromXml(WidgetModel parent, XmlElement xml,
+  static BoxModel? fromXml(Model parent, XmlElement xml,
       {bool expandDefault = true, Scope? scope, dynamic data}) {
     BoxModel? model;
     try {

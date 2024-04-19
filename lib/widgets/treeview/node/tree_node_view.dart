@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/treeview/node/tree_node_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 
 class TreeNodeView extends StatefulWidget implements ViewableWidgetView {
   @override

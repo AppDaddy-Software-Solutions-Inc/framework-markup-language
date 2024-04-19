@@ -15,10 +15,10 @@ import 'package:fml/widgets/table/table_footer_cell_model.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
 import 'package:fml/widgets/table/table_header_group_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/table/table_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 import 'package:pluto_grid_plus_export/pluto_grid_plus_export.dart'
 as pluto_grid_export;
@@ -82,7 +82,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
     var b = Binding.fromString(property);
     if (b?.property == 'busy') return;
     super.onModelChange(model);

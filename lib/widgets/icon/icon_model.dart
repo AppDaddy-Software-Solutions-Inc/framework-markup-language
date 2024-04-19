@@ -3,7 +3,7 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -59,7 +59,7 @@ class IconModel extends ViewableWidgetModel {
     this.size = size;
   }
 
-  static IconModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static IconModel? fromXml(Model parent, XmlElement xml) {
     IconModel? model;
     try {
       model = IconModel(parent, Xml.get(node: xml, tag: 'id'));

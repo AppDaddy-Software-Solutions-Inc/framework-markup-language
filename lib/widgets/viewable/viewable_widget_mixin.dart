@@ -16,10 +16,10 @@ import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'dart:math';
 
-mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
+mixin ViewableWidgetMixin on Model implements IDragDrop {
 
   // model holding the tooltip
   TooltipModel? tipModel;
@@ -1131,16 +1131,16 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     // we only create the observable if its bound to in the template
     // otherwise we just store the value in a simple double variable
     String? key;
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewwidth'))) {
+    if (Model.isBound(this, key = Binding.toKey(id, 'viewwidth'))) {
       _viewWidthObservable = DoubleObservable(key, null, scope: scope);
     }
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewheight'))) {
+    if (Model.isBound(this, key = Binding.toKey(id, 'viewheight'))) {
       _viewHeightObservable = DoubleObservable(key, null, scope: scope);
     }
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewx'))) {
+    if (Model.isBound(this, key = Binding.toKey(id, 'viewx'))) {
       _viewXObservable = DoubleObservable(key, null, scope: scope);
     }
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewy'))) {
+    if (Model.isBound(this, key = Binding.toKey(id, 'viewy'))) {
       _viewYObservable = DoubleObservable(key, null, scope: scope);
     }
 
@@ -1149,9 +1149,9 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     _addVisibilityDetector = visible &&
         (!isNullOrEmpty(onscreen) ||
             !isNullOrEmpty(offscreen) ||
-            WidgetModel.isBound(this, Binding.toKey(id, 'visiblearea')) ||
-            WidgetModel.isBound(this, Binding.toKey(id, 'visibleheight')) ||
-            WidgetModel.isBound(this, Binding.toKey(id, 'visiblewidth')));
+            Model.isBound(this, Binding.toKey(id, 'visiblearea')) ||
+            Model.isBound(this, Binding.toKey(id, 'visibleheight')) ||
+            Model.isBound(this, Binding.toKey(id, 'visiblewidth')));
 
     // set margins. Can be comma separated top,left,bottom,right
     // space around the widget
@@ -1177,7 +1177,7 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
       eText.attributes.add(XmlAttribute(XmlName("value"), tooltip));
       eTip.children.add(eText);
 
-      var model = WidgetModel.fromXml(this, eTip);
+      var model = Model.fromXml(this, eTip);
       tipModel = (model is TooltipModel) ? model : null;
     }
 

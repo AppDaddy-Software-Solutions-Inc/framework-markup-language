@@ -12,7 +12,7 @@ import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/hive/form.dart' as hive;
 import 'package:fml/widgets/form/form_view.dart';
 import 'package:fml/widgets/input/input_model.dart';
@@ -256,7 +256,7 @@ class FormModel extends BoxModel implements IForm {
   }
 
   FormModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     String? type,
     String? title,
@@ -279,7 +279,7 @@ class FormModel extends BoxModel implements IForm {
     this.data = data;
   }
 
-  static FormModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static FormModel? fromXml(Model parent, XmlElement xml) {
     FormModel? model;
 
     try {
@@ -385,7 +385,7 @@ class FormModel extends BoxModel implements IForm {
     formFields.addAll(_getFormFields(children));
   }
 
-  static List<IFormField> _getFormFields(List<WidgetModel>? children) {
+  static List<IFormField> _getFormFields(List<Model>? children) {
     List<IFormField> fields = [];
     if (children != null) {
       for (var child in children) {
@@ -396,7 +396,7 @@ class FormModel extends BoxModel implements IForm {
     return fields;
   }
 
-  static List<IForm> getForms(List<WidgetModel>? children) {
+  static List<IForm> getForms(List<Model>? children) {
     List<IForm> forms = [];
     if (children != null) {
       for (var child in children) {
@@ -722,7 +722,7 @@ class FormModel extends BoxModel implements IForm {
     bool ok = true;
 
     // force commits on focused field
-    WidgetModel.unfocus();
+    Model.unfocus();
 
     // get all fields in alarm state
     var list = _getAlarmingFields();

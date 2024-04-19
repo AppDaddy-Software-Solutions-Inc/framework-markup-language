@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/widget/model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 import 'link_model.dart';
 
 class LinkView extends StatefulWidget implements ViewableWidgetView {
@@ -17,17 +17,17 @@ class LinkView extends StatefulWidget implements ViewableWidgetView {
 
 class _LinkViewState extends ViewableWidgetState<LinkView> {
   onTap() async {
-    WidgetModel.unfocus();
+    Model.unfocus();
     await widget.model.onClick(context);
   }
 
   onDoubleTap() async {
-    WidgetModel.unfocus();
+    Model.unfocus();
     await widget.model.onDoubleTap(context);
   }
 
   onLongPress() async {
-    WidgetModel.unfocus();
+    Model.unfocus();
     await widget.model.onLongPress(context);
   }
 

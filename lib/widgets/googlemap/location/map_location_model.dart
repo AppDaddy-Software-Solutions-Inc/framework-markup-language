@@ -6,7 +6,7 @@ import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -68,7 +68,7 @@ class MapLocationModel extends ViewableWidgetModel {
 
   double? get longitude => _longitude?.get();
 
-  MapLocationModel(WidgetModel super.parent, super.id,
+  MapLocationModel(Model super.parent, super.id,
       {dynamic data,
       dynamic latitude,
       dynamic longitude,
@@ -88,7 +88,7 @@ class MapLocationModel extends ViewableWidgetModel {
     this.visible = visible;
   }
 
-  static MapLocationModel? fromXml(WidgetModel parent, XmlElement? xml,
+  static MapLocationModel? fromXml(Model parent, XmlElement? xml,
       {dynamic data}) {
     MapLocationModel? model;
     try {

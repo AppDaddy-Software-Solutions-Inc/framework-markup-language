@@ -2,7 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/tooltip/v1/tooltip_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -36,13 +36,13 @@ class TooltipModel extends ViewableWidgetModel {
 
   String? get label => _label?.get();
 
-  TooltipModel(WidgetModel super.parent, super.id,
+  TooltipModel(Model super.parent, super.id,
       {dynamic label, dynamic color}) {
     this.label = label;
     this.color = color;
   }
 
-  static TooltipModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TooltipModel? fromXml(Model parent, XmlElement xml) {
     TooltipModel? model;
     try {
       model = TooltipModel(parent, Xml.get(node: xml, tag: 'id'));

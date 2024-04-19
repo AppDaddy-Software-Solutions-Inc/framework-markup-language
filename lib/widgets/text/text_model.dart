@@ -7,7 +7,7 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/span/span_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/text/text_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -28,7 +28,7 @@ class TextModel extends ViewableWidgetModel {
       _value!.set(v);
     } else {
       if ((v != null) ||
-          (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) {
+          (Model.isBound(this, Binding.toKey(id, 'value')))) {
         _value = StringObservable(Binding.toKey(id, 'value'), v,
             scope: scope, listener: onPropertyChange);
       }
@@ -427,7 +427,7 @@ class TextModel extends ViewableWidgetModel {
     if (selectable != null) this.selectable = selectable;
   }
 
-  static TextModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TextModel? fromXml(Model parent, XmlElement xml) {
     TextModel? model;
     try {
       model = TextModel(parent, Xml.get(node: xml, tag: 'id'));

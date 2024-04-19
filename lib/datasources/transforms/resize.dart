@@ -5,7 +5,7 @@ import 'package:fml/datasources/transforms/image_transform_model.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/integer.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class Resize extends ImageTransformModel implements ITransform {
@@ -35,9 +35,9 @@ class Resize extends ImageTransformModel implements ITransform {
 
   int get height => _height?.get() ?? 0;
 
-  Resize(WidgetModel parent, {String? id}) : super(parent, id);
+  Resize(Model parent, {String? id}) : super(parent, id);
 
-  static Resize? fromXml(WidgetModel parent, XmlElement xml) {
+  static Resize? fromXml(Model parent, XmlElement xml) {
     Resize model = Resize(parent, id: Xml.get(node: xml, tag: 'id'));
     model.deserialize(xml);
     return model;

@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/theme/theme.dart';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 
 class ThemeView extends StatefulWidget implements ViewableWidgetView {
   @override

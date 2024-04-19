@@ -6,7 +6,7 @@ import 'package:fml/helpers/mime.dart';
 import 'package:fml/widgets/camera/camera_view.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -242,7 +242,7 @@ class CameraModel extends CameraImageModel with ViewableWidgetMixin {
     busy = false;
   }
 
-  static CameraModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static CameraModel? fromXml(Model parent, XmlElement xml) {
     CameraModel? model;
     try {
 // build model

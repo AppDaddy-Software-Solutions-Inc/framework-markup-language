@@ -5,7 +5,7 @@ import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/switch/switch_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -53,7 +53,7 @@ class SwitchModel extends FormFieldModel implements IFormField {
   String? get label => _label?.get();
 
   SwitchModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     String? type,
     dynamic visible,
@@ -83,7 +83,7 @@ class SwitchModel extends FormFieldModel implements IFormField {
     dirty = false;
   }
 
-  static SwitchModel? fromXml(WidgetModel parent, XmlElement xml,
+  static SwitchModel? fromXml(Model parent, XmlElement xml,
       {String? type}) {
     SwitchModel? model;
     try {

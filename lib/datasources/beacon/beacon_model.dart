@@ -7,7 +7,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/integer.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:xml/xml.dart';
 import 'beacon.dart';
@@ -59,7 +59,7 @@ class BeaconModel extends DataSourceModel
 
   BeaconModel(super.parent, super.id);
 
-  static BeaconModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static BeaconModel? fromXml(Model parent, XmlElement xml) {
     BeaconModel? model;
     try {
       model = BeaconModel(parent, Xml.get(node: xml, tag: 'id'));

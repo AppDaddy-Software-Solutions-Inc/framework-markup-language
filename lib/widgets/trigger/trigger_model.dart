@@ -1,18 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/trigger/condition/trigger_condition_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TriggerModel extends WidgetModel {
+class TriggerModel extends Model {
   String? type = 'multi';
   final List<TriggerConditionModel> cases = [];
 
-  TriggerModel(WidgetModel parent, {String? id, this.type}) : super(parent, id);
+  TriggerModel(Model parent, {String? id, this.type}) : super(parent, id);
 
-  static TriggerModel? fromXml(WidgetModel parent, XmlElement e) {
+  static TriggerModel? fromXml(Model parent, XmlElement e) {
     String? id = Xml.get(node: e, tag: 'id');
     if (isNullOrEmpty(id)) {
       Log().warning('<TRIGGER> missing required id');

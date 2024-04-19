@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -83,7 +83,7 @@ class BusyModel extends ViewableWidgetModel {
 
   bool get expand => _expand?.get() ?? true;
 
-  BusyModel(WidgetModel? parent,
+  BusyModel(Model? parent,
       {String? id,
       dynamic visible,
       dynamic expand,
@@ -106,7 +106,7 @@ class BusyModel extends ViewableWidgetModel {
     visible = v;
   }
 
-  static BusyModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static BusyModel? fromXml(Model parent, XmlElement xml) {
     BusyModel? model;
     try {
       model = BusyModel(parent, id: Xml.get(node: xml, tag: 'id'));

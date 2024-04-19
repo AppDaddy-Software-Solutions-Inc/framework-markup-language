@@ -5,7 +5,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/scroller/scroller_view.dart';
@@ -102,9 +102,9 @@ class ScrollerModel extends BoxModel implements IScrollable {
 
   bool get allowDrag => _allowDrag?.get() ?? false;
 
-  ScrollerModel(WidgetModel super.parent, super.id);
+  ScrollerModel(Model super.parent, super.id);
 
-  static ScrollerModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static ScrollerModel? fromXml(Model parent, XmlElement xml) {
     ScrollerModel? model;
     try {
       // build model

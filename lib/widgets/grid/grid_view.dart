@@ -6,7 +6,7 @@ import 'package:fml/widgets/dragdrop/droppable_view.dart';
 import 'package:fml/widgets/scroller/scroller_behavior.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/scrollshadow/scroll_shadow_view.dart';
 import 'package:fml/widgets/scrollshadow/scroll_shadow_model.dart';
@@ -14,7 +14,7 @@ import 'package:fml/widgets/measure/measure_view.dart';
 import 'package:fml/widgets/grid/grid_model.dart';
 import 'package:fml/widgets/grid/item/grid_item_view.dart';
 import 'package:fml/widgets/grid/item/grid_item_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 
 class GridView extends StatefulWidget implements ViewableWidgetView {
   @override

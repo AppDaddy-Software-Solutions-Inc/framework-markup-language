@@ -3,7 +3,7 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/breadcrumb/breadcrumb_view.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -27,7 +27,7 @@ class BreadcrumbModel extends ViewableWidgetModel {
   Color? get backgroundcolor => _backgroundcolor?.get();
 
   BreadcrumbModel({
-    WidgetModel? parent,
+    Model? parent,
     String? id,
     dynamic height,
     dynamic color,
@@ -44,7 +44,7 @@ class BreadcrumbModel extends ViewableWidgetModel {
     this.opacity = opacity;
   }
 
-  static BreadcrumbModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static BreadcrumbModel? fromXml(Model parent, XmlElement xml) {
     BreadcrumbModel? model;
     try {
 // build model

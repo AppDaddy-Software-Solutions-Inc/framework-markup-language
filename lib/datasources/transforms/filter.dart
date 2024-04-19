@@ -4,7 +4,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/transforms/transform_interface.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -49,13 +49,13 @@ class Filter extends TransformModel implements ITransform {
 
   bool get filter => _filter?.get() ?? false;
 
-  Filter(WidgetModel? parent, {String? id, dynamic enabled, dynamic filter})
+  Filter(Model? parent, {String? id, dynamic enabled, dynamic filter})
       : super(parent, id) {
     this.enabled = enabled;
     this.filter = filter;
   }
 
-  static Filter? fromXml(WidgetModel? parent, XmlElement xml) {
+  static Filter? fromXml(Model? parent, XmlElement xml) {
     String? id = Xml.get(node: xml, tag: 'id');
     if (isNullOrEmpty(id)) id = newId();
     Filter model = Filter(parent,

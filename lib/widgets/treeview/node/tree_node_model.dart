@@ -2,7 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/treeview/tree_model.dart';
 import 'package:fml/widgets/treeview/node/tree_node_view.dart';
 import 'package:fml/event/handler.dart';
@@ -105,9 +105,9 @@ class TreeNodeModel extends ViewableWidgetModel {
 
   bool? get selected => _selected?.get();
 
-  TreeNodeModel(WidgetModel super.parent, super.id);
+  TreeNodeModel(Model super.parent, super.id);
 
-  static TreeNodeModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TreeNodeModel? fromXml(Model parent, XmlElement xml) {
     TreeNodeModel? model;
     try {
       model = TreeNodeModel(parent, Xml.get(node: xml, tag: 'id'));

@@ -5,11 +5,11 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 import 'package:intl/intl.dart';
 import 'line_chart_model.dart';
 

@@ -8,9 +8,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
 import 'package:fml/widgets/image/image_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 import 'package:fml/helpers/helpers.dart';
 
 // platform

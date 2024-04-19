@@ -1,8 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/widget/model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 import 'gesture_model.dart';
 
 class GestureView extends StatefulWidget implements ViewableWidgetView {
@@ -56,42 +56,42 @@ class _GestureViewState extends ViewableWidgetState<GestureView> {
   }
 
   onTap() async {
-    WidgetModel.unfocus();
+    Model.unfocus();
     await widget.model.onClick(context);
   }
 
   onDoubleTap() async {
-    WidgetModel.unfocus();
+    Model.unfocus();
     await widget.model.onDoubleTap(context);
   }
 
   onLongPress() async {
-    WidgetModel.unfocus();
+    Model.unfocus();
     await widget.model.onLongPress(context);
   }
 
   onSwipeLeft() async {
-    WidgetModel.unfocus();
+    Model.unfocus();
     await widget.model.onSwipeLeft(context);
   }
 
   onSwipeRight() async {
-    WidgetModel.unfocus();
+    Model.unfocus();
     await widget.model.onSwipeRight(context);
   }
 
   onSwipeUp() async {
-    WidgetModel.unfocus();
+    Model.unfocus();
     await widget.model.onSwipeUp(context);
   }
 
   onSwipeDown() async {
-    WidgetModel.unfocus();
+    Model.unfocus();
     await widget.model.onSwipeDown(context);
   }
 
   onRightClick() async {
-    WidgetModel.unfocus();
+    Model.unfocus();
     await widget.model.onRightClick(context);
   }
 }

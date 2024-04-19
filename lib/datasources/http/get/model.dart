@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/http/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -16,7 +16,7 @@ class HttpGetModel extends HttpModel implements IDataSource {
 
   HttpGetModel(super.parent, super.id);
 
-  static HttpGetModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static HttpGetModel? fromXml(Model parent, XmlElement xml) {
     HttpGetModel? model;
     try {
       model = HttpGetModel(parent, Xml.get(node: xml, tag: 'id'));

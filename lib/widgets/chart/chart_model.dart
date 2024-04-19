@@ -8,7 +8,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart/label/chart_label_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/chart/chart_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -49,7 +49,7 @@ class ChartModel extends BoxModel {
     busy = false;
   }
 
-  static ChartModel? fromTemplate(WidgetModel parent, Template template) {
+  static ChartModel? fromTemplate(Model parent, Template template) {
     ChartModel? model;
     try {
       XmlElement? xml =
@@ -63,7 +63,7 @@ class ChartModel extends BoxModel {
     return model;
   }
 
-  static ChartModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static ChartModel? fromXml(Model parent, XmlElement xml) {
     ChartModel? model;
     try {
       model = ChartModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -225,7 +225,7 @@ class ChartModel extends BoxModel {
 
   /// Called when the databroker returns a successful result
   ///
-  /// [ChartModel] overrides [WidgetModel]'s onDataSourceSuccess
+  /// [ChartModel] overrides [Model]'s onDataSourceSuccess
   /// to populate the series data from the datasource and
   /// to populate the label data from the datasource data.
   @override

@@ -4,7 +4,7 @@ import 'package:fml/widgets/alarm/alarm_model.dart';
 import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/input/input_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -93,7 +93,7 @@ class InputModel extends DecoratedInputModel implements IFormField {
     if (_value != null) {
       _value!.set(v);
     } else if (v != null ||
-        WidgetModel.isBound(this, Binding.toKey(id, 'value'))) {
+        Model.isBound(this, Binding.toKey(id, 'value'))) {
       _value = StringObservable(Binding.toKey(id, 'value'), v,
           scope: scope, listener: onPropertyChange);
     }
@@ -251,7 +251,7 @@ class InputModel extends DecoratedInputModel implements IFormField {
     dirty = false;
   }
 
-  static InputModel? fromXml(WidgetModel parent, XmlElement xml,
+  static InputModel? fromXml(Model parent, XmlElement xml,
       {String? type}) {
     InputModel? model;
     try {

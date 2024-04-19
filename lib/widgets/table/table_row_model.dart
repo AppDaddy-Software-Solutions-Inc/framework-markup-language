@@ -3,7 +3,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
@@ -174,13 +174,13 @@ class TableRowModel extends BoxModel {
     dirty = isDirty;
   }
 
-  TableRowModel(WidgetModel super.parent, super.id, {dynamic data})
+  TableRowModel(Model super.parent, super.id, {dynamic data})
       : super(scope: Scope(parent: parent.scope)) {
     this.data = data;
     dirty = false;
   }
 
-  static TableRowModel? fromXml(WidgetModel parent, XmlElement? xml,
+  static TableRowModel? fromXml(Model parent, XmlElement? xml,
       {dynamic data}) {
     if (xml == null) return null;
     TableRowModel? model;

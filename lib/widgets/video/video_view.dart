@@ -8,10 +8,10 @@ import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/text/text_view.dart';
 import 'package:fml/widgets/video/ivideo_player.dart';
 import 'package:fml/widgets/video/video_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
+import 'package:fml/widgets/widget/model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_player_win/video_player_win_plugin.dart';
 
@@ -68,7 +68,7 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
   }
 
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
     if (mounted) setState(() {});
   }
 

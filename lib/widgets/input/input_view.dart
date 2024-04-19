@@ -9,9 +9,9 @@ import 'package:flutter_multi_formatter/formatters/currency_input_formatter.dart
 import 'package:flutter_multi_formatter/formatters/phone_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/input/input_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -115,7 +115,7 @@ class _InputViewState extends ViewableWidgetState<InputView>
 
   /// Callback to fire the [_InputViewState.build] when the [InputModel] changes
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
     // ensure we don't call setstate if the model update was entered via
     // keyboard by comparing the controller to the callback's value
     //return if not mounted

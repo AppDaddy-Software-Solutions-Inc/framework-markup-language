@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -62,7 +62,7 @@ class PieChartSeriesModel extends ChartPainterSeriesModel {
     this.showpoints = showpoints;
   }
 
-  static PieChartSeriesModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static PieChartSeriesModel? fromXml(Model parent, XmlElement xml) {
     PieChartSeriesModel? model;
     try {
       model = PieChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));

@@ -4,7 +4,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/grid/grid_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -79,11 +79,11 @@ class GridItemModel extends BoxModel {
 
   bool get dirty => _dirty?.get() ?? false;
 
-  GridItemModel(WidgetModel super.parent, super.id,
+  GridItemModel(Model super.parent, super.id,
       {super.data, dynamic backgroundcolor})
       : super(scope: Scope(parent: parent.scope));
 
-  static GridItemModel? fromXml(WidgetModel parent, XmlElement? xml,
+  static GridItemModel? fromXml(Model parent, XmlElement? xml,
       {dynamic data}) {
     GridItemModel? model;
     try {

@@ -4,7 +4,7 @@
 // import 'package:fml/event/event.dart' ;
 // import 'package:fml/widgets/widget/iViewableWidget.dart';
 // import 'dart:ui' as UI;
-// import 'package:fml/widgets/widget/widget_model.dart' ;
+// import 'package:fml/widgets/widget/model.dart' ;
 // import 'package:flutter/material.dart';
 // import 'package:fml/template/template.dart';
 // import 'package:fml/widgets/column/column_view.dart' as COLUMN;

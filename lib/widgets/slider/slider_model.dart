@@ -6,7 +6,7 @@ import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/widgets/slider/slider_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -76,7 +76,7 @@ class SliderModel extends FormFieldModel implements IFormField {
     if (_value != null) {
       _value!.set(v);
     } else if (v != null ||
-        WidgetModel.isBound(this, Binding.toKey(id, 'value'))) {
+        Model.isBound(this, Binding.toKey(id, 'value'))) {
       _value = StringObservable(Binding.toKey(id, 'value'), v,
           scope: scope, listener: onPropertyChange);
     }
@@ -147,7 +147,7 @@ class SliderModel extends FormFieldModel implements IFormField {
   bool get range => _range?.get() ?? false;
 
   SliderModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     String? type,
     dynamic visible,
@@ -187,7 +187,7 @@ class SliderModel extends FormFieldModel implements IFormField {
     dirty = false;
   }
 
-  static SliderModel? fromXml(WidgetModel parent, XmlElement xml,
+  static SliderModel? fromXml(Model parent, XmlElement xml,
       {String? type}) {
     SliderModel? model;
     try {

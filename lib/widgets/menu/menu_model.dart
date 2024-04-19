@@ -11,7 +11,7 @@ import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/menu/menu_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
@@ -67,7 +67,7 @@ class MenuModel extends ViewableWidgetModel implements IScrollable {
     busy = false;
   }
 
-  static MenuModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static MenuModel? fromXml(Model parent, XmlElement xml) {
     MenuModel? model;
     try {
       model = MenuModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -79,7 +79,7 @@ class MenuModel extends ViewableWidgetModel implements IScrollable {
     return model;
   }
 
-  static MenuModel? fromMap(WidgetModel parent, Map<String, String> map) {
+  static MenuModel? fromMap(Model parent, Map<String, String> map) {
     MenuModel? model;
     try {
       model = MenuModel(parent, newId());

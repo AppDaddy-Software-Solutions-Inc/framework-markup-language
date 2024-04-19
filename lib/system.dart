@@ -18,7 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/widgets/shortcut/shortcut_model.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:path/path.dart';
 import 'dart:async';
 import 'package:fml/hive/database.dart';
@@ -36,7 +36,7 @@ import 'package:fml/platform/platform.vm.dart'
     if (dart.library.io) 'package:fml/platform/platform.vm.dart'
     if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
-class System extends WidgetModel implements IEventManager {
+class System extends Model implements IEventManager {
   static const String myId = "SYSTEM";
 
   static final initialized  = Completer<bool>();
@@ -582,10 +582,10 @@ class System extends WidgetModel implements IEventManager {
       manager.remove(type, callback);
 
   @override
-  broadcastEvent(WidgetModel source, Event event) =>
+  broadcastEvent(Model source, Event event) =>
       manager.broadcast(this, event);
 
   @override
-  executeEvent(WidgetModel source, String event) =>
+  executeEvent(Model source, String event) =>
       manager.execute(this, event);
 }

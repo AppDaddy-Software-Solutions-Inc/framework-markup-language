@@ -8,8 +8,8 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/modal/modal_manager_view.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 
 class ModalView extends StatefulWidget implements ViewableWidgetView {
   @override

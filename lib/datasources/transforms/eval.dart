@@ -6,7 +6,7 @@ import 'package:fml/eval/eval.dart' as fml_eval;
 import 'package:fml/observable/binding.dart';
 
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class Eval extends TransformModel implements ITransform {
@@ -14,10 +14,10 @@ class Eval extends TransformModel implements ITransform {
   final String? source;
   final String? target;
 
-  Eval(WidgetModel? parent, {String? id, this.source, this.target})
+  Eval(Model? parent, {String? id, this.source, this.target})
       : super(parent, id);
 
-  static Eval? fromXml(WidgetModel? parent, XmlElement xml) {
+  static Eval? fromXml(Model? parent, XmlElement xml) {
     Eval model = Eval(
       parent,
       id: Xml.get(node: xml, tag: 'id'),

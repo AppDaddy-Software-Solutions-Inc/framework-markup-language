@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/option/tag_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/typeahead/typeahead_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -108,9 +108,9 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
   }
   bool get obscure => _obscure?.get() ?? false;
 
-  TypeaheadModel(WidgetModel super.parent, super.id);
+  TypeaheadModel(Model super.parent, super.id);
 
-  static TypeaheadModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TypeaheadModel? fromXml(Model parent, XmlElement xml) {
     TypeaheadModel? model =
         TypeaheadModel(parent, Xml.get(node: xml, tag: 'id'));
     model.deserialize(xml);

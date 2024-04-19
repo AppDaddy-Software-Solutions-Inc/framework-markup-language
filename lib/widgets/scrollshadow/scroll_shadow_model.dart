@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 
 class ScrollShadowModel extends ViewableWidgetModel {
@@ -64,7 +64,7 @@ class ScrollShadowModel extends ViewableWidgetModel {
 
   bool get down => _down?.get() ?? false;
 
-  ScrollShadowModel(WidgetModel parent,
+  ScrollShadowModel(Model parent,
       {String? id, dynamic left, dynamic right, dynamic up, dynamic down})
       : super(parent, id) {
     this.left = left;

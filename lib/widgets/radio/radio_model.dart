@@ -8,7 +8,7 @@ import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/radio/radio_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -72,7 +72,7 @@ class RadioModel extends FormFieldModel implements IFormField {
     if (_value != null) {
       _value!.set(v);
     } else if (v != null ||
-        WidgetModel.isBound(this, Binding.toKey(id, 'value'))) {
+        Model.isBound(this, Binding.toKey(id, 'value'))) {
       _value = StringObservable(Binding.toKey(id, 'value'), v,
           scope: scope, listener: onValueChange);
     }
@@ -101,7 +101,7 @@ class RadioModel extends FormFieldModel implements IFormField {
   }
 
   RadioModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     dynamic visible,
     dynamic mandatory,
@@ -141,7 +141,7 @@ class RadioModel extends FormFieldModel implements IFormField {
     dirty = false;
   }
 
-  static RadioModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static RadioModel? fromXml(Model parent, XmlElement xml) {
     RadioModel? model = RadioModel(parent, Xml.get(node: xml, tag: 'id'));
     model.deserialize(xml);
     return model;

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/scribble/scribble_view.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:perfect_freehand/perfect_freehand.dart';
@@ -20,7 +20,7 @@ class ScribbleModel extends FormFieldModel implements IFormField {
       _value!.set(v);
     } else {
       if ((v != null) ||
-          (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) {
+          (Model.isBound(this, Binding.toKey(id, 'value')))) {
         _value = StringObservable(Binding.toKey(id, 'value'), v,
             scope: scope, listener: onPropertyChange);
       }
@@ -87,7 +87,7 @@ class ScribbleModel extends FormFieldModel implements IFormField {
   String? get style => _style?.get();
 
   ScribbleModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     dynamic mandatory,
     dynamic editable,
@@ -120,7 +120,7 @@ class ScribbleModel extends FormFieldModel implements IFormField {
     dirty = false;
   }
 
-  static ScribbleModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static ScribbleModel? fromXml(Model parent, XmlElement xml) {
     ScribbleModel? model;
     try {
       model = ScribbleModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -156,7 +156,7 @@ class SignatureModel extends ViewableWidgetModel {
   Color penColor;
   double penStrokeWidth;
 
-  SignatureModel(WidgetModel super.parent, super.id,
+  SignatureModel(Model super.parent, super.id,
       {List<PointVector>? points,
       double? width,
       double? height,

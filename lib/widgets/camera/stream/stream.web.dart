@@ -7,12 +7,12 @@ import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 import 'dart:ui' as ui;
 import 'package:fml/datasources/file/file.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/camera/stream/stream.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -85,7 +85,7 @@ class ViewState extends ViewableWidgetState<View> {
 
   /// Callback to fire the [_ViewState.build] when the [CameraModel] changes
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
     var b = Binding.fromString(property);
     if ((mounted) && (b?.property == 'enabled')) {
       Log().debug('enabled changed value');

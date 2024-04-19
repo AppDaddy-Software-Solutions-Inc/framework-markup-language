@@ -4,9 +4,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/helpers/color.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/widget/model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 
 class MenuItemView extends StatefulWidget implements ViewableWidgetView {
   @override
@@ -222,7 +222,7 @@ class _MenuItemViewState extends ViewableWidgetState<MenuItemView> {
   }
 
   void onTap() async {
-    WidgetModel.unfocus();
+    Model.unfocus();
     widget.model.onClick();
   }
 }

@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:fml/phrase.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/scribble/scribble_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 import 'package:perfect_freehand/perfect_freehand.dart';
 
 class ScribbleView extends StatefulWidget implements ViewableWidgetView {

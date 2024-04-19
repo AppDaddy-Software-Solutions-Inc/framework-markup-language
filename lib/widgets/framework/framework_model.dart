@@ -11,8 +11,8 @@ import 'package:fml/phrase.dart';
 import 'package:fml/template/template_manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/shortcut/shortcut_model.dart';
-import 'package:fml/widgets/widget/widget_model_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model_interface.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -44,11 +44,11 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
       manager.remove(type, callback);
 
   @override
-  broadcastEvent(WidgetModel source, Event event) =>
+  broadcastEvent(Model source, Event event) =>
       manager.broadcast(this, event);
 
   @override
-  executeEvent(WidgetModel source, String event) =>
+  executeEvent(Model source, String event) =>
       manager.execute(this, event);
 
   HeaderModel? header;
@@ -242,7 +242,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
     return myParameters;
   }
 
-  FrameworkModel(WidgetModel super.parent, super.id,
+  FrameworkModel(Model super.parent, super.id,
       {dynamic key,
       dynamic dependency,
       dynamic version,
@@ -258,7 +258,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
     this.onreturn = onreturn;
   }
 
-  static FrameworkModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static FrameworkModel? fromXml(Model parent, XmlElement xml) {
     FrameworkModel? model;
     try {
       model = FrameworkModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -270,7 +270,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
     return model;
   }
 
-  static FrameworkModel fromUrl(WidgetModel parent, String url,
+  static FrameworkModel fromUrl(Model parent, String url,
       {String? id, bool? refresh, String? dependency}) {
     FrameworkModel model = FrameworkModel(parent, id, dependency: dependency);
     model.load(url, refresh: refresh ?? false);
@@ -512,7 +512,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
     try {
       Binding? b = Binding.fromString(property);
       if ((b?.property == 'visible') ||

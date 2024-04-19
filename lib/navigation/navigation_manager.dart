@@ -17,7 +17,7 @@ import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/store/store_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 // platform
 import 'package:fml/platform/platform.vm.dart'
@@ -336,7 +336,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
   }
 
   Future<bool> open(Map<String, String?>? parameters,
-      {bool? refresh = false, WidgetModel? model, String? dependency}) async {
+      {bool? refresh = false, Model? model, String? dependency}) async {
     bool ok = true;
     parameters ??= <String, String>{};
 

@@ -4,7 +4,7 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/splitview/split_view_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -75,11 +75,11 @@ class SplitViewModel extends BoxModel {
 
   Color? get dividerHandleColor => _dividerHandleColor?.get();
 
-  SplitViewModel(WidgetModel super.parent, super.id, {bool? vertical}) {
+  SplitViewModel(Model super.parent, super.id, {bool? vertical}) {
     if (vertical != null) _vertical = vertical;
   }
 
-  static SplitViewModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static SplitViewModel? fromXml(Model parent, XmlElement xml) {
     SplitViewModel? model;
     try {
       model = SplitViewModel(parent, Xml.get(node: xml, tag: 'id'),
@@ -107,7 +107,7 @@ class SplitViewModel extends BoxModel {
 
     // remove and destroy all non-box children
     if (children != null) {
-      var list = children!.where((child) => child is! BoxModel).cast<WidgetModel>();
+      var list = children!.where((child) => child is! BoxModel).cast<Model>();
       for (var child in list) {
         child.dispose();
       }

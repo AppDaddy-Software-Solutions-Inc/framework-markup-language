@@ -4,7 +4,7 @@ import 'package:fml/datasources/transforms/transform_interface.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
 enum SortTypes { none, ascending, descending }
@@ -69,7 +69,7 @@ class Sort extends TransformModel implements ITransform {
 
   bool get casesensitive => _casesensitive ?? false;
 
-  Sort(WidgetModel? parent,
+  Sort(Model? parent,
       {String? id,
       dynamic field,
       dynamic type,
@@ -82,7 +82,7 @@ class Sort extends TransformModel implements ITransform {
     this.casesensitive = casesensitive;
   }
 
-  static Sort? fromXml(WidgetModel? parent, XmlElement xml) {
+  static Sort? fromXml(Model? parent, XmlElement xml) {
     Sort model = Sort(
       parent,
       id: Xml.get(node: xml, tag: 'id'),

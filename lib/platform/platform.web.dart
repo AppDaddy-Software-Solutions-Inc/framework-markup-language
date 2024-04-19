@@ -7,7 +7,7 @@ import 'package:fml/fml.dart';
 import 'package:fml/helpers/mime.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/helpers/uri.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:universal_html/html.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fml/log/manager.dart';
@@ -180,7 +180,7 @@ class Platform {
       // The script in index.html sets the data value that we assign to doc:
       // `js2fml({'data': `${event.data}`, 'from': `${event.origin}`, 'to': 'fml'});`
       String doc = json['data'];
-      WidgetModel? model = System();
+      Model? model = System();
       EventManager.of(model)?.broadcastEvent(
           model, Event(EventTypes.openjstemplate, parameters: {'templ8': doc}));
     };

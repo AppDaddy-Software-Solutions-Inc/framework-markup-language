@@ -2,8 +2,8 @@
 import 'package:fml/widgets/popover/item/popover_item_model.dart';
 import 'package:fml/widgets/popover/popover_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/viewable_widget_view.dart';
-import 'package:fml/widgets/widget/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 
 class PopoverView extends StatefulWidget implements ViewableWidgetView {
   @override

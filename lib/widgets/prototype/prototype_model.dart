@@ -9,7 +9,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -26,10 +26,10 @@ class PrototypeModel extends BoxModel {
   // prototypes must be in their own scope
   // since they destroy their children once the prototype is created
   // in the deserialize().
-  PrototypeModel(WidgetModel super.parent, super.id)
+  PrototypeModel(Model super.parent, super.id)
       : super(scope: Scope(parent: parent.scope));
 
-  static PrototypeModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static PrototypeModel? fromXml(Model parent, XmlElement xml) {
     PrototypeModel? model;
     try {
       // build model
@@ -91,11 +91,11 @@ class PrototypeModel extends BoxModel {
     busy = true;
 
     // build children from datasource
-    List<WidgetModel> models = [];
+    List<Model> models = [];
     if (list != null) {
       for (var data in list) {
         // find model from list
-        WidgetModel? model = children?.firstWhereOrNull((child) {
+        Model? model = children?.firstWhereOrNull((child) {
           if (child.data == data) return true;
           if (child.data is List &&
               (child.data as List).isNotEmpty &&
@@ -104,7 +104,7 @@ class PrototypeModel extends BoxModel {
         });
 
         // create the model if it doesn't already exist
-        model ??= WidgetModel.fromXml(this, prototype!.copy(),
+        model ??= Model.fromXml(this, prototype!.copy(),
             scope: Scope(parent: parent?.scope), data: data);
 
         // add model to the list
@@ -155,11 +155,11 @@ class PrototypeModel extends BoxModel {
     await DragDrop.onDrop(droppable, draggable, dropSpot: dropSpot);
 
     // get drag and drop index
-    var dragIndex = children?.contains(draggable as WidgetModel) ?? false
-        ? children?.indexOf(draggable as WidgetModel)
+    var dragIndex = children?.contains(draggable as Model) ?? false
+        ? children?.indexOf(draggable as Model)
         : null;
-    var dropIndex = children?.contains(droppable as WidgetModel) ?? false
-        ? children?.indexOf(droppable as WidgetModel)
+    var dropIndex = children?.contains(droppable as Model) ?? false
+        ? children?.indexOf(droppable as Model)
         : null;
 
     // move the cell in the items list

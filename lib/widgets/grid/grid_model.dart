@@ -11,7 +11,7 @@ import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/grid/grid_view.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/grid/grid_view.dart' as grid_view;
 import 'package:fml/widgets/grid/item/grid_item_model.dart';
 import 'package:fml/datasources/transforms/sort.dart' as sort_transform;
@@ -199,7 +199,7 @@ class GridModel extends BoxModel implements IScrollable {
 
   Size? size;
 
-  GridModel(WidgetModel super.parent, super.id,
+  GridModel(Model super.parent, super.id,
       {dynamic width,
       dynamic height,
       dynamic direction,
@@ -223,7 +223,7 @@ class GridModel extends BoxModel implements IScrollable {
     moreRight = false;
   }
 
-  static GridModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static GridModel? fromXml(Model parent, XmlElement xml) {
     GridModel? model;
     try {
       model = GridModel(parent, Xml.get(node: xml, tag: 'id'));

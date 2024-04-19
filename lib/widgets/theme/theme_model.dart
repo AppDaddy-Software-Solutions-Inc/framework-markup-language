@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/theme/theme_view.dart';
@@ -351,12 +351,12 @@ class ThemeModel extends ViewableWidgetModel {
 
   Color? get onErrorContainer => _onErrorContainer?.get();
 
-  ThemeModel(WidgetModel super.parent, super.id)
+  ThemeModel(Model super.parent, super.id)
       : super(scope: Scope(id: myId));
 
   // Map<String, dynamic> themeValues = Map<String, dynamic>();
 
-  static ThemeModel? fromXml(WidgetModel parent, XmlElement xml,
+  static ThemeModel? fromXml(Model parent, XmlElement xml,
       {String? type}) {
     ThemeModel? model;
     try {

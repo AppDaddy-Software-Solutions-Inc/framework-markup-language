@@ -7,7 +7,7 @@ import 'package:fml/widgets/table/table_header_cell_model.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -110,9 +110,9 @@ class TableHeaderGroupModel extends BoxModel {
 
   String? get title => _title?.get();
 
-  TableHeaderGroupModel(WidgetModel super.parent, super.id);
+  TableHeaderGroupModel(Model super.parent, super.id);
 
-  static TableHeaderGroupModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TableHeaderGroupModel? fromXml(Model parent, XmlElement xml) {
     TableHeaderGroupModel? model;
     try {
       model = TableHeaderGroupModel(parent, Xml.get(node: xml, tag: 'id'));

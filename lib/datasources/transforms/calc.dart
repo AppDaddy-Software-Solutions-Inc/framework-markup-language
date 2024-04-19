@@ -7,7 +7,7 @@ import 'package:fml/eval/eval.dart' as fml_eval;
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class Calc extends TransformModel implements ITransform {
@@ -28,7 +28,7 @@ class Calc extends TransformModel implements ITransform {
   late final String? operation;
   late final List<String>? groups;
 
-  Calc(WidgetModel? parent,
+  Calc(Model? parent,
       {String? id,
       String? operation,
       this.source,
@@ -40,7 +40,7 @@ class Calc extends TransformModel implements ITransform {
     groups = group?.split(",");
   }
 
-  static Calc? fromXml(WidgetModel? parent, XmlElement xml) {
+  static Calc? fromXml(Model? parent, XmlElement xml) {
     Calc model = Calc(
       parent,
       id: Xml.get(node: xml, tag: 'id'),

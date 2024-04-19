@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -52,7 +52,7 @@ class AnimationChildModel extends AnimationModel {
 
   AnimationChildModel(super.parent, super.id); // ; {key: value}
 
-  static AnimationChildModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static AnimationChildModel? fromXml(Model parent, XmlElement xml) {
     AnimationChildModel? model;
     try {
       model = AnimationChildModel(parent, Xml.get(node: xml, tag: 'id'));

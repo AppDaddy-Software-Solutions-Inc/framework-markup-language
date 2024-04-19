@@ -116,7 +116,7 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     return box;
   }
 
-  BoxView get _missingView => BoxView(BoxModel(widget.model, null), widget.model.inflate());
+  BoxView get _missingView => BoxView(BoxModel(widget.model, null), []);
 
   @override
   Widget build(BuildContext context) {

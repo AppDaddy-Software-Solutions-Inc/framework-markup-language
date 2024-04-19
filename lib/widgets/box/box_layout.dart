@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_data.dart';
-import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 
 class BoxLayout extends ParentDataWidget<BoxData> {
 

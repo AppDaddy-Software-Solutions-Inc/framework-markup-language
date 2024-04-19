@@ -1,11 +1,13 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:fml/widgets/widget/model.dart';
+
+abstract class ViewableWidgetView {
+  ViewableWidgetMixin? get model;
+}
 
 abstract class ViewableWidgetState<T extends StatefulWidget> extends State<T>
     implements IModelListener {

@@ -11,10 +11,9 @@ import 'package:fml/widgets/box/wrap/wrap_object.dart';
 import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/widgets/drawer/drawer_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:fml/widgets/widget/model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
 
 abstract class BoxViewWidgetState<T extends StatefulWidget> extends ViewableWidgetState<T>
     implements IModelListener {

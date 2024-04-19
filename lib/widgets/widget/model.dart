@@ -8,7 +8,7 @@ import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';

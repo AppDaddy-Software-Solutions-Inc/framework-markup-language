@@ -11,7 +11,7 @@ import 'package:fml/widgets/box/box_mixin.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/stack/stack_renderer.dart';
 import 'package:fml/widgets/box/wrap/wrap_renderer.dart';
-import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 
 // change to false to allow write messages
 const debug = kDebugMode && true;

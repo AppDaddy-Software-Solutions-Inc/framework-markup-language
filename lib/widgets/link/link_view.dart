@@ -1,9 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/widget/model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 import 'link_model.dart';
 
 class LinkView extends StatefulWidget implements ViewableWidgetView {

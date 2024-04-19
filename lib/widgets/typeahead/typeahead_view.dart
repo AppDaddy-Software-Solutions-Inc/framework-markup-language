@@ -3,11 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/typeahead/typeahead_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 
 class TypeaheadView extends StatefulWidget implements ViewableWidgetView {
   @override

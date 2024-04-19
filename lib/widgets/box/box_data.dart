@@ -1,6 +1,6 @@
 import 'package:flutter/rendering.dart';
 import 'package:fml/widgets/positioned/positioned_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 
 enum FlexType { shrinking, fixed, expanding }
 

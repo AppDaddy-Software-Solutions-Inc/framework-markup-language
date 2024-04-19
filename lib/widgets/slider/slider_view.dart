@@ -2,8 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/slider/slider_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class SliderView extends StatefulWidget implements ViewableWidgetView {

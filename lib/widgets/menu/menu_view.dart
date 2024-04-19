@@ -5,9 +5,8 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/scroller/scroller_behavior.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 
 class MenuView extends StatefulWidget implements ViewableWidgetView {
   @override

@@ -7,11 +7,10 @@ import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/map/map_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/map/marker/map_marker_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapView extends StatefulWidget implements ViewableWidgetView {

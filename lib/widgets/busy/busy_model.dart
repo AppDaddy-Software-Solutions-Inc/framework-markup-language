@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';

@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'package:fml/navigation/navigation_observer.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
 import 'src/arrow.dart';
 import 'src/bubble.dart';
 import 'src/element_box.dart';

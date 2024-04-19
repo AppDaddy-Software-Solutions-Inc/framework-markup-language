@@ -19,6 +19,11 @@ import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'dart:math';
 
+class ViewableWidgetModel extends Model with ViewableWidgetMixin {
+
+  ViewableWidgetModel(super.parent, super.id, {super.scope, super.data});
+}
+
 mixin ViewableWidgetMixin on Model implements IDragDrop {
 
   // model holding the tooltip
@@ -575,7 +580,7 @@ mixin ViewableWidgetMixin on Model implements IDragDrop {
     }
     return maxHeight!;
   }
-  
+
   // Depth - used in stack
   DoubleObservable? _depth;
 

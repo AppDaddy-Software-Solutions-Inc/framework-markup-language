@@ -2,11 +2,10 @@
 import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/widgets/editor/editor_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_highlight/theme_map.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 import 'package:highlight/languages/http.dart';
 import 'package:highlight/languages/dart.dart';
 import 'package:highlight/languages/xml.dart';

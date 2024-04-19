@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:fml/widgets/positioned/positioned_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 
 class PagerView extends StatefulWidget implements ViewableWidgetView {
   @override

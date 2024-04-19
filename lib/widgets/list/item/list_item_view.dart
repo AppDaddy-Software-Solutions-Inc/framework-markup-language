@@ -1,9 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/list/item/list_item_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 
 class ListItemView extends StatefulWidget implements ViewableWidgetView {
   @override

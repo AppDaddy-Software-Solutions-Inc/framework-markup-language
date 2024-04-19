@@ -1,8 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/widget/model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 import 'gesture_model.dart';
 
 class GestureView extends StatefulWidget implements ViewableWidgetView {

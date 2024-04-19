@@ -12,8 +12,7 @@ import 'package:fml/widgets/list/item/list_item_view.dart';
 import 'package:fml/widgets/list/item/list_item_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 
 class ListLayoutView extends StatefulWidget implements ViewableWidgetView {
   @override

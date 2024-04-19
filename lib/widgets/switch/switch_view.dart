@@ -1,8 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/switch/switch_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/text/text_view.dart';
 

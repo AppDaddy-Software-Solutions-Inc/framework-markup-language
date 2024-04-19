@@ -2,8 +2,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'padding_model.dart';
 
 class PaddingView extends StatefulWidget implements ViewableWidgetView {

@@ -6,8 +6,7 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/splitview/split_view_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 
 class SplitViewView extends StatefulWidget implements ViewableWidgetView {
 

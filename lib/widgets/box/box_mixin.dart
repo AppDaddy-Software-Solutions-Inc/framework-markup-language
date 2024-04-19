@@ -3,7 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/box/box_constraints.dart';
 import 'package:fml/widgets/box/box_data.dart';
-import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 
 mixin BoxMixin {
   // lays out the child

@@ -3,8 +3,7 @@ import 'package:fml/navigation/navigation_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/navigation/page.dart';
 import 'package:fml/widgets/breadcrumb/breadcrumb_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 
 /// Breadcrumb View
 ///

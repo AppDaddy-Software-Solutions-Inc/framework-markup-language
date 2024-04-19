@@ -9,7 +9,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
 import 'package:fml/widgets/camera/stream/stream.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
@@ -21,7 +21,6 @@ import 'package:fml/helpers/helpers.dart';
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
     if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
     if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 
 class CameraView extends StatefulWidget implements ViewableWidgetView {
   @override

@@ -9,8 +9,7 @@ import 'package:flutter_multi_formatter/formatters/currency_input_formatter.dart
 import 'package:flutter_multi_formatter/formatters/phone_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/input/input_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';

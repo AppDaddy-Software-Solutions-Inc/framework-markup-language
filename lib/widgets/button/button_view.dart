@@ -2,9 +2,8 @@
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/button/button_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/viewable/viewable_widget_view.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/viewable/viewable_widget_state.dart';
 
 /// Button View
 ///

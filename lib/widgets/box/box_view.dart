@@ -393,17 +393,15 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
   }
 
   // build a decorated box around the specified child
-  static Widget _buildView(BuildContext context, BoxConstraints constraints, BoxModel model, List<Widget> children, {bool wrapInLayoutBox = false}) {
+  static Widget _buildView(BuildContext context, BoxConstraints constraints, BoxModel model, List<Widget> children) {
 
     // inner children must be wrapped if parent is a row, column, stack or box
-    if (wrapInLayoutBox) {
       List<Widget> list = [];
       for (var child in children) {
         var model = (child is ViewableWidgetView) ? (child as ViewableWidgetView).model : null;
         list.add(model != null ? BoxLayout(model: model, child: child) : child);
       }
       children = list;
-    }
 
     // calculate the alignment
     var alignment = WidgetAlignment(model.layoutType,
@@ -459,7 +457,7 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     onLayout(constraints);
 
     // build the box
-    var view = _buildView(context, constraints, widget.model, widget.children, wrapInLayoutBox: widget.runtimeType == RootBoxView);
+    var view = _buildView(context, constraints, widget.model, widget.children);
 
     // add margins
     view = addMargins(view);

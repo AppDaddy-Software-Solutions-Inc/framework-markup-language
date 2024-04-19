@@ -375,8 +375,8 @@ class FrameworkViewState extends State<FrameworkView>
   }
 
   Widget _buildBody(BoxConstraints constraints) {
-    var header = null;//widget.model.header;
-    var footer = null;//widget.model.footer;
+    var header = widget.model.header;
+    var footer = widget.model.footer;
     var body = widget.model;
 
     // default model layout to stack if not supplied

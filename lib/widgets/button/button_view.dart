@@ -149,7 +149,7 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
 
     // build the body
     var model = widget.model.getContentModel();
-    Widget body = BoxView(model);
+    Widget body = BoxView(model, model.inflate());
 
     // disabled?
     if (!widget.model.enabled) {

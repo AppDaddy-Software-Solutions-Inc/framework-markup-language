@@ -904,10 +904,10 @@ class DrawerViewState extends ViewableWidgetState<DrawerView> implements IDragLi
       fromRight = width;
     }
 
-    top = widget.model.top != null ? BoxView(widget.model.top!) : null;
-    bottom = widget.model.bottom != null ? BoxView(widget.model.bottom!) : null;
-    left = widget.model.left != null ? BoxView(widget.model.left!) : null;
-    right = widget.model.right != null ? BoxView(widget.model.right!) : null;
+    top = widget.model.top != null ? BoxView(widget.model.top!, widget.model.top!.inflate()) : null;
+    bottom = widget.model.bottom != null ? BoxView(widget.model.bottom!, widget.model.bottom!.inflate()) : null;
+    left = widget.model.left != null ? BoxView(widget.model.left!, widget.model.left!.inflate()) : null;
+    right = widget.model.right != null ? BoxView(widget.model.right!, widget.model.left!.inflate()) : null;
 
     double screenHeight = height;
     double screenWidth = width;

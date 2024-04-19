@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
-import 'package:fml/widgets/positioned/positioned_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
@@ -82,8 +81,9 @@ class PagerViewState extends ViewableWidgetState<PagerView> {
     }
   }
 
-  // called by models inflate
-  List<Widget> inflate() {
+  @override
+  Widget build(BuildContext context) {
+
     List<Widget> list = [];
 
     // create page view
@@ -101,8 +101,6 @@ class PagerViewState extends ViewableWidgetState<PagerView> {
           itemBuilder: buildPage,
           itemCount: _pages.length,
           onPageChanged: (int page) => widget.model.currentpage = page + 1);
-
-      pageView = BoxView(widget.model, children: [pageView!]);
     }
 
     list.add(pageView!);
@@ -114,13 +112,11 @@ class PagerViewState extends ViewableWidgetState<PagerView> {
           controller: _controller!,
           itemCount: _pages.length,
           color:
-              widget.model.color ?? Theme.of(context).colorScheme.onBackground,
+          widget.model.color ?? Theme.of(context).colorScheme.onBackground,
           onPageSelected: (int page) =>
               pageTo(page + 1, widget.model.transition));
 
-      var model = PositionedModel(widget.model, null, bottom: 8, child: pager);
-
-      pager = BoxView(model, children: [Positioned(bottom: 8, child: pager!)]);
+      pager = Positioned(bottom: 8, child: pager!);
     }
     if (pager != null) {
       list.add(pager!);
@@ -134,11 +130,8 @@ class PagerViewState extends ViewableWidgetState<PagerView> {
     }
     list.add(busy!);
 
-    return list;
+    return BoxView(widget.model, list);
   }
-
-  @override
-  Widget build(BuildContext context) => BoxView(widget.model);
 }
 
 class DotsIndicator extends AnimatedWidget {

@@ -94,5 +94,5 @@ class MapMarkerModel extends ViewableModel {
   }
 
   @override
-  Widget? getView() => null;
+  Widget getView() => const Offstage();
 }

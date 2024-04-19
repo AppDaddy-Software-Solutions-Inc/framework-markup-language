@@ -30,7 +30,7 @@ class _TreeNodeViewState extends ViewableWidgetState<TreeNodeView> {
           nodes.add(TreeNodeView(model));
         } else if (model is ViewableMixin) {
           var view = model.getView();
-          if (view != null) children.add(view);
+          children.add(view);
         }
       }
     }

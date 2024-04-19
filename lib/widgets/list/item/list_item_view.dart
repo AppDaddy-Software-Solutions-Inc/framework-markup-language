@@ -17,5 +17,5 @@ class ListItemView extends StatefulWidget implements ViewableWidgetView {
 class _ListItemViewState extends ViewableWidgetState<ListItemView> {
 
   @override
-  Widget build(BuildContext context) => BoxView(widget.model);
+  Widget build(BuildContext context) => BoxView(widget.model, widget.model.inflate());
 }

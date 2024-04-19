@@ -308,11 +308,6 @@ class ListModel extends BoxModel implements IForm, IScrollable {
     _buildItems();
   }
 
-  @override
-  List<Widget> inflate() {
-    return [];
-  }
-
   void _buildItems() {
     List<ListItemModel> items =
         findChildrenOfExactType(ListItemModel).cast<ListItemModel>();

@@ -171,7 +171,10 @@ class _MapViewState extends ViewableWidgetState<MapView> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints) {
+
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
@@ -196,8 +199,8 @@ class _MapViewState extends ViewableWidgetState<MapView> {
     // view
     Widget view = Stack(children: children);
 
-    // create as Box
-    view = BoxView(widget.model, children: [view]);
+    // wrap in box
+    view = BoxView(widget.model,[view]);
 
     return view;
   }

@@ -185,32 +185,6 @@ class ModalModel extends BoxModel {
   }
 
   @override
-  List<Widget> inflate() {
-    // process children
-    List<Widget> views = [];
-    for (var model in viewableChildren) {
-      if (model is! ModalModel) {
-
-        var view = model.getView();
-
-        // wrap child in child data widget
-        // this is done for us in "positioned" if the child happens
-        // to be a positioned widget and the layout is "stack" (see positioned_view.dart)
-        if (view != null) {
-          views.add(view);
-        }
-      }
-    }
-
-    // add the static child
-    if (child != null) {
-      views.add(child!);
-    }
-
-    return views;
-  }
-
-  @override
   Future<bool?> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
     if (scope == null) return null;

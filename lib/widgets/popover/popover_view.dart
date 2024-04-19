@@ -29,9 +29,7 @@ class _PopoverViewState extends ViewableWidgetState<PopoverView> {
           List<Widget> children = [];
           for (var model in item.viewableChildren) {
             var view = model.getView();
-            if (view != null) {
-              children.add(view);
-            }
+            children.add(view);
           }
           child = ListTile(
               title: Row(mainAxisSize: MainAxisSize.min, children: children));

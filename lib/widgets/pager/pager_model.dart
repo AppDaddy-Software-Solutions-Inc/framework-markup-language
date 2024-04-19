@@ -255,12 +255,5 @@ class PagerModel extends BoxModel {
   }
 
   @override
-  List<Widget> inflate() {
-    PagerViewState? view = findListenerOfExactType(PagerViewState);
-    if (view == null) return [];
-    return view.inflate();
-  }
-
-  @override
   Widget getView({Key? key}) => getReactiveView(PagerView(this));
 }

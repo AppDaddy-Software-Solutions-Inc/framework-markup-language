@@ -4,7 +4,6 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -203,19 +202,6 @@ class MapModel extends BoxModel {
     }
 
     return true;
-  }
-
-  @override
-  List<Widget> inflate() {
-    // process children
-    List<Widget> views = [];
-    for (var model in viewableChildren) {
-      if (model is! ModalModel) {
-        var view = model.getView();
-        if (view != null) views.add(view);
-      }
-    }
-    return views;
   }
 
   @override

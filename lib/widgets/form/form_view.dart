@@ -126,7 +126,7 @@ class FormViewState extends ViewableWidgetState<FormView> implements IGpsListene
     if (!widget.model.visible) return const Offstage();
 
     // Center
-    Widget view = BoxView(widget.model);
+    Widget view = BoxView(widget.model, widget.model.inflate());
 
     // Close Keyboard
     //final gesture = GestureDetector(onTap: () => WidgetModel.unfocus(), child: view);

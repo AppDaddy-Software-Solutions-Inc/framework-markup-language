@@ -99,7 +99,7 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
                             child: Icon(Icons.drag_handle,
                                 color: widget.model.dividerHandleColor))))));
 
-    return BoxView(BoxModel(null, null, expandDefault: false), children: [view]);
+    return view;
   }
 
   Widget _constrainBox(BoxView box, int flex) {
@@ -116,10 +116,11 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     return box;
   }
 
-  BoxView get _missingView => BoxView(BoxModel(widget.model, null));
+  BoxView get _missingView => BoxView(BoxModel(widget.model, null), widget.model.inflate());
 
-  // called by models inflate
-  List<Widget> inflate() {
+  @override
+  Widget build(BuildContext context) {
+
     // create box views
     if (widget.boxes.isEmpty) {
       var views = widget.model.viewableChildren;
@@ -153,9 +154,8 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     var box2 = _constrainBox(widget.boxes[1], 1000 - flex);
     list.add(box2);
 
-    return list;
-  }
+    var view = BoxView(widget.model, list);
 
-  @override
-  Widget build(BuildContext context) => BoxView(widget.model);
+    return view;
+  }
 }

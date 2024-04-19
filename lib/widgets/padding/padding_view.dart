@@ -32,7 +32,7 @@ class _PaddingViewState extends ViewableWidgetState<PaddingView> {
     }
 
     // box view
-    Widget view = BoxView(widget.model);
+    Widget view = BoxView(widget.model, widget.model.inflate());
 
     // build the child views
     return view;

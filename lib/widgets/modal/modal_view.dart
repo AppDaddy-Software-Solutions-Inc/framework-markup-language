@@ -442,7 +442,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
     if (width == null || height == null) {
       return UnconstrainedBox(
           child:
-              MeasureView(Material(child: BoxView(widget.model)), onMeasured));
+              MeasureView(Material(child: BoxView(widget.model, widget.model.inflate())), onMeasured));
     }
 
     ColorScheme t = Theme.of(context).colorScheme;
@@ -476,7 +476,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
     if (height! <= minimumHeight) height = minimumHeight;
 
     // Content Box
-    body ??= Material(child: BoxView(widget.model));
+    body ??= Material(child: BoxView(widget.model, widget.model.inflate()));
 
     // Non-Minimized View
     if (!minimized) {

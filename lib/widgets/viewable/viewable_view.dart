@@ -6,7 +6,7 @@ import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:fml/widgets/widget/model.dart';
 
 abstract class ViewableWidgetView {
-  ViewableMixin? get model;
+  ViewableMixin get model;
 }
 
 abstract class ViewableWidgetState<T extends StatefulWidget> extends State<T>
@@ -30,7 +30,7 @@ abstract class ViewableWidgetState<T extends StatefulWidget> extends State<T>
   void didUpdateWidget(dynamic oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget is ViewableWidgetView && oldWidget.model != model) {
-      oldWidget.model?.removeListener(this);
+      oldWidget.model.removeListener(this);
       model?.registerListener(this);
     }
   }

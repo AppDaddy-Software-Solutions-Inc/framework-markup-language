@@ -61,5 +61,5 @@ class PageModel extends BoxModel {
   }
 
   @override
-  Widget getView({Key? key}) => BoxView(this);
+  Widget getView({Key? key}) => BoxView(this, inflate());
 }

@@ -3,7 +3,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/drawer/drawer_model.dart';
-import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -437,26 +436,6 @@ class BoxModel extends ViewableModel {
     }
   }
 
-  @override
-  List<Widget> inflate() {
-    // process children
-    List<Widget> views = [];
-    for (var model in viewableChildren) {
-      if (model is! ModalModel) {
-
-        // build the view
-        var view = model.getView();
-
-        // add the view to the
-        // view list
-        if (view != null) {
-          views.add(view);
-        }
-      }
-    }
-    return views;
-  }
-
   static LayoutType getLayoutType(String? layout,
       {LayoutType defaultLayout = LayoutType.none}) {
     switch (layout?.toLowerCase().trim()) {
@@ -484,5 +463,5 @@ class BoxModel extends ViewableModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(BoxView(this));
+  Widget getView({Key? key}) => getReactiveView(RootBoxView(this, inflate()));
 }

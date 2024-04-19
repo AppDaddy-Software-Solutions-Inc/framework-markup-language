@@ -116,12 +116,5 @@ class SplitViewModel extends BoxModel {
   }
 
   @override
-  List<Widget> inflate() {
-    SplitViewViewState? view = findListenerOfExactType(SplitViewViewState);
-    if (view == null) return [];
-    return view.inflate();
-  }
-
-  @override
   Widget getView({Key? key}) => getReactiveView(SplitViewView(this));
 }

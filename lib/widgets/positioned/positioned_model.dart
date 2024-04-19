@@ -1,5 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/widget/model.dart';
@@ -11,9 +10,6 @@ class PositionedModel extends ColumnModel {
 
   @override
   bool get expand => false;
-
-  // defined child
-  final Widget? child;
 
   // left
   // bool _leftIsPercent = false;
@@ -136,7 +132,6 @@ class PositionedModel extends ColumnModel {
       dynamic xoffset,
       dynamic yoffset,
       dynamic depth,
-      this.child,
       super.scope}) {
     this.top = top;
     this.bottom = bottom;
@@ -175,7 +170,4 @@ class PositionedModel extends ColumnModel {
     yoffset = Xml.get(node: xml, tag: 'yoffset'); // formally vcenter
     depth = Xml.get(node: xml, tag: 'depth');
   }
-
-  @override
-  List<Widget> inflate() => child == null ? super.inflate() : [child!];
 }

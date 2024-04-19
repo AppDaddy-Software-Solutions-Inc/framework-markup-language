@@ -1300,7 +1300,7 @@ mixin ViewableMixin on Model implements IDragDrop {
     for (var model in viewableChildren) {
       if (model is! ModalModel) {
         var view = model.getView();
-        if (view != null) views.add(view);
+        views.add(view);
       }
     }
     return views;
@@ -1357,7 +1357,7 @@ mixin ViewableMixin on Model implements IDragDrop {
   void onDrag() async => await DragDrop.onDrag(this);
 
   // get the view
-  Widget? getView() => throw ("getView() Not Implemented");
+  Widget getView() => throw ("getView() Not Implemented");
 }
 
 class Constraints {

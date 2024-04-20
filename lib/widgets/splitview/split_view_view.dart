@@ -22,7 +22,6 @@ class SplitViewView extends StatefulWidget implements ViewableWidgetView {
 }
 
 class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
-  ThemeData? theme;
 
   BoxConstraints constraints = const BoxConstraints();
 
@@ -38,6 +37,7 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
   }
 
   void _onDrag(DragUpdateDetails details, BoxConstraints constraints) {
+
     var ratio = widget.model.ratio;
 
     var maxHeight = constraints.hasBoundedHeight ? constraints.maxHeight : 0.0;
@@ -57,12 +57,16 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     // reset the ratio
     if (ratio < 0) ratio = 0;
     if (ratio > 1) ratio = 1;
-    if (ratio != widget.model.ratio) widget.model.ratio = ratio;
+    if (ratio != widget.model.ratio) {
+      setState(() {
+        widget.model.ratio = ratio;
+      });
+    }
   }
 
-  Widget _buildHandle() {
+  Widget _buildHandle(BoxConstraints constraints) {
     var myDividerColor =
-        widget.model.dividerColor ?? theme?.colorScheme.onInverseSurface;
+        widget.model.dividerColor ?? Theme.of(context).colorScheme.onInverseSurface;
     var myDividerWidth = widget.model.dividerWidth;
 
     Widget view = widget.model.vertical
@@ -116,10 +120,11 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     return box;
   }
 
-  BoxView get _missingView => BoxView(BoxModel(widget.model, null), []);
+  BoxView get _missingView => BoxView(BoxModel(widget.model, null), const []);
 
-  @override
-  Widget build(BuildContext context) {
+  List<Widget> inflate(BoxConstraints constraints)
+  {
+    widget.boxes.clear();
 
     // create box views
     if (widget.boxes.isEmpty) {
@@ -147,14 +152,23 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     list.add(box1);
 
     // handle
-    Widget handle = _buildHandle();
+    Widget handle = _buildHandle(constraints);
     list.add(handle);
 
     // right/bottom pane
     var box2 = _constrainBox(widget.boxes[1], 1000 - flex);
     list.add(box2);
 
-    var view = BoxView(widget.model, list);
+    return list;
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints) {
+
+   // var view = BoxView(widget.model, const [], inflate: inflate,);
+    var view = BoxView(widget.model, inflate(constraints),);
 
     return view;
   }

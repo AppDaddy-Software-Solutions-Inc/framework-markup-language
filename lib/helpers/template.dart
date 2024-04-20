@@ -312,6 +312,8 @@ Future<bool> _appendXml(Model model, String xml, int? index,
     _appendChild(model, element, index);
   }
 
+  model.parent?.rebuild();
+
   return exception != null && nodes.isNotEmpty;
 }
 

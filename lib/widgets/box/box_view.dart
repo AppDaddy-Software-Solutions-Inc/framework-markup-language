@@ -16,13 +16,16 @@ import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 
+typedef Inflate = List<Widget> Function(BoxConstraints constraints);
+
 /// [BOX] view
 class BoxView extends StatefulWidget implements ViewableWidgetView {
   @override
   final BoxModel model;
   final List<Widget> children;
+  final Inflate? inflate;
 
-  BoxView(this.model, this.children, {Key? key}) : super(key: key ?? ObjectKey(model));
+  BoxView(this.model, this.children, {Key? key, this.inflate}) : super(key: key ?? ObjectKey(model));
 
   @override
   State<BoxView> createState() => BoxViewState();
@@ -30,7 +33,7 @@ class BoxView extends StatefulWidget implements ViewableWidgetView {
 
 /// [BOX] view
 class RootBoxView extends BoxView {
-  RootBoxView(super.model, super.children, {super.key});
+  RootBoxView(super.model, super.children, {super.key, super.inflate});
 }
 
 class BoxViewState extends ViewableWidgetState<BoxView> {
@@ -456,8 +459,13 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     // this may no necessary in the future
     onLayout(constraints);
 
+    var children = widget.children;
+    if (widget.inflate != null) {
+      children = widget.inflate!(constraints);
+    }
+
     // build the box
-    var view = _buildView(context, constraints, widget.model, widget.children);
+    var view = _buildView(context, constraints, widget.model, children);
 
     // add margins
     view = addMargins(view);

@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter/material.dart';
 import 'package:fml/datasources/beacon/beacon_model.dart';
 import 'package:fml/datasources/detectors/biometrics/biometrics_detector_model.dart';
 import 'package:fml/datasources/sse/model.dart';
@@ -312,6 +313,7 @@ Future<bool> _appendXml(Model model, String xml, int? index,
     _appendChild(model, element, index);
   }
 
+  // force the parent to rebuild
   model.parent?.rebuild();
 
   return exception != null && nodes.isNotEmpty;

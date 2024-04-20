@@ -16,16 +16,13 @@ import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 
-typedef Inflate = List<Widget> Function(BoxConstraints constraints);
-
 /// [BOX] view
 class BoxView extends StatefulWidget implements ViewableWidgetView {
   @override
   final BoxModel model;
   final List<Widget> children;
-  final Inflate? inflate;
 
-  BoxView(this.model, this.children, {Key? key, this.inflate}) : super(key: key ?? ObjectKey(model));
+  BoxView(this.model, this.children, {Key? key}) : super(key: key ?? ObjectKey(model));
 
   @override
   State<BoxView> createState() => BoxViewState();
@@ -33,7 +30,7 @@ class BoxView extends StatefulWidget implements ViewableWidgetView {
 
 /// [BOX] view
 class RootBoxView extends BoxView {
-  RootBoxView(super.model, super.children, {super.key, super.inflate});
+  RootBoxView(super.model, super.children, {super.key});
 }
 
 class BoxViewState extends ViewableWidgetState<BoxView> {
@@ -399,12 +396,12 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
   static Widget _buildView(BuildContext context, BoxConstraints constraints, BoxModel model, List<Widget> children) {
 
     // inner children must be wrapped if parent is a row, column, stack or box
-      List<Widget> list = [];
-      for (var child in children) {
-        var model = (child is ViewableWidgetView) ? (child as ViewableWidgetView).model : null;
-        list.add(model != null ? BoxLayout(model: model, child: child) : child);
-      }
-      children = list;
+    List<Widget> list = [];
+    for (var child in children) {
+      var model = (child is ViewableWidgetView) ? (child as ViewableWidgetView).model : null;
+      list.add(model != null ? BoxLayout(model: model, child: child) : child);
+    }
+    children = list;
 
     // calculate the alignment
     var alignment = WidgetAlignment(model.layoutType,
@@ -459,13 +456,8 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     // this may no necessary in the future
     onLayout(constraints);
 
-    var children = widget.children;
-    if (widget.inflate != null) {
-      children = widget.inflate!(constraints);
-    }
-
     // build the box
-    var view = _buildView(context, constraints, widget.model, children);
+    var view = _buildView(context, constraints, widget.model, widget.children);
 
     // add margins
     view = addMargins(view);

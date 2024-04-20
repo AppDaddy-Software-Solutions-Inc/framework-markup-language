@@ -13,8 +13,6 @@ class SplitViewView extends StatefulWidget implements ViewableWidgetView {
   @override
   final SplitViewModel model;
 
-  final List<BoxView> boxes = [];
-
   SplitViewView(this.model) : super(key: ObjectKey(model));
 
   @override
@@ -57,11 +55,7 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     // reset the ratio
     if (ratio < 0) ratio = 0;
     if (ratio > 1) ratio = 1;
-    if (ratio != widget.model.ratio) {
-      setState(() {
-        widget.model.ratio = ratio;
-      });
-    }
+    widget.model.ratio = ratio;
   }
 
   Widget _buildHandle(BoxConstraints constraints) {
@@ -74,6 +68,7 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
             behavior: HitTestBehavior.opaque,
             onVerticalDragUpdate: (DragUpdateDetails details) =>
                 _onDrag(details, constraints),
+            onTap: () => widget.model.ratio = 0,
             child: Container(
                 color: myDividerColor,
                 child: SizedBox(
@@ -124,20 +119,20 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
 
   List<Widget> inflate(BoxConstraints constraints)
   {
-    widget.boxes.clear();
-
     // create box views
-    if (widget.boxes.isEmpty) {
-      var views = widget.model.viewableChildren;
+    var views = widget.model.viewableChildren;
 
-      Widget? view1;
-      if (views.isNotEmpty) view1 = views.elementAt(0).getView();
-      widget.boxes.add(view1 is BoxView ? view1 : _missingView);
+    // left pane
+    Widget? view1;
+    if (views.isNotEmpty) view1 = views.elementAt(0).getView();
+    if (view1 is! BoxView) view1 = _missingView;
 
-      Widget? view2;
-      if (views.length > 1) view2 = views.elementAt(1).getView();
-      widget.boxes.add(view2 is BoxView ? view2 : _missingView);
-    }
+    // right pane
+    Widget? view2;
+    if (views.length > 1) view2 = views.elementAt(1).getView();
+    if (view2 is! BoxView) view2 = _missingView;
+
+    List<Widget> list = [];
 
     // ratio box1:box2. if 1, box 1 is 100% size
     var ratio = widget.model.ratio;
@@ -145,10 +140,8 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     if (ratio > 1) ratio = 1;
     var flex = (ratio * 1000).ceil();
 
-    List<Widget> list = [];
-
     // left/top pane
-    var box1 = _constrainBox(widget.boxes[0], flex);
+    var box1 = _constrainBox(view1, flex);
     list.add(box1);
 
     // handle
@@ -156,7 +149,7 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     list.add(handle);
 
     // right/bottom pane
-    var box2 = _constrainBox(widget.boxes[1], 1000 - flex);
+    var box2 = _constrainBox(view2, 1000 - flex);
     list.add(box2);
 
     return list;

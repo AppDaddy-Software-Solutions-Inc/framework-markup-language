@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:fml/event/handler.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/services.dart';
@@ -438,8 +437,8 @@ class FrameworkViewState extends State<FrameworkView>
 
     // simulate a swipe to move back on all desktop applications
     // and mobile IOS applications
-    bool enableSwipeBack = FmlEngine.isDesktop ||
-        (FmlEngine.isMobile && System().useragent == "ios");
+    bool enableSwipeBack = isDesktop ||
+        (isMobile && System().useragent == "ios");
 
     // gesture detector is swipe back on IOS
     if (enableSwipeBack) {

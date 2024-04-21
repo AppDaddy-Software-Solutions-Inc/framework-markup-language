@@ -1,11 +1,15 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/helpers/color.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/widget/model.dart';
+
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class MenuItemView extends StatefulWidget implements ViewableWidgetView {
   @override
@@ -51,8 +55,8 @@ class _MenuItemViewState extends ViewableWidgetState<MenuItemView> {
           shape: shape,
           elevation: 0,
           hoverElevation: 0,
-          minWidth: FmlEngine.isMobile ? 160 : 250,
-          height: FmlEngine.isMobile ? 160 : 250,
+          minWidth: isMobile ? 160 : 250,
+          height: isMobile ? 160 : 250,
           color: widget.model.backgroundimage == null
               ? Colors.transparent
               : theme.background,
@@ -62,16 +66,16 @@ class _MenuItemViewState extends ViewableWidgetState<MenuItemView> {
                   .withOpacity(0.1)
               : theme.onSecondary,
           child: Padding(
-              padding: EdgeInsets.all(FmlEngine.isMobile ? 0 : 10),
+              padding: EdgeInsets.all(isMobile ? 0 : 10),
               child: child));
       button = MouseRegion(cursor: SystemMouseCursors.click, child: button);
       Widget customButton = Padding(
-          padding: EdgeInsets.all(FmlEngine.isMobile ? 0 : 10),
+          padding: EdgeInsets.all(isMobile ? 0 : 10),
           child: Container(
-            width: FmlEngine.isMobile
+            width: isMobile
                 ? 160
                 : 250, // These constraints are more strict than a Material Button's
-            height: FmlEngine.isMobile ? 160 : 250, // button
+            height: isMobile ? 160 : 250, // button
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
             ),
@@ -96,7 +100,7 @@ class _MenuItemViewState extends ViewableWidgetState<MenuItemView> {
       Widget? icon;
       if (widget.model.icon != null) {
         double size =
-            (widget.model.iconsize ?? 48.0) - (FmlEngine.isMobile ? 4 : 0);
+            (widget.model.iconsize ?? 48.0) - (isMobile ? 4 : 0);
         Color color =
             widget.model.iconcolor ?? theme.primary; //System.colorDefault;
         icon = Icon(widget.model.icon ?? Icons.touch_app,
@@ -112,7 +116,7 @@ class _MenuItemViewState extends ViewableWidgetState<MenuItemView> {
             textAlign: TextAlign.center,
             style: TextStyle(
                 fontSize: (widget.model.fontsize ?? 16.0) -
-                    (FmlEngine.isMobile ? 2 : 0),
+                    (isMobile ? 2 : 0),
                 color: backgroundImage != null
                     ? (widget.model.fontcolor ?? Colors.black)
                     : widget.model.fontcolor ?? theme.primary,
@@ -149,8 +153,8 @@ class _MenuItemViewState extends ViewableWidgetState<MenuItemView> {
           elevation: backgroundImage != null ? 2.0 : 0,
           hoverElevation: backgroundImage != null ? 3.0 : 0,
           highlightElevation: 0,
-          minWidth: FmlEngine.isMobile ? 160 : 250,
-          height: FmlEngine.isMobile ? 160 : 250,
+          minWidth: isMobile ? 160 : 250,
+          height: isMobile ? 160 : 250,
           color: backgroundImage != null
               ? Colors.white.withOpacity(0.4)
               : widget.model.backgroundcolor ?? theme.surface,
@@ -163,7 +167,7 @@ class _MenuItemViewState extends ViewableWidgetState<MenuItemView> {
           onLongPress: widget.model.enabled ? (widget.model.onLongPress) : null,
           shape: shape,
           child: Padding(
-              padding: EdgeInsets.all(FmlEngine.isMobile ? 0 : 10),
+              padding: EdgeInsets.all(isMobile ? 0 : 10),
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
@@ -174,13 +178,13 @@ class _MenuItemViewState extends ViewableWidgetState<MenuItemView> {
       }
 
       Widget staticButton = Padding(
-          padding: EdgeInsets.all(FmlEngine.isMobile ? 0 : 10),
+          padding: EdgeInsets.all(isMobile ? 0 : 10),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            width: FmlEngine.isMobile
+            width: isMobile
                 ? 160
                 : 250, // These constraints are more strict than a Material Button's
-            height: FmlEngine.isMobile ? 160 : 250, // button
+            height: isMobile ? 160 : 250, // button
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
                 // color: Colors.grey[300],
@@ -205,7 +209,7 @@ class _MenuItemViewState extends ViewableWidgetState<MenuItemView> {
             child: button,
           ));
 
-      menuItem = FmlEngine.isMobile
+      menuItem = isMobile
           ? staticButton
           : MouseRegion(
               cursor: SystemMouseCursors.click,

@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:camera/camera.dart';
 import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
@@ -17,6 +16,11 @@ import 'package:fml/datasources/file/file.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
+
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
     if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
@@ -169,7 +173,7 @@ class CameraViewState extends ViewableWidgetState<CameraView> {
 
       // a bug in the desktop controller causes the
       // program to crash if re-initialized;
-      if (FmlEngine.isDesktop && controller != null) {
+      if (isDesktop && controller != null) {
         setState(() {});
         return;
       }
@@ -225,14 +229,14 @@ class CameraViewState extends ViewableWidgetState<CameraView> {
 
         // default the format
         var format = ImageFormatGroup.yuv420;
-        if (FmlEngine.isWeb) format = ImageFormatGroup.jpeg;
+        if (isWeb) format = ImageFormatGroup.jpeg;
 
         // default the resolution
         ResolutionPreset resolution =
             toEnum(widget.model.resolution, ResolutionPreset.values) ??
                 ResolutionPreset.medium;
         if (widget.model.stream) {
-          resolution = (FmlEngine.isWeb)
+          resolution = (isWeb)
               ? ResolutionPreset.medium
               : ResolutionPreset.low;
         }
@@ -335,7 +339,7 @@ class CameraViewState extends ViewableWidgetState<CameraView> {
 
         // start stream
         if (widget.model.stream) {
-          if (!FmlEngine.isDesktop) {
+          if (!isDesktop) {
             controller!.startImageStream((stream) => onStream(stream, camera));
           } else {
             Log().error('Streaming is not yet supported on desktop');
@@ -547,7 +551,7 @@ class CameraViewState extends ViewableWidgetState<CameraView> {
     children.add(view);
 
     // hack to initialize background camera stream. current camera widget doesn't support streaming in web
-    if ((FmlEngine.isWeb) &&
+    if ((isWeb) &&
         (widget.model.stream) &&
         (backgroundStream == null)) {
       backgroundStream = StreamView(widget.model);

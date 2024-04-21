@@ -23,6 +23,9 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
 
   BoxConstraints constraints = const BoxConstraints();
 
+  BoxView? view1;
+  BoxView? view2;
+
   void onBack(Event event) {
     event.handled = true;
     String? pages = fromMap(event.parameters, 'until');
@@ -117,22 +120,28 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
 
   BoxView get _missingView => BoxView(BoxModel(widget.model, null), const []);
 
-  List<Widget> inflate(BoxConstraints constraints)
-  {
-    // create box views
-    var views = widget.model.viewableChildren;
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints) {
 
     // left pane
-    Widget? view1;
-    if (views.isNotEmpty) view1 = views.elementAt(0).getView();
-    if (view1 is! BoxView) view1 = _missingView;
+    if (view1 == null) {
+      var children = widget.model.viewableChildren;
 
-    // right pane
-    Widget? view2;
-    if (views.length > 1) view2 = views.elementAt(1).getView();
-    if (view2 is! BoxView) view2 = _missingView;
+      Widget? view;
+      if (children.isNotEmpty) view = children.elementAt(0).getView();
+      if (view is! BoxView) view = _missingView;
+      view1 = view;
 
-    List<Widget> list = [];
+      // right pane
+      view = null;
+      if (children.length > 1) view = children.elementAt(1).getView();
+      if (view is! BoxView) view = _missingView;
+      view2 = view;
+    }
+
+    List<Widget> children = [];
 
     // ratio box1:box2. if 1, box 1 is 100% size
     var ratio = widget.model.ratio;
@@ -141,27 +150,20 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     var flex = (ratio * 1000).ceil();
 
     // left/top pane
-    var box1 = _constrainBox(view1, flex);
-    list.add(box1);
+    var box1 = _constrainBox(view1!, flex);
+    children.add(box1);
 
     // handle
     Widget handle = _buildHandle(constraints);
-    list.add(handle);
+    children.add(handle);
 
     // right/bottom pane
-    var box2 = _constrainBox(view2, 1000 - flex);
-    list.add(box2);
+    var box2 = _constrainBox(view2!, 1000 - flex);
+    children.add(box2);
 
-    return list;
-  }
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
 
    // var view = BoxView(widget.model, const [], inflate: inflate,);
-    var view = BoxView(widget.model, inflate(constraints),);
+    var view = BoxView(widget.model, children);
 
     return view;
   }

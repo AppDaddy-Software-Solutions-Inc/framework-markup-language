@@ -9,7 +9,6 @@ import 'package:fml/dialog/manager.dart';
 import 'package:fml/eval/evaluator.dart';
 import 'package:fml/eval/expressions.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
@@ -556,7 +555,7 @@ class EventHandler extends Eval {
     duration = toInt(duration) ?? 0;
 
     try {
-      if (FmlEngine.isDesktop) {
+      if (isDesktop) {
         Log().debug("[DESKTOP] Framework onSound()");
         Log().debug('TBD: sound support for desktops');
         return true;

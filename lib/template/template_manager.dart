@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
-import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/phrase.dart';
@@ -99,7 +98,7 @@ class TemplateManager {
   Future<FetchResult> _fromAssetsBundle(String url) async {
     try {
       // not supported on web
-      if (FmlEngine.isWeb) throw ('Local Files not supported in Browser');
+      if (isWeb) throw ('Local Files not supported in Browser');
 
       // get template from asset bundle
       var template = await rootBundle
@@ -118,8 +117,8 @@ class TemplateManager {
   Future<FetchResult> _fromDisk(String url) async {
     try {
       // not supported on web
-      if (FmlEngine.isWeb) throw ('Local Files not supported in Browser');
-      if (FmlEngine.isMobile) throw ('Local Files not supported in Mobile');
+      if (isWeb) throw ('Local Files not supported in Browser');
+      if (isMobile) throw ('Local Files not supported in Mobile');
 
       // get template from file
       Uri? uri = URI.parse(url);

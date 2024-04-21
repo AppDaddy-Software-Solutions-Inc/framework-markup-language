@@ -21,6 +21,11 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/theme/theme.dart';
 
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 class ApplicationModel extends Model {
   static const String myId = "APPLICATION";
 
@@ -417,7 +422,7 @@ class ApplicationModel extends Model {
     //_loadConfig();
 
     // start mirror
-    if (mirrorApi != null && !FmlEngine.isWeb && scheme != "file") {
+    if (mirrorApi != null && !isWeb && scheme != "file") {
       Uri? uri = URI.parse(mirrorApi, domain: domain);
       if (uri != null) mirror = Mirror(uri.url)..execute();
     }

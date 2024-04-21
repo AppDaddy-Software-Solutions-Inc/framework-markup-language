@@ -17,7 +17,7 @@ class BoxLayout extends ParentDataWidget<BoxData> {
     if (renderObject.parentData is BoxData) {
       final BoxData parentData = renderObject.parentData! as BoxData;
 
-      bool needsLayout = false;
+      bool needsLayout = true;
 
       if (parentData.model != model) {
         parentData.model = model;

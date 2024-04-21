@@ -5,7 +5,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
@@ -107,7 +106,7 @@ class ImageView extends StatefulWidget implements ViewableWidgetView {
 
         /// blob image from camera or file picker
         case "blob":
-          image = FmlEngine.isWeb
+          image = isWeb
               ? Image.network(url!, fit: getFit(fit))
               : Image.file(File(url!), fit: getFit(fit));
           break;

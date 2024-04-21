@@ -460,6 +460,8 @@ class BoxModel extends ViewableModel {
     var w = size.width  + (paddingLeft ?? 0) + (paddingRight  ?? 0)  + (marginLeft ?? 0) + (marginRight ?? 0);// + (borderWidth * 2);
     var h = size.height + (paddingTop ?? 0)  + (paddingBottom ?? 0) + (marginTop ?? 0)  + (marginBottom ?? 0);// + (borderWidth * 2);
     super.layoutComplete(Size(w,h), offset);
+
+    Row();
   }
 
   @override

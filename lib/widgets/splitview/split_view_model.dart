@@ -1,5 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
@@ -8,6 +7,11 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/splitview/split_view_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
+
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class SplitViewModel extends BoxModel {
   @override
@@ -56,7 +60,7 @@ class SplitViewModel extends BoxModel {
   }
 
   double get dividerWidth {
-    var width = _dividerWidth?.get() ?? (FmlEngine.isTouchDevice ? 20 : 6);
+    var width = _dividerWidth?.get() ?? (Platform.isTouchDevice ? 20 : 6);
     if (width % 2 != 0) width = width + 1;
     return width;
   }

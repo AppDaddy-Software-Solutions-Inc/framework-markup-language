@@ -33,8 +33,8 @@ import 'dart:io' as io show Platform;
 
 // platform
 import 'package:fml/platform/platform.vm.dart'
-    if (dart.library.io) 'package:fml/platform/platform.vm.dart'
-    if (dart.library.html) 'package:fml/platform/platform.web.dart';
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class System extends Model implements IEventManager {
   static const String myId = "SYSTEM";
@@ -98,7 +98,7 @@ class System extends Model implements IEventManager {
 
   /// Global System Observable
   StringObservable? _userplatform;
-  String? get userplatform => _userplatform?.get() ?? FmlEngine.platform;
+  String? get userplatform => _userplatform?.get() ?? Platform.platform;
 
   StringObservable? _useragent;
   String? get useragent => _useragent?.get() ?? Platform.useragent;
@@ -237,7 +237,7 @@ class System extends Model implements IEventManager {
         PlatformDispatcher.instance.views.first.physicalSize.width,
         scope: scope);
     _userplatform = StringObservable(
-        Binding.toKey('platform'), FmlEngine.platform,
+        Binding.toKey('platform'), Platform.platform,
         scope: scope);
     _useragent = StringObservable(
         Binding.toKey('useragent'), Platform.useragent,
@@ -303,7 +303,7 @@ class System extends Model implements IEventManager {
   static Future _loadApps() async {
 
     // load the apps from the database
-    _apps = FmlEngine.isWeb ? [] : await ApplicationModel.loadAll();
+    _apps = isWeb ? [] : await ApplicationModel.loadAll();
 
     // remove redundant apps if branded (this normally wont be needed
     // only in development mode where user is switching between app types
@@ -325,7 +325,7 @@ class System extends Model implements IEventManager {
       var domain = FmlEngine.domain;
 
       // replace default for testing
-      if (FmlEngine.isWeb) {
+      if (isWeb) {
 
         // parse the site domain url
         var uri = Uri.tryParse(baseUrl);
@@ -429,7 +429,7 @@ class System extends Model implements IEventManager {
   static void clearBranding() async
   {
     // do nothing if in web or no default application
-    if (FmlEngine.isWeb || _brandedApp == null) return;
+    if (isWeb || _brandedApp == null) return;
 
     // show dialog to confirm
     bool ok = await _confirmClearBranding();

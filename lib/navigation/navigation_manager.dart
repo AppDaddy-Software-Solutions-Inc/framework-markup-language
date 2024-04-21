@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/template/template_manager.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/modal/modal_manager_model.dart';
@@ -19,6 +18,7 @@ import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/store/store_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
+
 // platform
 import 'package:fml/platform/platform.vm.dart'
 if (dart.library.io) 'package:fml/platform/platform.vm.dart'
@@ -126,7 +126,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
     String? url = configuration.uri?.toString();
 
     // deeplink specified
-    if (!FmlEngine.isWeb) {
+    if (!isWeb) {
       url = await _buildDeeplinkUrl(url);
     }
 

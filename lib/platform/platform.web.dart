@@ -15,7 +15,21 @@ import 'package:fml/system.dart';
 import 'package:universal_html/js.dart';
 import 'package:fml/event/manager.dart';
 
+bool get isWeb => Platform.isWeb;
+bool get isMobile => Platform.isMobile;
+bool get isDesktop => !isMobile;
+
 class Platform {
+
+  // platform
+  static String get platform => "web";
+
+  static bool get isWeb => kIsWeb;
+  static bool get isMobile => false;
+  static bool get isDesktop => false;
+
+  // touch device?
+  static bool get isTouchDevice => false;
 
   static String? get useragent {
     const appleType = "ios";

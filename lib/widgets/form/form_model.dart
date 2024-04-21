@@ -4,7 +4,6 @@ import 'package:fml/data/data.dart';
 import 'package:fml/data/dotnotation.dart';
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/datasources/datasource_interface.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/box/box_model.dart';
@@ -18,6 +17,11 @@ import 'package:fml/widgets/form/form_view.dart';
 import 'package:fml/widgets/input/input_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
+
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 enum StatusCodes { incomplete, complete }
 
@@ -120,7 +124,7 @@ class FormModel extends BoxModel implements IForm {
   }
 
   bool? get autosave {
-    if ((FmlEngine.isWeb) || (_autosave == null)) return false;
+    if ((isWeb) || (_autosave == null)) return false;
     return _autosave?.get();
   }
 
@@ -175,7 +179,7 @@ class FormModel extends BoxModel implements IForm {
   }
 
   bool? get geocode {
-    if (_geocode == null) return (FmlEngine.isMobile ? true : false);
+    if (_geocode == null) return (isMobile ? true : false);
     return _geocode?.get();
   }
 

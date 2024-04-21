@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/widgets/measure/measure_view.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/widgets/box/box_view.dart';
@@ -9,6 +8,11 @@ import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/modal/modal_manager_view.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
+
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class ModalView extends StatefulWidget implements ViewableWidgetView {
   @override
@@ -516,7 +520,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
                   child: resize));
 
       Widget resize2 =
-          SizedBox(width: FmlEngine.isMobile ? 34 : 24, height: height);
+          SizedBox(width: isMobile ? 34 : 24, height: height);
       Widget resizeableL = !widget.model.resizeable
           ? Container()
           : GestureDetector(
@@ -533,7 +537,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
                   cursor: SystemMouseCursors.resizeLeftRight, child: resize2));
 
       Widget resize3 =
-          SizedBox(width: width, height: FmlEngine.isMobile ? 34 : 24);
+          SizedBox(width: width, height: isMobile ? 34 : 24);
       Widget resizeableT = !widget.model.resizeable
           ? Container()
           : GestureDetector(

@@ -26,6 +26,10 @@ class ViewableModel extends Model with ViewableMixin {
 
 mixin ViewableMixin on Model implements IDragDrop {
 
+  // this is used in the renderer to determine if the widget
+  // should rebuild on layout changes
+  bool markNeedsRebuild = false;
+
   // model holding the tooltip
   TooltipModel? tipModel;
 
@@ -1316,6 +1320,7 @@ mixin ViewableMixin on Model implements IDragDrop {
       viewHeight = size.height;
       viewX = offset.dx;
       viewY = offset.dy;
+      markNeedsRebuild = true;
     }
   }
 

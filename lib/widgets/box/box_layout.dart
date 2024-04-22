@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_data.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 
 class BoxLayout extends ParentDataWidget<BoxData> {
@@ -14,22 +16,38 @@ class BoxLayout extends ParentDataWidget<BoxData> {
 
   @override
   void applyParentData(RenderObject renderObject) {
+
     if (renderObject.parentData is BoxData) {
-      final BoxData parentData = renderObject.parentData! as BoxData;
 
-      bool needsLayout = true;
+      final data = renderObject.parentData! as BoxData;
 
-      if (parentData.model != model) {
-        parentData.model = model;
+      // determine if we need to draw (redraw) the box
+      // boxes mark themselves as needing rebuild when their view size or position changes
+      // This gets marked in onLayoutChange() of the visibleMixin
+      bool needsLayout = false;
+
+      // model changed?
+      if (data.model != model) {
+        data.model = model;
         needsLayout = true;
       }
 
+      // model marked as needing rebuild?
+      if (data.model is BoxModel && (data.model as BoxModel).markNeedsRebuild) {
+        (data.model as BoxModel).markNeedsRebuild = false;
+        needsLayout = true;
+      }
+
+      // we need to rebuild the box
       if (needsLayout) {
         final RenderObject? targetParent = renderObject.parent;
         if (targetParent is RenderObject) {
           targetParent.markNeedsLayout();
         }
       }
+    }
+    else {
+      if (kDebugMode) print('Error: applyParentData() called on a parentData that is not BoxData');
     }
   }
 

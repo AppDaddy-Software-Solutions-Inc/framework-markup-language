@@ -28,11 +28,6 @@ class BoxView extends StatefulWidget implements ViewableWidgetView {
   State<BoxView> createState() => BoxViewState();
 }
 
-/// [BOX] view
-class RootBoxView extends BoxView {
-  RootBoxView(super.model, super.children, {super.key});
-}
-
 class BoxViewState extends ViewableWidgetState<BoxView> {
 
   /// Function to find gradient alignment

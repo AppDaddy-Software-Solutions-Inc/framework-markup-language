@@ -16,6 +16,7 @@ enum VerticalAlignmentType { top, bottom, center, around, between, evenly }
 enum HorizontalAlignmentType { left, right, center, around, between, evenly }
 
 class BoxModel extends ViewableModel {
+
   LayoutType get layoutType =>
       getLayoutType(layout, defaultLayout: LayoutType.column);
 
@@ -456,14 +457,14 @@ class BoxModel extends ViewableModel {
 
   @override
   void layoutComplete(Size size, Offset offset) {
+
     // we need to adjust the size and position to account for padding, margin, and border
     var w = size.width  + (paddingLeft ?? 0) + (paddingRight  ?? 0)  + (marginLeft ?? 0) + (marginRight ?? 0);// + (borderWidth * 2);
     var h = size.height + (paddingTop ?? 0)  + (paddingBottom ?? 0) + (marginTop ?? 0)  + (marginBottom ?? 0);// + (borderWidth * 2);
-    super.layoutComplete(Size(w,h), offset);
 
-    Row();
+    super.layoutComplete(Size(w,h), offset);
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(RootBoxView(this, inflate()));
+  Widget getView({Key? key}) => getReactiveView(BoxView(this, inflate()));
 }

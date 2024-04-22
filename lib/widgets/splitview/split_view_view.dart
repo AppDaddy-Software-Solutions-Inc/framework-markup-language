@@ -1,12 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/navigation/navigation_manager.dart';
+import 'package:fml/observable/binding.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/splitview/split_view_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
+import 'package:fml/widgets/widget/model.dart';
 
 class SplitViewView extends StatefulWidget implements ViewableWidgetView {
 
@@ -104,21 +106,18 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     return view;
   }
 
-  Widget _constrainBox(BoxView box, int flex) {
-    var direction = widget.model.vertical ? Axis.vertical : Axis.horizontal;
-    switch (direction) {
-      case Axis.horizontal:
-        box.model.setFlex(flex);
-        break;
-
-      case Axis.vertical:
-        box.model.setFlex(flex);
-        break;
-    }
-    return box;
-  }
-
   BoxView get _missingView => BoxView(BoxModel(widget.model, null), const []);
+
+  @override
+  onModelChange(Model model, {String? property, dynamic value}) {
+    // cleared the cached views so they rebuild there
+    // children
+    if (Binding.fromString(property)?.source == 'rebuild') {
+      view1 = null;
+      view2 = null;
+    }
+    super.onModelChange(model, property: property, value: value);
+  }
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
@@ -141,7 +140,6 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
       view2 = view;
     }
 
-    List<Widget> children = [];
 
     // ratio box1:box2. if 1, box 1 is 100% size
     var ratio = widget.model.ratio;
@@ -149,22 +147,25 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     if (ratio > 1) ratio = 1;
     var flex = (ratio * 1000).ceil();
 
+    var leftPane  = view1!;
+    var rightPane = view2!;
+
+    List<Widget> children = [];
+
     // left/top pane
-    var box1 = _constrainBox(view1!, flex);
-    children.add(box1);
+    leftPane.model.setFlex(flex);
+    leftPane.model.markNeedsRebuild = true;
+    children.add(leftPane);
 
     // handle
     Widget handle = _buildHandle(constraints);
     children.add(handle);
 
     // right/bottom pane
-    var box2 = _constrainBox(view2!, 1000 - flex);
-    children.add(box2);
+    rightPane.model.setFlex(1000 - flex);
+    rightPane.model.markNeedsRebuild = true;
+    children.add(rightPane);
 
-
-   // var view = BoxView(widget.model, const [], inflate: inflate,);
-    var view = BoxView(widget.model, children);
-
-    return view;
+    return BoxView(widget.model, children);
   }
 }

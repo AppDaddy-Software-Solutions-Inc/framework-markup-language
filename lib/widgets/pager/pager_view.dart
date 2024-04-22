@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
+import 'package:fml/widgets/positioned/positioned_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
@@ -116,7 +117,8 @@ class PagerViewState extends ViewableWidgetState<PagerView> {
           onPageSelected: (int page) =>
               pageTo(page + 1, widget.model.transition));
 
-      pager = Positioned(bottom: 8, child: pager!);
+      // we need use positioned model's view to position the pager
+      pager = PositionedModel(widget.model, null, bottom: 8, child: pager!).getView();
     }
     if (pager != null) {
       list.add(pager!);

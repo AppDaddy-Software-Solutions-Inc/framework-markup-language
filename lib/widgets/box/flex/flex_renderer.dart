@@ -951,158 +951,158 @@ class FlexRenderer extends RenderBox
   void performLayout() {
 
     try{
-    final _LayoutSizes sizes = _computeSizes(
-        layoutChild: ChildLayoutHelper.layoutChild, constraints: constraints);
+      final _LayoutSizes sizes = _computeSizes(
+          layoutChild: ChildLayoutHelper.layoutChild, constraints: constraints);
 
-    final double allocatedSize = sizes.allocatedSize;
-    double mainAxisSize = sizes.mainSize;
-    double crossAxisSize = sizes.crossSize;
+      final double allocatedSize = sizes.allocatedSize;
+      double mainAxisSize = sizes.mainSize;
+      double crossAxisSize = sizes.crossSize;
 
-    double maxBaselineDistance = 0.0;
-    if (crossAxisAlignment == CrossAxisAlignment.baseline) {
-      RenderBox? child = firstChild;
-      double maxSizeAboveBaseline = 0;
-      double maxSizeBelowBaseline = 0;
-      while (child != null) {
-        assert(() {
-          if (textBaseline == null) {
-            throw FlutterError(
-                'To use FlexAlignItems.baseline, you must also specify which baseline to use using the "baseline" argument.');
+      double maxBaselineDistance = 0.0;
+      if (crossAxisAlignment == CrossAxisAlignment.baseline) {
+        RenderBox? child = firstChild;
+        double maxSizeAboveBaseline = 0;
+        double maxSizeBelowBaseline = 0;
+        while (child != null) {
+          assert(() {
+            if (textBaseline == null) {
+              throw FlutterError(
+                  'To use FlexAlignItems.baseline, you must also specify which baseline to use using the "baseline" argument.');
+            }
+            return true;
+          }());
+          final double? distance =
+          child.getDistanceToBaseline(textBaseline!, onlyReal: true);
+          if (distance != null) {
+            maxBaselineDistance = math.max(maxBaselineDistance, distance);
+            maxSizeAboveBaseline = math.max(
+              distance,
+              maxSizeAboveBaseline,
+            );
+            maxSizeBelowBaseline = math.max(
+              child.size.height - distance,
+              maxSizeBelowBaseline,
+            );
+            crossAxisSize = math.max(
+                maxSizeAboveBaseline + maxSizeBelowBaseline, crossAxisSize);
           }
-          return true;
-        }());
-        final double? distance =
-        child.getDistanceToBaseline(textBaseline!, onlyReal: true);
-        if (distance != null) {
-          maxBaselineDistance = math.max(maxBaselineDistance, distance);
-          maxSizeAboveBaseline = math.max(
-            distance,
-            maxSizeAboveBaseline,
-          );
-          maxSizeBelowBaseline = math.max(
-            child.size.height - distance,
-            maxSizeBelowBaseline,
-          );
-          crossAxisSize = math.max(
-              maxSizeAboveBaseline + maxSizeBelowBaseline, crossAxisSize);
+          final BoxData childParentData = child.parentData! as BoxData;
+          child = childParentData.nextSibling;
         }
-        final BoxData childParentData = child.parentData! as BoxData;
-        child = childParentData.nextSibling;
       }
-    }
 
-    // Align items along the main axis.
-    switch (_direction) {
-      case Axis.horizontal:
-        size = constraints.constrain(Size(mainAxisSize, crossAxisSize));
-        mainAxisSize = size.width;
-        crossAxisSize = size.height;
-        break;
-      case Axis.vertical:
-        size = constraints.constrain(Size(crossAxisSize, mainAxisSize));
-        mainAxisSize = size.height;
-        crossAxisSize = size.width;
-        break;
-    }
-    final double actualSizeDelta = mainAxisSize - allocatedSize;
-    _overflow = math.max(0.0, -actualSizeDelta);
-    final double remainingSpace = math.max(0.0, actualSizeDelta);
-    late final double leadingSpace;
-    late final double betweenSpace;
-    // flipMainAxis is used to decide whether to lay out
-    // left-to-right/top-to-bottom (false), or right-to-left/bottom-to-top
-    // (true). The _startIsTopLeft will return null if there's only one child
-    // and the relevant direction is null, in which case we arbitrarily decide
-    // to flip, but that doesn't have any detectable effect.
-    final bool flipMainAxis =
-    !(_startIsTopLeft(direction, textDirection, verticalDirection) ?? true);
-    switch (_mainAxisAlignment) {
-      case MainAxisAlignment.start:
-        leadingSpace = 0.0;
-        betweenSpace = 0.0;
-        break;
-      case MainAxisAlignment.end:
-        leadingSpace = remainingSpace;
-        betweenSpace = 0.0;
-        break;
-      case MainAxisAlignment.center:
-        leadingSpace = remainingSpace / 2.0;
-        betweenSpace = 0.0;
-        break;
-      case MainAxisAlignment.spaceBetween:
-        leadingSpace = 0.0;
-        betweenSpace = childCount > 1 ? remainingSpace / (childCount - 1) : 0.0;
-        break;
-      case MainAxisAlignment.spaceAround:
-        betweenSpace = childCount > 0 ? remainingSpace / childCount : 0.0;
-        leadingSpace = betweenSpace / 2.0;
-        break;
-      case MainAxisAlignment.spaceEvenly:
-        betweenSpace = childCount > 0 ? remainingSpace / (childCount + 1) : 0.0;
-        leadingSpace = betweenSpace;
-        break;
-    }
+      // Align items along the main axis.
+      switch (_direction) {
+        case Axis.horizontal:
+          size = constraints.constrain(Size(mainAxisSize, crossAxisSize));
+          mainAxisSize = size.width;
+          crossAxisSize = size.height;
+          break;
+        case Axis.vertical:
+          size = constraints.constrain(Size(crossAxisSize, mainAxisSize));
+          mainAxisSize = size.height;
+          crossAxisSize = size.width;
+          break;
+      }
+      final double actualSizeDelta = mainAxisSize - allocatedSize;
+      _overflow = math.max(0.0, -actualSizeDelta);
+      final double remainingSpace = math.max(0.0, actualSizeDelta);
+      late final double leadingSpace;
+      late final double betweenSpace;
+      // flipMainAxis is used to decide whether to lay out
+      // left-to-right/top-to-bottom (false), or right-to-left/bottom-to-top
+      // (true). The _startIsTopLeft will return null if there's only one child
+      // and the relevant direction is null, in which case we arbitrarily decide
+      // to flip, but that doesn't have any detectable effect.
+      final bool flipMainAxis =
+      !(_startIsTopLeft(direction, textDirection, verticalDirection) ?? true);
+      switch (_mainAxisAlignment) {
+        case MainAxisAlignment.start:
+          leadingSpace = 0.0;
+          betweenSpace = 0.0;
+          break;
+        case MainAxisAlignment.end:
+          leadingSpace = remainingSpace;
+          betweenSpace = 0.0;
+          break;
+        case MainAxisAlignment.center:
+          leadingSpace = remainingSpace / 2.0;
+          betweenSpace = 0.0;
+          break;
+        case MainAxisAlignment.spaceBetween:
+          leadingSpace = 0.0;
+          betweenSpace = childCount > 1 ? remainingSpace / (childCount - 1) : 0.0;
+          break;
+        case MainAxisAlignment.spaceAround:
+          betweenSpace = childCount > 0 ? remainingSpace / childCount : 0.0;
+          leadingSpace = betweenSpace / 2.0;
+          break;
+        case MainAxisAlignment.spaceEvenly:
+          betweenSpace = childCount > 0 ? remainingSpace / (childCount + 1) : 0.0;
+          leadingSpace = betweenSpace;
+          break;
+      }
 
-    // Position elements
-    double childMainPosition =
-    flipMainAxis ? mainAxisSize - leadingSpace : leadingSpace;
-    RenderBox? child = firstChild;
-    while (child != null) {
-      final BoxData data = child.parentData! as BoxData;
+      // Position elements
+      double childMainPosition =
+      flipMainAxis ? mainAxisSize - leadingSpace : leadingSpace;
+      RenderBox? child = firstChild;
+      while (child != null) {
+        final BoxData data = child.parentData! as BoxData;
 
-      final double childCrossPosition;
-      switch (_crossAxisAlignment) {
-        case CrossAxisAlignment.start:
-        case CrossAxisAlignment.end:
-          childCrossPosition = _startIsTopLeft(
-              flipAxis(direction), textDirection, verticalDirection) ==
-              (_crossAxisAlignment == CrossAxisAlignment.start)
-              ? 0.0
-              : crossAxisSize - _getCrossSize(child.size);
-          break;
-        case CrossAxisAlignment.center:
-          childCrossPosition =
-              crossAxisSize / 2.0 - _getCrossSize(child.size) / 2.0;
-          break;
-        case CrossAxisAlignment.stretch:
-          childCrossPosition = 0.0;
-          break;
-        case CrossAxisAlignment.baseline:
-          if (_direction == Axis.horizontal) {
-            assert(textBaseline != null);
-            final double? distance =
-            child.getDistanceToBaseline(textBaseline!, onlyReal: true);
-            if (distance != null) {
-              childCrossPosition = maxBaselineDistance - distance;
+        final double childCrossPosition;
+        switch (_crossAxisAlignment) {
+          case CrossAxisAlignment.start:
+          case CrossAxisAlignment.end:
+            childCrossPosition = _startIsTopLeft(
+                flipAxis(direction), textDirection, verticalDirection) ==
+                (_crossAxisAlignment == CrossAxisAlignment.start)
+                ? 0.0
+                : crossAxisSize - _getCrossSize(child.size);
+            break;
+          case CrossAxisAlignment.center:
+            childCrossPosition =
+                crossAxisSize / 2.0 - _getCrossSize(child.size) / 2.0;
+            break;
+          case CrossAxisAlignment.stretch:
+            childCrossPosition = 0.0;
+            break;
+          case CrossAxisAlignment.baseline:
+            if (_direction == Axis.horizontal) {
+              assert(textBaseline != null);
+              final double? distance =
+              child.getDistanceToBaseline(textBaseline!, onlyReal: true);
+              if (distance != null) {
+                childCrossPosition = maxBaselineDistance - distance;
+              } else {
+                childCrossPosition = 0.0;
+              }
             } else {
               childCrossPosition = 0.0;
             }
-          } else {
-            childCrossPosition = 0.0;
-          }
-          break;
+            break;
+        }
+        if (flipMainAxis) {
+          childMainPosition -= _getMainSize(child.size);
+        }
+        switch (_direction) {
+          case Axis.horizontal:
+            data.offset = Offset(childMainPosition, childCrossPosition);
+            break;
+          case Axis.vertical:
+            data.offset = Offset(childCrossPosition, childMainPosition);
+            break;
+        }
+        if (flipMainAxis) {
+          childMainPosition -= betweenSpace;
+        } else {
+          childMainPosition += _getMainSize(child.size) + betweenSpace;
+        }
+        child = data.nextSibling;
       }
-      if (flipMainAxis) {
-        childMainPosition -= _getMainSize(child.size);
-      }
-      switch (_direction) {
-        case Axis.horizontal:
-          data.offset = Offset(childMainPosition, childCrossPosition);
-          break;
-        case Axis.vertical:
-          data.offset = Offset(childCrossPosition, childMainPosition);
-          break;
-      }
-      if (flipMainAxis) {
-        childMainPosition -= betweenSpace;
-      } else {
-        childMainPosition += _getMainSize(child.size) + betweenSpace;
-      }
-      child = data.nextSibling;
-    }
 
-    // set my size in model
-    model.layoutComplete(size, Offset(paintBounds.top, paintBounds.left));
+      // set my size in model
+      model.layoutComplete(size, Offset(paintBounds.top, paintBounds.left));
     }
     catch (e)
     {

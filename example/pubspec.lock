@@ -614,7 +614,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "3.0.0+17"
+    version: "3.0.0+16"
   geolocator:
     dependency: transitive
     description:

@@ -312,8 +312,10 @@ Future<bool> _appendXml(Model model, String xml, int? index,
     _appendChild(model, element, index);
   }
 
-  // force the parent to rebuild
-  model.parent?.rebuild();
+  // force a rebuild
+  // if we are a box model, we need to force our parent to rebuild
+  // in order to rebuild the child views
+  (model is! BoxModel) ? model.rebuild() : model.parent?.rebuild();
 
   return exception != null && nodes.isNotEmpty;
 }

@@ -63,5 +63,5 @@ class CardModel extends BoxModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(BoxView(this, inflate()));
+  Widget getView({Key? key}) => getReactiveView(BoxView(this, (_,__) => inflate()));
 }

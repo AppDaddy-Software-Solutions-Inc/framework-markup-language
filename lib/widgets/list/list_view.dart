@@ -181,12 +181,12 @@ class ListLayoutViewState extends ViewableWidgetState<ListLayoutView> {
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+  Widget build(BuildContext context) => BoxView(widget.model, builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
+  List<Widget> builder(BuildContext context, BoxConstraints constraints) {
 
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return const Offstage();
+    if (!widget.model.visible) return const [Offstage()];
 
     /// Busy / Loading Indicator
     busy ??= BusyModel(widget.model,
@@ -255,9 +255,6 @@ class ListLayoutViewState extends ViewableWidgetState<ListLayoutView> {
     // show busy spinner over list
     view = Stack(children: children);
 
-    // wrap in box
-    view = BoxView(widget.model,[view]);
-
-    return view;
+    return [view];
   }
 }

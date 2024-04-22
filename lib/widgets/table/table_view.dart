@@ -210,7 +210,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
     // return the view
     if (!views.containsKey(model)) {
       // build the view
-      Widget view = RepaintBoundary(child: BoxView(model, widget.model.inflate()));
+      Widget view = RepaintBoundary(child: BoxView(model, (_,__) => widget.model.inflate()));
 
       // cache the view
       views[model] = view;
@@ -994,7 +994,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
     if (groups.isEmpty && fields.isEmpty) return null;
 
     var title = model.title;
-    var header = WidgetSpan(child: BoxView(model, widget.model.inflate()));
+    var header = WidgetSpan(child: BoxView(model, (_,__) => widget.model.inflate()));
 
     var group = PlutoColumnGroup(
       title: title ?? "",
@@ -1015,7 +1015,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
 
   Widget _footerBuilder(
       PlutoColumnFooterRendererContext context, TableFooterCellModel model) {
-    var view = WidgetSpan(child: BoxView(model, model.inflate()));
+    var view = WidgetSpan(child: BoxView(model, (_,__) => model.inflate()));
 
     var footer = PlutoAggregateColumnFooter(
         rendererContext: context,
@@ -1042,7 +1042,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
       bool render = cell.usesRenderer;
 
       // set custom header renderer
-      var header = WidgetSpan(child: BoxView(cell, cell.inflate()));
+      var header = WidgetSpan(child: BoxView(cell, (_,__) => cell.inflate()));
       if (widget.model.header!.cells.length == 1 &&
           (title.trim() == TableModel.dynamicTableValue1 ||
               title.trim() == TableModel.dynamicTableValue2)) {

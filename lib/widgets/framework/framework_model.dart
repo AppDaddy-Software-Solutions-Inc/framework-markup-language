@@ -452,7 +452,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
     initialized = true;
 
     // force rebuild
-    rebuild();
+    notifyListeners("rebuild", true);
   }
 
   @override

@@ -19,8 +19,10 @@ class BusyView extends StatefulWidget implements ViewableWidgetView {
 }
 
 class _BusyViewState extends ViewableWidgetState<BusyView> {
+
   @override
   Widget build(BuildContext context) {
+
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 

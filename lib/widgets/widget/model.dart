@@ -27,6 +27,14 @@ class Model implements IDataSourceListener {
   Scope? _subscope;
   Scope? get subscope => _subscope;
 
+  // this is used in the renderer to determine if the widget
+  // should rebuild on layout changes
+  bool needsLayout = false;
+
+  // this is used in the renderer to determine if the widget
+  // should rebuild its children
+  bool needsRebuild = false;
+
   // framework
   FrameworkModel? framework;
 
@@ -278,9 +286,6 @@ class Model implements IDataSourceListener {
     _subscope?.dispose();
   }
 
-  /// forces and associated views to rebuild
-  rebuild() => notifyListeners("rebuild", true);
-
   /// adds a models listener to the list
   registerListener(IModelListener listener) {
     _listeners ??= [];
@@ -481,7 +486,8 @@ class Model implements IDataSourceListener {
         addChild(this, arguments);
 
         // force rebuild
-        notifyListeners("rebuild", "true");
+        needsRebuild = true;
+        notifyListeners("rebuild", true);
 
         return true;
 
@@ -489,7 +495,8 @@ class Model implements IDataSourceListener {
         removeChild(this, arguments);
 
         // force rebuild
-        notifyListeners("rebuild", "true");
+        needsRebuild = true;
+        notifyListeners("rebuild", true);
 
         return true;
 
@@ -497,7 +504,8 @@ class Model implements IDataSourceListener {
         removeChildren(this, arguments);
 
         // force rebuild
-        notifyListeners("rebuild", "true");
+        needsRebuild = true;
+        notifyListeners("rebuild", true);
 
         return true;
 
@@ -505,7 +513,8 @@ class Model implements IDataSourceListener {
         replaceChild(this, arguments);
 
         // force rebuild
-        notifyListeners("rebuild", "true");
+        needsRebuild = true;
+        notifyListeners("rebuild", true);
 
         return true;
 
@@ -513,7 +522,8 @@ class Model implements IDataSourceListener {
         replaceChildren(this, arguments);
 
         // force rebuild
-        notifyListeners("rebuild", "true");
+        needsRebuild = true;
+        notifyListeners("rebuild", true);
 
         return true;
 
@@ -521,7 +531,8 @@ class Model implements IDataSourceListener {
         removeWidget(this, arguments);
 
         // force rebuild
-        notifyListeners("rebuild", "true");
+        needsRebuild = true;
+        notifyListeners("rebuild", true);
 
         return true;
 
@@ -529,7 +540,8 @@ class Model implements IDataSourceListener {
         replaceWidget(this, arguments);
 
         // force rebuild
-        notifyListeners("rebuild", "true");
+        needsRebuild = true;
+        notifyListeners("rebuild", true);
 
         return true;
     }

@@ -36,7 +36,7 @@ class _LinkViewState extends ViewableWidgetState<LinkView> {
     if (!widget.model.visible) return const Offstage();
 
     // column view
-    Widget view = BoxView(widget.model, widget.model.inflate());
+    Widget view = BoxView(widget.model, (_,__) => widget.model.inflate());
 
     // wrap in gesture detector
     if (widget.model.enabled) {

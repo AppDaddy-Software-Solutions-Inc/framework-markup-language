@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_data.dart';
-import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 
 class BoxLayout extends ParentDataWidget<BoxData> {
@@ -24,17 +23,11 @@ class BoxLayout extends ParentDataWidget<BoxData> {
       // determine if we need to draw (redraw) the box
       // boxes mark themselves as needing rebuild when their view size or position changes
       // This gets marked in onLayoutChange() of the visibleMixin
-      bool needsLayout = false;
+      bool needsLayout = data.model?.needsLayout ?? false;
 
       // model changed?
       if (data.model != model) {
         data.model = model;
-        needsLayout = true;
-      }
-
-      // model marked as needing rebuild?
-      if (data.model is BoxModel && (data.model as BoxModel).markNeedsRebuild) {
-        (data.model as BoxModel).markNeedsRebuild = false;
         needsLayout = true;
       }
 

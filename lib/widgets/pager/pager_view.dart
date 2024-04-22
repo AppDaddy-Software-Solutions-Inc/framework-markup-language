@@ -83,7 +83,9 @@ class PagerViewState extends ViewableWidgetState<PagerView> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => BoxView(widget.model, builder);
+
+  List<Widget> builder(BuildContext context, BoxConstraints constraints) {
 
     List<Widget> list = [];
 
@@ -132,7 +134,7 @@ class PagerViewState extends ViewableWidgetState<PagerView> {
     }
     list.add(busy!);
 
-    return BoxView(widget.model, list);
+    return list;
   }
 }
 

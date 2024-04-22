@@ -16,19 +16,24 @@ import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 
+typedef Builder = List<Widget> Function(BuildContext context, BoxConstraints constraints);
+
 /// [BOX] view
 class BoxView extends StatefulWidget implements ViewableWidgetView {
+
   @override
   final BoxModel model;
-  final List<Widget> children;
+  final Builder builder;
 
-  BoxView(this.model, this.children, {Key? key}) : super(key: key ?? ObjectKey(model));
+  BoxView(this.model, this.builder, {Key? key}) : super(key: key ?? ObjectKey(model));
 
   @override
   State<BoxView> createState() => BoxViewState();
 }
 
 class BoxViewState extends ViewableWidgetState<BoxView> {
+
+  List<Widget>? children;
 
   /// Function to find gradient alignment
   static Alignment? _toGradientAlignment(String? alignment) {
@@ -451,8 +456,14 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     // this may no necessary in the future
     onLayout(constraints);
 
+    // rebuild content?
+    if (widget.model.needsRebuild || children == null) {
+      children = widget.builder(context, constraints);
+      widget.model.needsRebuild = false;
+    }
+
     // build the box
-    var view = _buildView(context, constraints, widget.model, widget.children);
+    var view = _buildView(context, constraints, widget.model, children!);
 
     // add margins
     view = addMargins(view);

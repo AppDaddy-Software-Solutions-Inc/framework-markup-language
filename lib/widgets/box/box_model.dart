@@ -466,5 +466,5 @@ class BoxModel extends ViewableModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(BoxView(this, inflate()));
+  Widget getView({Key? key}) => getReactiveView(BoxView(this, (_,__) => inflate()));
 }

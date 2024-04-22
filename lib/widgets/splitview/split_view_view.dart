@@ -106,23 +106,12 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     return view;
   }
 
-  BoxView get _missingView => BoxView(BoxModel(widget.model, null), const []);
+  BoxView get _missingView => BoxView(BoxModel(widget.model, null), (_,__) => const []);
 
   @override
-  onModelChange(Model model, {String? property, dynamic value}) {
-    // cleared the cached views so they rebuild there
-    // children
-    if (Binding.fromString(property)?.source == 'rebuild') {
-      view1 = null;
-      view2 = null;
-    }
-    super.onModelChange(model, property: property, value: value);
-  }
+  Widget build(BuildContext context) => BoxView(widget.model, builder);
 
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
+  List<Widget> builder(BuildContext context, BoxConstraints constraints) {
 
     // left pane
     if (view1 == null) {
@@ -154,7 +143,7 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
 
     // left/top pane
     leftPane.model.setFlex(flex);
-    leftPane.model.markNeedsRebuild = true;
+    leftPane.model.needsLayout = true;
     children.add(leftPane);
 
     // handle
@@ -163,9 +152,9 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
 
     // right/bottom pane
     rightPane.model.setFlex(1000 - flex);
-    rightPane.model.markNeedsRebuild = true;
+    rightPane.model.needsLayout = true;
     children.add(rightPane);
 
-    return BoxView(widget.model, children);
+    return children;
   }
 }

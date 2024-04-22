@@ -388,7 +388,7 @@ class FrameworkViewState extends State<FrameworkView>
         (header?.height ?? 0) + (footer?.height ?? 0) + safeAreaHeight.ceil();
 
     // build framework body
-    Widget view = BoxView(body, body.inflate());
+    Widget view = BoxView(body, (_,__) => body.inflate());
 
     // listen to scroll events if the body
     // is wrapped in a Scroller

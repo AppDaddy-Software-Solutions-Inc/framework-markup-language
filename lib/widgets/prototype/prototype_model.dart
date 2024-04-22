@@ -143,8 +143,11 @@ class PrototypeModel extends BoxModel {
     // clear busy
     busy = false;
 
-    // force the parent to rebuild
-    parent?.rebuild();
+    // force a rebuild
+    // if we are a box model, we need to force our parent to rebuild
+    // in order to rebuild the child views
+    (parent is! BoxModel) ? parent?.rebuild() : parent?.parent?.rebuild();
+
 
     return true;
   }

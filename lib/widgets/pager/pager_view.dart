@@ -117,9 +117,9 @@ class PagerViewState extends ViewableWidgetState<PagerView> {
           onPageSelected: (int page) =>
               pageTo(page + 1, widget.model.transition));
 
-      // we need use positioned model's view to position the pager
       pager = PositionedModel(widget.model, null, bottom: 8, child: pager!).getView();
     }
+
     if (pager != null) {
       list.add(pager!);
     }

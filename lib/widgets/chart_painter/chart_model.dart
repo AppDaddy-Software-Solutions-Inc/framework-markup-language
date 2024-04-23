@@ -211,6 +211,7 @@ class ChartPainterModel extends BoxModel {
     return views;
   }
 
+  // must be implemented, so we return offstage as all charts are inherited from this class member
   @override
   Widget getView({Key? key}) => const Offstage();
 }

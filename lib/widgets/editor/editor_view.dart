@@ -78,6 +78,7 @@ class _EditorViewState extends ViewableWidgetState<EditorView> {
         styles: themeMap.containsKey(widget.model.theme)
             ? themeMap[widget.model.theme]
             : themeMap.values.first);
+
     return CodeTheme(
         data: theme,
         child: CodeField(

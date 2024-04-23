@@ -1,14 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/navigation/navigation_manager.dart';
-import 'package:fml/observable/binding.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/splitview/split_view_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
-import 'package:fml/widgets/widget/model.dart';
 
 class SplitViewView extends StatefulWidget implements ViewableWidgetView {
 

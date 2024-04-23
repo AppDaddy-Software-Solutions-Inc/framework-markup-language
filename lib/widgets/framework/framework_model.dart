@@ -489,22 +489,16 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
   }
 
   void onPush(Map<String?, String>? parameters) {
-    if (parameters != null) {
-      // set variables from return parameters
-      if ((scope != null)) {
-        parameters.forEach((key, value) => scope!.setObservable(key, value));
-      }
 
-      // fire OnReturn event
-      if (!isNullOrEmpty(onreturn)) EventHandler(this).execute(_onreturn);
-    }
+    // set variables from return parameters
+    parameters?.forEach((key, value) => scope?.setObservable(key, value));
+
+    // fire onReturn event
+    if (!isNullOrEmpty(onreturn)) EventHandler(this).execute(_onreturn);
   }
 
   // get return parameters
   Map<String?, String> onPop() {
-    // this is an important since framework views will rebuild even after popped
-    // the framework view build() method checks this value and returns offstage() when false
-    initialized = false;
 
     // return parameters
     return parameters;

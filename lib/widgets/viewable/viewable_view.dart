@@ -155,8 +155,5 @@ abstract class ViewableWidgetState<T extends StatefulWidget> extends State<T>
     return view;
   }
 
-  void onLayout(BoxConstraints constraints) {
-    model?.setLayoutConstraints(constraints);
-    //WidgetsBinding.instance.addPostFrameCallback((_) => model?.onLayoutComplete(model));
-  }
+  void onLayout(BoxConstraints constraints) => model?.setLayoutConstraints(constraints);
 }

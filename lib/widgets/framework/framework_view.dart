@@ -69,14 +69,14 @@ class FrameworkViewState extends State<FrameworkView>
   @override
   bool get wantKeepAlive => true;
 
-  bool goto = false;
-
   @override
   void initState() {
+
     // register model listener
     widget.model.registerListener(this);
 
-    // If the model contains any databrokers we fire them before building so we can bind to the data
+    // if the model contains any databrokers, we fire them before building
+    // so we can bind to the data
     widget.model.initialize();
 
     super.initState();
@@ -84,8 +84,12 @@ class FrameworkViewState extends State<FrameworkView>
 
   @override
   didChangeDependencies() {
+
     // register model listener
     widget.model.registerListener(this);
+
+    // register route listener
+    NavigationObserver().registerListener(this);
 
     // register event listeners
     widget.model.registerEventListener(EventTypes.home, onHome);
@@ -100,26 +104,24 @@ class FrameworkViewState extends State<FrameworkView>
   void didUpdateWidget(FrameworkView oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if ((oldWidget.model != widget.model)) {
+    if (oldWidget.model != widget.model) {
       // reset started to fire again
       started = false;
 
-      // register new route listener
+      // register route listener
       NavigationObserver().registerListener(this);
 
       // remove old event listeners
       oldWidget.model.removeEventListener(EventTypes.home, onHome);
       oldWidget.model.removeEventListener(EventTypes.close, onClose);
       oldWidget.model.removeEventListener(EventTypes.maximize, onMaximize);
-      oldWidget.model
-          .removeEventListener(EventTypes.showtemplate, onShowTemplate);
+      oldWidget.model.removeEventListener(EventTypes.showtemplate, onShowTemplate);
 
       // register new event listeners
       widget.model.registerEventListener(EventTypes.home, onHome);
       widget.model.registerEventListener(EventTypes.close, onClose);
       widget.model.registerEventListener(EventTypes.maximize, onMaximize);
-      widget.model
-          .registerEventListener(EventTypes.showtemplate, onShowTemplate);
+      widget.model.registerEventListener(EventTypes.showtemplate, onShowTemplate);
 
       // remove old model listener
       oldWidget.model.removeListener(this);
@@ -131,7 +133,8 @@ class FrameworkViewState extends State<FrameworkView>
 
   @override
   void dispose() {
-    // Stop Listening to Route Changes
+
+    // remove route listener
     NavigationObserver().removeListener(this);
 
     if (widget.model.orientation != null) {
@@ -166,7 +169,8 @@ class FrameworkViewState extends State<FrameworkView>
 
   @override
   Map<String?, String>? onNavigatorPop() {
-    // Stop Listening to Route Changes
+
+    // remove route listener
     NavigationObserver().removeListener(this);
 
     // pop the page
@@ -174,9 +178,7 @@ class FrameworkViewState extends State<FrameworkView>
   }
 
   @override
-  void onNavigatorPush({Map<String?, String>? parameters}) {
-    return widget.model.onPush(parameters);
-  }
+  void onNavigatorPush({Map<String?, String>? parameters}) => widget.model.onPush(parameters);
 
   @override
   void onNavigatorChange() {
@@ -467,28 +469,20 @@ class FrameworkViewState extends State<FrameworkView>
     Model.unfocus();
   }
 
-  // holds the current view
-  Widget? view;
-
   @override
   Widget build(BuildContext context) {
+
     super.build(context);
 
     // model is initializing
-    if (!widget.model.initialized) return view ?? _buildWait();
-
-    /// Pages on Navigator stack rebuild when a new page is pushed
-    /// https://github.com/flutter/flutter/issues/11655
-    /// This hack prevents rebuiling the page that is being navigated away from.
-    if (NavigationManager().positionInStack(context) != 0) {
-      return view ?? _buildWait();
-    }
+    if (!widget.model.initialized) return _buildWait();
 
     // model has initialized. show framework
     return LayoutBuilder(builder: builder);
   }
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
+
     // set focused framework
     System().setActiveFramework(widget.model);
 
@@ -536,9 +530,6 @@ class FrameworkViewState extends State<FrameworkView>
 
     // start listening to model changes
     widget.model.registerListener(this);
-
-    // assign the current view
-    this.view = view;
 
     return view;
   }

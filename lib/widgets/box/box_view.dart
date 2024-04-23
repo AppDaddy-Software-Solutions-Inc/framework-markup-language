@@ -444,6 +444,18 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     return view;
   }
 
+  bool doRebuild() {
+    if (widget.model.needsRebuild || widget.model.needsLayout || children == null) return true;
+    for (var child in children ?? []) {
+        if (child is ViewableWidgetView) {
+          if (child.model.needsLayout) {
+            return true;
+          }
+        }
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
@@ -457,7 +469,7 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     onLayout(constraints);
 
     // rebuild content?
-    if (widget.model.needsRebuild || children == null) {
+    if (doRebuild()) {
       children = widget.builder(context, constraints);
       widget.model.needsRebuild = false;
     }

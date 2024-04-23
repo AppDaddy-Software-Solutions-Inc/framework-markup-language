@@ -1270,7 +1270,9 @@ mixin ViewableMixin on Model implements IDragDrop {
     }
 
     // wrap in tooltip?
-    if (tipModel != null) view = TooltipView(tipModel!, view);
+    if (tipModel != null) {
+      view = TooltipView(tipModel!, view);
+    }
 
     // droppable?
     if (droppable && view is! DroppableView) {

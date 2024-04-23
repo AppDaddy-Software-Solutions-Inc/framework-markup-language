@@ -25,8 +25,8 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
 
   BoxConstraints constraints = const BoxConstraints();
 
+  BoxView? view0;
   BoxView? view1;
-  BoxView? view2;
 
   void onBack(Event event) {
     event.handled = true;
@@ -60,6 +60,7 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     // reset the ratio
     if (ratio < 0) ratio = 0;
     if (ratio > 1) ratio = 1;
+    widget.model.needsRebuild = true;
     widget.model.ratio = ratio;
   }
 
@@ -106,29 +107,33 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     return view;
   }
 
-  BoxView get _missingView => BoxView(BoxModel(widget.model, null), (_,__) => const []);
+  BoxView view(int i)
+  {
+    // get children
+    var children = widget.model.viewableChildren;
+
+    // find box model at specified child index
+    Widget? view;
+    if (children.length > i) {
+      view = children.elementAt(i).getView();
+      if (view is BoxView) return view;
+    }
+
+    // missing view
+    return BoxView(BoxModel(widget.model, null), (_,__) => const []);
+  }
 
   @override
-  Widget build(BuildContext context) => BoxView(widget.model, builder);
+  Widget build(BuildContext context) {
+    var view = BoxView(widget.model, builder);
+    return view;
+  }
 
   List<Widget> builder(BuildContext context, BoxConstraints constraints) {
 
     // left pane
-    if (view1 == null) {
-      var children = widget.model.viewableChildren;
-
-      Widget? view;
-      if (children.isNotEmpty) view = children.elementAt(0).getView();
-      if (view is! BoxView) view = _missingView;
-      view1 = view;
-
-      // right pane
-      view = null;
-      if (children.length > 1) view = children.elementAt(1).getView();
-      if (view is! BoxView) view = _missingView;
-      view2 = view;
-    }
-
+    view0 ??= view(0);
+    view1 ??= view(1);
 
     // ratio box1:box2. if 1, box 1 is 100% size
     var ratio = widget.model.ratio;
@@ -136,24 +141,23 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     if (ratio > 1) ratio = 1;
     var flex = (ratio * 1000).ceil();
 
-    var leftPane  = view1!;
-    var rightPane = view2!;
-
     List<Widget> children = [];
 
-    // left/top pane
-    leftPane.model.setFlex(flex);
-    leftPane.model.needsLayout = true;
-    children.add(leftPane);
+    // left/top view
+    view0 ??= view(0);
+    view0!.model.setFlex(flex);
+    view0!.model.needsLayout = true;
+    children.add(view0!);
 
     // handle
     Widget handle = _buildHandle(constraints);
     children.add(handle);
 
-    // right/bottom pane
-    rightPane.model.setFlex(1000 - flex);
-    rightPane.model.needsLayout = true;
-    children.add(rightPane);
+    // right/bottom view
+    view1 ??= view(1);
+    view1!.model.setFlex(1000 - flex);
+    view1!.model.needsLayout = true;
+    children.add(view1!);
 
     return children;
   }

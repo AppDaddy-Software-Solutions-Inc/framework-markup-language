@@ -16,12 +16,26 @@ class TestDataModel extends DataSourceModel implements IDataSource {
   static TestDataModel? fromXml(Model parent, XmlElement xml) {
     TestDataModel? model;
     try {
+
       model = TestDataModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
 
-      var rows = toInt(Xml.get(node: xml, tag: 'rows')) ?? 100;
-      model.data = Data.testData(rows);
-    } catch (e) {
+      var rows  = toInt(Xml.get(node: xml, tag: 'rows'))  ?? 100;
+      var delay = toInt(Xml.get(node: xml, tag: 'delay')) ?? 0;
+
+      if (delay <= 0) {
+        model.data = Data.testData(rows);
+        return model;
+      }
+
+      model.busy = true;
+      Future.delayed(Duration(seconds: delay), () {
+        var data = Data.testData(rows);
+        model!.onData(data);
+        model.busy = false;
+      });
+    }
+    catch (e) {
       Log().exception(e, caller: 'data.Model');
       model = null;
     }

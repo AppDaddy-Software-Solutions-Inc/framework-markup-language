@@ -45,6 +45,7 @@ class PrototypeModel extends BoxModel {
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
+
     // make a copy of the element
     var root = XmlElement(XmlName("PROTOTYPE"));
     var child = xml.copy();
@@ -80,6 +81,8 @@ class PrototypeModel extends BoxModel {
 
   @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async {
+
+    // not a prototype?
     if (prototype == null || source.id != datasource) {
       return super.onDataSourceSuccess(source, list);
     }

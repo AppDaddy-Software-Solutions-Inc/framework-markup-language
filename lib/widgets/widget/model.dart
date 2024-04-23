@@ -479,9 +479,11 @@ class Model implements IDataSourceListener {
     var function = propertyOrFunction.toLowerCase().trim();
 
     switch (function) {
+      // set property
       case 'set':
         return set(this, caller, propertyOrFunction, arguments, scope!);
 
+      // add child
       case 'addchild':
         addChild(this, arguments);
 
@@ -491,6 +493,7 @@ class Model implements IDataSourceListener {
 
         return true;
 
+      // remove child
       case 'removechild':
         removeChild(this, arguments);
 
@@ -500,6 +503,7 @@ class Model implements IDataSourceListener {
 
         return true;
 
+      // remove all children
       case 'removechildren':
         removeChildren(this, arguments);
 
@@ -509,6 +513,7 @@ class Model implements IDataSourceListener {
 
         return true;
 
+      // replace child
       case 'replacechild':
         replaceChild(this, arguments);
 
@@ -518,6 +523,7 @@ class Model implements IDataSourceListener {
 
         return true;
 
+      // replace all children
       case 'replacechildren':
         replaceChildren(this, arguments);
 
@@ -527,21 +533,23 @@ class Model implements IDataSourceListener {
 
         return true;
 
+      // remove me
       case 'removewidget':
         removeWidget(this, arguments);
 
         // force rebuild
-        needsRebuild = true;
-        notifyListeners("rebuild", true);
+        parent?.needsRebuild = true;
+        parent?.notifyListeners("rebuild", true);
 
         return true;
 
+      // replace me
       case 'replacewidget':
         replaceWidget(this, arguments);
 
         // force rebuild
-        needsRebuild = true;
-        notifyListeners("rebuild", true);
+        parent?.needsRebuild = true;
+        parent?.notifyListeners("rebuild", true);
 
         return true;
     }

@@ -1102,7 +1102,6 @@ class FlexRenderer extends RenderBox
 
     // set my size in model
     model.layoutComplete(size, Offset(paintBounds.top, paintBounds.left));
-
   }
 }
 

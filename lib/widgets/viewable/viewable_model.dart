@@ -1310,20 +1310,26 @@ mixin ViewableMixin on Model implements IDragDrop {
 
   void layoutComplete(Size size, Offset offset) {
 
+    // if the view has changed size or position
+    // we need to redraw it
+    needsLayout = false;
+
     // set the view width, height and position
     if (size.width != viewWidth ||
         size.height != viewHeight ||
         offset.dx != viewX ||
         offset.dy != viewY) {
+
+      // set size
       viewWidth  = size.width;
       viewHeight = size.height;
+
+      // set position
       viewX = offset.dx;
       viewY = offset.dy;
-      needsLayout = true;
-    }
 
-    else {
-      needsLayout = false;
+      // mark as needing layout
+      needsLayout = true;
     }
   }
 

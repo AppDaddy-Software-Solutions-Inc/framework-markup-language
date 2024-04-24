@@ -282,6 +282,10 @@ class TypeaheadViewState extends ViewableWidgetState<TypeaheadView> {
     }
   }
 
+  // this holds the last typed pattern
+  // so that we cab show the filtered list on subsequent opens
+  String lastPattern = "";
+
   Future<List<OptionModel>> buildSuggestions(String pattern) async {
     // if not enable then show no list
     if (!widget.model.enabled) return [];
@@ -289,7 +293,12 @@ class TypeaheadViewState extends ViewableWidgetState<TypeaheadView> {
     // hack to force entire list to show
     // note the SuggestionsControllerOverride override
     // on the open method below
-    if (controller.text == widget.model.selectedOption?.label) pattern = "";
+    if (controller.text == widget.model.selectedOption?.label) {
+      pattern = lastPattern;
+    }
+    else {
+      lastPattern = pattern;
+    }
 
     // get matching options
     return widget.model.getMatchingOptions(pattern);

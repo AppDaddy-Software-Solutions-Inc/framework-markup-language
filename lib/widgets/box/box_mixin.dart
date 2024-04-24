@@ -6,10 +6,11 @@ import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 
 mixin BoxMixin {
+
   // lays out the child
   // and sets its size in the model
-  doLayout(
-      RenderBox child, BoxConstraints constraints, ChildLayouter layoutChild) {
+  doLayout(RenderBox child, BoxConstraints constraints, ChildLayouter layoutChild) {
+
     // calculate the child's size by performing
     // a dry layout. We use LocalBoxConstraints in order to
     // override isTight, which is used in Layout() to determine if a

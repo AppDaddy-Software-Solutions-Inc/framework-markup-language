@@ -6,15 +6,12 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/splitview/split_view_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 
-class SplitViewView extends StatefulWidget implements IWidgetView {
+class SplitViewView extends StatefulWidget implements ViewableWidgetView {
 
   @override
   final SplitViewModel model;
-
-  final List<BoxView> boxes = [];
 
   SplitViewView(this.model) : super(key: ObjectKey(model));
 
@@ -22,10 +19,12 @@ class SplitViewView extends StatefulWidget implements IWidgetView {
   State<SplitViewView> createState() => SplitViewViewState();
 }
 
-class SplitViewViewState extends WidgetState<SplitViewView> {
-  ThemeData? theme;
+class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
 
   BoxConstraints constraints = const BoxConstraints();
+
+  BoxView? view0;
+  BoxView? view1;
 
   void onBack(Event event) {
     event.handled = true;
@@ -39,6 +38,7 @@ class SplitViewViewState extends WidgetState<SplitViewView> {
   }
 
   void _onDrag(DragUpdateDetails details, BoxConstraints constraints) {
+
     var ratio = widget.model.ratio;
 
     var maxHeight = constraints.hasBoundedHeight ? constraints.maxHeight : 0.0;
@@ -58,12 +58,13 @@ class SplitViewViewState extends WidgetState<SplitViewView> {
     // reset the ratio
     if (ratio < 0) ratio = 0;
     if (ratio > 1) ratio = 1;
-    if (ratio != widget.model.ratio) widget.model.ratio = ratio;
+    widget.model.needsRebuild = true;
+    widget.model.ratio = ratio;
   }
 
-  Widget _buildHandle() {
+  Widget _buildHandle(BoxConstraints constraints) {
     var myDividerColor =
-        widget.model.dividerColor ?? theme?.colorScheme.onInverseSurface;
+        widget.model.dividerColor ?? Theme.of(context).colorScheme.onInverseSurface;
     var myDividerWidth = widget.model.dividerWidth;
 
     Widget view = widget.model.vertical
@@ -71,6 +72,7 @@ class SplitViewViewState extends WidgetState<SplitViewView> {
             behavior: HitTestBehavior.opaque,
             onVerticalDragUpdate: (DragUpdateDetails details) =>
                 _onDrag(details, constraints),
+            onTap: () => widget.model.ratio = 0,
             child: Container(
                 color: myDividerColor,
                 child: SizedBox(
@@ -100,39 +102,36 @@ class SplitViewViewState extends WidgetState<SplitViewView> {
                             child: Icon(Icons.drag_handle,
                                 color: widget.model.dividerHandleColor))))));
 
-    return BoxView(BoxModel(null, null, expandDefault: false), children: [view]);
+    return view;
   }
 
-  Widget _constrainBox(BoxView box, int flex) {
-    var direction = widget.model.vertical ? Axis.vertical : Axis.horizontal;
-    switch (direction) {
-      case Axis.horizontal:
-        box.model.setFlex(flex);
-        break;
+  BoxView view(int i)
+  {
+    // get children
+    var children = widget.model.viewableChildren;
 
-      case Axis.vertical:
-        box.model.setFlex(flex);
-        break;
+    // find box model at specified child index
+    Widget? view;
+    if (children.length > i) {
+      view = children.elementAt(i).getView();
+      if (view is BoxView) return view;
     }
-    return box;
+
+    // missing view
+    return BoxView(BoxModel(widget.model, null), (_,__) => const []);
   }
 
-  BoxView get _missingView => BoxView(BoxModel(widget.model, null));
+  @override
+  Widget build(BuildContext context) {
+    var view = BoxView(widget.model, builder);
+    return view;
+  }
 
-  // called by models inflate
-  List<Widget> inflate() {
-    // create box views
-    if (widget.boxes.isEmpty) {
-      var views = widget.model.viewableChildren;
+  List<Widget> builder(BuildContext context, BoxConstraints constraints) {
 
-      Widget? view1;
-      if (views.isNotEmpty) view1 = views.elementAt(0).getView();
-      widget.boxes.add(view1 is BoxView ? view1 : _missingView);
-
-      Widget? view2;
-      if (views.length > 1) view2 = views.elementAt(1).getView();
-      widget.boxes.add(view2 is BoxView ? view2 : _missingView);
-    }
+    // left pane
+    view0 ??= view(0);
+    view1 ??= view(1);
 
     // ratio box1:box2. if 1, box 1 is 100% size
     var ratio = widget.model.ratio;
@@ -140,30 +139,24 @@ class SplitViewViewState extends WidgetState<SplitViewView> {
     if (ratio > 1) ratio = 1;
     var flex = (ratio * 1000).ceil();
 
-    List<Widget> list = [];
+    List<Widget> children = [];
 
-    // left/top pane
-    var box1 = _constrainBox(widget.boxes[0], flex);
-    list.add(box1);
+    // left/top view
+    view0 ??= view(0);
+    view0!.model.setFlex(flex);
+    view0!.model.needsLayout = true;
+    children.add(view0!);
 
     // handle
-    Widget handle = _buildHandle();
-    list.add(handle);
+    Widget handle = _buildHandle(constraints);
+    children.add(handle);
 
-    // right/bottom pane
-    var box2 = _constrainBox(widget.boxes[1], 1000 - flex);
-    list.add(box2);
+    // right/bottom view
+    view1 ??= view(1);
+    view1!.model.setFlex(1000 - flex);
+    view1!.model.needsLayout = true;
+    children.add(view1!);
 
-    return list;
-  }
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    theme = Theme.of(context);
-
-    this.constraints = constraints;
-    return BoxView(widget.model);
+    return children;
   }
 }

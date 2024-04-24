@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/event/manager.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 
 enum EventTypes {
   alert,
@@ -81,7 +81,7 @@ class Event {
   /// List of all [IEventManager] objects related to handling this event
   final List<EventManager> functions = [];
 
-  final WidgetModel? model;
+  final Model? model;
 
   Event(this.type,
       {this.parameters,

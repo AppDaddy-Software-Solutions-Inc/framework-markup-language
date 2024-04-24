@@ -1,10 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:xml/xml.dart';
@@ -13,6 +12,11 @@ import 'nfc_listener_interface.dart';
 import 'nfc.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
+
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class NcfModel extends DataSourceModel implements IDataSource, INfcListener {
   @override
@@ -84,7 +88,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener {
 
   String? get ontimeout => _ontimeout?.get();
 
-  NcfModel(WidgetModel parent, String? id) : super(parent, id) {
+  NcfModel(Model parent, String? id) : super(parent, id) {
     _received =
         IntegerObservable(Binding.toKey(id, 'received'), 0, scope: scope);
     _serial = StringObservable(Binding.toKey(id, 'serial'), null, scope: scope);
@@ -92,7 +96,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener {
         StringObservable(Binding.toKey(id, 'payload'), null, scope: scope);
   }
 
-  static NcfModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static NcfModel? fromXml(Model parent, XmlElement xml) {
     NcfModel? model;
     try {
       model = NcfModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -125,7 +129,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener {
   Future<bool> start({bool refresh = false, String? key}) async {
     bool ok = true;
 
-    if (!FmlEngine.isMobile) {
+    if (!isMobile) {
       System.toast("NFC is only available on mobile devices", duration: 4);
       return ok;
     }
@@ -229,7 +233,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener {
     /// setter
     if (scope == null) return null;
 
-    if (!FmlEngine.isMobile) {
+    if (!isMobile) {
       System.toast("NFC is only available on mobile devices", duration: 4);
       statusmessage = "NFC is only available on mobile devices";
       return false;

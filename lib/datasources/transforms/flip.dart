@@ -5,7 +5,7 @@ import 'package:fml/datasources/transforms/image_transform_model.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class Flip extends ImageTransformModel implements ITransform {
@@ -22,9 +22,9 @@ class Flip extends ImageTransformModel implements ITransform {
 
   String get axis => _axis?.get() ?? "horizontal";
 
-  Flip(WidgetModel parent, {String? id}) : super(parent, id);
+  Flip(Model parent, {String? id}) : super(parent, id);
 
-  static Flip? fromXml(WidgetModel parent, XmlElement xml) {
+  static Flip? fromXml(Model parent, XmlElement xml) {
     Flip model = Flip(parent, id: Xml.get(node: xml, tag: 'id'));
     model.deserialize(xml);
     return model;

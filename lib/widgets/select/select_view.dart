@@ -1,13 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/select/select_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class SelectView extends StatefulWidget implements IWidgetView {
+class SelectView extends StatefulWidget implements ViewableWidgetView {
   @override
   final SelectModel model;
 
@@ -17,7 +16,7 @@ class SelectView extends StatefulWidget implements IWidgetView {
   State<SelectView> createState() => _SelectViewState();
 }
 
-class _SelectViewState extends WidgetState<SelectView> {
+class _SelectViewState extends ViewableWidgetState<SelectView> {
   FocusNode focus = FocusNode();
 
   void onChangeOption(OptionModel? option) async {

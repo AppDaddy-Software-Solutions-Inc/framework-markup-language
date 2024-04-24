@@ -8,13 +8,13 @@ import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
-import 'package:fml/widgets/widget/widget_model_interface.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
+import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class WidgetModel implements IDataSourceListener {
+class Model implements IDataSourceListener {
   // primary identifier
   // needs to be unique within the scope
   late final String id;
@@ -26,6 +26,14 @@ class WidgetModel implements IDataSourceListener {
   // child scope
   Scope? _subscope;
   Scope? get subscope => _subscope;
+
+  // this is used in the renderer to determine if the widget
+  // should rebuild on layout changes
+  bool needsLayout = false;
+
+  // this is used in the renderer to determine if the widget
+  // should rebuild its children
+  bool needsRebuild = false;
 
   // framework
   FrameworkModel? framework;
@@ -89,10 +97,10 @@ class WidgetModel implements IDataSourceListener {
   bool get debug => _debug?.get() ?? false;
 
   // parent model
-  WidgetModel? parent;
+  Model? parent;
 
   // children
-  List<WidgetModel>? children;
+  List<Model>? children;
 
   // context
   BuildContext? get context {
@@ -121,7 +129,7 @@ class WidgetModel implements IDataSourceListener {
 
   bool get busy => _busy?.get() ?? false;
 
-  WidgetModel(this.parent, String? id, {Scope? scope, dynamic data}) {
+  Model(this.parent, String? id, {Scope? scope, dynamic data}) {
     // set the id
     this.id = getUniqueId(id);
 
@@ -156,7 +164,7 @@ class WidgetModel implements IDataSourceListener {
     return newId(prefix: prefix);
   }
 
-  static WidgetModel? fromXml(WidgetModel parent, XmlElement node,
+  static Model? fromXml(Model parent, XmlElement node,
       {Scope? scope, dynamic data}) {
 
     // clone node?
@@ -232,7 +240,7 @@ class WidgetModel implements IDataSourceListener {
     children?.clear();
     for (var element in elements) {
       // deserialize the model
-      var model = WidgetModel.fromXml(this, element);
+      var model = Model.fromXml(this, element);
 
       if (model != null)
       {
@@ -244,7 +252,7 @@ class WidgetModel implements IDataSourceListener {
         // add model to the child list
         // in cases like camera, it is both a viewable widget as well
         // as a data source.
-        if (model is! IDataSource || model is ViewableWidgetMixin) {
+        if (model is! IDataSource || model is ViewableMixin) {
           (children ??= []).add(model);
         }
       }
@@ -277,9 +285,6 @@ class WidgetModel implements IDataSourceListener {
     // dispose of the sub-scope
     _subscope?.dispose();
   }
-
-  /// forces and associated views to rebuild
-  rebuild() => notifyListeners("rebuild", true);
 
   /// adds a models listener to the list
   registerListener(IModelListener listener) {
@@ -335,7 +340,7 @@ class WidgetModel implements IDataSourceListener {
   }
 
   /// Returns true if the template references observable => key
-  static bool isBound(WidgetModel model, String? key) {
+  static bool isBound(Model model, String? key) {
     if ((model.framework == null) || (isNullOrEmpty(key))) return false;
     return model.framework!.bindables!.contains(key);
   }
@@ -474,62 +479,77 @@ class WidgetModel implements IDataSourceListener {
     var function = propertyOrFunction.toLowerCase().trim();
 
     switch (function) {
+      // set property
       case 'set':
         return set(this, caller, propertyOrFunction, arguments, scope!);
 
+      // add child
       case 'addchild':
         addChild(this, arguments);
 
         // force rebuild
-        notifyListeners("rebuild", "true");
+        needsRebuild = true;
+        notifyListeners("rebuild", true);
 
         return true;
 
+      // remove child
       case 'removechild':
         removeChild(this, arguments);
 
         // force rebuild
-        notifyListeners("rebuild", "true");
+        needsRebuild = true;
+        notifyListeners("rebuild", true);
 
         return true;
 
+      // remove all children
       case 'removechildren':
         removeChildren(this, arguments);
 
         // force rebuild
-        notifyListeners("rebuild", "true");
+        needsRebuild = true;
+        notifyListeners("rebuild", true);
 
         return true;
 
+      // replace child
       case 'replacechild':
         replaceChild(this, arguments);
 
         // force rebuild
-        notifyListeners("rebuild", "true");
+        needsRebuild = true;
+        notifyListeners("rebuild", true);
 
         return true;
 
+      // replace all children
       case 'replacechildren':
         replaceChildren(this, arguments);
 
         // force rebuild
-        notifyListeners("rebuild", "true");
+        needsRebuild = true;
+        notifyListeners("rebuild", true);
 
         return true;
 
+      // remove me
       case 'removewidget':
         removeWidget(this, arguments);
 
         // force rebuild
-        notifyListeners("rebuild", "true");
+        parent?.needsRebuild = true;
+        parent?.notifyListeners("rebuild", true);
 
         return true;
 
+      // replace me
       case 'replacewidget':
         replaceWidget(this, arguments);
 
         // force rebuild
-        notifyListeners("rebuild", "true");
+        parent?.needsRebuild = true;
+        parent?.notifyListeners("rebuild", true);
 
         return true;
     }
@@ -537,7 +557,7 @@ class WidgetModel implements IDataSourceListener {
     return false;
   }
 
-  static bool set(WidgetModel model, String id, String propertyOrFunction,
+  static bool set(Model model, String id, String propertyOrFunction,
       List<dynamic> arguments, Scope scope) {
     // value
     var value = elementAt(arguments, 0);

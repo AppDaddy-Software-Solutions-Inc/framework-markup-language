@@ -6,17 +6,16 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/bar/bar_chart_model.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
 /// Chart View
 ///
 /// Builds a Chart View using [CHART.ChartModel], [SERIES.ChartSeriesModel], [AXIS.ChartAxisModel] and
 /// [EXCERPT.Model] properties
-class BarChartView extends StatefulWidget implements IWidgetView {
+class BarChartView extends StatefulWidget implements ViewableWidgetView {
   @override
   final BarChartModel model;
   BarChartView(this.model) : super(key: ObjectKey(model));
@@ -25,7 +24,7 @@ class BarChartView extends StatefulWidget implements IWidgetView {
   State<BarChartView> createState() => _ChartViewState();
 }
 
-class _ChartViewState extends WidgetState<BarChartView> {
+class _ChartViewState extends ViewableWidgetState<BarChartView> {
   Future<Template>? template;
   Future<BarChartModel>? chartViewModel;
   BusyView? busy;

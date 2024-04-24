@@ -1,13 +1,17 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/splitview/split_view_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
+
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class SplitViewModel extends BoxModel {
   @override
@@ -56,7 +60,7 @@ class SplitViewModel extends BoxModel {
   }
 
   double get dividerWidth {
-    var width = _dividerWidth?.get() ?? (FmlEngine.isTouchDevice ? 20 : 6);
+    var width = _dividerWidth?.get() ?? (Platform.isTouchDevice ? 20 : 6);
     if (width % 2 != 0) width = width + 1;
     return width;
   }
@@ -75,11 +79,11 @@ class SplitViewModel extends BoxModel {
 
   Color? get dividerHandleColor => _dividerHandleColor?.get();
 
-  SplitViewModel(WidgetModel super.parent, super.id, {bool? vertical}) {
+  SplitViewModel(Model super.parent, super.id, {bool? vertical}) {
     if (vertical != null) _vertical = vertical;
   }
 
-  static SplitViewModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static SplitViewModel? fromXml(Model parent, XmlElement xml) {
     SplitViewModel? model;
     try {
       model = SplitViewModel(parent, Xml.get(node: xml, tag: 'id'),
@@ -107,19 +111,12 @@ class SplitViewModel extends BoxModel {
 
     // remove and destroy all non-box children
     if (children != null) {
-      var list = children!.where((child) => child is! BoxModel).cast<WidgetModel>();
+      var list = children!.where((child) => child is! BoxModel).cast<Model>();
       for (var child in list) {
         child.dispose();
       }
       children?.removeWhere((child) => list.contains(child));
     }
-  }
-
-  @override
-  List<Widget> inflate() {
-    SplitViewViewState? view = findListenerOfExactType(SplitViewViewState);
-    if (view == null) return [];
-    return view.inflate();
   }
 
   @override

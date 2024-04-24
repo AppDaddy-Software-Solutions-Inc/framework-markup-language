@@ -2,11 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/slider/slider_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class SliderView extends StatefulWidget implements IWidgetView {
+class SliderView extends StatefulWidget implements ViewableWidgetView {
   @override
   final SliderModel model;
   final dynamic onChangeCallback;
@@ -16,7 +15,7 @@ class SliderView extends StatefulWidget implements IWidgetView {
   State<SliderView> createState() => _SliderViewState();
 }
 
-class _SliderViewState extends WidgetState<SliderView>
+class _SliderViewState extends ViewableWidgetState<SliderView>
     with WidgetsBindingObserver {
 
   onChange(double value) async {

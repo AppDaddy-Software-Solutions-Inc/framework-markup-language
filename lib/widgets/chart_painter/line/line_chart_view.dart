@@ -5,11 +5,10 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:intl/intl.dart';
 import 'line_chart_model.dart';
 
@@ -17,7 +16,7 @@ import 'line_chart_model.dart';
 ///
 /// Builds a Chart View using [CHART.ChartModel], [SERIES.ChartSeriesModel], [AXIS.ChartAxisModel] and
 /// [EXCERPT.Model] properties
-class LineChartView extends StatefulWidget implements IWidgetView {
+class LineChartView extends StatefulWidget implements ViewableWidgetView {
   @override
   final LineChartModel model;
   LineChartView(this.model) : super(key: ObjectKey(model));
@@ -26,7 +25,7 @@ class LineChartView extends StatefulWidget implements IWidgetView {
   State<LineChartView> createState() => _LineChartViewState();
 }
 
-class _LineChartViewState extends WidgetState<LineChartView> {
+class _LineChartViewState extends ViewableWidgetState<LineChartView> {
   Future<Template>? template;
   Future<LineChartModel>? chartViewModel;
   BusyView? busy;

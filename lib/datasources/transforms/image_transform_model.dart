@@ -4,7 +4,7 @@ import 'package:flutter_image_transform/flutter_image_transform.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -27,7 +27,7 @@ class ImageTransformModel extends TransformModel {
 
   ImageTransformModel(super.parent, super.id);
 
-  static ImageTransformModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static ImageTransformModel? fromXml(Model parent, XmlElement xml) {
     ImageTransformModel? model;
     try {
       model = ImageTransformModel(parent, Xml.get(node: xml, tag: 'id'));

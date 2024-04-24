@@ -1,12 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class VariableModel extends WidgetModel {
+class VariableModel extends Model {
   late final bool constant;
   String? type;
 
@@ -17,7 +17,7 @@ class VariableModel extends WidgetModel {
       _value!.set(v);
     } else {
       if ((v != null) ||
-          (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) {
+          (Model.isBound(this, Binding.toKey(id, 'value')))) {
         Formatter? formatter = type != null ? _encodeBody : null;
         Setter? setter =
             constant ? (dynamic value, {Observable? setter}) => v : null;
@@ -53,14 +53,14 @@ class VariableModel extends WidgetModel {
 
   String? get returnas => _returnas;
 
-  VariableModel(WidgetModel super.parent, super.id,
+  VariableModel(Model super.parent, super.id,
       {String? type, dynamic value, dynamic onchange, bool? constant}) {
     this.constant = constant ?? false;
     if (value != null) this.value = value;
     if (onchange != null) this.onchange = onchange;
   }
 
-  static VariableModel? fromXml(WidgetModel parent, XmlElement xml,
+  static VariableModel? fromXml(Model parent, XmlElement xml,
       {String? type, bool? constant}) {
     VariableModel? model;
     try {

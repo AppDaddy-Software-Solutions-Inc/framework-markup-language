@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/drawer/drawer_view.dart';
 import 'package:fml/widgets/drawer/item/drawer_item_model.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +12,7 @@ import 'package:fml/helpers/helpers.dart';
 enum Drawers {top, bottom, left, right}
 enum DragDirection {vertical, horizontal}
 
-class DrawerModel extends ViewableWidgetModel {
+class DrawerModel extends ViewableModel {
 
   // Side
   StringObservable? _side;
@@ -68,7 +68,7 @@ class DrawerModel extends ViewableWidgetModel {
   String? idBottom;
 
   DrawerModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     dynamic rounded,
     dynamic handle,
@@ -92,7 +92,7 @@ class DrawerModel extends ViewableWidgetModel {
   // I built this to replace fromXml so that we can take in multiple <DRAWER> elements
   // and consolidate them into a single DrawerModel that handles them all (important)
   static DrawerModel? fromXmlList(
-      WidgetModel parent, List<XmlElement> elements) {
+      Model parent, List<XmlElement> elements) {
     DrawerModel? model;
     try {
       bool handleLeft = false;

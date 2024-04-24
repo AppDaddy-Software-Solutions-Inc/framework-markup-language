@@ -13,7 +13,7 @@
 // import 'package:fml/widgets/chart_syncfusion/series/chart_series_model.dart';
 // import 'package:fml/widgets/chart_syncfusion/axis/chart_axis_model.dart' as sfAXIS;
 // import 'package:fml/widgets/chart_syncfusion/chart_view.dart';
-// import 'package:fml/widgets/widget/widget_model.dart'       ;
+// import 'package:fml/widgets/widget/model.dart'       ;
 // import 'package:fml/widgets/column/column_model.dart';
 // import 'package:fml/observable/observable_barrel.dart';
 // import 'package:fml/helpers/helpers.dart';

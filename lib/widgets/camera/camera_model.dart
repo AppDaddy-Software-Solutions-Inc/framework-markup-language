@@ -5,8 +5,8 @@ import 'package:fml/datasources/camera/model.dart';
 import 'package:fml/helpers/mime.dart';
 import 'package:fml/widgets/camera/camera_view.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -21,7 +21,7 @@ import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
     if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
     if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
-class CameraModel extends CameraImageModel with ViewableWidgetMixin {
+class CameraModel extends CameraImageModel with ViewableMixin {
   bool fullscreen = true;
   bool stream = false;
 
@@ -242,7 +242,7 @@ class CameraModel extends CameraImageModel with ViewableWidgetMixin {
     busy = false;
   }
 
-  static CameraModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static CameraModel? fromXml(Model parent, XmlElement xml) {
     CameraModel? model;
     try {
 // build model

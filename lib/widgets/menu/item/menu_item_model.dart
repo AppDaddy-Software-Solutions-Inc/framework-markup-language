@@ -2,18 +2,18 @@
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/menu/item/menu_item_view.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class MenuItemModel extends ViewableWidgetModel {
+class MenuItemModel extends ViewableModel {
   // url
   StringObservable? _url;
   set url(dynamic v) {
@@ -199,7 +199,7 @@ class MenuItemModel extends ViewableWidgetModel {
   VoidCallback? onTap;
   UriData? image;
 
-  MenuItemModel(WidgetModel super.parent, super.id,
+  MenuItemModel(Model super.parent, super.id,
       {super.data,
       dynamic url,
       dynamic title,
@@ -238,7 +238,7 @@ class MenuItemModel extends ViewableWidgetModel {
     if (image != null) this.image = toDataUri(image);
   }
 
-  static MenuItemModel? fromXml(WidgetModel parent, XmlElement? xml,
+  static MenuItemModel? fromXml(Model parent, XmlElement? xml,
       {dynamic data, dynamic onTap, dynamic onLongPress}) {
     MenuItemModel? model;
     try {

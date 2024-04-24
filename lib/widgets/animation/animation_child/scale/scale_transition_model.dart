@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/animation/animation_child/animation_child_model.dart';
 import 'package:fml/widgets/animation/animation_child/scale/scale_transition_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -60,7 +60,7 @@ class ScaleTransitionModel extends AnimationChildModel {
 
   ScaleTransitionModel(super.parent, super.id); // ; {key: value}
 
-  static ScaleTransitionModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static ScaleTransitionModel? fromXml(Model parent, XmlElement xml) {
     ScaleTransitionModel? model;
     try {
       model = ScaleTransitionModel(parent, Xml.get(node: xml, tag: 'id'));

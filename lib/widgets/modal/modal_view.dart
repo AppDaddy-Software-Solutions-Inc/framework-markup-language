@@ -1,17 +1,20 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/widgets/measure/measure_view.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/modal/modal_manager_view.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 
-class ModalView extends StatefulWidget implements IWidgetView {
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
+class ModalView extends StatefulWidget implements ViewableWidgetView {
   @override
   final ModalModel model;
 
@@ -21,7 +24,7 @@ class ModalView extends StatefulWidget implements IWidgetView {
   State<ModalView> createState() => ModalViewState();
 }
 
-class ModalViewState extends WidgetState<ModalView> {
+class ModalViewState extends ViewableWidgetState<ModalView> {
   static double headerSize = 30;
   static double headerIconSize = headerSize - 10;
   static double headerIconDividerSize = 5;
@@ -443,7 +446,7 @@ class ModalViewState extends WidgetState<ModalView> {
     if (width == null || height == null) {
       return UnconstrainedBox(
           child:
-              MeasureView(Material(child: BoxView(widget.model)), onMeasured));
+              MeasureView(Material(child: BoxView(widget.model, (_,__) => widget.model.inflate())), onMeasured));
     }
 
     ColorScheme t = Theme.of(context).colorScheme;
@@ -477,7 +480,7 @@ class ModalViewState extends WidgetState<ModalView> {
     if (height! <= minimumHeight) height = minimumHeight;
 
     // Content Box
-    body ??= Material(child: BoxView(widget.model));
+    body ??= Material(child: BoxView(widget.model, (_,__) => widget.model.inflate()));
 
     // Non-Minimized View
     if (!minimized) {
@@ -517,7 +520,7 @@ class ModalViewState extends WidgetState<ModalView> {
                   child: resize));
 
       Widget resize2 =
-          SizedBox(width: FmlEngine.isMobile ? 34 : 24, height: height);
+          SizedBox(width: isMobile ? 34 : 24, height: height);
       Widget resizeableL = !widget.model.resizeable
           ? Container()
           : GestureDetector(
@@ -534,7 +537,7 @@ class ModalViewState extends WidgetState<ModalView> {
                   cursor: SystemMouseCursors.resizeLeftRight, child: resize2));
 
       Widget resize3 =
-          SizedBox(width: width, height: FmlEngine.isMobile ? 34 : 24);
+          SizedBox(width: width, height: isMobile ? 34 : 24);
       Widget resizeableT = !widget.model.resizeable
           ? Container()
           : GestureDetector(

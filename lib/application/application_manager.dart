@@ -13,8 +13,8 @@ import 'package:fml/helpers/helpers.dart';
 
 // platform
 import 'package:fml/platform/platform.vm.dart'
-    if (dart.library.io) 'package:fml/platform/platform.vm.dart'
-    if (dart.library.html) 'package:fml/platform/platform.web.dart';
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class ApplicationManager extends StatefulWidget {
   final Widget? child;

@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/http/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -13,7 +13,7 @@ class HttpPatchModel extends HttpModel implements IDataSource {
 
   HttpPatchModel(super.parent, super.id);
 
-  static HttpPatchModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static HttpPatchModel? fromXml(Model parent, XmlElement xml) {
     HttpPatchModel? model;
     try {
       model = HttpPatchModel(parent, Xml.get(node: xml, tag: 'id'));

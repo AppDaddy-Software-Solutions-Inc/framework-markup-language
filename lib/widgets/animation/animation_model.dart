@@ -1,8 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/animation/animation_view.dart';
@@ -11,7 +11,7 @@ import 'package:fml/helpers/helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class AnimationModel extends ViewableWidgetModel {
+class AnimationModel extends ViewableModel {
   bool hasrun = false;
 
   /// Transition Curve
@@ -195,9 +195,9 @@ class AnimationModel extends ViewableWidgetModel {
 
   double controllerValue = 0;
 
-  AnimationModel(WidgetModel super.parent, super.id); // ; {key: value}
+  AnimationModel(Model super.parent, super.id); // ; {key: value}
 
-  static AnimationModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static AnimationModel? fromXml(Model parent, XmlElement xml) {
     AnimationModel? model;
     try {
       model = AnimationModel(parent, Xml.get(node: xml, tag: 'id'));

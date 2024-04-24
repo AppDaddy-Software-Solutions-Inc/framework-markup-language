@@ -495,6 +495,7 @@ class WrapRenderer extends RenderBox
 
   @override
   void performLayout() {
+
     final BoxConstraints constraints = this.constraints;
 
     assert(_debugHasNecessaryDirections);

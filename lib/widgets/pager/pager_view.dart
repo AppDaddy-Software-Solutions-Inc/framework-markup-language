@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:fml/widgets/positioned/positioned_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class PagerView extends StatefulWidget implements IWidgetView {
+class PagerView extends StatefulWidget implements ViewableWidgetView {
   @override
   final PagerModel model;
   PagerView(this.model) : super(key: ObjectKey(model));
@@ -18,7 +17,7 @@ class PagerView extends StatefulWidget implements IWidgetView {
   State<PagerView> createState() => PagerViewState();
 }
 
-class PagerViewState extends WidgetState<PagerView> {
+class PagerViewState extends ViewableWidgetState<PagerView> {
   PageController? _controller;
   List<Widget> _pages = [];
   Widget? busy;
@@ -83,8 +82,11 @@ class PagerViewState extends WidgetState<PagerView> {
     }
   }
 
-  // called by models inflate
-  List<Widget> inflate() {
+  @override
+  Widget build(BuildContext context) => BoxView(widget.model, builder);
+
+  List<Widget> builder(BuildContext context, BoxConstraints constraints) {
+
     List<Widget> list = [];
 
     // create page view
@@ -102,8 +104,6 @@ class PagerViewState extends WidgetState<PagerView> {
           itemBuilder: buildPage,
           itemCount: _pages.length,
           onPageChanged: (int page) => widget.model.currentpage = page + 1);
-
-      pageView = BoxView(widget.model, children: [pageView!]);
     }
 
     list.add(pageView!);
@@ -115,14 +115,13 @@ class PagerViewState extends WidgetState<PagerView> {
           controller: _controller!,
           itemCount: _pages.length,
           color:
-              widget.model.color ?? Theme.of(context).colorScheme.onBackground,
+          widget.model.color ?? Theme.of(context).colorScheme.onBackground,
           onPageSelected: (int page) =>
               pageTo(page + 1, widget.model.transition));
 
-      var model = PositionedModel(widget.model, null, bottom: 8, child: pager);
-
-      pager = BoxView(model, children: [pager!]);
+      pager = PositionedModel(widget.model, null, bottom: 8, child: pager!).getView();
     }
+
     if (pager != null) {
       list.add(pager!);
     }
@@ -137,9 +136,6 @@ class PagerViewState extends WidgetState<PagerView> {
 
     return list;
   }
-
-  @override
-  Widget build(BuildContext context) => BoxView(widget.model);
 }
 
 class DotsIndicator extends AnimatedWidget {

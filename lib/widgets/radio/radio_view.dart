@@ -1,13 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/helpers/string.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/radio/radio_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 
-class RadioView extends StatefulWidget implements IWidgetView {
+class RadioView extends StatefulWidget implements ViewableWidgetView {
   @override
   final RadioModel model;
   RadioView(this.model) : super(key: ObjectKey(model));
@@ -16,7 +15,7 @@ class RadioView extends StatefulWidget implements IWidgetView {
   State<RadioView> createState() => _RadioViewState();
 }
 
-class _RadioViewState extends WidgetState<RadioView> {
+class _RadioViewState extends ViewableWidgetState<RadioView> {
   void onChangeOption(OptionModel? option) async {
     // stop model change notifications
     widget.model.removeListener(this);

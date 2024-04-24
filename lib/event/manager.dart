@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
 import 'package:fml/event/handler.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'event.dart';
 
 typedef OnEventCallback = void Function(Event);
@@ -10,8 +10,8 @@ abstract class IEventManager {
   registerEventListener(EventTypes type, OnEventCallback callback,
       {int? priority});
   removeEventListener(EventTypes type, OnEventCallback callback);
-  broadcastEvent(WidgetModel sender, Event event);
-  executeEvent(WidgetModel sender, String event);
+  broadcastEvent(Model sender, Event event);
+  executeEvent(Model sender, String event);
 }
 
 /// EventManager handles all event notifications from its decendants
@@ -26,7 +26,7 @@ class EventManager {
   EventManager();
 
   /// Gets the nearest [EventManager] ancestor from this widget
-  static IEventManager? of(WidgetModel model) {
+  static IEventManager? of(Model model) {
     if (model is IEventManager) {
       return model as IEventManager;
     } else {
@@ -57,11 +57,11 @@ class EventManager {
   }
 
   /// Executes and Event
-  Future<dynamic> execute(WidgetModel source, String event) async =>
+  Future<dynamic> execute(Model source, String event) async =>
       await EventHandler(source).executeEvent(event);
 
   /// Notifies listeners about an [Event]
-  void broadcast(WidgetModel source, Event event) {
+  void broadcast(Model source, Event event) {
     /* Already Processed? */
     if (!event.functions.contains(this)) {
       // Mark as Processed
@@ -83,28 +83,28 @@ class EventManager {
         List<IEventManager> children = _childrenOf(source);
         for (IEventManager child in children) {
           if (event.handled) break;
-          child.broadcastEvent(child as WidgetModel, event);
+          child.broadcastEvent(child as Model, event);
         }
       }
 
       // Notify Parent Event Manager
       if (!event.handled && event.bubbles) {
         IEventManager? parent = _parentOf(source);
-        if (parent != null) parent.broadcastEvent(parent as WidgetModel, event);
+        if (parent != null) parent.broadcastEvent(parent as Model, event);
       }
     }
   }
 
-  static IEventManager? _parentOf(WidgetModel? model) {
+  static IEventManager? _parentOf(Model? model) {
     if (model == null) return null;
     if (model.parent is IEventManager) return model.parent as IEventManager;
     return _parentOf(model.parent);
   }
 
-  List<IEventManager> _childrenOf(WidgetModel? model) {
+  List<IEventManager> _childrenOf(Model? model) {
     List<IEventManager> list = [];
     if (model?.children != null) {
-      for (WidgetModel child in model!.children!) {
+      for (Model child in model!.children!) {
         list.addAll(_childrenOf(child));
       }
     }

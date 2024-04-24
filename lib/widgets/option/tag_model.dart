@@ -1,12 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 enum TagType {contains, startswith, endwith, equal, keyword}
 
-class TagModel extends WidgetModel {
+class TagModel extends Model {
 
   // option type
   String? _type;
@@ -38,11 +38,11 @@ class TagModel extends WidgetModel {
   }
   bool get caseSensitive => _caseSensitive?.get() ?? false;
 
-  TagModel(WidgetModel super.parent, super.id, {String? value}) {
+  TagModel(Model super.parent, super.id, {String? value}) {
     if (value != null) this.value = value;
   }
 
-  static TagModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TagModel? fromXml(Model parent, XmlElement xml) {
 
     TagModel model = TagModel(parent, Xml.get(node: xml, tag: 'id'));
 

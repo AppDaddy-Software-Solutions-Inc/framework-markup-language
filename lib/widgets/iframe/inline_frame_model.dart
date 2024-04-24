@@ -1,13 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/iframe/inline_frame_view.dart' as widget_view;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class InlineFrameModel extends ViewableWidgetModel {
+class InlineFrameModel extends ViewableModel {
   // url
   StringObservable? _url;
   set url(dynamic v) {
@@ -21,9 +21,9 @@ class InlineFrameModel extends ViewableWidgetModel {
 
   String? get url => _url?.get();
 
-  InlineFrameModel(WidgetModel super.parent, super.id);
+  InlineFrameModel(Model super.parent, super.id);
 
-  static InlineFrameModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static InlineFrameModel? fromXml(Model parent, XmlElement xml) {
     InlineFrameModel? model =
         InlineFrameModel(parent, Xml.get(node: xml, tag: 'id'));
     model.deserialize(xml);

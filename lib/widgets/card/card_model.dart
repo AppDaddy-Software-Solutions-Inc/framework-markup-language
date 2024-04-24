@@ -2,7 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -35,9 +35,9 @@ class CardModel extends BoxModel {
   @override
   Color? get color => super.color ?? Colors.white;
 
-  CardModel(WidgetModel super.parent, super.id) : super(expandDefault: false);
+  CardModel(Model super.parent, super.id) : super(expandDefault: false);
 
-  static CardModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static CardModel? fromXml(Model parent, XmlElement xml) {
     CardModel? model;
     try {
       // build model
@@ -63,5 +63,5 @@ class CardModel extends BoxModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(BoxView(this));
+  Widget getView({Key? key}) => getReactiveView(BoxView(this, (_,__) => inflate()));
 }

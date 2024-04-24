@@ -17,11 +17,16 @@ import 'package:fml/system.dart';
 import 'package:fml/template/template_manager.dart';
 import 'package:fml/token/token.dart';
 import 'package:fml/user/user_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/theme/theme.dart';
 
-class ApplicationModel extends WidgetModel {
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
+class ApplicationModel extends Model {
   static const String myId = "APPLICATION";
 
   static String tableName = "APP";
@@ -152,7 +157,7 @@ class ApplicationModel extends WidgetModel {
 
   Map<String, String?>? get configParameters => _config?.parameters;
 
-  ApplicationModel(WidgetModel parent,
+  ApplicationModel(Model parent,
       {String? key,
         required String url,
         this.title,
@@ -417,7 +422,7 @@ class ApplicationModel extends WidgetModel {
     //_loadConfig();
 
     // start mirror
-    if (mirrorApi != null && !FmlEngine.isWeb && scheme != "file") {
+    if (mirrorApi != null && !isWeb && scheme != "file") {
       Uri? uri = URI.parse(mirrorApi, domain: domain);
       if (uri != null) mirror = Mirror(uri.url)..execute();
     }

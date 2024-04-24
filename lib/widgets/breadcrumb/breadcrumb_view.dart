@@ -3,13 +3,12 @@ import 'package:fml/navigation/navigation_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/navigation/page.dart';
 import 'package:fml/widgets/breadcrumb/breadcrumb_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 
 /// Breadcrumb View
 ///
 /// Builds the View from the [BREADCRUMB.BreadcrumbModel] properties
-class BreadcrumbView extends StatefulWidget implements IWidgetView {
+class BreadcrumbView extends StatefulWidget implements ViewableWidgetView {
   @override
   final BreadcrumbModel model;
 
@@ -27,7 +26,7 @@ class BreadcrumbView extends StatefulWidget implements IWidgetView {
   State<BreadcrumbView> createState() => _BreadcrumbViewState();
 }
 
-class _BreadcrumbViewState extends WidgetState<BreadcrumbView> {
+class _BreadcrumbViewState extends ViewableWidgetState<BreadcrumbView> {
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it

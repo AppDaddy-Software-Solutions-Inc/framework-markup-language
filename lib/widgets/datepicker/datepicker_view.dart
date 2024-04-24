@@ -1,14 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/datepicker/datepicker_model.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class DatepickerView extends StatefulWidget implements IWidgetView {
+class DatepickerView extends StatefulWidget implements ViewableWidgetView {
   @override
   final DatepickerModel model;
   DatepickerView(this.model) : super(key: ObjectKey(model));
@@ -17,7 +16,7 @@ class DatepickerView extends StatefulWidget implements IWidgetView {
   State<DatepickerView> createState() => DatepickerViewState();
 }
 
-class DatepickerViewState extends WidgetState<DatepickerView> {
+class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
   String? format;
   String? date;
   String? oldValue;
@@ -74,7 +73,7 @@ class DatepickerViewState extends WidgetState<DatepickerView> {
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
     if ((cont!.text != widget.model.value) &&
         (widget.model.isPicking != true)) {
       widget.model.onChange(context);

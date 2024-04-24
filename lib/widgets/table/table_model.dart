@@ -11,7 +11,7 @@ import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/table/table_footer_model.dart';
 import 'package:fml/widgets/table/nodata_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/table/table_view.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
@@ -328,12 +328,12 @@ class TableModel extends BoxModel implements IForm {
 
   int get pageSize => _pageSize?.get() ?? 0;
 
-  TableModel(WidgetModel super.parent, super.id) {
+  TableModel(Model super.parent, super.id) {
     // instantiate busy observable
     busy = false;
   }
 
-  static TableModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TableModel? fromXml(Model parent, XmlElement xml) {
     TableModel? model;
     try {
       model = TableModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -619,7 +619,7 @@ class TableModel extends BoxModel implements IForm {
     // build new header cells
     header!.prototypes.forEach((prototype, parentModel) {
       // create a new header cells
-      WidgetModel parent = parentModel ?? header!;
+      Model parent = parentModel ?? header!;
       parent.children ??= [];
 
       // build dynamic cell(s)

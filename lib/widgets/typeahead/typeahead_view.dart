@@ -3,13 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/typeahead/typeahead_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class TypeaheadView extends StatefulWidget implements IWidgetView {
+class TypeaheadView extends StatefulWidget implements ViewableWidgetView {
   @override
   final TypeaheadModel model;
 
@@ -19,7 +18,7 @@ class TypeaheadView extends StatefulWidget implements IWidgetView {
   State<TypeaheadView> createState() => TypeaheadViewState();
 }
 
-class TypeaheadViewState extends WidgetState<TypeaheadView> {
+class TypeaheadViewState extends ViewableWidgetState<TypeaheadView> {
   // typeahead has been initialized
   bool initialized = false;
 
@@ -283,6 +282,10 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
     }
   }
 
+  // this holds the last typed pattern
+  // so that we cab show the filtered list on subsequent opens
+  String lastPattern = "";
+
   Future<List<OptionModel>> buildSuggestions(String pattern) async {
     // if not enable then show no list
     if (!widget.model.enabled) return [];
@@ -290,7 +293,12 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
     // hack to force entire list to show
     // note the SuggestionsControllerOverride override
     // on the open method below
-    if (controller.text == widget.model.selectedOption?.label) pattern = "";
+    if (controller.text == widget.model.selectedOption?.label) {
+      pattern = lastPattern;
+    }
+    else {
+      lastPattern = pattern;
+    }
 
     // get matching options
     return widget.model.getMatchingOptions(pattern);

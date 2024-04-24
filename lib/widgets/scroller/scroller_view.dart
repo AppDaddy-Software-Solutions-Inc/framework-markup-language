@@ -6,8 +6,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/scroller/scroller_shadow_view.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 
 /// Scroll View
 ///
@@ -15,7 +14,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 /// This widget creates a scrollable widget that expands to its parents size
 /// constraint, if the children would overflow because they are larger they will
 /// instead be contained within this scrollable widget.
-class ScrollerView extends StatefulWidget implements IWidgetView {
+class ScrollerView extends StatefulWidget implements ViewableWidgetView {
   @override
   final ScrollerModel model;
   ScrollerView(this.model) : super(key: ObjectKey(model));
@@ -24,7 +23,7 @@ class ScrollerView extends StatefulWidget implements IWidgetView {
   State<ScrollerView> createState() => ScrollerViewState();
 }
 
-class ScrollerViewState extends WidgetState<ScrollerView> {
+class ScrollerViewState extends ViewableWidgetState<ScrollerView> {
   final ScrollController controller = ScrollController();
 
   /// When true the scroller has been scrolled to the end
@@ -250,7 +249,7 @@ class ScrollerViewState extends WidgetState<ScrollerView> {
     if (!widget.model.visible) return const Offstage();
 
     // build the body
-    var contents = BoxView(widget.model.getContentModel());
+    var contents = BoxView(widget.model.getContentModel(), (_,__) => widget.model.inflate());
 
     // build the scroll bar
     Widget view = _buildScrollbar(contents);

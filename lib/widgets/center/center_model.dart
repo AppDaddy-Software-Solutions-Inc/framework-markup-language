@@ -2,7 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -21,10 +21,10 @@ class CenterModel extends BoxModel {
   @override
   bool get center => true;
 
-  CenterModel(WidgetModel super.parent, super.id,
+  CenterModel(Model super.parent, super.id,
       {dynamic flex}); // ; {key: value}
 
-  static CenterModel? fromXml(WidgetModel parent, XmlElement xml,
+  static CenterModel? fromXml(Model parent, XmlElement xml,
       {String? type}) {
     CenterModel? model;
     try {
@@ -38,5 +38,5 @@ class CenterModel extends BoxModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(BoxView(this));
+  Widget getView({Key? key}) => getReactiveView(BoxView(this, (_,__) => inflate()));
 }

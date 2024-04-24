@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/column/column_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -147,7 +147,7 @@ class PositionedModel extends ColumnModel {
     this.depth = depth;
   }
 
-  static PositionedModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static PositionedModel? fromXml(Model parent, XmlElement xml) {
     PositionedModel? model;
     try {
       // build model

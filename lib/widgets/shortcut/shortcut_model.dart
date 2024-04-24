@@ -9,7 +9,7 @@ import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 
 class ShowLogIntent extends Intent {}
@@ -23,7 +23,7 @@ class ShowLogAction extends Action<ShowLogIntent> {
   }
 }
 
-class ShortcutModel extends WidgetModel {
+class ShortcutModel extends Model {
   // key
   StringObservable? _key;
 
@@ -58,13 +58,13 @@ class ShortcutModel extends WidgetModel {
   // holds the sequence of keys that make up the shortcut
   List<LogicalKeyboardKey> keySequence = [];
 
-  ShortcutModel(WidgetModel super.parent, super.id,
+  ShortcutModel(Model super.parent, super.id,
       {String? key, String? action}) {
     this.key = key;
     this.action = action;
   }
 
-  static ShortcutModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static ShortcutModel? fromXml(Model parent, XmlElement xml) {
     ShortcutModel? model = ShortcutModel(parent, Xml.get(node: xml, tag: 'id'));
     model.deserialize(xml);
     return model;

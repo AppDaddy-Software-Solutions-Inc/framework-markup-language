@@ -10,7 +10,7 @@ import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/button/button_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -155,7 +155,7 @@ class ButtonModel extends BoxModel {
       dynamic minheight,
       dynamic maxheight,
       dynamic layout,
-      List<WidgetModel>? children}) {
+      List<Model>? children}) {
     // constraints
     if (width != null) this.width = width;
     if (height != null) this.height = height;
@@ -175,7 +175,7 @@ class ButtonModel extends BoxModel {
     this.children = children;
   }
 
-  static ButtonModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static ButtonModel? fromXml(Model parent, XmlElement xml) {
     ButtonModel? model;
     try {
       model = ButtonModel(parent, Xml.get(node: xml, tag: 'id'),
@@ -220,7 +220,7 @@ class ButtonModel extends BoxModel {
           const Duration(milliseconds: 300), () => preventClicking = false);
       preventClicking = true;
 
-      WidgetModel.unfocus();
+      Model.unfocus();
 
       if (enabled != false) await onClick(context);
     }

@@ -2,12 +2,12 @@
 import 'dart:async';
 import 'package:fml/log/manager.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TimerModel extends WidgetModel {
+class TimerModel extends Model {
   // timer
   Timer? timer;
   bool started = false;
@@ -68,14 +68,14 @@ class TimerModel extends WidgetModel {
 
   String? get action => _action?.get();
 
-  TimerModel(WidgetModel super.parent, super.id,
+  TimerModel(Model super.parent, super.id,
       {dynamic action, dynamic enabled, dynamic frequency}) {
     if (action != null) this.action = action;
     if (enabled != null) this.enabled = enabled;
     if (frequency != null) this.frequency = frequency;
   }
 
-  static TimerModel? fromXml(WidgetModel parent, XmlElement xml,
+  static TimerModel? fromXml(Model parent, XmlElement xml,
       {String? type}) {
     TimerModel? model;
     try {

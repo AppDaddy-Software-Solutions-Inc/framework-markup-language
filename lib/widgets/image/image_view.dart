@@ -5,12 +5,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/image/image_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/helpers/helpers.dart';
 
 // platform
@@ -19,7 +17,7 @@ import 'package:fml/platform/platform.vm.dart'
     if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 /// [IMAGE] view
-class ImageView extends StatefulWidget implements IWidgetView {
+class ImageView extends StatefulWidget implements ViewableWidgetView {
   @override
   final ImageModel model;
 
@@ -108,7 +106,7 @@ class ImageView extends StatefulWidget implements IWidgetView {
 
         /// blob image from camera or file picker
         case "blob":
-          image = FmlEngine.isWeb
+          image = isWeb
               ? Image.network(url!, fit: getFit(fit))
               : Image.file(File(url!), fit: getFit(fit));
           break;
@@ -238,7 +236,7 @@ class ImageView extends StatefulWidget implements IWidgetView {
   }
 }
 
-class _ImageViewState extends WidgetState<ImageView> {
+class _ImageViewState extends ViewableWidgetState<ImageView> {
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it

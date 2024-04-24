@@ -2,7 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/widgets/drawer/drawer_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -10,10 +10,10 @@ import 'package:fml/helpers/helpers.dart';
 class DrawerItemModel extends BoxModel {
   final Drawers position;
 
-  DrawerItemModel(WidgetModel super.parent, super.id, this.position);
+  DrawerItemModel(Model super.parent, super.id, this.position);
 
   static DrawerItemModel? fromXml(
-      WidgetModel parent, XmlElement? xml, Drawers position) {
+      Model parent, XmlElement? xml, Drawers position) {
     DrawerItemModel? model;
     try {
       model = DrawerItemModel(parent, Xml.get(node: xml, tag: 'id'), position);

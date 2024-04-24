@@ -64,15 +64,14 @@ class BarcodeDetector implements IBarcodeDetector {
       bool? tryharder, bool? invert) async {
     _multiFormatReader ??= zxing.MultiFormatReader();
 
+    // decoder
     var reader = _multiFormatReader!;
 
-    Map<dynamic, Object> hints = <dynamic, Object>{};
-    hints[zxing.DecodeHintType.tryHarder] = (tryharder == true);
-    hints[zxing.DecodeHintType.alsoInverted] = (invert == true);
-    //hints[DecodeHintType.POSSIBLE_FORMATS] = BarcodeFormats.;
+    // decoder hints
+    var hint = zxing.DecodeHint(tryHarder: (tryharder == true), alsoInverted: (invert == true));
 
     Log().debug('Multi Decode Start');
-    var result = reader.decode(bitmap, hints);
+    var result = reader.decode(bitmap, hint);
     Log().debug('Multi Decode End');
 
     return _buildPayload(result);
@@ -87,12 +86,11 @@ class BarcodeDetector implements IBarcodeDetector {
     _pDF417Reader ??= pdf417.PDF417Reader();
     var reader = _pDF417Reader!;
 
-    Map<dynamic, Object> hints = <dynamic, Object>{};
-    hints[zxing.DecodeHintType.tryHarder] = (tryharder == true);
-    hints[zxing.DecodeHintType.alsoInverted] = (invert == true);
+    // decoder hints
+    var hint = zxing.DecodeHint(tryHarder: (tryharder == true), alsoInverted: (invert == true));
 
     Log().debug('PDF417 Decode Start');
-    var result = reader.decode(bitmap, hints);
+    var result = reader.decode(bitmap, hint);
 
     return _buildPayload(result);
   }
@@ -205,12 +203,11 @@ class BarcodeDetector implements IBarcodeDetector {
     _code39Reader ??= code39.Code39Reader(false, true);
     var reader = _code39Reader!;
 
-    Map<dynamic, Object> hints = <dynamic, Object>{};
-    hints[zxing.DecodeHintType.tryHarder] = (tryharder == true);
-    hints[zxing.DecodeHintType.alsoInverted] = (invert == true);
+    // decoder hints
+    var hint = zxing.DecodeHint(tryHarder: (tryharder == true), alsoInverted: (invert == true));
 
     Log().debug('Code39 Decode Start');
-    var result = reader.decode(bitmap, hints);
+    var result = reader.decode(bitmap, hint);
 
     return _buildPayload(result);
   }
@@ -225,12 +222,11 @@ class BarcodeDetector implements IBarcodeDetector {
     _qRCodeReader ??= qrcode.QRCodeReader();
     var reader = _qRCodeReader!;
 
-    Map<dynamic, Object> hints = <dynamic, Object>{};
-    hints[zxing.DecodeHintType.tryHarder] = (tryharder == true);
-    hints[zxing.DecodeHintType.alsoInverted] = (invert == true);
+    // decoder hints
+    var hint = zxing.DecodeHint(tryHarder: (tryharder == true), alsoInverted: (invert == true));
 
     Log().debug('QR Decode Start');
-    var result = reader.decode(bitmap, hints);
+    var result = reader.decode(bitmap, hint);
 
     return _buildPayload(result);
   }

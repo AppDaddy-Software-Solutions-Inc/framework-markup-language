@@ -6,17 +6,17 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/menu/menu_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class MenuModel extends ViewableWidgetModel implements IScrollable {
+class MenuModel extends ViewableModel implements IScrollable {
   static const String typeList = "list";
   static const String typeButton = "button";
 
@@ -66,7 +66,7 @@ class MenuModel extends ViewableWidgetModel implements IScrollable {
     busy = false;
   }
 
-  static MenuModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static MenuModel? fromXml(Model parent, XmlElement xml) {
     MenuModel? model;
     try {
       model = MenuModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -78,7 +78,7 @@ class MenuModel extends ViewableWidgetModel implements IScrollable {
     return model;
   }
 
-  static MenuModel? fromMap(WidgetModel parent, Map<String, String> map) {
+  static MenuModel? fromMap(Model parent, Map<String, String> map) {
     MenuModel? model;
     try {
       model = MenuModel(parent, newId());
@@ -291,10 +291,8 @@ class MenuModel extends ViewableWidgetModel implements IScrollable {
         scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 1)) ?? true);
         return true;
     }
-
     return super.execute(caller, propertyOrFunction, arguments);
   }
-
 
   @override
   Widget getView({Key? key}) => getReactiveView(MenuView(this));

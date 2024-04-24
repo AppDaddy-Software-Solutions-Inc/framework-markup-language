@@ -1,12 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/switch/switch_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/text/text_view.dart';
 
-class SwitchView extends StatefulWidget implements IWidgetView {
+class SwitchView extends StatefulWidget implements ViewableWidgetView {
   @override
   final SwitchModel model;
   final dynamic onChangeCallback;
@@ -16,7 +15,7 @@ class SwitchView extends StatefulWidget implements IWidgetView {
   State<SwitchView> createState() => _SwitchViewState();
 }
 
-class _SwitchViewState extends WidgetState<SwitchView>
+class _SwitchViewState extends ViewableWidgetState<SwitchView>
     with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {

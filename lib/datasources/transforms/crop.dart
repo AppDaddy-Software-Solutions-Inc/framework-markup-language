@@ -3,7 +3,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/transforms/transform_interface.dart';
 import 'package:fml/datasources/transforms/image_transform_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -75,9 +75,9 @@ class Crop extends ImageTransformModel implements ITransform {
   @override
   String? get source => _source?.get();
 
-  Crop(WidgetModel parent, {String? id}) : super(parent, id);
+  Crop(Model parent, {String? id}) : super(parent, id);
 
-  static Crop? fromXml(WidgetModel parent, XmlElement xml) {
+  static Crop? fromXml(Model parent, XmlElement xml) {
     Crop model = Crop(
       parent,
       id: Xml.get(node: xml, tag: 'id'),

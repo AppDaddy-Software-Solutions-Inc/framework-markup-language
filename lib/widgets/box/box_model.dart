@@ -1,10 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/drawer/drawer_model.dart';
-import 'package:fml/widgets/modal/modal_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -16,7 +15,8 @@ enum VerticalAlignmentType { top, bottom, center, around, between, evenly }
 
 enum HorizontalAlignmentType { left, right, center, around, between, evenly }
 
-class BoxModel extends ViewableWidgetModel {
+class BoxModel extends ViewableModel {
+
   LayoutType get layoutType =>
       getLayoutType(layout, defaultLayout: LayoutType.column);
 
@@ -365,7 +365,7 @@ class BoxModel extends ViewableWidgetModel {
   BoxModel(super.parent, super.id,
       {super.scope, this.expandDefault = true, super.data});
 
-  static BoxModel? fromXml(WidgetModel parent, XmlElement xml,
+  static BoxModel? fromXml(Model parent, XmlElement xml,
       {bool expandDefault = true, Scope? scope, dynamic data}) {
     BoxModel? model;
     try {
@@ -437,26 +437,6 @@ class BoxModel extends ViewableWidgetModel {
     }
   }
 
-  @override
-  List<Widget> inflate() {
-    // process children
-    List<Widget> views = [];
-    for (var model in viewableChildren) {
-      if (model is! ModalModel) {
-
-        // build the view
-        var view = model.getView();
-
-        // add the view to the
-        // view list
-        if (view != null) {
-          views.add(view);
-        }
-      }
-    }
-    return views;
-  }
-
   static LayoutType getLayoutType(String? layout,
       {LayoutType defaultLayout = LayoutType.none}) {
     switch (layout?.toLowerCase().trim()) {
@@ -477,12 +457,14 @@ class BoxModel extends ViewableWidgetModel {
 
   @override
   void layoutComplete(Size size, Offset offset) {
+
     // we need to adjust the size and position to account for padding, margin, and border
     var w = size.width  + (paddingLeft ?? 0) + (paddingRight  ?? 0)  + (marginLeft ?? 0) + (marginRight ?? 0);// + (borderWidth * 2);
     var h = size.height + (paddingTop ?? 0)  + (paddingBottom ?? 0) + (marginTop ?? 0)  + (marginBottom ?? 0);// + (borderWidth * 2);
+
     super.layoutComplete(Size(w,h), offset);
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(BoxView(this));
+  Widget getView({Key? key}) => getReactiveView(BoxView(this, (_,__) => inflate()));
 }

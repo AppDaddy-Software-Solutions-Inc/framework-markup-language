@@ -2,13 +2,13 @@
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
 enum AlarmType { generic, mandatory, validation }
 
-class AlarmModel extends WidgetModel {
+class AlarmModel extends Model {
   // indicates the type of alarm
   AlarmType type = AlarmType.generic;
 
@@ -51,7 +51,7 @@ class AlarmModel extends WidgetModel {
   }
   String? get onalarm => _onalarm?.get();
 
-  AlarmModel(WidgetModel parent, String? id,
+  AlarmModel(Model parent, String? id,
       {dynamic type, dynamic text, dynamic alarm})
       : super(parent, id) {
     // set type
@@ -71,7 +71,7 @@ class AlarmModel extends WidgetModel {
         scope: scope);
   }
 
-  static AlarmModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static AlarmModel? fromXml(Model parent, XmlElement xml) {
     AlarmModel? model;
     try {
       model = AlarmModel(parent, Xml.get(node: xml, tag: 'id'),

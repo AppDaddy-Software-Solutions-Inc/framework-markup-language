@@ -4,6 +4,7 @@
 
 import 'dart:math' as math;
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/widgets/box/box_constraints.dart';
@@ -372,6 +373,7 @@ class StackRenderer extends RenderBox
 
   @override
   void performLayout() {
+
     final BoxConstraints constraints = this.constraints;
     _hasVisualOverflow = false;
 

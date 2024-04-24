@@ -4,7 +4,6 @@ import 'package:fml/data/data.dart';
 import 'package:fml/data/dotnotation.dart';
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/datasources/datasource_interface.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/box/box_model.dart';
@@ -12,12 +11,17 @@ import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/hive/form.dart' as hive;
 import 'package:fml/widgets/form/form_view.dart';
 import 'package:fml/widgets/input/input_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
+
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 enum StatusCodes { incomplete, complete }
 
@@ -120,7 +124,7 @@ class FormModel extends BoxModel implements IForm {
   }
 
   bool? get autosave {
-    if ((FmlEngine.isWeb) || (_autosave == null)) return false;
+    if ((isWeb) || (_autosave == null)) return false;
     return _autosave?.get();
   }
 
@@ -175,7 +179,7 @@ class FormModel extends BoxModel implements IForm {
   }
 
   bool? get geocode {
-    if (_geocode == null) return (FmlEngine.isMobile ? true : false);
+    if (_geocode == null) return (isMobile ? true : false);
     return _geocode?.get();
   }
 
@@ -256,7 +260,7 @@ class FormModel extends BoxModel implements IForm {
   }
 
   FormModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     String? type,
     String? title,
@@ -279,7 +283,7 @@ class FormModel extends BoxModel implements IForm {
     this.data = data;
   }
 
-  static FormModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static FormModel? fromXml(Model parent, XmlElement xml) {
     FormModel? model;
 
     try {
@@ -385,7 +389,7 @@ class FormModel extends BoxModel implements IForm {
     formFields.addAll(_getFormFields(children));
   }
 
-  static List<IFormField> _getFormFields(List<WidgetModel>? children) {
+  static List<IFormField> _getFormFields(List<Model>? children) {
     List<IFormField> fields = [];
     if (children != null) {
       for (var child in children) {
@@ -396,7 +400,7 @@ class FormModel extends BoxModel implements IForm {
     return fields;
   }
 
-  static List<IForm> getForms(List<WidgetModel>? children) {
+  static List<IForm> getForms(List<Model>? children) {
     List<IForm> forms = [];
     if (children != null) {
       for (var child in children) {
@@ -722,7 +726,7 @@ class FormModel extends BoxModel implements IForm {
     bool ok = true;
 
     // force commits on focused field
-    WidgetModel.unfocus();
+    Model.unfocus();
 
     // get all fields in alarm state
     var list = _getAlarmingFields();

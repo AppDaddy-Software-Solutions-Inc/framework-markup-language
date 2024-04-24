@@ -1,10 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'scroll_shadow_model.dart';
 
-class ScrollShadowView extends StatefulWidget implements IWidgetView {
+class ScrollShadowView extends StatefulWidget implements ViewableWidgetView {
   @override
   final ScrollShadowModel model;
 
@@ -14,7 +13,7 @@ class ScrollShadowView extends StatefulWidget implements IWidgetView {
   State<ScrollShadowView> createState() => _ScrollShadowViewState();
 }
 
-class _ScrollShadowViewState extends WidgetState<ScrollShadowView> {
+class _ScrollShadowViewState extends ViewableWidgetState<ScrollShadowView> {
   @override
   Widget build(BuildContext context) {
     var col = Theme.of(context).brightness == Brightness.light

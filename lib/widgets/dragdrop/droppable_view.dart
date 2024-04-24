@@ -1,13 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
-import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 
-class DroppableView extends StatefulWidget implements IWidgetView {
+class DroppableView extends StatefulWidget implements ViewableWidgetView {
   @override
-  final ViewableWidgetMixin model;
+  final ViewableMixin model;
   final Widget view;
 
   DroppableView(this.model, this.view) : super(key: ObjectKey(model));
@@ -16,7 +15,7 @@ class DroppableView extends StatefulWidget implements IWidgetView {
   State<DroppableView> createState() => _DroppableViewState();
 }
 
-class _DroppableViewState extends WidgetState<DroppableView> {
+class _DroppableViewState extends ViewableWidgetState<DroppableView> {
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it

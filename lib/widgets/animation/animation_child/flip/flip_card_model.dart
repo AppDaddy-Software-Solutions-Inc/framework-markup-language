@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/animation/animation_child/animation_child_model.dart';
 import 'package:fml/widgets/animation/animation_child/flip/flip_card_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -81,7 +81,7 @@ class FlipCardModel extends AnimationChildModel {
 
   FlipCardModel(super.parent, super.id); // ; {key: value}
 
-  static FlipCardModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static FlipCardModel? fromXml(Model parent, XmlElement xml) {
     FlipCardModel? model;
     try {
       model = FlipCardModel(parent, Xml.get(node: xml, tag: 'id'));

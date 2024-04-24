@@ -4,8 +4,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/modal/modal_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/map/map_view.dart';
@@ -90,7 +89,7 @@ class MapModel extends BoxModel {
 
   final List<MapMarkerModel> markers = [];
 
-  MapModel(WidgetModel super.parent, super.id,
+  MapModel(Model super.parent, super.id,
       {dynamic zoom, dynamic visible}) {
     // instantiate busy observable
     busy = false;
@@ -99,7 +98,7 @@ class MapModel extends BoxModel {
     this.visible = visible;
   }
 
-  static MapModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static MapModel? fromXml(Model parent, XmlElement xml) {
     MapModel? model;
     try {
       model = MapModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -203,19 +202,6 @@ class MapModel extends BoxModel {
     }
 
     return true;
-  }
-
-  @override
-  List<Widget> inflate() {
-    // process children
-    List<Widget> views = [];
-    for (var model in viewableChildren) {
-      if (model is! ModalModel) {
-        var view = model.getView();
-        if (view != null) views.add(view);
-      }
-    }
-    return views;
   }
 
   @override

@@ -3,7 +3,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/file/model.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/filepicker/filepicker_view.dart' as file_picker;
 import 'package:fml/datasources/file/file.dart';
@@ -47,7 +47,7 @@ class FilepickerModel extends FileModel implements IDataSource {
 
   FilepickerModel(super.parent, super.id);
 
-  static FilepickerModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static FilepickerModel? fromXml(Model parent, XmlElement xml) {
     FilepickerModel? model;
     try {
       model = FilepickerModel(parent, Xml.get(node: xml, tag: 'id'));

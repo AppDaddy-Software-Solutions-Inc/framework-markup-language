@@ -6,7 +6,7 @@ import 'package:fml/event/event.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/treeview/tree_view.dart';
 import 'package:fml/widgets/treeview/node/tree_node_model.dart';
 import 'package:xml/xml.dart';
@@ -46,9 +46,9 @@ class TreeModel extends BoxModel {
   final List<TreeNodeModel> nodes = [];
   final List<TreeNodeModel?> youngestGeneration = [];
 
-  TreeModel(WidgetModel super.parent, super.id);
+  TreeModel(Model super.parent, super.id);
 
-  static TreeModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TreeModel? fromXml(Model parent, XmlElement xml) {
     TreeModel? model;
     try {
       model = TreeModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -175,7 +175,7 @@ class TreeModel extends BoxModel {
       // parse the xml
       var document = Xml.tryParse(source.response);
       if (document is XmlDocument) {
-        var model = WidgetModel.fromXml(this, document.rootElement);
+        var model = Model.fromXml(this, document.rootElement);
         if (model is TreeNodeModel) {
           busy = true;
           removeChildrenOfExactType(TreeNodeModel);

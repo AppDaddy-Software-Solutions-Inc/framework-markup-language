@@ -1,12 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/span/span_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class SpanView extends StatefulWidget implements IWidgetView {
+class SpanView extends StatefulWidget implements ViewableWidgetView {
   @override
   final SpanModel model;
 
@@ -16,7 +15,7 @@ class SpanView extends StatefulWidget implements IWidgetView {
   State<SpanView> createState() => _SpanViewState();
 }
 
-class _SpanViewState extends WidgetState<SpanView> {
+class _SpanViewState extends ViewableWidgetState<SpanView> {
   List<InlineSpan>? _list;
 
   @override

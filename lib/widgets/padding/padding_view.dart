@@ -2,11 +2,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'padding_model.dart';
 
-class PaddingView extends StatefulWidget implements IWidgetView {
+class PaddingView extends StatefulWidget implements ViewableWidgetView {
   @override
   final PaddingModel model;
 
@@ -16,7 +15,7 @@ class PaddingView extends StatefulWidget implements IWidgetView {
   State<PaddingView> createState() => _PaddingViewState();
 }
 
-class _PaddingViewState extends WidgetState<PaddingView> {
+class _PaddingViewState extends ViewableWidgetState<PaddingView> {
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
@@ -33,7 +32,7 @@ class _PaddingViewState extends WidgetState<PaddingView> {
     }
 
     // box view
-    Widget view = BoxView(widget.model);
+    Widget view = BoxView(widget.model, (_,__) => widget.model.inflate());
 
     // build the child views
     return view;

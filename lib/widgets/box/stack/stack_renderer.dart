@@ -374,7 +374,6 @@ class StackRenderer extends RenderBox
   @override
   void performLayout() {
 
-    try{
     final BoxConstraints constraints = this.constraints;
     _hasVisualOverflow = false;
 
@@ -403,11 +402,6 @@ class StackRenderer extends RenderBox
 
     // set my size in the model
     model.layoutComplete(size, Offset(paintBounds.top, paintBounds.left));
-    }
-    catch(e)
-    {
-      if (kDebugMode) print(e);
-    }
   }
 
   @override

@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 import 'package:fml/widgets/box/box_layout.dart';
@@ -444,18 +443,6 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     return view;
   }
 
-  bool doRebuild() {
-    if (widget.model.needsRebuild || widget.model.needsLayout || children == null) return true;
-    for (var child in children ?? []) {
-        if (child is ViewableWidgetView) {
-          if (child.model.needsLayout) {
-            return true;
-          }
-        }
-    }
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
@@ -469,10 +456,7 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     onLayout(constraints);
 
     // rebuild content?
-    if (doRebuild()) {
-      children = widget.builder(context, constraints);
-      widget.model.needsRebuild = false;
-    }
+    children = widget.builder(context, constraints);
 
     // build the box
     var view = _buildView(context, constraints, widget.model, children!);

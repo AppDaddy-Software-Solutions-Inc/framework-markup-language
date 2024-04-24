@@ -1309,6 +1309,7 @@ mixin ViewableMixin on Model implements IDragDrop {
   }
 
   void layoutComplete(Size size, Offset offset) {
+
     // set the view width, height and position
     if (size.width != viewWidth ||
         size.height != viewHeight ||
@@ -1319,6 +1320,10 @@ mixin ViewableMixin on Model implements IDragDrop {
       viewX = offset.dx;
       viewY = offset.dy;
       needsLayout = true;
+    }
+
+    else {
+      needsLayout = false;
     }
   }
 

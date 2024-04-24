@@ -475,14 +475,16 @@ class FrameworkViewState extends State<FrameworkView>
     super.build(context);
 
     // model is initializing
-    if (!widget.model.initialized) return _buildWait();
+    if (!widget.model.initialized) {
+      return _buildWait();
+    }
 
     // model has initialized. show framework
     return LayoutBuilder(builder: builder);
   }
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
-
+    
     // set focused framework
     System().setActiveFramework(widget.model);
 

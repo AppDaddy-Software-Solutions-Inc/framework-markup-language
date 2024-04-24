@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/widgets/box/box_constraints.dart';
 import 'package:fml/widgets/box/box_data.dart';
@@ -497,7 +496,6 @@ class WrapRenderer extends RenderBox
   @override
   void performLayout() {
 
-    try{
     final BoxConstraints constraints = this.constraints;
 
     assert(_debugHasNecessaryDirections);
@@ -727,10 +725,6 @@ class WrapRenderer extends RenderBox
 
     // set my size in the model
     model.layoutComplete(size, Offset(paintBounds.top, paintBounds.left));
-    }
-    catch(e){
-      if (kDebugMode) print(e);
-    }
   }
 
   @override

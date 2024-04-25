@@ -913,6 +913,7 @@ class TableViewState extends WidgetState<TableView> {
         evenRowColor: evenRowColor,
         checkedColor: checkedColor,
         activatedColor: activeColor,
+        columnContextIcon: Icons.more_vert_rounded,
         activatedBorderColor: activeBorderColor)
         : PlutoGridStyleConfig(
         defaultCellPadding: const EdgeInsets.all(0),
@@ -932,6 +933,7 @@ class TableViewState extends WidgetState<TableView> {
         evenRowColor: evenRowColor,
         checkedColor: checkedColor,
         activatedColor: activeColor,
+        columnContextIcon: Icons.more_vert_rounded,
         activatedBorderColor: activeBorderColor);
 
     bool boundedWidth = false;

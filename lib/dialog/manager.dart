@@ -1,8 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:fml/fml.dart';
 import 'alert.dart';
+
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 enum DialogType { error, success, info, modal, warning, none }
 
@@ -57,15 +61,15 @@ class DialogManager {
       AlertDialog dialog = AlertDialog(
           title: title,
           insetPadding: EdgeInsets.symmetric(
-              horizontal: FmlEngine.isMobile ? 10 : 128,
-              vertical: FmlEngine.isMobile ? 64 : 128),
+              horizontal: isMobile ? 10 : 128,
+              vertical: isMobile ? 64 : 128),
           titlePadding: const EdgeInsets.all(0),
           content: request.content,
           contentPadding: EdgeInsets.only(
               top: 0,
               bottom: 10,
-              left: FmlEngine.isMobile ? 2 : 10,
-              right: FmlEngine.isMobile ? 2 : 10));
+              left: isMobile ? 2 : 10,
+              right: isMobile ? 2 : 10));
 
       // show the dialog
       showDialog(

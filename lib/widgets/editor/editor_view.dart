@@ -2,16 +2,15 @@
 import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/widgets/editor/editor_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_highlight/theme_map.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:highlight/languages/http.dart';
 import 'package:highlight/languages/dart.dart';
 import 'package:highlight/languages/xml.dart';
 
-class EditorView extends StatefulWidget implements IWidgetView {
+class EditorView extends StatefulWidget implements ViewableWidgetView {
   @override
   final EditorModel model;
   EditorView(this.model) : super(key: ObjectKey(model));
@@ -20,7 +19,7 @@ class EditorView extends StatefulWidget implements IWidgetView {
   State<EditorView> createState() => _EditorViewState();
 }
 
-class _EditorViewState extends WidgetState<EditorView> {
+class _EditorViewState extends ViewableWidgetState<EditorView> {
   CodeController? _controller;
 
   @override
@@ -31,7 +30,7 @@ class _EditorViewState extends WidgetState<EditorView> {
 
   /// Callback to fire the [_EditorViewState.build] when the [EditorModel] changes
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
     if (mounted) {
       // value changes as user edits the text
       // we don't want to do a set state after every keystroke
@@ -79,6 +78,7 @@ class _EditorViewState extends WidgetState<EditorView> {
         styles: themeMap.containsKey(widget.model.theme)
             ? themeMap[widget.model.theme]
             : themeMap.values.first);
+
     return CodeTheme(
         data: theme,
         child: CodeField(

@@ -8,8 +8,8 @@ import 'package:fml/store/store_app_view.dart';
 import 'package:fml/system.dart';
 import 'package:fml/theme/theme.dart';
 import 'package:fml/navigation/navigation_observer.dart';
-import 'package:fml/widgets/widget/widget_model_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model_interface.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
@@ -104,7 +104,7 @@ class _ViewState extends State<StoreView>
 
   /// Callback to fire the [_ViewState.build] when the [StoreModel] changes
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
 
     // application model
     if (model is ApplicationModel) {

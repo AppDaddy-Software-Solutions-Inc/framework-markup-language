@@ -7,7 +7,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/input/input_model.dart';
 import 'package:fml/widgets/table/table_row_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -141,9 +141,9 @@ class TableRowCellModel extends BoxModel {
   }
   bool get alarming => _alarming?.get() ?? false;
 
-  TableRowCellModel(WidgetModel super.parent, super.id);
+  TableRowCellModel(Model super.parent, super.id);
 
-  static TableRowCellModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TableRowCellModel? fromXml(Model parent, XmlElement xml) {
     TableRowCellModel? model;
     try {
       model = TableRowCellModel(parent, Xml.get(node: xml, tag: 'id'));

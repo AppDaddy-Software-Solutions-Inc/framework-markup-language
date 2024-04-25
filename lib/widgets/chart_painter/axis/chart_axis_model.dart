@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -12,7 +12,7 @@ enum ChartAxisType { category, numeric, datetime, date, time }
 /// Chart Axis [ChartAxisModel]
 ///
 /// Defines the properties used to build a Charts's Axis
-class ChartAxisModel extends WidgetModel {
+class ChartAxisModel extends Model {
   /// Axis type: `category`, `numeric`, `datetime`, `date` or `time`
   ///
   /// This is used to help display the data on an axis correctly based on the data type
@@ -224,7 +224,7 @@ class ChartAxisModel extends WidgetModel {
   }
 
   static ChartAxisModel? fromXml(
-      WidgetModel parent, XmlElement xml, ChartAxis axis) {
+      Model parent, XmlElement xml, ChartAxis axis) {
     ChartAxisModel? model;
     try {
       model = ChartAxisModel(

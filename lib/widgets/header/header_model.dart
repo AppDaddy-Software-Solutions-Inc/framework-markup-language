@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 
 enum Animations { fade, none }
@@ -13,9 +13,9 @@ class HeaderModel extends BoxModel {
   @override
   double get height => super.height ?? maxHeight ?? minHeight ?? 100;
 
-  HeaderModel(WidgetModel super.parent, super.id);
+  HeaderModel(Model super.parent, super.id);
 
-  static HeaderModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static HeaderModel? fromXml(Model parent, XmlElement xml) {
     HeaderModel? model;
     try {
       model = HeaderModel(parent, null);

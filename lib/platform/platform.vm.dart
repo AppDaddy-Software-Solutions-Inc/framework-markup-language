@@ -14,7 +14,22 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io' as io;
 
+bool get isWeb => Platform.isWeb;
+bool get isMobile => Platform.isMobile;
+bool get isDesktop => !isMobile;
+
 class Platform {
+
+  static bool get isWeb => kIsWeb;
+  static bool get isMobile => (io.Platform.isAndroid || io.Platform.isIOS);
+  static bool get isDesktop => !isMobile;
+
+  // platform
+  static String get platform => isMobile ? "mobile" : "desktop";
+
+  // touch device?
+  static bool get isTouchDevice => (io.Platform.isAndroid || io.Platform.isIOS);
+
   static String? get useragent {
     if (io.Platform.isIOS) return "ios";
     if (io.Platform.isAndroid) return "android";
@@ -28,7 +43,7 @@ class Platform {
   static initialize() async
   {
     // initialize the app root folder
-    if (FmlEngine.isMobile || (FmlEngine.isDesktop && useragent == "macos")) {
+    if (isMobile || (isDesktop && useragent == "macos")) {
       return (await getApplicationDocumentsDirectory()).path;
     }
 

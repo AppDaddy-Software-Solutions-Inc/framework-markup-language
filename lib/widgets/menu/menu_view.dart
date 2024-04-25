@@ -1,15 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/gestures.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/scroller/scroller_behavior.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class MenuView extends StatefulWidget implements IWidgetView {
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
+class MenuView extends StatefulWidget implements ViewableWidgetView {
   @override
   final MenuModel model;
   const MenuView(this.model, {super.key});
@@ -18,7 +21,7 @@ class MenuView extends StatefulWidget implements IWidgetView {
   State<MenuView> createState() => MenuViewState();
 }
 
-class MenuViewState extends WidgetState<MenuView>  {
+class MenuViewState extends ViewableWidgetState<MenuView>  {
   Widget? busy;
   final ScrollController controller = ScrollController();
 
@@ -115,12 +118,12 @@ class MenuViewState extends WidgetState<MenuView>  {
       tilesList.add(item.getView());
     }
 
-    double menuColPadding = FmlEngine.isMobile ? 0.0 : 25.0;
-    double tilePadding = FmlEngine.isMobile ? 5.0 : 0;
+    double menuColPadding = isMobile ? 0.0 : 25.0;
+    double tilePadding = isMobile ? 5.0 : 0;
 
     int tilesPerRow =
         ((/*MediaQuery.of(context).size.*/ width - (menuColPadding * 2)) ~/
-            (FmlEngine.isMobile
+            (isMobile
                 ? (170 + (tilePadding * 2))
                 : (270 + (tilePadding * 2))));
     int tileCountForRow = 0;
@@ -168,6 +171,7 @@ class MenuViewState extends WidgetState<MenuView>  {
 
   @override
   Widget build(BuildContext context) {
+
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 

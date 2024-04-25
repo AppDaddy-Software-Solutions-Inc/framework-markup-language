@@ -14,7 +14,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/list/list_view.dart';
 import 'package:fml/widgets/list/item/list_item_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -273,7 +273,7 @@ class ListModel extends BoxModel implements IForm, IScrollable {
     moreRight = false;
   }
 
-  static ListModel? fromXml(WidgetModel? parent, XmlElement xml) {
+  static ListModel? fromXml(Model? parent, XmlElement xml) {
     ListModel? model;
     try {
       model = ListModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -306,11 +306,6 @@ class ListModel extends BoxModel implements IForm, IScrollable {
 
     // build list items
     _buildItems();
-  }
-
-  @override
-  List<Widget> inflate() {
-    return [];
   }
 
   void _buildItems() {

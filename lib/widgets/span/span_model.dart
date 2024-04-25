@@ -1,16 +1,16 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/span/span_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/system.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class SpanModel extends ViewableWidgetModel {
+class SpanModel extends ViewableModel {
   //TODO: make text spans pass properties to text
   
   // Value 
@@ -275,7 +275,7 @@ class SpanModel extends ViewableWidgetModel {
   String get overflow => _overflow?.get() ?? 'wrap';
 
   SpanModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     dynamic value,
     dynamic color,
@@ -328,7 +328,7 @@ class SpanModel extends ViewableWidgetModel {
     if (selectable != null) this.selectable = selectable;
   }
 
-  static SpanModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static SpanModel? fromXml(Model parent, XmlElement xml) {
     SpanModel? model;
     try {
       model = SpanModel(parent, Xml.get(node: xml, tag: 'id'));

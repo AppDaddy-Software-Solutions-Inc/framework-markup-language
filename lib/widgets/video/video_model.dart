@@ -1,16 +1,16 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/video/ivideo_player.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/video/video_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class VideoModel extends ViewableWidgetModel {
+class VideoModel extends ViewableModel {
   IVideoPlayer? player;
 
   // url
@@ -66,12 +66,12 @@ class VideoModel extends ViewableWidgetModel {
 
   String? get onInitialized => _onInitialized?.get();
 
-  VideoModel(WidgetModel super.parent, super.id) {
+  VideoModel(Model super.parent, super.id) {
     // instantiate busy observable
     busy = false;
   }
 
-  static VideoModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static VideoModel? fromXml(Model parent, XmlElement xml) {
     VideoModel? model;
     try {
       // build model

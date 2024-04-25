@@ -7,14 +7,13 @@ import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/map/map_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/map/marker/map_marker_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:latlong2/latlong.dart';
 
-class MapView extends StatefulWidget implements IWidgetView {
+class MapView extends StatefulWidget implements ViewableWidgetView {
   @override
   final MapModel model;
   MapView(this.model) : super(key: ObjectKey(model));
@@ -23,7 +22,7 @@ class MapView extends StatefulWidget implements IWidgetView {
   State<MapView> createState() => _MapViewState();
 }
 
-class _MapViewState extends WidgetState<MapView> {
+class _MapViewState extends ViewableWidgetState<MapView> {
   Widget? busy;
   Future<MapModel>? future;
   bool startup = true;
@@ -37,7 +36,7 @@ class _MapViewState extends WidgetState<MapView> {
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
     var b = Binding.fromString(property);
     if (b?.property == 'busy') return;
 
@@ -172,9 +171,12 @@ class _MapViewState extends WidgetState<MapView> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => BoxView(widget.model, builder);
+
+  List<Widget> builder(BuildContext context, BoxConstraints constraints) {
+
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return const Offstage();
+    if (!widget.model.visible) return const [Offstage()];
 
     // get the children
     List<Widget> children = widget.model.inflate();
@@ -197,9 +199,6 @@ class _MapViewState extends WidgetState<MapView> {
     // view
     Widget view = Stack(children: children);
 
-    // create as Box
-    view = BoxView(widget.model, children: [view]);
-
-    return view;
+    return [view];
   }
 }

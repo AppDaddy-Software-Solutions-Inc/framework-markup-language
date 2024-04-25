@@ -4,15 +4,19 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/http/http.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/hive/post.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
+
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 enum Methods { get, put, post, patch, delete }
 
@@ -97,7 +101,7 @@ class HttpModel extends DataSourceModel implements IDataSource {
 
   HttpModel(super.parent, super.id);
 
-  static HttpModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static HttpModel? fromXml(Model parent, XmlElement xml) {
     HttpModel? model;
     try {
       model = HttpModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -178,7 +182,7 @@ class HttpModel extends DataSourceModel implements IDataSource {
     if (canRunInForeground && canRunInBackground) type = Types.either;
 
     // web is always in the foreground
-    if (FmlEngine.isWeb) type = Types.foreground;
+    if (isWeb) type = Types.foreground;
     if (type == Types.either && System().connected) type = Types.foreground;
 
     // process in the background

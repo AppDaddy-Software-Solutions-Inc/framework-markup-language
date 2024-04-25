@@ -3,7 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/table/table_footer_cell_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -45,10 +45,10 @@ class TableFooterModel extends BoxModel {
   @override
   String? get valign => super.valign ?? table?.valign;
 
-  TableFooterModel(WidgetModel super.parent, super.id)
+  TableFooterModel(Model super.parent, super.id)
       : super(scope: Scope(parent: parent.scope));
 
-  static TableFooterModel? fromXml(WidgetModel parent, XmlElement xml,
+  static TableFooterModel? fromXml(Model parent, XmlElement xml,
       {Map<dynamic, dynamic>? data}) {
     TableFooterModel? model;
     try {

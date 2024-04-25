@@ -15,17 +15,16 @@ import 'package:fml/widgets/table/table_footer_cell_model.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
 import 'package:fml/widgets/table/table_header_group_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/table/table_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 import 'package:pluto_grid_plus_export/pluto_grid_plus_export.dart'
 as pluto_grid_export;
 
 enum Toggle { on, off }
 
-class TableView extends StatefulWidget implements IWidgetView {
+class TableView extends StatefulWidget implements ViewableWidgetView {
   @override
   final TableModel model;
   TableView(this.model) : super(key: ObjectKey(model));
@@ -34,7 +33,7 @@ class TableView extends StatefulWidget implements IWidgetView {
   State<TableView> createState() => TableViewState();
 }
 
-class TableViewState extends WidgetState<TableView> {
+class TableViewState extends ViewableWidgetState<TableView> {
   Widget? busy;
 
   // indicates if grid is paged or not
@@ -82,7 +81,7 @@ class TableViewState extends WidgetState<TableView> {
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
     var b = Binding.fromString(property);
     if (b?.property == 'busy') return;
     super.onModelChange(model);
@@ -211,7 +210,7 @@ class TableViewState extends WidgetState<TableView> {
     // return the view
     if (!views.containsKey(model)) {
       // build the view
-      Widget view = RepaintBoundary(child: BoxView(model));
+      Widget view = RepaintBoundary(child: BoxView(model, (_,__) => widget.model.inflate()));
 
       // cache the view
       views[model] = view;
@@ -997,7 +996,7 @@ class TableViewState extends WidgetState<TableView> {
     if (groups.isEmpty && fields.isEmpty) return null;
 
     var title = model.title;
-    var header = WidgetSpan(child: BoxView(model));
+    var header = WidgetSpan(child: BoxView(model, (_,__) => widget.model.inflate()));
 
     var group = PlutoColumnGroup(
       title: title ?? "",
@@ -1018,7 +1017,7 @@ class TableViewState extends WidgetState<TableView> {
 
   Widget _footerBuilder(
       PlutoColumnFooterRendererContext context, TableFooterCellModel model) {
-    var view = WidgetSpan(child: BoxView(model));
+    var view = WidgetSpan(child: BoxView(model, (_,__) => model.inflate()));
 
     var footer = PlutoAggregateColumnFooter(
         rendererContext: context,
@@ -1045,7 +1044,7 @@ class TableViewState extends WidgetState<TableView> {
       bool render = cell.usesRenderer;
 
       // set custom header renderer
-      var header = WidgetSpan(child: BoxView(cell));
+      var header = WidgetSpan(child: BoxView(cell, (_,__) => cell.inflate()));
       if (widget.model.header!.cells.length == 1 &&
           (title.trim() == TableModel.dynamicTableValue1 ||
               title.trim() == TableModel.dynamicTableValue2)) {

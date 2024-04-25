@@ -1,12 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/treeview/node/tree_node_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class TreeNodeView extends StatefulWidget implements IWidgetView {
+class TreeNodeView extends StatefulWidget implements ViewableWidgetView {
   @override
   final TreeNodeModel model;
 
@@ -16,7 +15,7 @@ class TreeNodeView extends StatefulWidget implements IWidgetView {
   State<TreeNodeView> createState() => _TreeNodeViewState();
 }
 
-class _TreeNodeViewState extends WidgetState<TreeNodeView> {
+class _TreeNodeViewState extends ViewableWidgetState<TreeNodeView> {
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
@@ -29,9 +28,9 @@ class _TreeNodeViewState extends WidgetState<TreeNodeView> {
       for (var model in widget.model.children!) {
         if (model is TreeNodeModel) {
           nodes.add(TreeNodeView(model));
-        } else if (model is ViewableWidgetMixin) {
+        } else if (model is ViewableMixin) {
           var view = model.getView();
-          if (view != null) children.add(view);
+          children.add(view);
         }
       }
     }

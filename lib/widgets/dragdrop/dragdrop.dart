@@ -5,7 +5,7 @@ import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observable.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 
 class DragDrop {
   static bool willAccept(IDragDrop droppable, IDragDrop draggable) {
@@ -21,7 +21,7 @@ class DragDrop {
 
     // variables
     var variables = EventHandler.getVariables(
-        bindings, droppable as WidgetModel, draggable as WidgetModel,
+        bindings, droppable as Model, draggable as Model,
         localAliasNames: ['this', 'drop'], remoteAliasNames: ['drag']);
 
     // execute will accept
@@ -56,11 +56,11 @@ class DragDrop {
 
       // variables
       var variables = EventHandler.getVariables(
-          bindings, droppable as WidgetModel, draggable as WidgetModel,
+          bindings, droppable as Model, draggable as Model,
           localAliasNames: ['this', 'drop'], remoteAliasNames: ['drag']);
 
       // execute event
-      ok = await EventHandler(droppable as WidgetModel)
+      ok = await EventHandler(droppable as Model)
           .executeExpression(expression, variables);
     }
 
@@ -75,11 +75,11 @@ class DragDrop {
 
       // variables
       var variables = EventHandler.getVariables(
-          bindings, draggable as WidgetModel, droppable as WidgetModel,
+          bindings, draggable as Model, droppable as Model,
           localAliasNames: ['this', 'drag'], remoteAliasNames: ['drop']);
 
       // execute event
-      ok = await EventHandler(draggable as WidgetModel)
+      ok = await EventHandler(draggable as Model)
           .executeExpression(expression, variables);
     }
 
@@ -90,8 +90,8 @@ class DragDrop {
   }
 
   static Map<String, dynamic> getSourceTargetVariables(
-      WidgetModel source,
-      WidgetModel target,
+      Model source,
+      Model target,
       List<String> sourceAliasNames,
       List<String> targetAliasNames,
       List<Binding>? bindings) {
@@ -127,7 +127,7 @@ class DragDrop {
 
   // on drag event
   static Future<bool> onDrag(IDragDrop draggable) async {
-    return await EventHandler(draggable as WidgetModel)
+    return await EventHandler(draggable as Model)
         .execute(draggable.onDragObservable);
   }
 

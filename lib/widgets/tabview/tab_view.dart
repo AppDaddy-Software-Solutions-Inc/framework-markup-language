@@ -7,14 +7,13 @@ import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/trigger/trigger_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/tabview/tab_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TabView extends StatefulWidget implements IWidgetView {
+class TabView extends StatefulWidget implements ViewableWidgetView {
   @override
   final TabModel model;
 
@@ -24,7 +23,7 @@ class TabView extends StatefulWidget implements IWidgetView {
   State<TabView> createState() => _TabViewState();
 }
 
-class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin {
+class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStateMixin {
   TabController? _tabController;
 
   double barheight = 38.0;

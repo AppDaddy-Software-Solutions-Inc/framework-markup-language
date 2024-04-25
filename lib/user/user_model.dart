@@ -8,9 +8,9 @@ import 'package:fml/observable/scope.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/token/token.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 
-class UserModel extends WidgetModel {
+class UserModel extends Model {
   static const String myId = "USER";
 
   late Future<bool> initialized;
@@ -36,7 +36,7 @@ class UserModel extends WidgetModel {
   Jwt? _jwt;
   Jwt? get jwt => _jwt;
 
-  UserModel(WidgetModel parent, {String? jwt})
+  UserModel(Model parent, {String? jwt})
       : super(parent, myId, scope: Scope(id: myId)) {
     // load the config
     initialized = initialize();

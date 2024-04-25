@@ -9,7 +9,7 @@ import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/checkbox/checkbox_view.dart';
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -253,7 +253,7 @@ class CheckboxModel extends FormFieldModel implements IFormField {
   List? get label => _label?.get();
 
   CheckboxModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     dynamic visible,
     dynamic mandatory,
@@ -294,7 +294,7 @@ class CheckboxModel extends FormFieldModel implements IFormField {
     dirty = false;
   }
 
-  static CheckboxModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static CheckboxModel? fromXml(Model parent, XmlElement xml) {
     CheckboxModel? model;
     try {
       model = CheckboxModel(parent, Xml.get(node: xml, tag: 'id'));

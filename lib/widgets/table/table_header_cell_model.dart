@@ -9,7 +9,7 @@ import 'package:fml/widgets/table/table_header_group_model.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -185,9 +185,9 @@ class TableHeaderCellModel extends BoxModel {
 
   String? get onChange => _onChange?.get();
 
-  TableHeaderCellModel(WidgetModel super.parent, super.id);
+  TableHeaderCellModel(Model super.parent, super.id);
 
-  static TableHeaderCellModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TableHeaderCellModel? fromXml(Model parent, XmlElement xml) {
     TableHeaderCellModel? model;
     try {
       model = TableHeaderCellModel(parent, Xml.get(node: xml, tag: 'id'));

@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/column/column_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:xml/xml.dart';
@@ -105,7 +105,7 @@ class LinkModel extends ColumnModel {
     this.ondoubletap = ondoubletap;
   }
 
-  static LinkModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static LinkModel? fromXml(Model parent, XmlElement xml) {
     LinkModel? model;
     try {
       // build model

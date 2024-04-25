@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'package:fml/navigation/navigation_observer.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'src/arrow.dart';
 import 'src/bubble.dart';
 import 'src/element_box.dart';
@@ -12,7 +11,7 @@ import 'src/modal.dart';
 import 'src/position_manager.dart';
 import 'src/tooltip_elements_display.dart';
 
-class TooltipView extends StatefulWidget implements IWidgetView {
+class TooltipView extends StatefulWidget implements ViewableWidgetView {
   @override
   final TooltipModel model;
   final Widget child;
@@ -98,7 +97,7 @@ class TooltipView extends StatefulWidget implements IWidgetView {
 }
 
 /// _ElTooltipState extends ElTooltip class
-class TooltipViewState extends WidgetState<TooltipView>
+class TooltipViewState extends ViewableWidgetState<TooltipView>
     with WidgetsBindingObserver
     implements INavigatorObserver {
   // holds the wrapped view

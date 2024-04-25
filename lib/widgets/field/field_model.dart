@@ -5,7 +5,7 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class FieldModel extends FormFieldModel implements IFormField {
@@ -16,7 +16,7 @@ class FieldModel extends FormFieldModel implements IFormField {
     if (_value != null) {
       _value!.set(v);
     } else if (v != null ||
-        WidgetModel.isBound(this, Binding.toKey(id, 'value'))) {
+        Model.isBound(this, Binding.toKey(id, 'value'))) {
       _value = StringObservable(Binding.toKey(id, 'value'), v,
           scope: scope, listener: onPropertyChange);
     }
@@ -26,14 +26,14 @@ class FieldModel extends FormFieldModel implements IFormField {
   dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
   FieldModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     dynamic value,
   }) {
     if (value != null) this.value = value;
   }
 
-  static FieldModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static FieldModel? fromXml(Model parent, XmlElement xml) {
     FieldModel? model;
     try {
       model = FieldModel(parent, Xml.get(node: xml, tag: 'id'));

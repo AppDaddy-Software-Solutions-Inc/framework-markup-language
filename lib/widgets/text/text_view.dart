@@ -1,14 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/helpers/string.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:google_fonts/google_fonts.dart' deferred as fonts;
 import 'package:fml/eval/text_parser.dart' as parse;
 import 'package:flutter/material.dart';
 
-class TextView extends StatefulWidget implements IWidgetView {
+class TextView extends StatefulWidget implements ViewableWidgetView {
   @override
   final TextModel model;
   TextView(this.model) : super(key: ObjectKey(model));
@@ -17,7 +16,7 @@ class TextView extends StatefulWidget implements IWidgetView {
   State<TextView> createState() => _TextViewState();
 }
 
-class _TextViewState extends WidgetState<TextView> {
+class _TextViewState extends ViewableWidgetState<TextView> {
   String? text;
 
   // google fonts

@@ -3,7 +3,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/zebra/wedge.dart' as zebra;
 import 'package:fml/datasources/detectors/barcode/barcode_detector.dart';
 import 'package:fml/datasources/zebra/wedge.dart';
@@ -22,7 +22,7 @@ class ZebraModel extends DataSourceModel
 
   ZebraModel(super.parent, super.id);
 
-  static ZebraModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static ZebraModel? fromXml(Model parent, XmlElement xml) {
     ZebraModel? model;
     try {
       model = ZebraModel(parent, Xml.get(node: xml, tag: 'id'));

@@ -29,8 +29,10 @@ class NavigationObserver extends NavigatorObserver {
     }
 
     // notify pushed route
-    INavigatorObserver? pushed = listenerOf(route);
-    if (pushed != null) pushed.onNavigatorPush();
+    var pushed = listenersOf(route);
+    for (var listener in pushed) {
+      listener.onNavigatorPush();
+    }
 
     // signal change
     for (INavigatorObserver listener in _listeners) {
@@ -38,19 +40,29 @@ class NavigationObserver extends NavigatorObserver {
     }
   }
 
+  /// The [Navigator] popped `route`.
+  ///
+  /// The route immediately below that one, and thus the newly active
+  /// route, is `previousRoute`.
   @override
   void didPop(Route route, Route? previousRoute) {
     super.didPop(route, previousRoute);
 
-    INavigatorObserver? popped = listenerOf(route);
-    INavigatorObserver? pushed = listenerOf(previousRoute);
+    // get pushed & popped route listeners
+    var popped = listenersOf(route);
+    var pushed = listenersOf(previousRoute);
 
-    // get parameters
+    // notify popped route(s)
     Map<String?, String>? parameters;
-    if (popped != null) parameters = popped.onNavigatorPop();
+    for (var listener in popped) {
+      var result = listener.onNavigatorPop();
+      parameters ??= result;
+    }
 
-    // notify pushed route
-    if (pushed != null) pushed.onNavigatorPush(parameters: parameters);
+    // notify pushed route(s)
+    for (var listener in pushed) {
+      listener.onNavigatorPush(parameters: parameters);
+    }
 
     // signal change
     for (INavigatorObserver listener in _listeners) {
@@ -62,15 +74,21 @@ class NavigationObserver extends NavigatorObserver {
   void didRemove(Route route, Route? previousRoute) {
     super.didRemove(route, previousRoute);
 
-    INavigatorObserver? popped = listenerOf(route);
-    INavigatorObserver? pushed = listenerOf(previousRoute);
+    // get pushed & popped route listeners
+    var popped = listenersOf(route);
+    var pushed = listenersOf(previousRoute);
 
-    // get parameters
+    // notify popped route(s)
     Map<String?, String>? parameters;
-    if (popped != null) parameters = popped.onNavigatorPop();
+    for (var listener in popped) {
+      var result = listener.onNavigatorPop();
+      parameters ??= result;
+    }
 
-    // notify pushed route
-    if (pushed != null) pushed.onNavigatorPush(parameters: parameters);
+    // notify pushed route(s)
+    for (var listener in pushed) {
+      listener.onNavigatorPush(parameters: parameters);
+    }
 
     // signal change
     for (INavigatorObserver listener in _listeners) {
@@ -82,15 +100,21 @@ class NavigationObserver extends NavigatorObserver {
   void didReplace({Route? newRoute, Route? oldRoute}) {
     super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
 
-    INavigatorObserver? popped = listenerOf(oldRoute);
-    INavigatorObserver? pushed = listenerOf(newRoute);
+    // get pushed & popped route listeners
+    var popped = listenersOf(oldRoute);
+    var pushed = listenersOf(newRoute);
 
-    /* Get Parameters */
+    // notify popped route(s)
     Map<String?, String>? parameters;
-    if (popped != null) parameters = popped.onNavigatorPop();
+    for (var listener in popped) {
+      var result = listener.onNavigatorPop();
+      parameters ??= result;
+    }
 
-    /* Notify Pushed Route */
-    if (pushed != null) pushed.onNavigatorPush(parameters: parameters);
+    // notify pushed route(s)
+    for (var listener in pushed) {
+      listener.onNavigatorPush(parameters: parameters);
+    }
 
     /* Signal Change */
     for (INavigatorObserver listener in _listeners) {
@@ -106,15 +130,18 @@ class NavigationObserver extends NavigatorObserver {
     if (_listeners.contains(listener)) _listeners.remove(listener);
   }
 
-  INavigatorObserver? listenerOf(Route? route) {
-    if (route == null) return null;
+  List<INavigatorObserver> listenersOf(Route? route) {
+
+    List<INavigatorObserver>  observers = [];
+    if (route == null) return observers;
+
+    // traverse listeners
     for (INavigatorObserver listener in _listeners) {
       BuildContext context = listener.getNavigatorContext();
-
       Route? listenerRoute = ModalRoute.of(context);
-      if (route == listenerRoute) return listener;
+      if (route == listenerRoute) observers.add(listener);
     }
-    return null;
+    return observers;
   }
 
   INavigatorObserver? listenerOfExactType(Route route, Type T) {

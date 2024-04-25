@@ -1,8 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:audioplayers/audioplayers.dart';
-import 'package:fml/fml.dart';
-import 'dart:io' show Platform;
-
 import 'package:fml/log/manager.dart';
 
 class Sound {
@@ -14,14 +11,14 @@ class Sound {
   }
 
   void initPlayer() {
-    if (FmlEngine.isWeb) {
-      return; // Calls to Platform.isIOS fails on web
-    } else if (Platform.isIOS) {
-      // if (assetPlayer.fixedPlayer != null) {
-      //   assetPlayer.fixedPlayer.startHeadlessService();
-      // }
-      // advancedPlayer.startHeadlessService();
-    }
+    // if (isWeb) {
+    //   return; // Calls to Platform.isIOS fails on web
+    // } else if (Platform.isIOS) {
+    //   // if (assetPlayer.fixedPlayer != null) {
+    //   //   assetPlayer.fixedPlayer.startHeadlessService();
+    //   // }
+    //   // advancedPlayer.startHeadlessService();
+    // }
   }
 
 //  To add local audio assets for web include the file in:

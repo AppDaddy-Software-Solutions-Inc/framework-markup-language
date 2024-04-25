@@ -2,14 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/widgets/goback/goback.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class DrawerView extends StatefulWidget implements IDragListener, IWidgetView {
+class DrawerView extends StatefulWidget implements IDragListener, ViewableWidgetView {
 
   @override
   final DrawerModel model;
@@ -51,7 +50,7 @@ class DrawerView extends StatefulWidget implements IDragListener, IWidgetView {
   }
 }
 
-class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
+class DrawerViewState extends ViewableWidgetState<DrawerView> implements IDragListener {
 
   // drag leeway for completing open/closes on drag end
   static int dragLeeway = 200;
@@ -905,10 +904,10 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener {
       fromRight = width;
     }
 
-    top = widget.model.top != null ? BoxView(widget.model.top!) : null;
-    bottom = widget.model.bottom != null ? BoxView(widget.model.bottom!) : null;
-    left = widget.model.left != null ? BoxView(widget.model.left!) : null;
-    right = widget.model.right != null ? BoxView(widget.model.right!) : null;
+    top = widget.model.top != null ? BoxView(widget.model.top!, (_,__) => widget.model.top!.inflate()) : null;
+    bottom = widget.model.bottom != null ? BoxView(widget.model.bottom!, (_,__) => widget.model.bottom!.inflate()) : null;
+    left = widget.model.left != null ? BoxView(widget.model.left!, (_,__) => widget.model.left!.inflate()) : null;
+    right = widget.model.right != null ? BoxView(widget.model.right!, (_,__) => widget.model.left!.inflate()) : null;
 
     double screenHeight = height;
     double screenWidth = width;

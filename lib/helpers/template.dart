@@ -127,12 +127,12 @@ import 'package:fml/widgets/typeahead/typeahead_model.dart';
 import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:fml/widgets/video/video_model.dart';
 import 'package:fml/widgets/span/span_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-Future<void> addChild(WidgetModel model, List<dynamic> arguments) async {
+Future<void> addChild(Model model, List<dynamic> arguments) async {
   // fml
   var xml = elementAt(arguments, 0);
 
@@ -148,7 +148,7 @@ Future<void> addChild(WidgetModel model, List<dynamic> arguments) async {
   await _appendXml(model, xml, index, silent);
 }
 
-Future<void> removeChild(WidgetModel model, List<dynamic> arguments) async {
+Future<void> removeChild(Model model, List<dynamic> arguments) async {
   // if index is null, remove all children before replacement.
   int? index = toInt(elementAt(arguments, 0));
 
@@ -169,13 +169,13 @@ Future<void> removeChild(WidgetModel model, List<dynamic> arguments) async {
   }
 }
 
-Future<void> removeChildren(WidgetModel model, List<dynamic> arguments) async {
+Future<void> removeChildren(Model model, List<dynamic> arguments) async {
   // dispose of all children
   model.children?.forEach((child) => child.dispose());
   model.children?.clear();
 }
 
-Future<void> replaceChild(WidgetModel model, List<dynamic> arguments) async {
+Future<void> replaceChild(Model model, List<dynamic> arguments) async {
   // fml
   var xml = elementAt(arguments, 0);
 
@@ -209,7 +209,7 @@ Future<void> replaceChild(WidgetModel model, List<dynamic> arguments) async {
   await _appendXml(model, xml, index, silent);
 }
 
-Future<void> replaceChildren(WidgetModel model, List<dynamic> arguments) async {
+Future<void> replaceChildren(Model model, List<dynamic> arguments) async {
   // fml
   var xml = elementAt(arguments, 0);
 
@@ -226,7 +226,7 @@ Future<void> replaceChildren(WidgetModel model, List<dynamic> arguments) async {
   await _appendXml(model, xml, null, silent);
 }
 
-Future<void> removeWidget(WidgetModel model, List<dynamic> arguments) async {
+Future<void> removeWidget(Model model, List<dynamic> arguments) async {
   // index
   int? index = (model.parent?.children?.contains(model) ?? false)
       ? model.parent?.children?.indexOf(model)
@@ -240,7 +240,7 @@ Future<void> removeWidget(WidgetModel model, List<dynamic> arguments) async {
   }
 }
 
-Future<void> replaceWidget(WidgetModel model, List<dynamic> arguments) async {
+Future<void> replaceWidget(Model model, List<dynamic> arguments) async {
   // fml
   var xml = elementAt(arguments, 0);
 
@@ -267,7 +267,7 @@ Future<void> replaceWidget(WidgetModel model, List<dynamic> arguments) async {
   }
 }
 
-Future<bool> _appendXml(WidgetModel model, String xml, int? index,
+Future<bool> _appendXml(Model model, String xml, int? index,
     [bool silent = true]) async {
   List<XmlElement> nodes = [];
 
@@ -319,8 +319,8 @@ Future<bool> _appendXml(WidgetModel model, String xml, int? index,
 /// where children may actually be header or footer declarations that require
 /// a complete restructuring/rebuild of the parent
 Future<bool> _appendChild(
-    WidgetModel parent, XmlElement element, int? index) async {
-  WidgetModel? model = WidgetModel.fromXml(parent, element);
+    Model parent, XmlElement element, int? index) async {
+  Model? model = Model.fromXml(parent, element);
   if (model != null) {
     // model is a datasource
     if (model is IDataSource) {
@@ -454,9 +454,9 @@ XmlElement? prototypeOf(XmlElement? node) {
   return node;
 }
 
-WidgetModel? fromXmlNode(
-    WidgetModel parent, XmlElement node, Scope? scope, dynamic data) {
-  WidgetModel? model;
+Model? fromXmlNode(
+    Model parent, XmlElement node, Scope? scope, dynamic data) {
+  Model? model;
 
   switch (node.localName) {
     case "ALARM":

@@ -4,7 +4,7 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/popover/popover_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -66,7 +66,7 @@ class PopoverItemModel extends RowModel {
     this.onclick = onclick;
   }
 
-  static PopoverItemModel? fromXml(WidgetModel parent, XmlElement xml,
+  static PopoverItemModel? fromXml(Model parent, XmlElement xml,
       {dynamic data}) {
     PopoverItemModel? model;
     try {

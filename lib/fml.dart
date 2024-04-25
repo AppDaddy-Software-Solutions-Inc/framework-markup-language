@@ -11,7 +11,6 @@ import 'package:fml/splash/splash.dart';
 import 'package:fml/system.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/theme/theme.dart';
-import 'dart:io' as io;
 
 /// application type
 enum ApplicationType { single, multi, branded }
@@ -37,17 +36,7 @@ class FmlEngine {
   // if the engine has been initialized
   static final initialized = Completer<bool>();
 
-  // platform
-  static String get platform => isWeb
-      ? "web"
-      : isMobile
-          ? "mobile"
-          : "desktop";
-  static bool get isWeb => kIsWeb;
-  static bool get isMobile =>
-      !isWeb && (io.Platform.isAndroid || io.Platform.isIOS);
-  static bool get isDesktop => !isWeb && !isMobile;
-  static bool get isTouchDevice => (io.Platform.isAndroid || io.Platform.isIOS);
+
 
   /// This url is used to locate config.xml on startup
   /// Used in Single Application mode only and on Web when developing on localhost

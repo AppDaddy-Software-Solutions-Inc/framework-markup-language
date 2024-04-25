@@ -4,7 +4,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/hive/stash.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -15,7 +15,7 @@ class StashModel extends DataSourceModel implements IDataSource {
   @override
   bool get autoexecute => super.autoexecute ?? true;
 
-  static StashModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static StashModel? fromXml(Model parent, XmlElement xml) {
     StashModel? model;
     try {
       model = StashModel(parent, Xml.get(node: xml, tag: 'id'));

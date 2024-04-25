@@ -1,10 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TriggerConditionModel extends WidgetModel {
+class TriggerConditionModel extends Model {
   //////////
   /* When */
   //////////
@@ -38,14 +38,14 @@ class TriggerConditionModel extends WidgetModel {
     return _call?.get();
   }
 
-  TriggerConditionModel(WidgetModel parent,
+  TriggerConditionModel(Model parent,
       {String? id, dynamic when, dynamic call})
       : super(parent, id) {
     this.when = when;
     this.call = call;
   }
 
-  static TriggerConditionModel? fromXml(WidgetModel parent, XmlElement e,
+  static TriggerConditionModel? fromXml(Model parent, XmlElement e,
       {String? when}) {
     TriggerConditionModel condition = TriggerConditionModel(
       parent,

@@ -16,10 +16,15 @@ import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'dart:math';
 
-mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
+class ViewableModel extends Model with ViewableMixin {
+
+  ViewableModel(super.parent, super.id, {super.scope, super.data});
+}
+
+mixin ViewableMixin on Model implements IDragDrop {
 
   // model holding the tooltip
   TooltipModel? tipModel;
@@ -28,11 +33,11 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
   List<AnimationModel>? animations;
 
   // viewable children
-  List<ViewableWidgetMixin> get viewableChildren {
-    List<ViewableWidgetMixin> list = [];
+  List<ViewableMixin> get viewableChildren {
+    List<ViewableMixin> list = [];
     if (children != null) {
       for (var child in children!) {
-        if (child is ViewableWidgetMixin) list.add(child);
+        if (child is ViewableMixin) list.add(child);
       }
     }
     return list;
@@ -486,8 +491,8 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
   /// the first system non-null minWidth value
   double get myMinWidth {
     if (system.minWidth != null) return system.minWidth!;
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMinWidth;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMinWidth;
     }
     return 0;
   }
@@ -500,8 +505,8 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     }
     if (width != null) return width!;
     if (maxWidth != null) return maxWidth!;
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMaxWidth;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMaxWidth;
     }
     return 0;
   }
@@ -512,8 +517,8 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     if (system.minHeight != null && system.minHeight != double.infinity) {
       return system.minHeight!;
     }
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMinHeight;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMinHeight;
     }
     return 0;
   }
@@ -526,8 +531,8 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     }
     if (height != null) return height!;
     if (maxHeight != null) return maxHeight!;
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMaxHeight;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMaxHeight;
     }
     return 0;
   }
@@ -552,8 +557,8 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     if (system.maxWidth != null && system.maxWidth != double.infinity) {
       return system.maxWidth!;
     }
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMaxWidth;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMaxWidth;
     }
     if (maxWidth == null || maxWidth == double.infinity) {
       maxWidth = System().screenwidth.toDouble();
@@ -567,15 +572,15 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     if (system.maxHeight != null && maxHeight != double.infinity) {
       return system.maxHeight!;
     }
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMaxHeight;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMaxHeight;
     }
     if (maxHeight == null || maxHeight == double.infinity) {
       return System().screenheight.toDouble();
     }
     return maxHeight!;
   }
-  
+
   // Depth - used in stack
   DoubleObservable? _depth;
 
@@ -1131,16 +1136,16 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     // we only create the observable if its bound to in the template
     // otherwise we just store the value in a simple double variable
     String? key;
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewwidth'))) {
+    if (Model.isBound(this, key = Binding.toKey(id, 'viewwidth'))) {
       _viewWidthObservable = DoubleObservable(key, null, scope: scope);
     }
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewheight'))) {
+    if (Model.isBound(this, key = Binding.toKey(id, 'viewheight'))) {
       _viewHeightObservable = DoubleObservable(key, null, scope: scope);
     }
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewx'))) {
+    if (Model.isBound(this, key = Binding.toKey(id, 'viewx'))) {
       _viewXObservable = DoubleObservable(key, null, scope: scope);
     }
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewy'))) {
+    if (Model.isBound(this, key = Binding.toKey(id, 'viewy'))) {
       _viewYObservable = DoubleObservable(key, null, scope: scope);
     }
 
@@ -1149,9 +1154,9 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     _addVisibilityDetector = visible &&
         (!isNullOrEmpty(onscreen) ||
             !isNullOrEmpty(offscreen) ||
-            WidgetModel.isBound(this, Binding.toKey(id, 'visiblearea')) ||
-            WidgetModel.isBound(this, Binding.toKey(id, 'visibleheight')) ||
-            WidgetModel.isBound(this, Binding.toKey(id, 'visiblewidth')));
+            Model.isBound(this, Binding.toKey(id, 'visiblearea')) ||
+            Model.isBound(this, Binding.toKey(id, 'visibleheight')) ||
+            Model.isBound(this, Binding.toKey(id, 'visiblewidth')));
 
     // set margins. Can be comma separated top,left,bottom,right
     // space around the widget
@@ -1177,7 +1182,7 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
       eText.attributes.add(XmlAttribute(XmlName("value"), tooltip));
       eTip.children.add(eText);
 
-      var model = WidgetModel.fromXml(this, eTip);
+      var model = Model.fromXml(this, eTip);
       tipModel = (model is TooltipModel) ? model : null;
     }
 
@@ -1265,7 +1270,9 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     }
 
     // wrap in tooltip?
-    if (tipModel != null) view = TooltipView(tipModel!, view);
+    if (tipModel != null) {
+      view = TooltipView(tipModel!, view);
+    }
 
     // droppable?
     if (droppable && view is! DroppableView) {
@@ -1295,27 +1302,39 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     for (var model in viewableChildren) {
       if (model is! ModalModel) {
         var view = model.getView();
-        if (view != null) views.add(view);
+        views.add(view);
       }
     }
     return views;
   }
 
   void layoutComplete(Size size, Offset offset) {
+
+    // if the view has changed size or position
+    // we need to redraw it
+    needsLayout = false;
+
     // set the view width, height and position
     if (size.width != viewWidth ||
         size.height != viewHeight ||
         offset.dx != viewX ||
         offset.dy != viewY) {
+
+      // set size
       viewWidth  = size.width;
       viewHeight = size.height;
+
+      // set position
       viewX = offset.dx;
       viewY = offset.dy;
+
+      // mark as needing layout
+      needsLayout = true;
     }
   }
 
   // animate the model
-  static bool animate(ViewableWidgetMixin model, String caller,
+  static bool animate(ViewableMixin model, String caller,
       String propertyOrFunction, List<dynamic> arguments) {
     var animations = model.animations;
     if (animations != null) {
@@ -1352,7 +1371,7 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
   void onDrag() async => await DragDrop.onDrag(this);
 
   // get the view
-  Widget? getView() => throw ("getView() Not Implemented");
+  Widget getView() => throw ("getView() Not Implemented");
 }
 
 class Constraints {

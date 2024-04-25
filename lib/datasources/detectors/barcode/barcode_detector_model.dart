@@ -5,7 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/detector_model.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'barcode_detector.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -45,7 +45,7 @@ class BarcodeDetectorModel extends DetectorModel implements IDetectable {
 
   BarcodeDetectorModel(super.parent, super.id);
 
-  static BarcodeDetectorModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static BarcodeDetectorModel? fromXml(Model parent, XmlElement xml) {
     BarcodeDetectorModel? model;
     try {
       model = BarcodeDetectorModel(parent, Xml.get(node: xml, tag: 'id'));

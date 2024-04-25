@@ -8,7 +8,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/axis/chart_axis_model.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:xml/xml.dart';
 import '../chart_model.dart';
@@ -59,7 +59,7 @@ class LineChartModel extends ChartPainterModel {
     busy = false;
   }
 
-  static LineChartModel? fromTemplate(WidgetModel parent, Template template) {
+  static LineChartModel? fromTemplate(Model parent, Template template) {
     LineChartModel? model;
     try {
       XmlElement? xml =
@@ -73,7 +73,7 @@ class LineChartModel extends ChartPainterModel {
     return model;
   }
 
-  static LineChartModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static LineChartModel? fromXml(Model parent, XmlElement xml) {
     LineChartModel? model;
     try {
       model = LineChartModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -130,7 +130,7 @@ class LineChartModel extends ChartPainterModel {
 
   /// Called when the databroker returns a successful result
   ///
-  /// [ChartModel] overrides [WidgetModel]'s onDataSourceSuccess
+  /// [ChartModel] overrides [Model]'s onDataSourceSuccess
   /// to populate the series data from the datasource and
   /// to populate the label data from the datasource data.
   @override

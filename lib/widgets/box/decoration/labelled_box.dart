@@ -78,8 +78,6 @@ class LabelledContainerRenderer extends RenderBox
 
   final double gapPadding = 6.0;
   final double gapStart = 10.0;
-  Offset get labelOffset => Offset(
-      gapStart + (gapPadding / 2), ((label?.size.height ?? 0.0) / 2) * -1);
 
   @override
   void performLayout() {
@@ -103,7 +101,13 @@ class LabelledContainerRenderer extends RenderBox
           maxHeight: container!.size.height/2);
 
       label!.layout(constraints, parentUsesSize: true);
-      _positionChild(label!, labelOffset);
+
+      var borderWidth = decoration?.border?.top.width ?? 0;
+
+      var x = gapStart + (gapPadding / 2) - (borderWidth/2);
+      var y = (label!.size.height + borderWidth) / 2 * -1;
+
+      _positionChild(label!, Offset(x,y));
     }
 
     // calculate the overall size
@@ -117,7 +121,9 @@ class LabelledContainerRenderer extends RenderBox
   Offset paintChildOffset(
       RenderBox child, PaintingContext context, Offset offset) {
     final BoxParentData childParentData = child.parentData! as BoxParentData;
-    return childParentData.offset + offset;
+
+    var borderWidth = decoration?.border?.top.width ?? 0;
+    return childParentData.offset + offset + Offset(borderWidth,borderWidth);
   }
 
   void paintChild(RenderBox child, PaintingContext context, Offset offset) {

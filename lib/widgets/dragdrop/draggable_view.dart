@@ -2,14 +2,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
-import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:flutter/services.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class DraggableView extends StatefulWidget implements IWidgetView {
+class DraggableView extends StatefulWidget implements ViewableWidgetView {
   @override
-  final ViewableWidgetMixin model;
+  final ViewableMixin model;
   final Widget view;
 
   DraggableView(this.model, this.view) : super(key: ObjectKey(model));
@@ -18,7 +17,7 @@ class DraggableView extends StatefulWidget implements IWidgetView {
   State<DraggableView> createState() => _DraggableViewState();
 }
 
-class _DraggableViewState extends WidgetState<DraggableView> {
+class _DraggableViewState extends ViewableWidgetState<DraggableView> {
   Timer? autoscroll;
 
   double? width;

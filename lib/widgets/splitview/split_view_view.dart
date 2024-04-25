@@ -1,9 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:fml/navigation/navigation_manager.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/splitview/split_view_model.dart';
@@ -65,16 +63,22 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     widget.model.ratio = ratio;
   }
 
+  GestureTapCallback? _onDoubleTap()
+  {    // reset the ratio
+    widget.model.needsRebuild = true;
+    widget.model.ratio = 0;
+    return null;
+  }
+
   Widget _buildHandle(BoxConstraints constraints) {
 
-    var color = Colors.yellow;//widget.model.dividerColor ?? Theme.of(context).colorScheme.onInverseSurface;
+    var color = widget.model.dividerColor ?? Theme.of(context).colorScheme.onInverseSurface;
 
     // vertical splitter
     if (widget.model.vertical) {
 
       var width = constraints.maxWidth;
       var height = widget.model.dividerWidth;
-      if (!System().mouse) height = max(height, 20.0);
 
       Widget bar = Container(
           color: color,
@@ -88,10 +92,10 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
 
       Widget handle = Icon(Icons.drag_handle, color: widget.model.dividerHandleColor);
       handle = GestureDetector(
-          behavior: HitTestBehavior.opaque,
+          behavior: HitTestBehavior.translucent,
           onVerticalDragUpdate: (DragUpdateDetails details) =>
               _onDrag(details, constraints),
-          child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown, child: handle));
+          child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: handle));
 
       Widget view = Stack(alignment: Alignment.center, children: [bar, Positioned(left: 10,  right: 10, child: handle)]);
 
@@ -102,7 +106,6 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     else {
       var width = widget.model.dividerWidth;
       var height = constraints.maxHeight;
-      if (!System().mouse) width = max(width, 20.0);
 
       Widget bar = Container(
           color: color,
@@ -117,7 +120,7 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
       Widget handle = Icon(Icons.drag_handle, color: widget.model.dividerHandleColor);
       handle = Transform.rotate(angle: 90 * pi / 180, child: handle);
       handle = GestureDetector(
-          behavior: HitTestBehavior.opaque,
+          behavior: HitTestBehavior.translucent,
           onHorizontalDragUpdate: (DragUpdateDetails details) =>
               _onDrag(details, constraints),
           child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: handle));

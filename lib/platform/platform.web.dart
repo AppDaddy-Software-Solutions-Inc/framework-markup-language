@@ -29,23 +29,88 @@ class Platform {
   static bool get isMobile => false;
   static bool get isDesktop => false;
 
-  static String? get useragent {
-    const appleType = "ios";
-    const androidType = "android";
-    const desktopType = "desktop";
+  static String get operatingSystem {
 
-    final userAgent = window.navigator.userAgent.toString().toLowerCase();
+    final s = window.navigator.userAgent.toLowerCase();
+    if (s.contains('iphone') ||
+        s.contains('ipad') ||
+        s.contains('ipod') ||
+        s.contains('watch os')) {
+      return 'ios';
+    }
+    if (s.contains('mac os')) {
+      return 'macos';
+    }
+    if (s.contains('fuchsia')) {
+      return 'fuchsia';
+    }
+    if (s.contains('android')) {
+      return 'android';
+    }
+    if (s.contains('linux') || s.contains('cros') || s.contains('chromebook')) {
+      return 'linux';
+    }
+    if (s.contains('windows')) {
+      return 'windows';
+    }
+    return "?";
+  }
 
-    // smartphone
-    if (userAgent.contains("iphone")) return appleType;
-    if (userAgent.contains("android")) return androidType;
+  static String get operatingSystemVersion {
 
-    // tablet
-    if (userAgent.contains("ipad")) return appleType;
-    if (window.navigator.platform!.toLowerCase().contains("macintel") &&
-        window.navigator.maxTouchPoints! > 0) return appleType;
+    final s = window.navigator.userAgent;
 
-    return desktopType;
+    // Android?
+    {
+      final regExp = RegExp('Android ([a-zA-Z0-9.-_]+)');
+      final match = regExp.firstMatch(s);
+      if (match != null) {
+        final version = match.group(1) ?? '';
+        return version.replaceAll(";", "");
+      }
+    }
+
+    // iPhone OS?
+        {
+      final regExp = RegExp('iPhone OS ([a-zA-Z0-9.-_]+) ([a-zA-Z0-9.-_]+)');
+      final match = regExp.firstMatch(s);
+      if (match != null) {
+        final version = (match.group(2) ?? '').replaceAll('_', '.');
+        return version.replaceAll(";", "");
+      }
+    }
+
+    // Mac OS X?
+        {
+      final regExp = RegExp('Mac OS X ([a-zA-Z0-9.-_]+)');
+      final match = regExp.firstMatch(s);
+      if (match != null) {
+        final version = (match.group(1) ?? '').replaceAll('_', '.');
+        return version.replaceAll(";", "");
+      }
+    }
+
+    // Chrome OS?
+        {
+      final regExp = RegExp('CrOS ([a-zA-Z0-9.-_]+) ([a-zA-Z0-9.-_]+)');
+      final match = regExp.firstMatch(s);
+      if (match != null) {
+        final version = match.group(2) ?? '';
+        return version.replaceAll(";", "");
+      }
+    }
+
+    // Windows?
+        {
+      final regExp = RegExp('Windows NT ([a-zA-Z0-9.-_]+)');
+      final match = regExp.firstMatch(s);
+      if (match != null) {
+        final version = (match.group(1) ?? '');
+        return version.replaceAll(";", "");
+      }
+    }
+
+    return "?";
   }
 
   static final dynamic iframe = window.document.getElementById('invisible');

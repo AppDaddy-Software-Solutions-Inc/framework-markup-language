@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/helpers/mime.dart';
@@ -27,9 +28,6 @@ class Platform {
   static bool get isWeb => kIsWeb;
   static bool get isMobile => false;
   static bool get isDesktop => false;
-
-  // touch device?
-  static bool get isTouchDevice => false;
 
   static String? get useragent {
     const appleType = "ios";

@@ -36,8 +36,6 @@ class FmlEngine {
   // if the engine has been initialized
   static final initialized = Completer<bool>();
 
-
-
   /// This url is used to locate config.xml on startup
   /// Used in Single Application mode only and on Web when developing on localhost
   /// Set this to file://app

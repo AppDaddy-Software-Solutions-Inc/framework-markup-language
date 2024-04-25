@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/helpers/mime.dart';
@@ -27,9 +28,6 @@ class Platform {
   // platform
   static String get platform => isMobile ? "mobile" : "desktop";
 
-  // touch device?
-  static bool get isTouchDevice => (io.Platform.isAndroid || io.Platform.isIOS);
-
   static String? get useragent {
     if (io.Platform.isIOS) return "ios";
     if (io.Platform.isAndroid) return "android";
@@ -39,6 +37,9 @@ class Platform {
     if (io.Platform.isFuchsia) return "fuchsia";
     return null;
   }
+
+  // device has a mouse connected?
+  static bool get mouseIsConnected => RendererBinding.instance.mouseTracker.mouseIsConnected;
 
   static initialize() async
   {

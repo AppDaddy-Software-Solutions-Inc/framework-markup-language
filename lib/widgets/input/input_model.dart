@@ -144,6 +144,19 @@ class InputModel extends DecoratedInputModel implements IFormField {
 
   int? get lines => _lines?.get();
 
+  /// The number of milliseconds used for commiting
+  /// changes to the input
+  IntegerObservable? _debounce;
+  set debounce(dynamic v) {
+    if (_debounce != null) {
+      _debounce!.set(v);
+    } else if (v != null) {
+      _debounce = IntegerObservable(Binding.toKey(id, 'debounce'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  int get debounce => _debounce?.get() ?? 1000;
+
   IntegerObservable? _maxlines;
   set maxlines(dynamic v) {
     if (_maxlines != null) {
@@ -317,6 +330,7 @@ class InputModel extends DecoratedInputModel implements IFormField {
     borderWidth = Xml.get(node: xml, tag: 'borderwidth');
     textcolor = Xml.get(node: xml, tag: 'textcolor');
     mask = Xml.get(node: xml, tag: 'mask');
+    debounce = Xml.get(node: xml, tag: 'debounce');
   }
 
   setValidator(String? defaultText) {

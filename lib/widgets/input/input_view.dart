@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:math';
 import 'package:fml/widgets/input/input_formatters.dart';
 import 'package:flutter_multi_formatter/formatters/credit_card_cvc_input_formatter.dart';
 import 'package:flutter_multi_formatter/formatters/credit_card_expiration_input_formatter.dart';
@@ -282,8 +283,10 @@ class _InputViewState extends ViewableWidgetState<InputView>
     if (commitTimer?.isActive ?? false) commitTimer!.cancel();
 
     // reset the timer
-    commitTimer =
-        Timer(const Duration(milliseconds: 1000), () async => _commit());
+    var milliseconds = widget.model.debounce;
+    if (milliseconds > 0) {
+      commitTimer = Timer(Duration(milliseconds: milliseconds), () async => _commit());
+    }
   }
 
   void onClear() {

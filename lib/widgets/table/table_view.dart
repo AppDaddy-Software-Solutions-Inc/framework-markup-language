@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
@@ -210,7 +211,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
     // return the view
     if (!views.containsKey(model)) {
       // build the view
-      Widget view = RepaintBoundary(child: BoxView(model, (_,__) => widget.model.inflate()));
+      Widget view = RepaintBoundary(child: BoxView(model, (_,__) => model.inflate()));
 
       // cache the view
       views[model] = view;
@@ -996,7 +997,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
     if (groups.isEmpty && fields.isEmpty) return null;
 
     var title = model.title;
-    var header = WidgetSpan(child: BoxView(model, (_,__) => widget.model.inflate()));
+    var header = WidgetSpan(child: BoxView(model, (_,__) => model.inflate()));
 
     var group = PlutoColumnGroup(
       title: title ?? "",
@@ -1151,13 +1152,27 @@ class TableViewState extends ViewableWidgetState<TableView> {
     return false;
   }
 
+  var themeHash = 0;
+
   @override
   Widget build(BuildContext context) {
+
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
+    // theme change?
+    var hash = Theme.of(context).hashCode;
+    if (hash != themeHash) {
+      themeHash = hash;
+      grid = null;
+    }
+
     // build style
     if (grid == null) {
+
+      if (kDebugMode) {
+        print('Rebuilding table ...');
+      }
 
       // build the columns
       _buildColumns();

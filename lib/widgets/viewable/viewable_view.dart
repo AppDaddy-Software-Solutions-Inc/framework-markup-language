@@ -11,6 +11,7 @@ abstract class ViewableWidgetView {
 
 abstract class ViewableWidgetState<T extends StatefulWidget> extends State<T>
     implements IModelListener {
+
   ViewableMixin? get model =>
       (widget is ViewableWidgetView) ? (widget as ViewableWidgetView).model : null;
 

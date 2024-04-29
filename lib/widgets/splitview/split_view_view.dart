@@ -63,13 +63,6 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     widget.model.ratio = ratio;
   }
 
-  GestureTapCallback? _onDoubleTap()
-  {    // reset the ratio
-    widget.model.needsRebuild = true;
-    widget.model.ratio = 0;
-    return null;
-  }
-
   Widget _buildHandle(BoxConstraints constraints) {
 
     var color = widget.model.dividerColor ?? Theme.of(context).colorScheme.onInverseSurface;

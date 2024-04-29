@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'dart:math';
 import 'package:fml/widgets/input/input_formatters.dart';
 import 'package:flutter_multi_formatter/formatters/credit_card_cvc_input_formatter.dart';
 import 'package:flutter_multi_formatter/formatters/credit_card_expiration_input_formatter.dart';

@@ -237,8 +237,12 @@ class ImageView extends StatefulWidget implements ViewableWidgetView {
 }
 
 class _ImageViewState extends ViewableWidgetState<ImageView> {
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints) {
+
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 

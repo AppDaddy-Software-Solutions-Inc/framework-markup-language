@@ -10,6 +10,7 @@ import 'package:fml/widgets/chart_painter/chart_model.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_chart_view.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_series.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -196,6 +197,7 @@ class PieChartModel extends ChartPainterModel {
 
   @override
   Widget getView({Key? key}) {
-    return getReactiveView(PieChartView(this));
+    var view = PieChartView(this);
+    return isReactive ? ReactiveView(this, view) : view;
   }
 }

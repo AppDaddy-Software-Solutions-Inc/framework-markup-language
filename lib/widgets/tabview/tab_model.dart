@@ -6,6 +6,7 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/tabview/tab_view.dart';
@@ -184,5 +185,8 @@ class TabModel extends BoxModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(TabView(this));
+  Widget getView({Key? key}) {
+    var view = TabView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

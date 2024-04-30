@@ -2,6 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -38,5 +39,8 @@ class CenterModel extends BoxModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(BoxView(this, (_,__) => inflate()));
+  Widget getView({Key? key}) {
+    var view = BoxView(this, (_,__) => inflate());
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

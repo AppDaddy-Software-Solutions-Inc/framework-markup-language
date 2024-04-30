@@ -5,6 +5,7 @@ import 'package:fml/datasources/camera/model.dart';
 import 'package:fml/helpers/mime.dart';
 import 'package:fml/widgets/camera/camera_view.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/event/handler.dart';
@@ -379,5 +380,8 @@ class CameraModel extends CameraImageModel with ViewableMixin {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(CameraView(this));
+  Widget getView({Key? key}) {
+    var view = CameraView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

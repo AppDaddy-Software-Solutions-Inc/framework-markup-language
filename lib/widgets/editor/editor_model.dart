@@ -2,6 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/editor/editor_view.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
@@ -83,5 +84,8 @@ class EditorModel extends ViewableModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(EditorView(this));
+  Widget getView({Key? key}) {
+    var view = EditorView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

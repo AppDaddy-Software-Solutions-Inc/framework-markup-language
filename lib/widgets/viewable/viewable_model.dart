@@ -6,13 +6,9 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
-import 'package:fml/widgets/dragdrop/draggable_view.dart';
-import 'package:fml/widgets/dragdrop/droppable_view.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/prototype/prototype_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
-import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -713,8 +709,9 @@ mixin ViewableMixin on Model implements IDragDrop {
       visibleWidth = 0;
     }
   }
-
   String? get onscreen => _onscreen?.get();
+
+  void onScreen() => !isNullOrEmpty(_onscreen) ? EventHandler(this).execute(_onscreen) : null;
 
   /// offscreen event string - fires when object is 100 on screen
   StringObservable? _offscreen;
@@ -731,8 +728,9 @@ mixin ViewableMixin on Model implements IDragDrop {
       visibleWidth = 0;
     }
   }
-
   String? get offscreen => _offscreen?.get();
+
+  void offScreen() => !isNullOrEmpty(_offscreen) ? EventHandler(this).execute(_offscreen) : null;
 
   /// visible area - percent of object visible on screen
   DoubleObservable? _visibleArea;
@@ -1221,33 +1219,6 @@ mixin ViewableMixin on Model implements IDragDrop {
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
-  // set visibility
-  double oldVisibility = 0;
-  bool hasGoneOffscreen = false;
-  bool hasGoneOnscreen = false;
-
-  void onVisibilityChanged(VisibilityInfo info) {
-    if (oldVisibility == (info.visibleFraction * 100)) return;
-
-    visibleHeight = info.size.height > 0
-        ? ((info.visibleBounds.height / info.size.height) * 100)
-        : 0.0;
-    visibleWidth = info.size.width > 0
-        ? ((info.visibleBounds.width / info.size.width) * 100)
-        : 0.0;
-    visibleArea = info.visibleFraction * 100;
-
-    oldVisibility = visibleArea ?? 0.0;
-
-    if (visibleArea! > 1 && !hasGoneOnscreen) {
-      if (!isNullOrEmpty(_onscreen)) EventHandler(this).execute(_onscreen);
-      hasGoneOnscreen = true;
-    } else if (visibleArea! == 0 && hasGoneOnscreen) {
-      if (!isNullOrEmpty(_offscreen)) EventHandler(this).execute(_offscreen);
-      hasGoneOnscreen = false;
-    }
-  }
-
   @override
   void dispose() {
     // dispose of tip model
@@ -1260,38 +1231,14 @@ mixin ViewableMixin on Model implements IDragDrop {
     super.dispose();
   }
 
-  Widget getReactiveView(Widget view) {
-    // wrap in visibility detector?
-    if (needsVisibilityDetector) {
-      view = VisibilityDetector(
-          key: ObjectKey(this),
-          onVisibilityChanged: onVisibilityChanged,
-          child: view);
-    }
-
-    // wrap in tooltip?
-    if (tipModel != null) {
-      view = TooltipView(tipModel!, view);
-    }
-
-    // droppable?
-    if (droppable && view is! DroppableView) {
-      view = DroppableView(this, view);
-    }
-
-    // draggable?
-    if (draggable && view is! DraggableView) {
-      view = DraggableView(this, view);
-    }
-
-    // wrap animations.
-    if (animations != null) {
-      var animations = this.animations!.reversed;
-      for (var model in animations) {
-        view = model.getAnimatedView(view);
-      }
-    }
-    return view;
+  // returns true if the widget needs tro be wrapped
+  // in a ReactiveView();
+  bool get isReactive {
+    if (needsVisibilityDetector) return true;
+    if (tipModel != null) return true;
+    if (draggable || droppable) return true;
+    if (animations != null) return true;
+    return false;
   }
 
   /// this routine creates views for all

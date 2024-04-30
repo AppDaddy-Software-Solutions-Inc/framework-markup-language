@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/modal/modal_manager_view.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
+import '../tooltip/v2/tooltip_model.dart';
 import 'modal_view.dart';
 
 class ModalModel extends BoxModel {
@@ -17,6 +19,18 @@ class ModalModel extends BoxModel {
 
   @override
   bool get expand => true;
+
+  @override
+  bool get needsVisibilityDetector => false;
+
+  @override
+  TooltipModel? get tipModel => null;
+
+  @override
+  bool get draggable => false;
+
+  @override
+  bool get droppable => false;
 
   ModalModel(Model super.parent, super.id,
       {this.child,
@@ -246,19 +260,9 @@ class ModalModel extends BoxModel {
     if (view != null) view!.onDismiss();
   }
 
-  /// Returns the [MODAL] View
   @override
-  Widget getView({Key? key}) => getReactiveView(ModalView(this));
-
-  @override
-  Widget getReactiveView(Widget view) {
-    // wrap animations.
-    if (animations != null) {
-      var animations = this.animations!.reversed;
-      for (var model in animations) {
-        view = model.getAnimatedView(view);
-      }
-    }
-    return view;
+  Widget getView({Key? key}) {
+    var view = ModalView(this);
+    return isReactive ? ReactiveView(this, view) : view;
   }
 }

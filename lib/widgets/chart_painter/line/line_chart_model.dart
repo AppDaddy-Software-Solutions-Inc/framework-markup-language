@@ -8,6 +8,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/axis/chart_axis_model.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:xml/xml.dart';
@@ -190,6 +191,7 @@ class LineChartModel extends ChartPainterModel {
 
   @override
   Widget getView({Key? key}) {
-    return getReactiveView(LineChartView(this));
+    var view = LineChartView(this);
+    return isReactive ? ReactiveView(this, view) : view;
   }
 }

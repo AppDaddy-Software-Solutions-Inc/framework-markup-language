@@ -4,23 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/splitview/split_view_model.dart';
+import 'package:fml/widgets/splitview/splitview_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 
-class SplitViewView extends StatefulWidget implements ViewableWidgetView {
+class SplitView extends StatefulWidget implements ViewableWidgetView {
 
   @override
   final SplitViewModel model;
 
-  SplitViewView(this.model) : super(key: ObjectKey(model));
+  SplitView(this.model) : super(key: ObjectKey(model));
 
   @override
-  State<SplitViewView> createState() => SplitViewViewState();
+  State<SplitView> createState() => SplitViewState();
 }
 
-class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
+class SplitViewState extends ViewableWidgetState<SplitView> {
 
   BoxConstraints constraints = const BoxConstraints();
 
@@ -59,7 +59,6 @@ class SplitViewViewState extends ViewableWidgetState<SplitViewView> {
     // reset the ratio
     if (ratio < 0) ratio = 0;
     if (ratio > 1) ratio = 1;
-    widget.model.needsRebuild = true;
     widget.model.ratio = ratio;
   }
 

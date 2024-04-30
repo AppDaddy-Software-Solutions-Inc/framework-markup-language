@@ -9,6 +9,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/table/table_footer_model.dart';
 import 'package:fml/widgets/table/nodata_model.dart';
 import 'package:fml/widgets/widget/model.dart';
@@ -1063,5 +1064,8 @@ class TableModel extends BoxModel implements IForm {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(TableView(this));
+  Widget getView({Key? key}) {
+    var view = TableView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

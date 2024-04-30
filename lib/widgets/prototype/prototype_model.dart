@@ -147,7 +147,6 @@ class PrototypeModel extends BoxModel {
     busy = false;
 
     // force rebuild
-    needsRebuild = true;
     notifyListeners("rebuild", true);
 
     return true;

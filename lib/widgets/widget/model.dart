@@ -31,10 +31,6 @@ class Model implements IDataSourceListener {
   // should rebuild on layout changes
   bool needsLayout = false;
 
-  // this is used in the renderer to determine if the widget
-  // should rebuild its children
-  bool needsRebuild = false;
-
   // framework
   FrameworkModel? framework;
 
@@ -488,7 +484,6 @@ class Model implements IDataSourceListener {
         addChild(this, arguments);
 
         // force rebuild
-        needsRebuild = true;
         notifyListeners("rebuild", true);
 
         return true;
@@ -498,7 +493,6 @@ class Model implements IDataSourceListener {
         removeChild(this, arguments);
 
         // force rebuild
-        needsRebuild = true;
         notifyListeners("rebuild", true);
 
         return true;
@@ -508,7 +502,6 @@ class Model implements IDataSourceListener {
         removeChildren(this, arguments);
 
         // force rebuild
-        needsRebuild = true;
         notifyListeners("rebuild", true);
 
         return true;
@@ -518,7 +511,6 @@ class Model implements IDataSourceListener {
         replaceChild(this, arguments);
 
         // force rebuild
-        needsRebuild = true;
         notifyListeners("rebuild", true);
 
         return true;
@@ -528,7 +520,6 @@ class Model implements IDataSourceListener {
         replaceChildren(this, arguments);
 
         // force rebuild
-        needsRebuild = true;
         notifyListeners("rebuild", true);
 
         return true;
@@ -538,7 +529,6 @@ class Model implements IDataSourceListener {
         removeWidget(this, arguments);
 
         // force rebuild
-        parent?.needsRebuild = true;
         parent?.notifyListeners("rebuild", true);
 
         return true;
@@ -548,7 +538,6 @@ class Model implements IDataSourceListener {
         replaceWidget(this, arguments);
 
         // force rebuild
-        parent?.needsRebuild = true;
         parent?.notifyListeners("rebuild", true);
 
         return true;

@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/span/span_model.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:xml/xml.dart';
@@ -484,5 +485,8 @@ class TextModel extends ViewableModel {
   bool get isSpan => (parent is SpanModel);
 
   @override
-  Widget getView({Key? key}) => getReactiveView(TextView(this));
+  Widget getView({Key? key}) {
+    var view = TextView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

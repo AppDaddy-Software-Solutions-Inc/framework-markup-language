@@ -10,6 +10,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/form/form_interface.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/hive/form.dart' as hive;
@@ -879,5 +880,8 @@ class FormModel extends BoxModel implements IForm {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(FormView(this));
+  Widget getView({Key? key}) {
+    var view = FormView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

@@ -10,6 +10,7 @@ import 'package:fml/widgets/chart_painter/bar/bar_series.dart';
 import 'package:fml/widgets/chart_painter/chart_model.dart';
 import 'package:fml/widgets/chart_painter/axis/chart_axis_model.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/chart_painter/bar/bar_chart_view.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -163,6 +164,7 @@ class BarChartModel extends ChartPainterModel {
 
   @override
   Widget getView({Key? key}) {
-    return getReactiveView(BarChartView(this));
+    var view = BarChartView(this);
+    return isReactive ? ReactiveView(this, view) : view;
   }
 }

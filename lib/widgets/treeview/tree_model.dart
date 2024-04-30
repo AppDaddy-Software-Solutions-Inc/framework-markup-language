@@ -6,6 +6,7 @@ import 'package:fml/event/event.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/treeview/tree_view.dart';
 import 'package:fml/widgets/treeview/node/tree_node_model.dart';
@@ -191,5 +192,8 @@ class TreeModel extends BoxModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(TreeView(this));
+  Widget getView({Key? key}) {
+    var view = TreeView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

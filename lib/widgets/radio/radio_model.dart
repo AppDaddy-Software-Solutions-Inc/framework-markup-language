@@ -6,6 +6,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/model.dart';
@@ -263,5 +264,8 @@ class RadioModel extends FormFieldModel implements IFormField {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(RadioView(this));
+  Widget getView({Key? key}) {
+    var view = RadioView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

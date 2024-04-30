@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/column/column_model.dart';
+import 'package:fml/widgets/positioned/positioned_view.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
@@ -179,4 +181,10 @@ class PositionedModel extends ViewableModel {
 
   @override
   List<Widget> inflate() => child == null ? super.inflate() : [child!];
+
+  @override
+  Widget getView({Key? key}) {
+    var view = PositionedView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

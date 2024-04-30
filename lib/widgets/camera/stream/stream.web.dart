@@ -7,12 +7,11 @@ import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'dart:ui' as ui;
 import 'package:fml/datasources/file/file.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/camera/stream/stream.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -21,13 +20,13 @@ import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
     if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 // platform
-import 'package:fml/platform/platform.web.dart'
+import 'package:fml/platform/platform.vm.dart'
     if (dart.library.io) 'package:fml/platform/platform.vm.dart'
     if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 View getView(model) => View(model);
 
-class View extends StatefulWidget implements IWidgetView, StreamView {
+class View extends StatefulWidget implements ViewableWidgetView, StreamView {
   @override
   final CameraModel model;
 
@@ -37,7 +36,7 @@ class View extends StatefulWidget implements IWidgetView, StreamView {
   ViewState createState() => ViewState();
 }
 
-class ViewState extends WidgetState<View> {
+class ViewState extends ViewableWidgetState<View> {
   List<dynamic> cameras = [];
   int selectedCamera = 0;
 
@@ -85,7 +84,7 @@ class ViewState extends WidgetState<View> {
 
   /// Callback to fire the [_ViewState.build] when the [CameraModel] changes
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
     var b = Binding.fromString(property);
     if ((mounted) && (b?.property == 'enabled')) {
       Log().debug('enabled changed value');

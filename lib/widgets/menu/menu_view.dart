@@ -1,17 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/gestures.dart';
-import 'package:fml/event/manager.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/scroller/scroller_behavior.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class MenuView extends StatefulWidget implements IWidgetView {
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
+class MenuView extends StatefulWidget implements ViewableWidgetView {
   @override
   final MenuModel model;
   const MenuView(this.model, {super.key});
@@ -20,70 +21,90 @@ class MenuView extends StatefulWidget implements IWidgetView {
   State<MenuView> createState() => MenuViewState();
 }
 
-class MenuViewState extends WidgetState<MenuView> implements IEventScrolling {
+class MenuViewState extends ViewableWidgetState<MenuView>  {
   Widget? busy;
   final ScrollController controller = ScrollController();
 
   @override
-  didChangeDependencies() {
-    // register event listeners
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.scroll, onScroll);
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(MenuView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if ((oldWidget.model != widget.model)) {
-      // remove old event listeners
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.scroll, onScroll);
-
-      // register new event listeners
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.scroll, onScroll);
-    }
-  }
-
-  @override
   void dispose() {
-    // remove event listeners
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.scroll, onScroll);
-
     controller.dispose();
-
     super.dispose();
   }
 
-  @override
-  void onScroll(Event event) async {
-    scroll(event, controller);
-    event.handled = true;
+  /// scrolls the widget with the specified context into view
+  scrollToContext(BuildContext context, {required bool animate}) {
+    Scrollable.ensureVisible(context, duration: animate ? const Duration(seconds: 1) : Duration.zero, alignment: 0.2);
   }
 
-  scroll(Event event, ScrollController? scroller) async {
+  /// scrolls the widget with the specified context into view
+  scrollTo(double? position, {bool animate = false}) {
+    if (position == null) return;
+    if (position < 0) position = 0;
+
+    var max = controller.position.maxScrollExtent;
+    if (position > max) position = max;
+
+    if (animate) {
+      controller.animateTo(position,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.easeOut);
+    }
+    else {
+      controller.jumpTo(position);
+    }
+  }
+
+  /// moves the scroller by the specified pixels in the specified direction
+  void scroll(double? pixels, {required bool animate})  {
+
     try {
-      if (event.parameters!.containsKey("direction") &&
-          event.parameters!.containsKey("pixels") &&
-          scroller != null) {
-        String? direction = event.parameters!["direction"];
-        double distance = double.parse(event.parameters!["pixels"]!);
-        if (direction != null) {
-          double offset = scroller.offset;
-          double moveToPosition = offset +
-              ((direction == 'up' || direction == 'left')
-                  ? -distance
-                  : distance);
-          scroller.animateTo(moveToPosition,
+      // check if pixels is null
+      pixels ??= 0;
+
+      // scroll up/left
+      if (pixels < 0) {
+
+        // already at the start of the list
+        if (controller.offset == 0) return;
+
+        // calculate pixels
+        pixels = controller.offset - pixels.abs();
+        if (pixels < 0) pixels = 0;
+
+        if (animate) {
+          controller.animateTo(pixels,
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeOut);
         }
+        else {
+          controller.jumpTo(pixels);
+        }
+        return;
       }
-    } catch (e) {
-      Log().error('onScroll Error: $e');
+
+      // scroll down/right
+      if (pixels > 0) {
+
+        // already at the end of the list
+        if (controller.position.maxScrollExtent == controller.offset) return;
+
+        // calculate pixels
+        pixels = controller.offset + pixels;
+        if (pixels > controller.position.maxScrollExtent) pixels = controller.position.maxScrollExtent;
+
+        if (animate) {
+          controller.animateTo(pixels,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut);
+        }
+        else {
+          controller.jumpTo(pixels);
+        }
+        return;
+      }
+    }
+    catch (e) {
+      Log().exception(e, caller: 'menu.View');
     }
   }
 
@@ -97,12 +118,12 @@ class MenuViewState extends WidgetState<MenuView> implements IEventScrolling {
       tilesList.add(item.getView());
     }
 
-    double menuColPadding = FmlEngine.isMobile ? 0.0 : 25.0;
-    double tilePadding = FmlEngine.isMobile ? 5.0 : 0;
+    double menuColPadding = isMobile ? 0.0 : 25.0;
+    double tilePadding = isMobile ? 5.0 : 0;
 
     int tilesPerRow =
         ((/*MediaQuery.of(context).size.*/ width - (menuColPadding * 2)) ~/
-            (FmlEngine.isMobile
+            (isMobile
                 ? (170 + (tilePadding * 2))
                 : (270 + (tilePadding * 2))));
     int tileCountForRow = 0;
@@ -150,6 +171,7 @@ class MenuViewState extends WidgetState<MenuView> implements IEventScrolling {
 
   @override
   Widget build(BuildContext context) {
+
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 

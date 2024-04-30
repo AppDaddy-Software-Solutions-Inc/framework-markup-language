@@ -2,13 +2,13 @@
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/editor/editor_view.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class EditorModel extends DecoratedWidgetModel {
+class EditorModel extends ViewableModel {
   // theme
   StringObservable? _theme;
   set theme(dynamic v) {
@@ -59,7 +59,7 @@ class EditorModel extends DecoratedWidgetModel {
     if (language != null) this.language = language;
   }
 
-  static EditorModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static EditorModel? fromXml(Model parent, XmlElement xml) {
     EditorModel? model;
     try {
       model = EditorModel(parent, Xml.get(node: xml, tag: 'id'));

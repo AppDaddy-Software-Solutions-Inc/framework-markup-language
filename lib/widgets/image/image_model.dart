@@ -1,14 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/image/image_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class ImageModel extends DecoratedWidgetModel {
+class ImageModel extends ViewableModel {
   // url
   StringObservable? _url;
   set url(dynamic v) {
@@ -19,7 +19,6 @@ class ImageModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get url => _url?.get();
 
   // default
@@ -32,7 +31,6 @@ class ImageModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get defaultvalue => _default?.get();
 
   // fit
@@ -45,7 +43,6 @@ class ImageModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get fit => _fit?.get();
 
   // filter
@@ -58,21 +55,7 @@ class ImageModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get filter => _filter?.get();
-
-  // flip
-  StringObservable? _flip;
-  set flip(dynamic v) {
-    if (_flip != null) {
-      _flip!.set(v);
-    } else if (v != null) {
-      _flip = StringObservable(Binding.toKey(id, 'flip'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get flip => _flip?.get();
 
   // interactive
   BooleanObservable? _interactive;
@@ -84,10 +67,9 @@ class ImageModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get interactive => _interactive?.get() ?? false;
 
-  ImageModel(WidgetModel super.parent, super.id,
+  ImageModel(Model super.parent, super.id,
       {dynamic url,
       dynamic defaultvalue,
       dynamic width,
@@ -109,7 +91,7 @@ class ImageModel extends DecoratedWidgetModel {
     this.interactive = interactive;
   }
 
-  static ImageModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static ImageModel? fromXml(Model parent, XmlElement xml) {
     ImageModel? model;
     try {
       model = ImageModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -130,10 +112,8 @@ class ImageModel extends DecoratedWidgetModel {
     // properties
     url = Xml.get(node: xml, tag: 'url');
     defaultvalue = Xml.get(node: xml, tag: 'default');
-    opacity = Xml.get(node: xml, tag: 'opacity');
     fit = Xml.get(node: xml, tag: 'fit');
     filter = Xml.get(node: xml, tag: 'filter');
-    flip = Xml.get(node: xml, tag: 'flip');
     interactive = Xml.get(node: xml, tag: 'interactive');
   }
 

@@ -5,13 +5,13 @@ import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/alarm/alarm_model.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/observable/observable_barrel.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class FormFieldModel extends DecoratedWidgetModel {
+class FormFieldModel extends ViewableModel {
   // override this getter and setter in your base class
   set value(dynamic v) {}
   dynamic get value => null;
@@ -27,7 +27,6 @@ class FormFieldModel extends DecoratedWidgetModel {
       }
     }
   }
-
   dynamic get defaultValue => _defaultValue?.get();
 
   /// metadata to save with the post
@@ -52,7 +51,6 @@ class FormFieldModel extends DecoratedWidgetModel {
           BooleanObservable(Binding.toKey(id, 'touched'), v, scope: scope);
     }
   }
-
   bool get touched => _touched?.get() ?? false;
 
   // form field name override
@@ -69,8 +67,10 @@ class FormFieldModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get dirty => _dirty?.get() ?? false;
+
+  /// registers a listener to the diry observable
+  void registerDirtyListener(OnChangeCallback callback) => _dirty?.registerListener(callback);
 
   /// mandatory will dictate if the field will stop the form from `complete()`ing if not filled out.
   BooleanObservable? _mandatory;
@@ -82,7 +82,6 @@ class FormFieldModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool? get mandatory => _mandatory?.get();
 
   /// Post tells the form whether or not to include the field in the posting body. If post is null, visible determines post.
@@ -95,7 +94,6 @@ class FormFieldModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool? get post => _post?.get();
 
   /// GeoCode for each [iFormField] which is set on answer
@@ -111,7 +109,6 @@ class FormFieldModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get editable => _editable?.get() ?? true;
 
   // onchange event
@@ -124,7 +121,6 @@ class FormFieldModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
-
   String? get onchange => _onchange?.get();
 
   /// [Alarm]s based on validation checks
@@ -140,21 +136,29 @@ class FormFieldModel extends DecoratedWidgetModel {
           BooleanObservable(Binding.toKey(id, 'alarming'), v, scope: scope);
     }
   }
-
   bool get alarming => _alarming?.get() ?? false;
 
+  // active alarm text
+  StringObservable? _alarm;
+  set alarm(dynamic v) {
+    if (_alarm != null) {
+      _alarm!.set(v);
+    } else {
+      _alarm = StringObservable(Binding.toKey(id, 'alarm'), v,
+          scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  String? get alarm {
+    if (isNullOrEmpty(value) && !touched) return null;
+    return _alarm?.get();
+  }
+  
   /// returns active alarm
   AlarmModel? getActiveAlarm() {
     for (var alarm in _alarms) {
       if (alarm.alarming) return alarm;
     }
     return null;
-  }
-
-  /// alarm text
-  String? get alarmText {
-    if (isNullOrEmpty(value) && !touched) return null;
-    return getActiveAlarm()?.text;
   }
 
   /// The string of events that will be executed when focus is lost.
@@ -244,7 +248,7 @@ class FormFieldModel extends DecoratedWidgetModel {
       }
 
       // register a listener to the alarm
-      alarm.alarmingObservable?.registerListener(_onAlarmChange);
+      alarm.onChange(_onAlarmChange);
 
       // add alarm to children
       children ??= [];
@@ -257,7 +261,9 @@ class FormFieldModel extends DecoratedWidgetModel {
   }
 
   void _onAlarmChange(_) {
-    alarming = (getActiveAlarm() != null);
+    var active = getActiveAlarm();
+    alarming = (active != null);
+    alarm = active?.text;
     notifyListeners("alarming", alarming);
   }
 

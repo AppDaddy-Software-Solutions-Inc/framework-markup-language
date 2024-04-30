@@ -32,7 +32,6 @@ abstract class IFormField {
   // field has been edited
   bool? get dirty;
   set dirty(dynamic b);
-  BooleanObservable? get dirtyObservable;
 
   // fielf is editable
   bool? get editable;
@@ -68,4 +67,7 @@ abstract class IFormField {
 
   // field name overrides id if specified
   String? field;
+
+  // register a listener to the dirty
+  void registerDirtyListener(OnChangeCallback callback);
 }

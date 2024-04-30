@@ -1,8 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -14,13 +15,13 @@ class StackModel extends BoxModel {
   @override
   String? get layout => "stack";
 
-  StackModel(WidgetModel super.parent, super.id);
+  StackModel(Model super.parent, super.id, {super.scope, super.data});
 
-  static StackModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static StackModel? fromXml(Model parent, XmlElement xml, {Scope? scope, dynamic data}) {
     StackModel? model;
     try {
       // build model
-      model = StackModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = StackModel(parent, Xml.get(node: xml, tag: 'id'), scope: scope, data: data);
       model.deserialize(xml);
     } catch (e) {
       Log().exception(e, caller: 'stack.Model');
@@ -34,7 +35,7 @@ class StackModel extends BoxModel {
     // sort children by depth
     if (children != null) {
       children!.sort((a, b) {
-        if (a is ViewableWidgetMixin && b is ViewableWidgetMixin) {
+        if (a is ViewableMixin && b is ViewableMixin) {
           if (a.depth != null && b.depth != null) {
             return a.depth?.compareTo(b.depth!) ?? 0;
           }
@@ -43,12 +44,5 @@ class StackModel extends BoxModel {
       });
     }
     return super.inflate();
-  }
-
-  /// Deserializes the FML template elements, attributes and children
-  @override
-  void deserialize(XmlElement xml) {
-    // deserialize
-    super.deserialize(xml);
   }
 }

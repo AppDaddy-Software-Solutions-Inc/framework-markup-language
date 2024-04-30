@@ -3,7 +3,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:xml/xml.dart';
 import 'gps_listener_interface.dart';
@@ -16,7 +16,7 @@ class GpsModel extends DataSourceModel implements IDataSource, IGpsListener {
 
   GpsModel(super.parent, super.id);
 
-  static GpsModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static GpsModel? fromXml(Model parent, XmlElement xml) {
     GpsModel? model;
     try {
       model = GpsModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -57,7 +57,7 @@ class GpsModel extends DataSourceModel implements IDataSource, IGpsListener {
   @override
   onGpsData({Payload? payload}) {
     // enabled?
-    if (enabled == false) return;
+    if (!enabled) return;
 
     busy = false;
 

@@ -6,7 +6,7 @@ import 'package:fml/datasources/base/model.dart';
 import 'package:fml/datasources/detectors/detector_interface.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/file/file.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -17,7 +17,7 @@ class FileModel extends DataSourceModel implements IDataSource {
 
   FileModel(super.parent, super.id);
 
-  static FileModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static FileModel? fromXml(Model parent, XmlElement xml) {
     FileModel? model;
     try {
       model = FileModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -63,10 +63,16 @@ class FileModel extends DataSourceModel implements IDataSource {
     map['extension'] = ".${file.name}".split('.').last;
     map['size'] = file.size;
 
-    if (WidgetModel.isBound(this, "$id.data.text")) {
+    if (Model.isBound(this, "$id.data.text")) {
       await file.read();
       map['text'] = "";
-      if (file.bytes != null) map["text"] = utf8.decode(file.bytes!);
+      if (file.bytes != null) {
+        try {
+          map["text"] = utf8.decode(file.bytes!);
+        } catch (e) {
+          map["text"] = "";
+        }
+      }
     }
 
     // add map

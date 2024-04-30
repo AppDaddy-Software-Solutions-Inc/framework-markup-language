@@ -1,14 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class NoDataModel extends BoxModel {
-  NoDataModel(WidgetModel super.parent, super.id);
+  NoDataModel(Model super.parent, super.id);
 
-  static NoDataModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static NoDataModel? fromXml(Model parent, XmlElement xml) {
     NoDataModel? model;
     try {
       model = NoDataModel(parent, Xml.get(node: xml, tag: 'id'));

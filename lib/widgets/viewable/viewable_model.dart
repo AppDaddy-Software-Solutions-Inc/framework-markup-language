@@ -16,10 +16,15 @@ import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'dart:math';
 
-mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
+class ViewableModel extends Model with ViewableMixin {
+
+  ViewableModel(super.parent, super.id, {super.scope, super.data});
+}
+
+mixin ViewableMixin on Model implements IDragDrop {
 
   // model holding the tooltip
   TooltipModel? tipModel;
@@ -28,11 +33,11 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
   List<AnimationModel>? animations;
 
   // viewable children
-  List<ViewableWidgetMixin> get viewableChildren {
-    List<ViewableWidgetMixin> list = [];
+  List<ViewableMixin> get viewableChildren {
+    List<ViewableMixin> list = [];
     if (children != null) {
       for (var child in children!) {
-        if (child is ViewableWidgetMixin) list.add(child);
+        if (child is ViewableMixin) list.add(child);
       }
     }
     return list;
@@ -88,7 +93,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
       _width!.set(v, notify: false);
     }
   }
-
   double? get width => _width?.get();
 
   // this routine enforces the min and max width
@@ -133,7 +137,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
       _height!.set(v, notify: false);
     }
   }
-
   double? get height => _height?.get();
 
   // this routine enforces the min and max height
@@ -175,7 +178,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   int? get flex => _flex?.get();
 
   // this routine set the width silently and resets the
@@ -489,8 +491,8 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
   /// the first system non-null minWidth value
   double get myMinWidth {
     if (system.minWidth != null) return system.minWidth!;
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMinWidth;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMinWidth;
     }
     return 0;
   }
@@ -503,8 +505,8 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     }
     if (width != null) return width!;
     if (maxWidth != null) return maxWidth!;
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMaxWidth;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMaxWidth;
     }
     return 0;
   }
@@ -515,8 +517,8 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     if (system.minHeight != null && system.minHeight != double.infinity) {
       return system.minHeight!;
     }
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMinHeight;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMinHeight;
     }
     return 0;
   }
@@ -529,8 +531,8 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     }
     if (height != null) return height!;
     if (maxHeight != null) return maxHeight!;
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMaxHeight;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMaxHeight;
     }
     return 0;
   }
@@ -555,8 +557,8 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     if (system.maxWidth != null && system.maxWidth != double.infinity) {
       return system.maxWidth!;
     }
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMaxWidth;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMaxWidth;
     }
     if (maxWidth == null || maxWidth == double.infinity) {
       maxWidth = System().screenwidth.toDouble();
@@ -570,15 +572,15 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     if (system.maxHeight != null && maxHeight != double.infinity) {
       return system.maxHeight!;
     }
-    if (parent is ViewableWidgetMixin) {
-      return (parent as ViewableWidgetMixin).myMaxHeight;
+    if (parent is ViewableMixin) {
+      return (parent as ViewableMixin).myMaxHeight;
     }
     if (maxHeight == null || maxHeight == double.infinity) {
       return System().screenheight.toDouble();
     }
     return maxHeight!;
   }
-  
+
   // Depth - used in stack
   DoubleObservable? _depth;
 
@@ -620,7 +622,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     // The observable is only created in deserialize if its bound
     if (_viewWidthObservable != null) _viewWidthObservable!.set(v);
   }
-
   double? get viewWidth => _viewWidth;
 
   // view height
@@ -634,7 +635,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     // The observable is only created in deserialize if its bound
     if (_viewHeightObservable != null) _viewHeightObservable!.set(v);
   }
-
   double? get viewHeight => _viewHeight;
 
   // view global X position
@@ -770,11 +770,9 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
           DoubleObservable(Binding.toKey(id, 'visiblewidth'), v, scope: scope);
     }
   }
-
   double? get visibleWidth => _visibleWidth?.get();
 
   set margins(dynamic v) {
-    // build PADDINGS array
     if (v is String) {
       var s = v.split(',');
 
@@ -822,7 +820,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get marginTop => _marginTop?.get();
 
   // margins right
@@ -835,7 +832,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get marginRight => _marginRight?.get();
 
   // margins bottom
@@ -848,7 +844,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get marginBottom => _marginBottom?.get();
 
   // margins left
@@ -861,99 +856,7 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get marginLeft => _marginLeft?.get();
-
-  set padding(dynamic v) {
-    // build PADDINGS array
-    if (v is String) {
-      var s = v.split(',');
-
-      // all
-      if (s.length == 1) {
-        paddingTop = s[0];
-        paddingRight = s[0];
-        paddingBottom = s[0];
-        paddingLeft = s[0];
-      }
-
-      // top/bottom
-      else if (s.length == 2) {
-        paddingTop = s[0];
-        paddingRight = s[1];
-        paddingBottom = s[0];
-        paddingLeft = s[1];
-      }
-
-      // top/bottom
-      else if (s.length == 3) {
-        paddingTop = s[0];
-        paddingRight = s[1];
-        paddingBottom = s[2];
-        paddingLeft = s[1];
-      }
-
-      // top/bottom
-      else if (s.length > 3) {
-        paddingTop = s[0];
-        paddingRight = s[1];
-        paddingBottom = s[2];
-        paddingLeft = s[3];
-      }
-    }
-  }
-
-  // paddings top
-  DoubleObservable? _paddingTop;
-  set paddingTop(dynamic v) {
-    if (_paddingTop != null) {
-      _paddingTop!.set(v);
-    } else if (v != null) {
-      _paddingTop = DoubleObservable(Binding.toKey(id, 'paddingtop'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double? get paddingTop => _paddingTop?.get();
-
-  // paddings right
-  DoubleObservable? _paddingRight;
-  set paddingRight(dynamic v) {
-    if (_paddingRight != null) {
-      _paddingRight!.set(v);
-    } else if (v != null) {
-      _paddingRight = DoubleObservable(Binding.toKey(id, 'paddingright'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double? get paddingRight => _paddingRight?.get();
-
-  // paddings bottom
-  DoubleObservable? _paddingBottom;
-  set paddingBottom(dynamic v) {
-    if (_paddingBottom != null) {
-      _paddingBottom!.set(v);
-    } else if (v != null) {
-      _paddingBottom = DoubleObservable(Binding.toKey(id, 'paddingbottom'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double? get paddingBottom => _paddingBottom?.get();
-
-  // paddings left
-  DoubleObservable? _paddingLeft;
-  set paddingLeft(dynamic v) {
-    if (_paddingLeft != null) {
-      _paddingLeft!.set(v);
-    } else if (v != null) {
-      _paddingLeft = DoubleObservable(Binding.toKey(id, 'paddingleft'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double? get paddingLeft => _paddingLeft?.get();
 
   // visible
   BooleanObservable? _visible;
@@ -1078,8 +981,82 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
           BooleanObservable(Binding.toKey(id, 'candrop'), v, scope: scope);
     }
   }
-
   bool? get canDrop => canDropObservable?.get();
+
+  set _colors(dynamic v) {
+    // build colors array
+    if (v is String) {
+      if (!Observable.isEvalSignature(v)) {
+        var s = v.split(',');
+        if (s.isNotEmpty) color = s[0].trim();
+        if (s.length > 1) color2 = s[1].trim();
+        if (s.length > 2) color3 = s[2].trim();
+        if (s.length > 3) color4 = s[3].trim();
+      } else {
+        color = v;
+      }
+    }
+  }
+
+  // color
+  ColorObservable? _color;
+  set color(dynamic v) {
+    if (_color != null) {
+      _color!.set(v);
+    } else if (v != null) {
+      _color = ColorObservable(Binding.toKey(id, 'color'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get color => _color?.get();
+
+  // color2
+  ColorObservable? _color2;
+  set color2(dynamic v) {
+    if (_color2 != null) {
+      _color2!.set(v);
+    } else if (v != null) {
+      _color2 = ColorObservable(Binding.toKey(id, 'color2'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get color2 => _color2?.get();
+
+  // color3
+  ColorObservable? _color3;
+  set color3(dynamic v) {
+    if (_color3 != null) {
+      _color3!.set(v);
+    } else if (v != null) {
+      _color3 = ColorObservable(Binding.toKey(id, 'color3'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get color3 => _color3?.get();
+
+  // color4
+  ColorObservable? _color4;
+  set color4(dynamic v) {
+    if (_color4 != null) {
+      _color4!.set(v);
+    } else if (v != null) {
+      _color4 = ColorObservable(Binding.toKey(id, 'color4'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get color4 => _color4?.get();
+
+  /// The opacity of the widget
+  DoubleObservable? _opacity;
+  set opacity(dynamic v) {
+    if (_opacity != null) {
+      _opacity!.set(v);
+    } else if (v != null) {
+      _opacity = DoubleObservable(Binding.toKey(id, 'opacity'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get opacity => _opacity?.get();
 
   // rotation
   DoubleObservable? _rotation;
@@ -1091,8 +1068,19 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get rotation => _rotation?.get();
+
+  // flip
+  StringObservable? _flip;
+  set flip(dynamic v) {
+    if (_flip != null) {
+      _flip!.set(v);
+    } else if (v != null) {
+      _flip = StringObservable(Binding.toKey(id, 'flip'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get flip => _flip?.get();
 
   /// Deserializes the FML template elements, attributes and children
   @override
@@ -1119,7 +1107,14 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     flexfit = Xml.get(node: xml, tag: 'flexfit');
     onscreen = Xml.get(node: xml, tag: 'onscreen');
     offscreen = Xml.get(node: xml, tag: 'offscreen');
-    rotation = Xml.get(node: xml, tag: 'rotation');
+
+    // _colors array - sets color1, color2, color3 and colo4
+    _colors = Xml.get(node: xml, tag: 'color');
+
+    // visual transforms
+    opacity = Xml.get(node: xml, tag: 'opacity');
+    rotation = Xml.get(node: xml, tag: 'rotate') ?? Xml.get(node: xml, tag: 'rotation');
+    flip = Xml.get(node: xml, tag: 'flip');
 
     // drag
     draggable = Xml.get(node: xml, tag: 'draggable');
@@ -1141,16 +1136,16 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     // we only create the observable if its bound to in the template
     // otherwise we just store the value in a simple double variable
     String? key;
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewwidth'))) {
+    if (Model.isBound(this, key = Binding.toKey(id, 'viewwidth'))) {
       _viewWidthObservable = DoubleObservable(key, null, scope: scope);
     }
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewheight'))) {
+    if (Model.isBound(this, key = Binding.toKey(id, 'viewheight'))) {
       _viewHeightObservable = DoubleObservable(key, null, scope: scope);
     }
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewx'))) {
+    if (Model.isBound(this, key = Binding.toKey(id, 'viewx'))) {
       _viewXObservable = DoubleObservable(key, null, scope: scope);
     }
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewy'))) {
+    if (Model.isBound(this, key = Binding.toKey(id, 'viewy'))) {
       _viewYObservable = DoubleObservable(key, null, scope: scope);
     }
 
@@ -1159,22 +1154,15 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     _addVisibilityDetector = visible &&
         (!isNullOrEmpty(onscreen) ||
             !isNullOrEmpty(offscreen) ||
-            WidgetModel.isBound(this, Binding.toKey(id, 'visiblearea')) ||
-            WidgetModel.isBound(this, Binding.toKey(id, 'visibleheight')) ||
-            WidgetModel.isBound(this, Binding.toKey(id, 'visiblewidth')));
+            Model.isBound(this, Binding.toKey(id, 'visiblearea')) ||
+            Model.isBound(this, Binding.toKey(id, 'visibleheight')) ||
+            Model.isBound(this, Binding.toKey(id, 'visiblewidth')));
 
     // set margins. Can be comma separated top,left,bottom,right
     // space around the widget
     var margins = Xml.attribute(node: xml, tag: 'margin') ??
         Xml.attribute(node: xml, tag: 'margins');
     this.margins = margins;
-
-    // set padding. Can be comma separated top,left,bottom,right
-    // space around the widget's children
-    var padding = Xml.attribute(node: xml, tag: 'pad') ??
-        Xml.attribute(node: xml, tag: 'padding') ??
-        Xml.attribute(node: xml, tag: 'padd');
-    this.padding = padding;
 
     // tooltip
     var tooltip = Xml.attribute(node: xml, tag: 'tip') ??
@@ -1194,7 +1182,7 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
       eText.attributes.add(XmlAttribute(XmlName("value"), tooltip));
       eTip.children.add(eText);
 
-      var model = WidgetModel.fromXml(this, eTip);
+      var model = Model.fromXml(this, eTip);
       tipModel = (model is TooltipModel) ? model : null;
     }
 
@@ -1282,7 +1270,9 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     }
 
     // wrap in tooltip?
-    if (tipModel != null) view = TooltipView(tipModel!, view);
+    if (tipModel != null) {
+      view = TooltipView(tipModel!, view);
+    }
 
     // droppable?
     if (droppable && view is! DroppableView) {
@@ -1292,12 +1282,6 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     // draggable?
     if (draggable && view is! DraggableView) {
       view = DraggableView(this, view);
-    }
-
-    // rotation
-    if (rotation != null) {
-      view = RotationTransition(
-          turns: AlwaysStoppedAnimation(rotation! / 360), child: view);
     }
 
     // wrap animations.
@@ -1318,27 +1302,39 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
     for (var model in viewableChildren) {
       if (model is! ModalModel) {
         var view = model.getView();
-        if (view != null) views.add(view);
+        views.add(view);
       }
     }
     return views;
   }
 
   void layoutComplete(Size size, Offset offset) {
+
+    // if the view has changed size or position
+    // we need to redraw it
+    needsLayout = false;
+
     // set the view width, height and position
     if (size.width != viewWidth ||
         size.height != viewHeight ||
         offset.dx != viewX ||
         offset.dy != viewY) {
-      viewWidth = size.width;
+
+      // set size
+      viewWidth  = size.width;
       viewHeight = size.height;
+
+      // set position
       viewX = offset.dx;
       viewY = offset.dy;
+
+      // mark as needing layout
+      needsLayout = true;
     }
   }
 
   // animate the model
-  static bool animate(ViewableWidgetMixin model, String caller,
+  static bool animate(ViewableMixin model, String caller,
       String propertyOrFunction, List<dynamic> arguments) {
     var animations = model.animations;
     if (animations != null) {
@@ -1375,7 +1371,7 @@ mixin ViewableWidgetMixin on WidgetModel implements IDragDrop {
   void onDrag() async => await DragDrop.onDrag(this);
 
   // get the view
-  Widget? getView() => throw ("getView() Not Implemented");
+  Widget getView() => throw ("getView() Not Implemented");
 }
 
 class Constraints {

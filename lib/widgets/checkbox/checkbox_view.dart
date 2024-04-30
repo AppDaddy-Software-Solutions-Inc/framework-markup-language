@@ -1,16 +1,15 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/helpers/string.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/checkbox/checkbox_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 
 /// Checkbox View
 ///
 /// Builds the Checkbox View from [Model] properties
-class CheckboxView extends StatefulWidget implements IWidgetView {
+class CheckboxView extends StatefulWidget implements ViewableWidgetView {
   @override
   final CheckboxModel model;
   CheckboxView(this.model) : super(key: ObjectKey(model));
@@ -19,7 +18,7 @@ class CheckboxView extends StatefulWidget implements IWidgetView {
   State<CheckboxView> createState() => _CheckboxViewState();
 }
 
-class _CheckboxViewState extends WidgetState<CheckboxView> {
+class _CheckboxViewState extends ViewableWidgetState<CheckboxView> {
   void onChangeOption(OptionModel? option) async {
     // stop model change notifications
     widget.model.removeListener(this);
@@ -43,9 +42,9 @@ class _CheckboxViewState extends WidgetState<CheckboxView> {
   }
 
   Widget addAlarmText(Widget view) {
-    if (isNullOrEmpty(widget.model.alarmText)) return view;
+    if (isNullOrEmpty(widget.model.alarm)) return view;
 
-    Widget? text = Text("${widget.model.alarmText}",
+    Widget? text = Text("${widget.model.alarm}",
         style: TextStyle(color: Theme.of(context).colorScheme.error));
 
     view = Column(
@@ -169,6 +168,9 @@ class _CheckboxViewState extends WidgetState<CheckboxView> {
 
     // add margins
     view = addMargins(view);
+
+    // apply visual transforms
+    view = applyTransforms(view);
 
     // apply constraints
     view = applyConstraints(view, widget.model.constraints);

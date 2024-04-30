@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/option/tag_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -32,23 +32,7 @@ class OptionModel extends RowModel {
       _label = StringObservable(null, v, scope: scope);
     }
   }
-
-  String? get label => _label?.get() ?? labelInner ?? value;
-
-  // list of labels from child text widgets
-  String? get labelInner {
-    String? label;
-    List<TextModel> models =
-        findDescendantsOfExactType(TextModel).cast<TextModel>();
-    for (var model in models) {
-      var text = model.value;
-      if (!isNullOrEmpty(text)) {
-        label ??= "";
-        label = "$label $text";
-      }
-    }
-    return label;
-  }
+  String? get label => _label?.get() ?? value;
 
   // value
   StringObservable? _value;
@@ -59,30 +43,12 @@ class OptionModel extends RowModel {
       _value = StringObservable(null, v, scope: scope);
     }
   }
-
   String? get value => _value?.get();
 
+
   // string to search on
-  List<String> get tags {
-    List<String> list = [];
-
-    // child search tags specified
-    List<TagModel> tags = findChildrenOfExactType(TagModel).cast<TagModel>();
-    if (tags.isNotEmpty) {
-      for (var tag in tags) {
-        if (!isNullOrEmpty(tag.value)) list.add(tag.value!);
-      }
-      return list;
-    }
-
-    // search on label
-    if (!isNullOrEmpty(label)) {
-      list.add(label!);
-      return list;
-    }
-
-    return list;
-  }
+  final List<TagModel> _tags = [];
+  List<TagModel> get tags => _tags.toList();
 
   OptionModel(super.parent, super.id, {dynamic data, String? value})
       : super(scope: Scope(parent: parent.scope)) {
@@ -90,7 +56,7 @@ class OptionModel extends RowModel {
     if (value != null) this.value = value;
   }
 
-  static OptionModel? fromXml(WidgetModel parent, XmlElement? xml,
+  static OptionModel? fromXml(Model parent, XmlElement? xml,
       {dynamic data}) {
     OptionModel? model;
     try {
@@ -136,8 +102,33 @@ class OptionModel extends RowModel {
     if (viewableChildren.isEmpty)
     {
       children ??= [];
-      children!.add(TextModel(this,null,value: value));
+      children!.add(TextModel(this,null,value: label ?? value));
     }
+
+    // assign tags
+    _tags.addAll(findChildrenOfExactType(TagModel).cast<TagModel>());
+
+    // remove child tags
+    if (_tags.isNotEmpty) {
+      removeChildrenOfExactType(TagModel);
+    }
+
+    // no tags specified? default is label
+    if (_tags.isEmpty) {
+      _tags.add(TagModel(this,null,value: label ?? value));
+    }
+  }
+
+  @override
+  void dispose() {
+
+    // dispose of tags
+    for (var tag in _tags) {
+      tag.dispose();
+    }
+
+    // dispose
+    super.dispose();
   }
 
   Widget? cachedView;

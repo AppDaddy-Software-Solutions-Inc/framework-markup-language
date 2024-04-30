@@ -1,10 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/scroller/scroller_view.dart';
@@ -101,9 +102,9 @@ class ScrollerModel extends BoxModel implements IScrollable {
 
   bool get allowDrag => _allowDrag?.get() ?? false;
 
-  ScrollerModel(WidgetModel super.parent, super.id);
+  ScrollerModel(Model super.parent, super.id);
 
-  static ScrollerModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static ScrollerModel? fromXml(Model parent, XmlElement xml) {
     ScrollerModel? model;
     try {
       // build model
@@ -156,36 +157,6 @@ class ScrollerModel extends BoxModel implements IScrollable {
   }
 
   @override
-  void scrollUp(int pixels) {
-    ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
-    if (view == null) return;
-
-    // already at top
-    if (view.controller.offset == 0) return;
-
-    var to = view.controller.offset - pixels;
-    to = (to < 0) ? 0 : to;
-
-    view.controller.jumpTo(to);
-  }
-
-  @override
-  void scrollDown(int pixels) {
-    ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
-    if (view == null) return;
-
-    if (view.controller.position.pixels >=
-        view.controller.position.maxScrollExtent) return;
-
-    var to = view.controller.offset + pixels;
-    to = (to > view.controller.position.maxScrollExtent)
-        ? view.controller.position.maxScrollExtent
-        : to;
-
-    view.controller.jumpTo(to);
-  }
-
-  @override
   Offset? positionOf() {
     ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
     return view?.positionOf();
@@ -195,6 +166,76 @@ class ScrollerModel extends BoxModel implements IScrollable {
   Size? sizeOf() {
     ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
     return view?.sizeOf();
+  }
+
+  /// scroll +/- pixels or to an item
+  @override
+  void scroll(double? pixels, {bool animate = false}) {
+
+    // get the view
+    ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
+
+    // scroll specified number of pixels
+    // from current position
+    view?.scroll(pixels, animate: animate);
+  }
+
+  /// scroll to specified item by id and value
+  @override
+  void scrollTo(String? id, String? value, {bool animate = false}) {
+
+    if (id == null) return;
+
+    // get the view
+    ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
+
+    // scroll to top
+    if (id.trim().toLowerCase() == 'top' && isNullOrEmpty(value)) {
+      view?.scrollTo(0, animate: false);
+      return;
+    }
+
+    // scroll to bottom
+    if (id.trim().toLowerCase() == 'bottom' && isNullOrEmpty(value)) {
+      view?.scrollTo(double.maxFinite, animate: false);
+      return;
+    }
+
+    // scroll to specific pixel position
+    if (isNumeric(id) && isNullOrEmpty(value)) {
+      view?.scrollTo(toDouble(id), animate: false);
+    }
+
+    // find the first child with the specified
+    // id and matching value
+    var child = descendants?.toList().firstWhereOrNull((child) => child.id == id && child.value == (value ?? child.value));
+    if (child != null) {
+      view?.scrollToContext(child.context, animate: animate);
+    }
+  }
+
+  @override
+  Future<bool?> execute(String caller,
+      String propertyOrFunction,
+      List<dynamic> arguments) async {
+
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function) {
+
+    // scroll +/- pixels
+      case "scroll":
+        scroll(toDouble(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? true);
+        return true;
+
+    // scroll to item by id
+      case "scrollto":
+        scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 2)) ?? true);
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   @override

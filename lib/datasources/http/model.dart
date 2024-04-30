@@ -4,15 +4,19 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/http/http.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/hive/post.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
+
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 enum Methods { get, put, post, patch, delete }
 
@@ -22,8 +26,8 @@ class HttpModel extends DataSourceModel implements IDataSource {
   // headers
   Map<String, String>? headers;
 
-  bool? foreground = false;
-  bool? background = false;
+  bool canRunInForeground = true;
+  bool canRunInBackground = false;
 
   // refresh
   BooleanObservable? _refresh;
@@ -97,7 +101,7 @@ class HttpModel extends DataSourceModel implements IDataSource {
 
   HttpModel(super.parent, super.id);
 
-  static HttpModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static HttpModel? fromXml(Model parent, XmlElement xml) {
     HttpModel? model;
     try {
       model = HttpModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -120,8 +124,8 @@ class HttpModel extends DataSourceModel implements IDataSource {
     method = Xml.attribute(node: xml, tag: 'method');
     timeout = Xml.get(node: xml, tag: 'timeout');
     url = Xml.get(node: xml, tag: 'url') ?? Xml.get(node: xml, tag: 'URL');
-    foreground = toBool(Xml.get(node: xml, tag: 'foreground'));
-    background = toBool(Xml.get(node: xml, tag: 'background'));
+    canRunInForeground = toBool(Xml.get(node: xml, tag: 'foreground')) ?? true;
+    canRunInBackground = toBool(Xml.get(node: xml, tag: 'background')) ?? false;
 
     // build headers
     var headers = Xml.getChildElements(node: xml, tag: 'HEADER');
@@ -139,14 +143,14 @@ class HttpModel extends DataSourceModel implements IDataSource {
   }
 
   onUrlChange(Observable observable) {
-    if ((initialized == true) && (autoexecute == true) && (enabled != false)) {
+    if (initialized && enabled && autoexecute == true) {
       start(refresh: refresh);
     }
   }
 
   @override
   Future<bool> start({bool refresh = false, String? key}) async {
-    if (enabled == false) return false;
+    if (!enabled) return false;
 
     busy = true;
     await _start(refresh, key);
@@ -173,13 +177,13 @@ class HttpModel extends DataSourceModel implements IDataSource {
 
     // determine posting type
     Types type = Types.foreground;
-    if (foreground == true) type = Types.foreground;
-    if (background == true) type = Types.background;
-    if (foreground == true && background == true) type = Types.either;
+    if (canRunInForeground) type = Types.foreground;
+    if (canRunInBackground) type = Types.background;
+    if (canRunInForeground && canRunInBackground) type = Types.either;
 
     // web is always in the foreground
-    if (FmlEngine.isWeb) type = Types.foreground;
-    if ((type == Types.either) && (System().connected)) type = Types.foreground;
+    if (isWeb) type = Types.foreground;
+    if (type == Types.either && System().connected) type = Types.foreground;
 
     // process in the background
     if (type == Types.background) {

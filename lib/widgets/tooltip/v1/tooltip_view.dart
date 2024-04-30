@@ -1,12 +1,15 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/fml.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/tooltip/v1/tooltip_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class TooltipView extends StatefulWidget implements IWidgetView {
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
+class TooltipView extends StatefulWidget implements ViewableWidgetView {
   final List<Widget> children = [];
   @override
   final TooltipModel model;
@@ -16,7 +19,7 @@ class TooltipView extends StatefulWidget implements IWidgetView {
   State<TooltipView> createState() => _TooltipViewState();
 }
 
-class _TooltipViewState extends WidgetState<TooltipView> {
+class _TooltipViewState extends ViewableWidgetState<TooltipView> {
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
@@ -33,7 +36,7 @@ class _TooltipViewState extends WidgetState<TooltipView> {
     }
 
     dynamic activator;
-    if (FmlEngine.isMobile) {
+    if (isMobile) {
       activator = child;
     } else {
       activator = MouseRegion(cursor: SystemMouseCursors.click, child: child);

@@ -7,7 +7,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/base/model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/socket/socket.dart';
 import 'package:fml/datasources/file/file.dart';
 import 'package:xml/xml.dart';
@@ -111,14 +111,14 @@ class SocketModel extends DataSourceModel
 
   String? get onmessage => _onmessage?.get();
 
-  SocketModel(WidgetModel parent, String? id) : super(parent, id) {
+  SocketModel(Model parent, String? id) : super(parent, id) {
     _received =
         IntegerObservable(Binding.toKey(id, 'received'), 0, scope: scope);
     _message =
         StringObservable(Binding.toKey(id, 'message'), null, scope: scope);
   }
 
-  static SocketModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static SocketModel? fromXml(Model parent, XmlElement xml) {
     SocketModel? model;
     try {
       model = SocketModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -322,7 +322,13 @@ class SocketModel extends DataSourceModel
           if (asBinary) {
             await socket?.send(bytes);
           } else {
-            await socket?.send(utf8.decode(bytes));
+            String? text;
+            try {
+              text = utf8.decode(bytes);
+              await socket?.send(text);
+            } catch (e) {
+              Log().exception(e);
+            }
           }
         }
       }
@@ -338,7 +344,7 @@ class SocketModel extends DataSourceModel
   @override
   onMessage(String message) {
     // enabled?
-    if (enabled == false) return;
+    if (!enabled) return;
 
     // increment the number of messages received
     _received.set(received + 1);
@@ -425,7 +431,7 @@ class SocketModel extends DataSourceModel
 
   onUrlChange(Observable observable) async {
     // reconnect if the url changes
-    if ((initialized == true) && (autoexecute == true) && (enabled != false)) {
+    if (initialized && enabled && autoexecute == true) {
       await socket?.reconnect(url);
     }
   }

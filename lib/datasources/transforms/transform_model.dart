@@ -1,11 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TransformModel extends WidgetModel {
+class TransformModel extends Model {
   /// enabled
   BooleanObservable? _enabled;
   set enabled(dynamic v) {
@@ -48,7 +48,7 @@ class TransformModel extends WidgetModel {
 
   TransformModel(super.parent, super.id);
 
-  static TransformModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TransformModel? fromXml(Model parent, XmlElement xml) {
     TransformModel? model;
     try {
       model = TransformModel(parent, Xml.get(node: xml, tag: 'id'));

@@ -5,21 +5,19 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/image/image_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/helpers/helpers.dart';
 
 // platform
-import 'package:fml/platform/platform.web.dart'
+import 'package:fml/platform/platform.vm.dart'
     if (dart.library.io) 'package:fml/platform/platform.vm.dart'
     if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 /// [IMAGE] view
-class ImageView extends StatefulWidget implements IWidgetView {
+class ImageView extends StatefulWidget implements ViewableWidgetView {
   @override
   final ImageModel model;
 
@@ -108,7 +106,7 @@ class ImageView extends StatefulWidget implements IWidgetView {
 
         /// blob image from camera or file picker
         case "blob":
-          image = FmlEngine.isWeb
+          image = isWeb
               ? Image.network(url!, fit: getFit(fit))
               : Image.file(File(url!), fit: getFit(fit));
           break;
@@ -238,54 +236,31 @@ class ImageView extends StatefulWidget implements IWidgetView {
   }
 }
 
-class _ImageViewState extends WidgetState<ImageView> {
+class _ImageViewState extends ViewableWidgetState<ImageView> {
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
-    String? url = widget.model.url;
-    double? opacity = widget.model.opacity;
-    double? width = widget.model.width;
-    double? height = widget.model.height;
-    String? fit = widget.model.fit;
-    String? filter = widget.model.filter;
-    Scope? scope = Scope.of(widget.model);
-
     // get the image
-    Widget view = ImageView.getImage(url, widget.model.animations == null,
+    Widget view = ImageView.getImage(widget.model.url, widget.model.animations == null,
             color: widget.model.color,
-            scope: scope,
+            scope: Scope.of(widget.model),
             defaultImage: widget.model.defaultvalue,
-            width: width,
-            height: height,
-            fit: fit,
-            filter: filter) ??
+            width: widget.model.width,
+            height: widget.model.height,
+            fit: widget.model.fit,
+            filter: widget.model.filter) ??
         Container();
 
-    // Flip
-    if (widget.model.flip != null) {
-      if (widget.model.flip!.toLowerCase() == 'vertical') {
-        view = Transform.scale(scaleY: -1, child: view);
-      }
-      if (widget.model.flip!.toLowerCase() == 'horizontal') {
-        view = Transform.scale(scaleX: -1, child: view);
-      }
-    }
-
-    // Alpha/Opacity
-    if (opacity != null) view = Opacity(opacity: opacity, child: view);
-
-    // Stack Children
-    if (widget.model.children != null && widget.model.children!.isNotEmpty) {
-      view = Stack(children: [view]);
-    }
-
-    // Interactive
-    if (widget.model.interactive == true) view = InteractiveViewer(child: view);
+    // interactive image??
+    if (widget.model.interactive) view = InteractiveViewer(child: view);
 
     // add margins
     view = addMargins(view);
+
+    // apply visual transforms
+    view = applyTransforms(view);
 
     // apply constraints
     view = applyConstraints(view, widget.model.constraints);

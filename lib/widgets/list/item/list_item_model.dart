@@ -7,7 +7,7 @@ import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/list/list_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -33,7 +33,6 @@ class ListItemModel extends BoxModel {
       }
     }
   }
-
   List<String>? get postbrokers => _postbrokers;
 
   // indicates if this item has been selected
@@ -192,7 +191,7 @@ class ListItemModel extends BoxModel {
 
   String? get onDelete => _onDelete?.get();
 
-  ListItemModel(WidgetModel super.parent, super.id,
+  ListItemModel(Model super.parent, super.id,
       {super.data,
       dynamic selected,
       dynamic onclick,
@@ -209,7 +208,7 @@ class ListItemModel extends BoxModel {
     this.onclick = onclick;
   }
 
-  static ListItemModel? fromXml(WidgetModel parent, XmlElement? xml,
+  static ListItemModel? fromXml(Model parent, XmlElement? xml,
       {dynamic data}) {
     ListItemModel? model;
     try {
@@ -236,12 +235,12 @@ class ListItemModel extends BoxModel {
     backgroundcolor = Xml.get(node: xml, tag: 'backgroundcolor');
     margin = Xml.get(node: xml, tag: 'margin');
     title = Xml.get(node: xml, tag: 'title');
-    postbrokers = Xml.attribute(node: xml, tag: 'postbroker');
     selected = Xml.get(node: xml, tag: 'selected');
     selectable = Xml.get(node: xml, tag: 'selectable');
     onclick = Xml.get(node: xml, tag: 'onclick');
     onInsert = Xml.get(node: xml, tag: 'onInsert');
     onDelete = Xml.get(node: xml, tag: 'onDelete');
+    postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
 
     // find all descendants
     List<dynamic>? fields = findDescendantsOfExactType(null);
@@ -253,9 +252,7 @@ class ListItemModel extends BoxModel {
         this.fields!.add(field);
 
         // Register Listener to Dirty Field
-        if (field.dirtyObservable != null) {
-          field.dirtyObservable!.registerListener(onDirtyListener);
-        }
+        field.registerDirtyListener(onDirtyListener);
       }
     }
   }

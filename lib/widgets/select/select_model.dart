@@ -7,7 +7,7 @@ import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/select/select_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -44,7 +44,7 @@ class SelectModel extends DecoratedInputModel implements IFormField {
     if (_value != null) {
       _value!.set(v);
     } else if (v != null ||
-        WidgetModel.isBound(this, Binding.toKey(id, 'value'))) {
+        Model.isBound(this, Binding.toKey(id, 'value'))) {
       _value = StringObservable(Binding.toKey(id, 'value'), v,
           scope: scope, listener: onValueChange);
     }
@@ -54,7 +54,7 @@ class SelectModel extends DecoratedInputModel implements IFormField {
   dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
   SelectModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     dynamic value,
     dynamic defaultValue,
@@ -70,7 +70,7 @@ class SelectModel extends DecoratedInputModel implements IFormField {
     if (defaultValue != null) this.defaultValue = defaultValue;
   }
 
-  static SelectModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static SelectModel? fromXml(Model parent, XmlElement xml) {
     SelectModel? model;
     try {
       model = SelectModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -128,7 +128,6 @@ class SelectModel extends DecoratedInputModel implements IFormField {
     // set values
     if (setValue) value = selectedOption?.value;
     data = selectedOption?.data;
-    label = selectedOption?.value;
   }
 
   void _buildOptions() {
@@ -204,7 +203,7 @@ class SelectModel extends DecoratedInputModel implements IFormField {
 
     // announce data for late binding
     var datasource = scope?.getDataSource(this.datasource);
-    if (datasource != null) onDataSourceSuccess(datasource, datasource.data);
+    if (datasource != null && datasource.initialized) onDataSourceSuccess(datasource, datasource.data);
   }
 
   @override

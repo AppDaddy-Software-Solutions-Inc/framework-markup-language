@@ -2,14 +2,13 @@
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/button/button_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
 /// Button View
 ///
 /// Builds the Button View from [ButtonModel] properties
-class ButtonView extends StatefulWidget implements IWidgetView {
+class ButtonView extends StatefulWidget implements ViewableWidgetView {
   @override
   final ButtonModel model;
   final Widget? child;
@@ -20,7 +19,7 @@ class ButtonView extends StatefulWidget implements IWidgetView {
   State<ButtonView> createState() => _ButtonViewState();
 }
 
-class _ButtonViewState extends WidgetState<ButtonView> {
+class _ButtonViewState extends ViewableWidgetState<ButtonView> {
   ButtonStyle _getStyle() {
     var model = widget.model;
 
@@ -149,7 +148,8 @@ class _ButtonViewState extends WidgetState<ButtonView> {
     if (!widget.model.visible) return const Offstage();
 
     // build the body
-    Widget body = BoxView(widget.model.getContentModel());
+    var model = widget.model.getContentModel();
+    Widget body = BoxView(model, (_,__) => model.inflate());
 
     // disabled?
     if (!widget.model.enabled) {
@@ -159,11 +159,14 @@ class _ButtonViewState extends WidgetState<ButtonView> {
     // Build the Button Types
     var view = _buildButton(body);
 
+    // add margins
+    view = addMargins(view);
+
+    // apply visual transforms
+    view = applyTransforms(view);
+
     // apply constraints
     view = applyConstraints(view, widget.model.constraints);
-
-    // add margins around the entire widget
-    view = addMargins(view);
 
     return view;
   }

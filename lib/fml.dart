@@ -11,9 +11,9 @@ import 'package:fml/splash/splash.dart';
 import 'package:fml/system.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/theme/theme.dart';
-import 'dart:io' as io;
 
-enum _ApplicationTypes { singleApp, multiApp }
+/// application type
+enum ApplicationType { single, multi, branded }
 
 enum PageTransitions {
   platform,
@@ -36,17 +36,6 @@ class FmlEngine {
   // if the engine has been initialized
   static final initialized = Completer<bool>();
 
-  // platform
-  static String get platform => isWeb
-      ? "web"
-      : isMobile
-          ? "mobile"
-          : "desktop";
-  static bool get isWeb => kIsWeb;
-  static bool get isMobile =>
-      !isWeb && (io.Platform.isAndroid || io.Platform.isIOS);
-  static bool get isDesktop => !isWeb && !isMobile;
-
   /// This url is used to locate config.xml on startup
   /// Used in Single Application mode only and on Web when developing on localhost
   /// Set this to file://app
@@ -63,10 +52,8 @@ class FmlEngine {
   static String get title => _title;
 
   // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-  static late _ApplicationTypes _type;
-  static bool get isMultiApp =>  _type == _ApplicationTypes.multiApp;
-  static bool get isSingleApp => _type == _ApplicationTypes.singleApp;
-  static set singleApp(bool value) => _type = value ? _ApplicationTypes.singleApp : _ApplicationTypes.multiApp;
+  static late ApplicationType _type;
+  static ApplicationType get type => _type;
 
   static late String _font;
   static String get defaultFont => _font;
@@ -84,21 +71,24 @@ class FmlEngine {
 
   /// This is the main entry point for the FML
   /// language parser.
-  factory FmlEngine({
+  factory FmlEngine(
+    /// application type
+    /// single - app launches to the domain passed in fmlEngine(domain: ...);
+    /// multi - app launches to the store and allows the user to configure multiple apps within the engine
+    /// branded - app launches to the store and allows the user to configure a single custom domain,
+    /// once chosen, subsequent launches of the app launch to the domain defined.
+    ApplicationType applicationType, {
+
     /// this domain (url) is used to locate config.xml on startup
     /// Used in Single Application mode only and on Web when developing on localhost
     /// Set this to file://app
-    String domain = "https://test.appdaddy.co",
+    String domain = "https://fml.dev",
 
     /// application version
     String version = "1.0.0",
 
     /// application title
     String title = "My Application Title",
-
-    /// multi app - ignored on web. on desktop and mobile
-    /// launches the front page store app on start for multiApp.
-    bool multiApp = true,
 
     /// default theme color on startup
     Color color = Colors.lightBlue,
@@ -117,12 +107,10 @@ class FmlEngine {
     if (FmlEngine.initialized.isCompleted) return _singleton;
 
     // initialize the engine
+    FmlEngine._type = applicationType;
     FmlEngine._domain = domain;
     FmlEngine._title = title;
     FmlEngine._version = version;
-    FmlEngine._type = (multiApp && !isWeb)
-        ? _ApplicationTypes.multiApp
-        : _ApplicationTypes.singleApp;
     FmlEngine._font = font;
     FmlEngine._transition = transition;
     FmlEngine._color = color;
@@ -145,23 +133,7 @@ class FmlEngine {
     System().initialize();
   }
 
-  Widget launch() {
-    // fml engine
-    var engine = ChangeNotifierProvider<ThemeNotifier>(
-        child: Application(key: FmlEngine.key),
-        create: (_) => onThemeNotifierCreated());
-
-    // splash screen
-    var splash = Splash(
-        key: UniqueKey(), onInitializationComplete: () => runApp(engine));
-
-    // launch the splash screen
-    runApp(splash);
-
-    return splash;
-  }
-
-  onThemeNotifierCreated() {
+  _onThemeNotifierCreated() {
     try {
       var theme = ThemeNotifier.from(System.theme.colorScheme,
           googleFont: System.theme.font);
@@ -196,5 +168,37 @@ class FmlEngine {
     bool show = false;
     if (details.exception.toString().startsWith("A Render")) show = false;
     if (show) FlutterError.presentError(details);
+  }
+
+  /// launches the FML Engine
+  Widget launch() => _launchSplash();
+
+  /// launches the Splash Screen
+  Widget _launchSplash() {
+
+    // show splash screen
+    // until system is initialized
+    var splash = Splash(
+        key: UniqueKey(),
+        onInitializationComplete: _launchEngine);
+
+    // launch the splash screen
+    runApp(splash);
+
+    return splash;
+  }
+
+  /// launches the FML Engine
+  Widget _launchEngine() {
+
+    // fml engine
+    var engine = ChangeNotifierProvider<ThemeNotifier>(
+        child: Application(key: FmlEngine.key),
+        create: (_) => _onThemeNotifierCreated());
+
+    // launch the splash screen
+    runApp(engine);
+
+    return engine;
   }
 }

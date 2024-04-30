@@ -1,9 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/helpers/mime.dart';
+import 'package:fml/helpers/uri.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:open_filex/open_filex.dart';
@@ -11,28 +14,70 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io' as io;
 
+bool get isWeb => Platform.isWeb;
+bool get isMobile => Platform.isMobile;
+bool get isDesktop => !isMobile;
+
 class Platform {
-  static String? get useragent {
+
+  static bool get isWeb => kIsWeb;
+  static bool get isMobile => (io.Platform.isAndroid || io.Platform.isIOS);
+  static bool get isDesktop => !isMobile;
+
+  // platform
+  static String get platform => isMobile ? "mobile" : "desktop";
+
+  static String get operatingSystem {
     if (io.Platform.isIOS) return "ios";
     if (io.Platform.isAndroid) return "android";
     if (io.Platform.isMacOS) return "macos";
     if (io.Platform.isWindows) return "windows";
     if (io.Platform.isLinux) return "linux";
     if (io.Platform.isFuchsia) return "fuchsia";
-    return null;
+    return "unknown";
   }
 
-  // application root path
-  static Future<String?> get path async {
+  static String get operatingSystemVersion => io.Platform.operatingSystemVersion;
+
+  static initialize() async
+  {
     // initialize the app root folder
-    if (FmlEngine.isWeb) return null;
-    if (FmlEngine.isMobile || (FmlEngine.isDesktop && useragent == "macos")) {
+    if (isMobile || (isDesktop && operatingSystem == "macos")) {
       return (await getApplicationDocumentsDirectory()).path;
     }
-    return dirname(io.Platform.resolvedExecutable);
+
+    // copy the applications folder
+    FmlEngine.type == ApplicationType.multi ?
+      _copyApplicationFolder(URI.rootPath) : await _copyApplicationFolder(URI.rootPath);
   }
 
-  static init() async {}
+  // copies the assets/applications folder to the
+  // rooted /applications folder
+  static Future<void> _copyApplicationFolder(final String path) async
+  {
+    try {
+      // create applications folder
+      String? folderpath = normalize(join(path, "applications"));
+      folderpath = await createFolder(folderpath);
+
+      // read asset manifest
+      Map<String, dynamic> manifest =
+      json.decode(await rootBundle.loadString('AssetManifest.json'));
+
+      // copy assets
+      for (String key in manifest.keys) {
+        if (key.startsWith("assets/applications")) {
+          var folder = key.replaceFirst("assets/", "");
+          var filepath = normalize(join(URI.rootPath, folder));
+          await writeFile(filepath, await rootBundle.load(key));
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error building application assets. Error is $e");
+      }
+    }
+  }
 
   static Future<dynamic> fileSaveAs(List<int> bytes, String filepath) async {
     // make the file name safe
@@ -210,6 +255,8 @@ class Platform {
   static int getNavigationType() => 0;
 
   static String get title => FmlEngine.title;
+
+  static Color? get backgroundColor => null;
 
   static void js2fml() {}
   static void fml2js({String? version}) {}

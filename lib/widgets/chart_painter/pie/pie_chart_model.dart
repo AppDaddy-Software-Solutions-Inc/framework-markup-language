@@ -10,7 +10,7 @@ import 'package:fml/widgets/chart_painter/chart_model.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_chart_view.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_series.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:xml/xml.dart';
@@ -61,7 +61,7 @@ class PieChartModel extends ChartPainterModel {
     busy = false;
   }
 
-  static PieChartModel? fromTemplate(WidgetModel parent, Template template) {
+  static PieChartModel? fromTemplate(Model parent, Template template) {
     PieChartModel? model;
     try {
       XmlElement? xml =
@@ -75,7 +75,7 @@ class PieChartModel extends ChartPainterModel {
     return model;
   }
 
-  static PieChartModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static PieChartModel? fromXml(Model parent, XmlElement xml) {
     PieChartModel? model;
     try {
       model = PieChartModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -149,7 +149,7 @@ class PieChartModel extends ChartPainterModel {
 
   /// Called when the databroker returns a successful result
   ///
-  /// [ChartModel] overrides [WidgetModel]'s onDataSourceSuccess
+  /// [ChartModel] overrides [Model]'s onDataSourceSuccess
   /// to populate the series data from the datasource and
   /// to populate the label data from the datasource data.
   @override

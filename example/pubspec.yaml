@@ -38,3 +38,8 @@ flutter:
     - assets/applications/fmlpad/
     - assets/applications/fmlpad/images/
     - assets/applications/fmlpad/templates/
+
+  fonts:
+    - family: custom_icons
+      fonts:
+        - asset: assets/fonts/custom_icons.ttf

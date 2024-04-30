@@ -2,6 +2,8 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
+import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
@@ -14,17 +16,16 @@ import 'package:fml/widgets/table/table_footer_cell_model.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
 import 'package:fml/widgets/table/table_header_group_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/table/table_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 import 'package:pluto_grid_plus_export/pluto_grid_plus_export.dart'
 as pluto_grid_export;
 
 enum Toggle { on, off }
 
-class TableView extends StatefulWidget implements IWidgetView {
+class TableView extends StatefulWidget implements ViewableWidgetView {
   @override
   final TableModel model;
   TableView(this.model) : super(key: ObjectKey(model));
@@ -33,7 +34,7 @@ class TableView extends StatefulWidget implements IWidgetView {
   State<TableView> createState() => TableViewState();
 }
 
-class TableViewState extends WidgetState<TableView> {
+class TableViewState extends ViewableWidgetState<TableView> {
   Widget? busy;
 
   // indicates if grid is paged or not
@@ -54,6 +55,11 @@ class TableViewState extends WidgetState<TableView> {
 
   // list of Pluto Rows
   final List<PlutoRow> rows = [];
+
+  // used in lazy and page loaders
+  // to determine of a row model must be built or
+  // if the model is being built by the row's cell builder
+  bool mustBuildRowModel = false;
 
   // maps PlutoColumn -> TableHeaderModel
   // this is necessary since PlutoColumns can be re-ordered
@@ -76,7 +82,7 @@ class TableViewState extends WidgetState<TableView> {
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
     var b = Binding.fromString(property);
     if (b?.property == 'busy') return;
     super.onModelChange(model);
@@ -110,6 +116,23 @@ class TableViewState extends WidgetState<TableView> {
     while (rows.length < length) {
       var row = buildRow(rows.length);
       if (row == null) break;
+
+      // compute must build
+      if (widget.model.rows.length < 2) {
+        mustBuildRowModel = _mustBuildRowModel();
+      }
+
+      // must build model
+      if (mustBuildRowModel) {
+
+        // get row index
+        var index = rows.indexOf(row);
+
+        // not found
+        if (!index.isNegative) {
+          widget.model.getRowModel(index);
+        }
+      }
     }
   }
 
@@ -133,7 +156,6 @@ class TableViewState extends WidgetState<TableView> {
 
       // get row model
       for (var column in columns) {
-        dynamic value;
 
         // get column index
         var colIdx = map.containsKey(column) ? map[column]!.index : -1;
@@ -142,13 +164,21 @@ class TableViewState extends WidgetState<TableView> {
         var model = widget.model.header?.cell(colIdx);
 
         // simple grid
-        if (model?.usesRenderer ?? false) {
-          var model = widget.model.getRowCellModel(rowIdx, colIdx);
-          value = model?.value;
-        } else {
-          value = Data.read(data, column.field) ?? "";
+        dynamic value;
+
+        // get value override from model
+        if (model?.usesRenderer == true) {
+          value = widget.model.getRowCellModel(rowIdx, colIdx)?.value;
         }
 
+        // get value from data
+        value ??= Data.read(data, column.field);
+
+        // null values must be set to a blank string
+        // otherwise they show as the word "null" on the grid
+        value ??= "";
+
+        // create the cell
         cells[column.field] = PlutoCell(value: value);
         colIdx++;
       }
@@ -165,6 +195,7 @@ class TableViewState extends WidgetState<TableView> {
 
   Widget cellBuilder(
       PlutoColumnRendererContext context, bool hasEnterableFields) {
+
     // get row and column indexes
     var rowIdx = rows.indexOf(context.row);
     var colIdx =
@@ -180,7 +211,7 @@ class TableViewState extends WidgetState<TableView> {
     // return the view
     if (!views.containsKey(model)) {
       // build the view
-      Widget view = RepaintBoundary(child: BoxView(model));
+      Widget view = RepaintBoundary(child: BoxView(model, (_,__) => model.inflate()));
 
       // cache the view
       views[model] = view;
@@ -411,8 +442,16 @@ class TableViewState extends WidgetState<TableView> {
   }
 
   // called when a field changes via edit.
+  // we need to do this in a post change callback since
+  // it causes lag when running in release. Not sure why?
+  void onChangedHandler(final PlutoGridOnChangedEvent event) {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _onChangedHandler(event));
+  }
+
+  // called when a field changes via edit.
   // only applies to simple grid
-  void onChangedHandler(final PlutoGridOnChangedEvent event) async {
+  void _onChangedHandler(final PlutoGridOnChangedEvent event) async {
 
     var rowIdx = rows.indexOf(event.row);
     var colIdx = map.containsKey(event.column) ? map[event.column]!.index : -1;
@@ -874,6 +913,7 @@ class TableViewState extends WidgetState<TableView> {
         evenRowColor: evenRowColor,
         checkedColor: checkedColor,
         activatedColor: activeColor,
+        columnContextIcon: Icons.more_vert_rounded,
         activatedBorderColor: activeBorderColor)
         : PlutoGridStyleConfig(
         defaultCellPadding: const EdgeInsets.all(0),
@@ -893,6 +933,7 @@ class TableViewState extends WidgetState<TableView> {
         evenRowColor: evenRowColor,
         checkedColor: checkedColor,
         activatedColor: activeColor,
+        columnContextIcon: Icons.more_vert_rounded,
         activatedBorderColor: activeBorderColor);
 
     bool boundedWidth = false;
@@ -956,7 +997,7 @@ class TableViewState extends WidgetState<TableView> {
     if (groups.isEmpty && fields.isEmpty) return null;
 
     var title = model.title;
-    var header = WidgetSpan(child: BoxView(model));
+    var header = WidgetSpan(child: BoxView(model, (_,__) => model.inflate()));
 
     var group = PlutoColumnGroup(
       title: title ?? "",
@@ -977,7 +1018,7 @@ class TableViewState extends WidgetState<TableView> {
 
   Widget _footerBuilder(
       PlutoColumnFooterRendererContext context, TableFooterCellModel model) {
-    var view = WidgetSpan(child: BoxView(model));
+    var view = WidgetSpan(child: BoxView(model, (_,__) => model.inflate()));
 
     var footer = PlutoAggregateColumnFooter(
         rendererContext: context,
@@ -998,10 +1039,13 @@ class TableViewState extends WidgetState<TableView> {
 
     List<String> fields = [];
     for (var cell in widget.model.header!.cells) {
+
       var title = cell.title ?? cell.field ?? "Column ${cell.index}";
 
+      bool render = cell.usesRenderer;
+
       // set custom header renderer
-      var header = WidgetSpan(child: BoxView(cell));
+      var header = WidgetSpan(child: BoxView(cell, (_,__) => cell.inflate()));
       if (widget.model.header!.cells.length == 1 &&
           (title.trim() == TableModel.dynamicTableValue1 ||
               title.trim() == TableModel.dynamicTableValue2)) {
@@ -1018,7 +1062,7 @@ class TableViewState extends WidgetState<TableView> {
 
       // cell builder - for performance reasons, tables without defined
       // table rows can be rendered much quicker
-      var builder = cell.usesRenderer
+      var builder = render
           ? (rendererContext) =>
           cellBuilder(rendererContext, cell.hasEnterableFields)
           : null;
@@ -1031,7 +1075,7 @@ class TableViewState extends WidgetState<TableView> {
 
       // get cell alignment
       var alignment = _getAlignment();
-      if (cell.usesRenderer) alignment = PlutoColumnTextAlign.left;
+      if (render) alignment = PlutoColumnTextAlign.left;
 
       // footer builder
       TableFooterCellModel? footer;
@@ -1083,13 +1127,53 @@ class TableViewState extends WidgetState<TableView> {
     }
   }
 
+  bool _mustBuildRowModel() {
+
+    // renderer defined
+    if (widget.model.header?.cells.firstWhereOrNull((cell) => cell.usesRenderer) != null) return false;
+
+    // table editable?
+    if (widget.model.maybeEditable) return true;
+
+    // header or header cell is editable?
+    if (widget.model.header != null) {
+      var hdr = widget.model.header!;
+      if (hdr.maybeEditable) return true;
+      if (hdr.cells.firstWhereOrNull((cell) => cell.maybeEditable) != null) return true;
+    }
+
+    // row or row cell is editable?
+    if (widget.model.rows.isNotEmpty) {
+      var row = widget.model.rows.values.first;
+      if (row.maybeEditable) return true;
+      if (row.cells.firstWhereOrNull((cell) => cell.maybeEditable) != null) return true;
+    }
+
+    return false;
+  }
+
+  var themeHash = 0;
+
   @override
   Widget build(BuildContext context) {
+
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
+    // theme change?
+    var hash = Theme.of(context).hashCode;
+    if (hash != themeHash) {
+      themeHash = hash;
+      grid = null;
+    }
+
     // build style
     if (grid == null) {
+
+      if (kDebugMode) {
+        print('Rebuilding table ...');
+      }
+
       // build the columns
       _buildColumns();
 
@@ -1140,6 +1224,9 @@ class TableViewState extends WidgetState<TableView> {
 
     // add margins around the entire widget
     view = addMargins(view);
+
+    // apply visual transforms
+    view = applyTransforms(view);
 
     // display busy widget over table
     if (widget.model.showBusy) {

@@ -3,7 +3,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
@@ -48,6 +48,9 @@ class TableRowModel extends BoxModel {
 
   // Editable Fields
   List<IFormField>? fields;
+
+  // column uses editable
+  bool get maybeEditable => _editable != null;
 
   // editable - used on non row prototype only
   BooleanObservable? _editable;
@@ -171,13 +174,13 @@ class TableRowModel extends BoxModel {
     dirty = isDirty;
   }
 
-  TableRowModel(WidgetModel super.parent, super.id, {dynamic data})
+  TableRowModel(Model super.parent, super.id, {dynamic data})
       : super(scope: Scope(parent: parent.scope)) {
     this.data = data;
     dirty = false;
   }
 
-  static TableRowModel? fromXml(WidgetModel parent, XmlElement? xml,
+  static TableRowModel? fromXml(Model parent, XmlElement? xml,
       {dynamic data}) {
     if (xml == null) return null;
     TableRowModel? model;
@@ -194,6 +197,7 @@ class TableRowModel extends BoxModel {
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
+
     // deserialize
     super.deserialize(xml);
 
@@ -201,28 +205,20 @@ class TableRowModel extends BoxModel {
     editable = Xml.get(node: xml, tag: 'editable');
     oncomplete = Xml.get(node: xml, tag: 'oncomplete');
     onclick = Xml.get(node: xml, tag: 'onclick');
-    postbrokers = Xml.attribute(node: xml, tag: 'postbroker');
     onInsert = Xml.get(node: xml, tag: 'oninsert');
     onDelete = Xml.get(node: xml, tag: 'ondelete');
     onChange = Xml.get(node: xml, tag: 'onchange');
+    postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
 
     // get cells
-    cells.addAll(
-        findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>());
+    cells.addAll(findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>());
 
     // Initialize Form Fields
-    for (var _ in cells) {
-      List<IFormField> fields =
-          findChildrenOfExactType(IFormField).cast<IFormField>();
-      for (var field in fields) {
-        if (this.fields == null) this.fields = [];
-        this.fields!.add(field);
-
-        // Register Listener
-        if (field.dirtyObservable != null) {
-          field.dirtyObservable!.registerListener(onDirtyListener);
-        }
-      }
+    List<IFormField> fields = findChildrenOfExactType(IFormField).cast<IFormField>();
+    for (var field in fields) {
+      if (this.fields == null) this.fields = [];
+      this.fields!.add(field);
+      field.registerDirtyListener(onDirtyListener);
     }
   }
 
@@ -248,8 +244,16 @@ class TableRowModel extends BoxModel {
     // Post the Row
     if (ok) ok = await _post();
 
-    // Mark Clean
-    if ((ok) && (fields != null)) {
+    // mark row clean
+    if (ok) {
+      dirty = false;
+      for (var cell in cells) {
+        cell.dirty = false;
+      }
+    }
+
+    // mark custom form fields as clean
+    if (ok && fields != null) {
       for (var field in fields!) {
         field.dirty = false;
       }
@@ -276,7 +280,7 @@ class TableRowModel extends BoxModel {
     if (dirty == false) return true;
 
     bool ok = true;
-    if ((scope != null) && (postbrokers != null)) {
+    if (scope != null && postbrokers != null) {
       for (String id in postbrokers!) {
         IDataSource? source = scope!.getDataSource(id);
         if (source != null && ok && table != null) {

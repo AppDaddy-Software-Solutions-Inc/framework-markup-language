@@ -3,7 +3,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/detectors/detector_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/detector_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'biometrics_detector.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -15,7 +15,7 @@ import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 class BiometricsDetectorModel extends DetectorModel implements IDetectable {
   BiometricsDetectorModel(super.parent, super.id);
 
-  static BiometricsDetectorModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static BiometricsDetectorModel? fromXml(Model parent, XmlElement xml) {
     BiometricsDetectorModel? model;
     try {
       model = BiometricsDetectorModel(parent, Xml.get(node: xml, tag: 'id'));

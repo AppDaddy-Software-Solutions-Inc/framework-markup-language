@@ -28,7 +28,6 @@ class Eval {
   static final Map<String, dynamic> functions = {
     'abs': _abs,
     'acos': acos,
-    'addTime': _addTime,
     'addtime': _addTime,
     'asin': asin,
     'atan': atan,
@@ -40,77 +39,59 @@ class Eval {
     'cos': cos,
     'decrypt': _decrypt,
     'distance': _distance,
-    'elementAt': _elementAt,
+    'elementat': _elementAt,
     'encrypt': _encrypt,
-    'endsWith': _endsWith,
     'endswith': _endsWith,
     'floor': _floor,
     'hash': _hash,
-    'indexOf': _indexOf,
+    'indexof': _indexOf,
     'if': _if,
-    'isAfter': _isAfter,
     'isafter': _isAfter,
-    'isBefore': _isBefore,
     'isbefore': _isBefore,
-    'isBool': _isBool,
     'isbool': _isBool,
-    'isBoolean': _isBool,
     'isboolean': _isBool,
-    'isPhone': _isValidPhone,
-    'isCard': _isValidCreditCard,
-    'isPassword': _isValidPassword,
-    'isEmail': _isValidEmail,
-    'isExpiryDate': _isValidExpiryDate,
-    'isNull': _isNull,
+    'isphone': _isValidPhone,
+    'iscard': _isValidCreditCard,
+    'ispassword': _isValidPassword,
+    'isemail': _isValidEmail,
+    'isexpirydate': _isValidExpiryDate,
     'isnull': _isNull,
-    'isNullOrEmpty': _isNullOrEmpty,
     'isnullorempty': _isNullOrEmpty,
-    'isNum': _isNumeric,
     'isnum': _isNumeric,
-    'isNumeric': _isNumeric,
     'isnumeric': _isNumeric,
     'join': _join,
     'length': _length,
+    'lpad': _lpad,
+    'rpad': _rpad,
     'mod': _mod,
     'noe': _isNullOrEmpty,
     'number': _number,
     'nvl': _nvl,
-    'pi': pi / 5,
+    'pi': () => pi,
     'regex': _regex,
     'replace': _replace,
     'round': _round,
     'sin': sin,
     'split': _split,
-    'startsWith': _startsWith,
     'startswith': _startsWith,
     'substring': _substring,
-    'subtractTime': _subtractTime,
     'subtracttime': _subtractTime,
     'tan': tan,
-    'timeBetween': _timeBetween,
     'timebetween': _timeBetween,
-    'toBool': _toBool,
     'tobool': _toBool,
-    'toBoolean': _toBool,
     'toboolean': _toBool,
-    'toDate': _toDate,
     'todate': _toDate,
-    'toEpoch': _toEpoch,
     'toepoch': _toEpoch,
-    'toJson': _toJson,
-    'toLower': _toLower,
+    'tojson': _toJson,
     'tolower': _toLower,
-    'toNum': _toNum,
     'tonum': _toNum,
-    'toNumber': _toNum,
     'tonumber': _toNum,
-    'toStr': _toString,
+    'toint': _toInt,
+    'todouble': _toDouble,
     'tostr': _toString,
-    'toString': _toString,
     'tostring': _toString,
-    'toUpper': _toUpper,
     'toupper': _toUpper,
-    'toXml': _toXml,
+    'toxml': _toXml,
     'truncate': _truncate,
   };
 
@@ -322,10 +303,14 @@ class Eval {
     return toBool(value);
   }
 
-  /// Returns a Nul from a dynamic value using [toNum]
-  static dynamic _toNum(dynamic value) {
-    return toNum(value);
-  }
+  /// Returns a Number from a dynamic value using [toNum]
+  static dynamic _toNum(dynamic value) => toNum(value);
+
+  /// Returns an integer from a dynamic value using [toNum]
+  static dynamic _toInt(dynamic value) => toNum(value)?.toInt();
+
+  /// Returns a double from a dynamic value using [toNum]
+  static dynamic _toDouble(dynamic value) => toNum(value)?.toDouble();
 
   /// Returns the nearest integer value rounding up
   static dynamic _ceil(dynamic value) {
@@ -741,6 +726,42 @@ class Eval {
     if (_toString(s9) != null) myString += _toString(s9);
     if (_toString(s10) != null) myString += _toString(s10);
     return myString;
+  }
+
+  static dynamic _lpad(dynamic string, dynamic length, dynamic character) {
+
+    var s = _toString(string);
+    if (s == null) return s;
+
+    var l = toInt(length);
+    if (l == null || l < s.length) return s;
+
+    var c = (toStr(character) ?? " ").substring(0,1);
+
+    // pad left
+    while (s.length < l) {
+      s = c + s;
+    }
+
+    return s;
+  }
+
+  static dynamic _rpad(dynamic string, dynamic length, [dynamic character]) {
+
+    var s = _toString(string);
+    if (s == null) return s;
+
+    var l = toInt(length);
+    if (l == null || l < s.length) return s;
+
+    var c = (toStr(character) ?? " ").substring(0,1);
+
+    // pad right
+    while (s.length < l) {
+      s = s + c;
+    }
+
+    return s;
   }
 
   /// null-safe object length

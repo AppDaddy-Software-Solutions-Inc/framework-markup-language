@@ -1,6 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-library expressions.parser;
-
 import 'expressions.dart';
 import 'package:petitparser/petitparser.dart';
 

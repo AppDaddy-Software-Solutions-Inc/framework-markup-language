@@ -5,7 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/table/table_header_group_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -23,7 +23,7 @@ class TableHeaderModel extends BoxModel {
 
   // dynamic cells
   bool get isDynamic => prototypes.isNotEmpty;
-  var prototypes = <XmlElement, WidgetModel?>{};
+  var prototypes = <XmlElement, Model?>{};
 
   // list of static cell ids
   // used in dynamic table creation
@@ -92,6 +92,9 @@ class TableHeaderModel extends BoxModel {
   }
 
   bool get resizeable => _resizeable?.get() ?? table?.resizeable ?? true;
+
+  // column uses editable
+  bool get maybeEditable => _editable != null;
 
   // editable - used on non row prototype only
   BooleanObservable? _editable;
@@ -184,10 +187,10 @@ class TableHeaderModel extends BoxModel {
 
   String? get onDelete => _onDelete?.get();
 
-  TableHeaderModel(WidgetModel super.parent, super.id)
+  TableHeaderModel(Model super.parent, super.id)
       : super(scope: Scope(parent: parent.scope));
 
-  static TableHeaderModel? fromXml(WidgetModel parent, XmlElement xml,
+  static TableHeaderModel? fromXml(Model parent, XmlElement xml,
       {Map<dynamic, dynamic>? data}) {
     TableHeaderModel? model;
     try {

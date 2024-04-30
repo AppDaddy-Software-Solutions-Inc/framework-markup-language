@@ -7,7 +7,6 @@ import 'package:fml/datasources/stash/stash_model.dart';
 import 'package:fml/datasources/log/log_model.dart';
 import 'package:fml/datasources/test/test_data_model.dart';
 import 'package:fml/datasources/transforms/subquery.dart';
-import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector_model.dart';
 import 'package:fml/datasources/detectors/text/text_detector_model.dart';
 import 'package:fml/datasources/data/model.dart';
@@ -91,7 +90,7 @@ import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/select/select_model.dart';
 import 'package:fml/widgets/shortcut/shortcut_model.dart';
 import 'package:fml/widgets/slider/slider_model.dart';
-import 'package:fml/widgets/splitview/split_model.dart';
+import 'package:fml/widgets/splitview/split_view_model.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
 import 'package:fml/widgets/switch/switch_model.dart';
 import 'package:fml/widgets/table/table_footer_cell_model.dart';
@@ -128,12 +127,12 @@ import 'package:fml/widgets/typeahead/typeahead_model.dart';
 import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:fml/widgets/video/video_model.dart';
 import 'package:fml/widgets/span/span_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-Future<void> addChild(WidgetModel model, List<dynamic> arguments) async {
+Future<void> addChild(Model model, List<dynamic> arguments) async {
   // fml
   var xml = elementAt(arguments, 0);
 
@@ -149,7 +148,7 @@ Future<void> addChild(WidgetModel model, List<dynamic> arguments) async {
   await _appendXml(model, xml, index, silent);
 }
 
-Future<void> removeChild(WidgetModel model, List<dynamic> arguments) async {
+Future<void> removeChild(Model model, List<dynamic> arguments) async {
   // if index is null, remove all children before replacement.
   int? index = toInt(elementAt(arguments, 0));
 
@@ -170,13 +169,13 @@ Future<void> removeChild(WidgetModel model, List<dynamic> arguments) async {
   }
 }
 
-Future<void> removeChildren(WidgetModel model, List<dynamic> arguments) async {
+Future<void> removeChildren(Model model, List<dynamic> arguments) async {
   // dispose of all children
   model.children?.forEach((child) => child.dispose());
   model.children?.clear();
 }
 
-Future<void> replaceChild(WidgetModel model, List<dynamic> arguments) async {
+Future<void> replaceChild(Model model, List<dynamic> arguments) async {
   // fml
   var xml = elementAt(arguments, 0);
 
@@ -210,7 +209,7 @@ Future<void> replaceChild(WidgetModel model, List<dynamic> arguments) async {
   await _appendXml(model, xml, index, silent);
 }
 
-Future<void> replaceChildren(WidgetModel model, List<dynamic> arguments) async {
+Future<void> replaceChildren(Model model, List<dynamic> arguments) async {
   // fml
   var xml = elementAt(arguments, 0);
 
@@ -227,7 +226,7 @@ Future<void> replaceChildren(WidgetModel model, List<dynamic> arguments) async {
   await _appendXml(model, xml, null, silent);
 }
 
-Future<void> removeWidget(WidgetModel model, List<dynamic> arguments) async {
+Future<void> removeWidget(Model model, List<dynamic> arguments) async {
   // index
   int? index = (model.parent?.children?.contains(model) ?? false)
       ? model.parent?.children?.indexOf(model)
@@ -241,7 +240,7 @@ Future<void> removeWidget(WidgetModel model, List<dynamic> arguments) async {
   }
 }
 
-Future<void> replaceWidget(WidgetModel model, List<dynamic> arguments) async {
+Future<void> replaceWidget(Model model, List<dynamic> arguments) async {
   // fml
   var xml = elementAt(arguments, 0);
 
@@ -268,7 +267,7 @@ Future<void> replaceWidget(WidgetModel model, List<dynamic> arguments) async {
   }
 }
 
-Future<bool> _appendXml(WidgetModel model, String xml, int? index,
+Future<bool> _appendXml(Model model, String xml, int? index,
     [bool silent = true]) async {
   List<XmlElement> nodes = [];
 
@@ -320,8 +319,8 @@ Future<bool> _appendXml(WidgetModel model, String xml, int? index,
 /// where children may actually be header or footer declarations that require
 /// a complete restructuring/rebuild of the parent
 Future<bool> _appendChild(
-    WidgetModel parent, XmlElement element, int? index) async {
-  WidgetModel? model = WidgetModel.fromXml(parent, element);
+    Model parent, XmlElement element, int? index) async {
+  Model? model = Model.fromXml(parent, element);
   if (model != null) {
     // model is a datasource
     if (model is IDataSource) {
@@ -349,36 +348,36 @@ Future<bool> _appendChild(
   return (model != null);
 }
 
-XmlElement cloneNode(XmlElement node, Scope? scope) {
-  if (Xml.hasAttribute(node: node, tag: "clone")) {
-    var id = Xml.attribute(node: node, tag: "clone");
-    var model = Scope.findWidgetModel(id, scope);
-    if (model != null) {
-      if (model.element != null) {
-        var n1 = model.element!.localName.trim();
-        var n2 = node.localName.trim();
-
-        if (n1.toLowerCase() == n2.toLowerCase()) {
-          // copy element
-          var element = model.element!.copy();
-          for (var attribute in node.attributes) {
-            Xml.setAttribute(element, attribute.localName, attribute.value);
-          }
-          node.replace(element);
-          node = element;
-        } else {
-          Log().exception(
-              "A model of type <$n2/> cannot be cloned from a model of type <$n1/>");
-        }
-      } else {
-        Log().exception("Model $id has no element to copy from");
-      }
-    } else {
-      Log().exception("Error attempting to clone model $id. Model not found.");
-    }
-  }
-  return node;
-}
+// XmlElement cloneNode(XmlElement node, Scope? scope) {
+//   if (Xml.hasAttribute(node: node, tag: "clone")) {
+//     var id = Xml.attribute(node: node, tag: "clone");
+//     var model = Scope.findWidgetModel(id, scope);
+//     if (model != null) {
+//       if (model.element != null) {
+//         var n1 = model.element!.localName.trim();
+//         var n2 = node.localName.trim();
+//
+//         if (n1.toLowerCase() == n2.toLowerCase()) {
+//           // copy element
+//           var element = model.element!.copy();
+//           for (var attribute in node.attributes) {
+//             Xml.setAttribute(element, attribute.localName, attribute.value);
+//           }
+//           node.replace(element);
+//           node = element;
+//         } else {
+//           Log().exception(
+//               "A model of type <$n2/> cannot be cloned from a model of type <$n1/>");
+//         }
+//       } else {
+//         Log().exception("Model $id has no element to copy from");
+//       }
+//     } else {
+//       Log().exception("Error attempting to clone model $id. Model not found.");
+//     }
+//   }
+//   return node;
+// }
 
 bool excludeFromTemplate(XmlElement node, Scope? scope) {
   bool exclude = false;
@@ -386,8 +385,12 @@ bool excludeFromTemplate(XmlElement node, Scope? scope) {
   // exclude node from template?
   var value = node.getAttribute('exclude');
   if (value != null) {
+
+    // evaluate the bindable
     var bindable = BooleanObservable(null, value, scope: scope);
     exclude = bindable.get() ?? false;
+
+    // dispose of it
     bindable.dispose();
   }
   return exclude;
@@ -451,9 +454,9 @@ XmlElement? prototypeOf(XmlElement? node) {
   return node;
 }
 
-WidgetModel? fromXmlNode(
-    WidgetModel parent, XmlElement node, Scope? scope, dynamic data) {
-  WidgetModel? model;
+Model? fromXmlNode(
+    Model parent, XmlElement node, Scope? scope, dynamic data) {
+  Model? model;
 
   switch (node.localName) {
     case "ALARM":
@@ -483,10 +486,19 @@ WidgetModel? fromXmlNode(
 
     case "BOX": // Preferred Case
     case "CONTAINER": // Container may be deprecated
+    case "SBOX":
+    case "SHRINKBOX":
+
+      // shrink by default?
+      bool shrink = node.localName == "SBOX" || node.localName == "SHRINKBOX";
+
+      // prototype?
       bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
+
+      // define model
       model = isPrototype
           ? PrototypeModel.fromXml(parent, node)
-          : BoxModel.fromXml(parent, node, scope: scope, data: data);
+          : BoxModel.fromXml(parent, node, scope: scope, data: data, expandDefault: !shrink);
       break;
 
     case "BREADCRUMB":
@@ -574,7 +586,17 @@ WidgetModel? fromXmlNode(
 
     case "COLUMN":
     case "COL": //shorthand case
+
+      // table row?
+      if (parent is TableModel) {
+        model = TableHeaderModel.fromXml(parent, node);
+        break;
+      }
+
+      // prototype?
       bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
+
+      // define model
       model = isPrototype
           ? PrototypeModel.fromXml(parent, node)
           : ColumnModel.fromXml(parent, node, scope: scope, data: data);
@@ -692,6 +714,11 @@ WidgetModel? fromXmlNode(
     case "HEADER":
       if (parent is FrameworkModel) {
         model = HeaderModel.fromXml(parent, node);
+        break;
+      }
+      if (parent is TableModel) {
+        model = TableHeaderModel.fromXml(parent, node);
+        break;
       }
       break;
 
@@ -811,11 +838,6 @@ WidgetModel? fromXmlNode(
       if (parent is OptionModel) model = TagModel.fromXml(parent, node);
       break;
 
-    case "SBOX":
-    case "SHRINKBOX":
-      model = BoxModel.fromXml(parent, node, expandDefault: false);
-      break;
-
     case "SHORTCUT":
       model = ShortcutModel.fromXml(parent, node);
       break;
@@ -931,7 +953,17 @@ WidgetModel? fromXmlNode(
       break;
 
     case "ROW":
+
+      // table row?
+      if (parent is TableModel) {
+        model = TableRowModel.fromXml(parent, node);
+        break;
+      }
+
+      // prototype?
       bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
+
+      // define model
       model = isPrototype
           ? PrototypeModel.fromXml(parent, node)
           : RowModel.fromXml(parent, node, scope: scope, data: data);
@@ -984,11 +1016,19 @@ WidgetModel? fromXmlNode(
       break;
 
     case "STACK":
-      model = StackModel.fromXml(parent, node);
+
+      // prototype?
+      bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
+
+      // define model
+      model = isPrototype
+          ? PrototypeModel.fromXml(parent, node)
+          : StackModel.fromXml(parent, node, scope: scope, data: data);
+
       break;
 
     case "SPLITVIEW":
-      model = SplitModel.fromXml(parent, node);
+      model = SplitViewModel.fromXml(parent, node);
       break;
 
     case "TABLE":
@@ -1025,12 +1065,15 @@ WidgetModel? fromXmlNode(
     case "CELL":
       if (parent is TableHeaderModel || parent is TableHeaderGroupModel) {
         model = TableHeaderCellModel.fromXml(parent, node);
+        break;
       }
       if (parent is TableRowModel) {
         model = TableRowCellModel.fromXml(parent, node);
+        break;
       }
       if (parent is TableFooterModel) {
         model = TableFooterCellModel.fromXml(parent, node);
+        break;
       }
       break;
 
@@ -1095,7 +1138,12 @@ WidgetModel? fromXmlNode(
       break;
 
     case "VIEW":
-      if (parent is SplitModel) {
+      if (parent is SplitViewModel) {
+
+        // ensure expand is set to true
+        Xml.setAttribute(node, "expand", "true");
+
+        // splitter views are simple BoxModel's
         model = BoxModel.fromXml(parent, node);
       }
       break;

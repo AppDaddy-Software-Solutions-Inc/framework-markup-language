@@ -1,14 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:math';
 import 'dart:ui';
-import 'package:fml/event/manager.dart';
 import 'package:fml/widgets/dragdrop/draggable_view.dart';
 import 'package:fml/widgets/dragdrop/droppable_view.dart';
 import 'package:fml/widgets/scroller/scroller_behavior.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/event/event.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/scrollshadow/scroll_shadow_view.dart';
 import 'package:fml/widgets/scrollshadow/scroll_shadow_model.dart';
@@ -16,10 +14,8 @@ import 'package:fml/widgets/measure/measure_view.dart';
 import 'package:fml/widgets/grid/grid_model.dart';
 import 'package:fml/widgets/grid/item/grid_item_view.dart';
 import 'package:fml/widgets/grid/item/grid_item_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:fml/helpers/helpers.dart';
 
-class GridView extends StatefulWidget implements IWidgetView {
+class GridView extends StatefulWidget implements ViewableWidgetView {
   @override
   final GridModel model;
   GridView(this.model) : super(key: ObjectKey(model));
@@ -28,7 +24,7 @@ class GridView extends StatefulWidget implements IWidgetView {
   State<GridView> createState() => GridViewState();
 }
 
-class GridViewState extends WidgetState<GridView> {
+class GridViewState extends ViewableWidgetState<GridView> {
   Widget? busy;
   bool startup = true;
   final ScrollController controller = ScrollController();
@@ -47,122 +43,6 @@ class GridViewState extends WidgetState<GridView> {
 
     // Clean
     widget.model.clean = true;
-  }
-
-  @override
-  didChangeDependencies() {
-    // register event listeners
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.scroll, onScroll);
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.sort, onSort);
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
-
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(GridView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.model != widget.model) {
-      // remove old event listeners
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.scroll, onScroll);
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.sort, onSort);
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.scrollto, onScrollTo);
-
-      // register new event listeners
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.scroll, onScroll);
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.sort, onSort);
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
-    }
-  }
-
-  @override
-  void dispose() {
-    // remove event listeners
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.scroll, onScroll);
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.sort, onSort);
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.scrollto, onScrollTo);
-
-    controller.dispose();
-    super.dispose();
-  }
-
-  /// Takes an event (onscroll) and uses the id to scroll to that widget
-  onScrollTo(Event event) {
-    // BuildContext context;
-    event.handled = true;
-    if (event.parameters!.containsKey('id')) {
-      String? id = event.parameters!['id'];
-      var child = widget.model.findDescendantOfExactType(null, id: id);
-
-      // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
-      if ((child != null) && (child.context != null)) {
-        Scrollable.ensureVisible(child.context,
-            duration: const Duration(seconds: 1), alignment: 0.2);
-      }
-    }
-  }
-
-  void onSort(Event event) async {
-    if (event.parameters != null) {
-      String? field = event.parameters!.containsKey('field')
-          ? event.parameters!['field']
-          : null;
-      String? type = event.parameters!.containsKey('type')
-          ? event.parameters!['type']
-          : 'string';
-      String? ascending = event.parameters!.containsKey('ascending')
-          ? event.parameters!['ascending']
-          : 'true';
-      if (!isNullOrEmpty(field)) {
-        widget.model.sort(field, type, toBool(ascending));
-      }
-    }
-  }
-
-  void onScroll(Event event) async {
-    scroll(event, controller);
-    event.handled = true;
-  }
-
-  scroll(Event event, ScrollController? sc) async {
-    try {
-      if (event.parameters!.containsKey("direction") &&
-          event.parameters!.containsKey("pixels")) {
-        String? direction = event.parameters!["direction"];
-        double distance = double.parse(event.parameters!["pixels"]!);
-        if (direction != null) {
-          if (direction == 'left' || direction == 'right') {
-            double offset = sc!.offset;
-            double moveToPosition =
-                offset + (direction == 'left' ? -distance : distance);
-            sc.animateTo(moveToPosition,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOut);
-          } else if (direction == 'up' || direction == 'down') {
-            double offset = sc!.offset;
-            double moveToPosition =
-                offset + (direction == 'up' ? -distance : distance);
-            sc.animateTo(moveToPosition,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOut);
-          }
-        }
-      }
-    } catch (e) {
-      Log().error('onScroll Error: ');
-      Log().exception(e, caller: 'table.View');
-    }
   }
 
   Widget? itemBuilder(BuildContext context, int rowIndex) {
@@ -210,6 +90,83 @@ class GridViewState extends WidgetState<GridView> {
       return Row(mainAxisSize: MainAxisSize.min, children: children);
     } else {
       return Column(mainAxisSize: MainAxisSize.min, children: children);
+    }
+  }
+
+  /// scrolls the widget with the specified context into view
+  scrollToContext(BuildContext context, {required bool animate}) {
+    Scrollable.ensureVisible(context, duration: animate ? const Duration(seconds: 1) : Duration.zero, alignment: 0.2);
+  }
+
+  /// scrolls the widget with the specified context into view
+  scrollTo(double? position, {bool animate = false}) {
+    if (position == null) return;
+    if (position < 0) position = 0;
+
+    var max = controller.position.maxScrollExtent;
+    if (position > max) position = max;
+
+    if (animate) {
+      controller.animateTo(position,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.easeOut);
+    }
+    else {
+      controller.jumpTo(position);
+    }
+  }
+
+  /// moves the scroller by the specified pixels in the specified direction
+  void scroll(double? pixels, {required bool animate})  {
+
+    try {
+      // check if pixels is null
+      pixels ??= 0;
+
+      // scroll up/left
+      if (pixels < 0) {
+
+        // already at the start of the list
+        if (controller.offset == 0) return;
+
+        // calculate pixels
+        pixels = controller.offset - pixels.abs();
+        if (pixels < 0) pixels = 0;
+
+        if (animate) {
+          controller.animateTo(pixels,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut);
+        }
+        else {
+          controller.jumpTo(pixels);
+        }
+        return;
+      }
+
+      // scroll down/right
+      if (pixels > 0) {
+
+        // already at the end of the list
+        if (controller.position.maxScrollExtent == controller.offset) return;
+
+        // calculate pixels
+        pixels = controller.offset + pixels;
+        if (pixels > controller.position.maxScrollExtent) pixels = controller.position.maxScrollExtent;
+
+        if (animate) {
+          controller.animateTo(pixels,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut);
+        }
+        else {
+          controller.jumpTo(pixels);
+        }
+        return;
+      }
+    }
+    catch (e) {
+      Log().exception(e, caller: 'grid.View');
     }
   }
 
@@ -354,8 +311,12 @@ class GridViewState extends WidgetState<GridView> {
     // add margins
     view = addMargins(view);
 
+    // apply visual transforms
+    view = applyTransforms(view);
+
     // apply user defined constraints
     view = applyConstraints(view, widget.model.tightestOrDefault);
+
 
     List<Widget> children = [];
 

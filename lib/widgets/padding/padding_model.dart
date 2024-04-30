@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/padding/padding_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class PaddingModel extends ColumnModel {
@@ -13,7 +13,7 @@ class PaddingModel extends ColumnModel {
 
   PaddingModel(super.parent, super.id);
 
-  static PaddingModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static PaddingModel? fromXml(Model parent, XmlElement xml) {
     PaddingModel? model;
     try {
       // build model

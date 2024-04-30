@@ -3,7 +3,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -25,12 +25,12 @@ class ChartDataPoint {
 /// Chart Series [ChartSeriesModel]
 ///
 /// Defines the properties used to build a Charts's Series
-class ChartSeriesModel extends WidgetModel {
+class ChartSeriesModel extends Model {
   List<ChartDataPoint> dataPoint = [];
   String? type = 'bar';
 
   ChartSeriesModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     dynamic x,
     dynamic y,
@@ -67,7 +67,7 @@ class ChartSeriesModel extends WidgetModel {
     this.showpoints = showpoints;
   }
 
-  static ChartSeriesModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static ChartSeriesModel? fromXml(Model parent, XmlElement xml) {
     ChartSeriesModel? model;
     try {
       xml = prototypeOf(xml) ?? xml;

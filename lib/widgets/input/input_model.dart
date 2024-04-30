@@ -4,7 +4,7 @@ import 'package:fml/widgets/alarm/alarm_model.dart';
 import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/input/input_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -93,7 +93,7 @@ class InputModel extends DecoratedInputModel implements IFormField {
     if (_value != null) {
       _value!.set(v);
     } else if (v != null ||
-        WidgetModel.isBound(this, Binding.toKey(id, 'value'))) {
+        Model.isBound(this, Binding.toKey(id, 'value'))) {
       _value = StringObservable(Binding.toKey(id, 'value'), v,
           scope: scope, listener: onPropertyChange);
     }
@@ -143,6 +143,19 @@ class InputModel extends DecoratedInputModel implements IFormField {
   }
 
   int? get lines => _lines?.get();
+
+  /// The number of milliseconds used for commiting
+  /// changes to the input
+  IntegerObservable? _debounce;
+  set debounce(dynamic v) {
+    if (_debounce != null) {
+      _debounce!.set(v);
+    } else if (v != null) {
+      _debounce = IntegerObservable(Binding.toKey(id, 'debounce'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  int get debounce => _debounce?.get() ?? 1000;
 
   IntegerObservable? _maxlines;
   set maxlines(dynamic v) {
@@ -251,7 +264,7 @@ class InputModel extends DecoratedInputModel implements IFormField {
     dirty = false;
   }
 
-  static InputModel? fromXml(WidgetModel parent, XmlElement xml,
+  static InputModel? fromXml(Model parent, XmlElement xml,
       {String? type}) {
     InputModel? model;
     try {
@@ -311,13 +324,13 @@ class InputModel extends DecoratedInputModel implements IFormField {
     allow = Xml.get(node: xml, tag: 'allow');
     deny = Xml.get(node: xml, tag: 'deny');
     capitalization = Xml.get(node: xml, tag: 'case');
-    dense = Xml.get(node: xml, tag: 'dense');
     border = Xml.get(node: xml, tag: 'border');
     radius = Xml.get(node: xml, tag: 'radius');
     borderColor = Xml.get(node: xml, tag: 'bordercolor');
     borderWidth = Xml.get(node: xml, tag: 'borderwidth');
     textcolor = Xml.get(node: xml, tag: 'textcolor');
     mask = Xml.get(node: xml, tag: 'mask');
+    debounce = Xml.get(node: xml, tag: 'debounce');
   }
 
   setValidator(String? defaultText) {

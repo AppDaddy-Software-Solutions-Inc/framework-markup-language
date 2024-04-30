@@ -6,8 +6,8 @@ import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
 import 'package:fml/widgets/animation/animation_child/slide/slide_transition_model.dart';
-import 'package:fml/widgets/widget/widget_model_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model_interface.dart';
+import 'package:fml/widgets/widget/model.dart';
 
 /// Animation View
 ///
@@ -46,11 +46,11 @@ class SlideTransitionViewState extends State<SlideTransitionView>
           reverseDuration: Duration(
             milliseconds: widget.model.reverseduration ?? widget.model.duration,
           ));
-      if (widget.model.controllerValue == 1 && widget.model.runonce == true) {
+      if (widget.model.controllerValue == 1 && widget.model.runonce) {
         _controller.animateTo(widget.model.controllerValue,
             duration: const Duration());
 
-        if (widget.model.autoplay == true && _controller.isAnimating != true) {
+        if (widget.model.autoplay && !_controller.isAnimating) {
           start();
         }
       }
@@ -126,7 +126,7 @@ class SlideTransitionViewState extends State<SlideTransitionView>
 
   /// Callback to fire the [_AnimationViewState.build] when the [AnimationModel] changes
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
     if (mounted) setState(() {});
   }
 

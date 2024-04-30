@@ -2,7 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -28,9 +28,9 @@ class ColumnModel extends BoxModel {
     return flexible;
   }
 
-  ColumnModel(WidgetModel super.parent, super.id, {super.scope, super.data});
+  ColumnModel(Model super.parent, super.id, {super.scope, super.data});
 
-  static ColumnModel? fromXml(WidgetModel parent, XmlElement xml,
+  static ColumnModel? fromXml(Model parent, XmlElement xml,
       {Scope? scope, dynamic data}) {
     ColumnModel? model;
     try {

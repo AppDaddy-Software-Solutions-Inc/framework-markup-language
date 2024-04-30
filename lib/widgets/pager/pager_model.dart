@@ -6,7 +6,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/pager/pager_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -84,7 +84,7 @@ class PagerModel extends BoxModel {
   }
 
   PagerModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     dynamic pager,
     dynamic currentpage,
@@ -98,7 +98,7 @@ class PagerModel extends BoxModel {
     this.color = color;
   }
 
-  static PagerModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static PagerModel? fromXml(Model parent, XmlElement xml) {
     PagerModel? model;
     try {
       model = PagerModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -165,12 +165,12 @@ class PagerModel extends BoxModel {
       case "page":
         var view = findListenerOfExactType(PagerViewState);
         if (view is PagerViewState) {
-          int page = 0;
+          dynamic page;
           String transition = this.transition;
 
           // page
           if (arguments.isNotEmpty) {
-            page = toInt(arguments[0]) ?? 0;
+            page = arguments[0];
           }
 
           // transition
@@ -178,6 +178,7 @@ class PagerModel extends BoxModel {
             transition = toStr(arguments[1]) ?? this.transition;
           }
 
+          // go to page
           view.pageTo(page, transition);
         }
         break;
@@ -186,12 +187,12 @@ class PagerModel extends BoxModel {
       case "jump":
         var view = findListenerOfExactType(PagerViewState);
         if (view is PagerViewState) {
-          int page = 0;
+          dynamic page;
           String transition = "jump";
 
           // page
           if (arguments.isNotEmpty) {
-            page = toInt(arguments[0]) ?? 0;
+            page = arguments[0];
           }
           view.pageTo(page, transition);
         }
@@ -201,12 +202,12 @@ class PagerModel extends BoxModel {
       case "slide":
         var view = findListenerOfExactType(PagerViewState);
         if (view is PagerViewState) {
-          int page = 0;
+          dynamic page;
           String transition = "slide";
 
           // page
           if (arguments.isNotEmpty) {
-            page = toInt(arguments[0]) ?? 0;
+            page = arguments[0];
           }
           view.pageTo(page, transition);
         }
@@ -251,13 +252,6 @@ class PagerModel extends BoxModel {
     pages.clear();
 
     super.dispose();
-  }
-
-  @override
-  List<Widget> inflate() {
-    PagerViewState? view = findListenerOfExactType(PagerViewState);
-    if (view == null) return [];
-    return view.inflate();
   }
 
   @override

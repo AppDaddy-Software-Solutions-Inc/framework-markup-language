@@ -2,35 +2,15 @@
 import 'dart:async';
 import 'package:fml/application/application_model.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/widget_model_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 
-class Store extends WidgetModel implements IModelListener {
+class StoreModel extends Model {
 
   bool initialized = false;
 
-  static final Store _singleton = Store._initialize();
-  factory Store() => _singleton;
-  Store._initialize() : super(null, "STORE") {
-    init();
-  }
-
-  init() async {
-    initialized = await _initialize();
-  }
-
-  Future<bool> _initialize() async {
-
-    busy = true;
-
-    // register a listener to each app
-    for (var app in System.apps) {
-      app.registerListener(this);
-    }
-
-    busy = false;
-    return true;
-  }
+  static final StoreModel _singleton = StoreModel._initialize();
+  factory StoreModel() => _singleton;
+  StoreModel._initialize() : super(null, "STORE");
 
   Future addApp(ApplicationModel app) async {
     busy = true;
@@ -64,10 +44,5 @@ class Store extends WidgetModel implements IModelListener {
       if (app.url == url) return app;
     }
     return null;
-  }
-
-  @override
-  onModelChange(WidgetModel model, {String? property, value}) {
-    notifyListeners(property, value);
   }
 }

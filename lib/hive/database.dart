@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:async';
+
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:hive/hive.dart';
@@ -6,40 +8,28 @@ import 'package:fml/eval/eval.dart' as fml_eval;
 import 'package:fml/helpers/helpers.dart';
 
 class Database {
-  static final Database _singleton = Database._initialize();
-  Database._initialize();
 
-  String? path;
-  List<int>? encryptionKey;
+  static final _initialized = Completer<bool>();
+  static bool get initialized => _initialized.isCompleted;
 
-  bool _initialized = false;
-  bool get initialized => _initialized;
-
-  factory Database() => _singleton;
-
-  initialize(String? path) async {
-    bool ok = false;
-    try {
+  static Future<bool> initialize(String? path, {List<int>? encryptionKey}) async {
+    try
+    {
       Log().info('Initializing Database at Path: $path');
-      this.path = path;
-      encryptionKey = encryptionKey;
-      if (path != null) Hive.init(path);
-      ok = true;
-    } catch (e) {
-      ok = false;
+      Hive.init(path);
+      _initialized.complete(true);
+    }
+    catch (e) {
       Log().exception(e, caller: "database -> initialize(String? path) async");
     }
-
-    _initialized = true;
-
-    return ok;
+    return _initialized.isCompleted;
   }
 
-  Future<Exception?> insert(String table, String key, Map<String, dynamic> map,
+  static Future<Exception?> insert(String table, String key, Map<String, dynamic> map,
       {bool logExceptions = true}) async {
     Exception? exception;
     try {
-      if (!_initialized) return null;
+      if (!initialized) return null;
       var box = await Hive.openBox(table);
       await box.put(key, map);
     } on Exception catch (e) {
@@ -56,11 +46,15 @@ class Database {
     return exception;
   }
 
-  Future<Exception?> update(
-      String table, String key, Map<String, dynamic> map) async {
+  static Future<Exception?> update(
+      String table,
+      String key,
+      Map<String, dynamic> map) async {
+
+    if (!initialized) return null;
+
     Exception? exception;
     try {
-      if (!_initialized) return null;
       var box = await Hive.openBox(table);
       if (box.containsKey(key)) {
         await box.put(key, map);
@@ -74,11 +68,15 @@ class Database {
     return exception;
   }
 
-  Future<Exception?> upsert(
-      String table, String key, Map<String, dynamic> map) async {
+  static Future<Exception?> upsert(
+      String table,
+      String key,
+      Map<String, dynamic> map) async {
+
+    if (!initialized) return null;
+
     Exception? exception;
     try {
-      if (!_initialized) return null;
       var box = await Hive.openBox(table);
       await box.put(key, map);
     } on Exception catch (e) {
@@ -91,10 +89,12 @@ class Database {
     return exception;
   }
 
-  Future<Exception?> delete(String table, String key) async {
+  static Future<Exception?> delete(String table, String key) async {
+
+    if (!initialized) return null;
+
     Exception? exception;
     try {
-      if (!_initialized) return null;
       var box = await Hive.openBox(table);
       if (box.containsKey(key)) {
         await box.delete(key);
@@ -108,10 +108,12 @@ class Database {
     return exception;
   }
 
-  Future<Exception?> deleteAll(String table) async {
+  static Future<Exception?> deleteAll(String table) async {
+
+    if (!initialized) return null;
+
     Exception? exception;
     try {
-      if (!_initialized) return null;
       var box = await Hive.openBox(table);
       await box.clear();
     } on Exception catch (e) {
@@ -123,7 +125,10 @@ class Database {
     return exception;
   }
 
-  Future<Map<String, dynamic>?> find(String table, String key) async {
+  static Future<Map<String, dynamic>?> find(String table, String key) async {
+
+    if (!initialized) return null;
+
     dynamic value;
     try {
       var box = await Hive.openBox(table);
@@ -147,9 +152,16 @@ class Database {
     return null;
   }
 
-  Future<List<Map<String, dynamic>>> query(String table,
-      {String? where, String? orderby}) async {
+  static Future<List<Map<String, dynamic>>> query(
+      String table,
+      {
+        String? where,
+        String? orderby
+      }) async {
+
     List<Map<String, dynamic>> list = [];
+    if (!initialized) return list;
+
     try {
       // open the table
       var box = await Hive.openBox(table);
@@ -204,8 +216,12 @@ class Database {
     return list;
   }
 
-  Future<List<Map<String, dynamic>>> findAll(String table) async {
+  static Future<List<Map<String, dynamic>>> findAll(String table) async {
+
     List<Map<String, dynamic>> list = [];
+
+    if (!initialized) return list;
+
     try {
       var box = await Hive.openBox(table);
       var values = box.toMap();

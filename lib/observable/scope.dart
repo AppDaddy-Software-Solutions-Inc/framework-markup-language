@@ -5,7 +5,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/file/file.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -25,8 +25,8 @@ class Scope {
       LinkedHashMap<String, IDataSource>();
 
   // list of widget models in this scope
-  LinkedHashMap<String, WidgetModel> models =
-      LinkedHashMap<String, WidgetModel>();
+  LinkedHashMap<String, Model> models =
+      LinkedHashMap<String, Model>();
 
   // file links
   final Map<String, File> files = <String, File>{};
@@ -48,9 +48,10 @@ class Scope {
     System.currentApp?.scopeManager.add(this);
   }
 
-  static Scope? of(WidgetModel? model) {
+  static Scope? of(Model? model) {
     if (model == null) return null;
     if (model.scope != null) return model.scope!;
+    if (model.parent?.subscope != null) return model.parent!.subscope!;
     return Scope.of(model.parent);
   }
 
@@ -89,11 +90,11 @@ class Scope {
     return true;
   }
 
-  void registerModel(WidgetModel model) {
+  void registerModel(Model model) {
     models[model.id] = model;
   }
 
-  void unregisterModel(WidgetModel model) {
+  void unregisterModel(Model model) {
     models.remove(model.id);
     var observables = this
         .observables
@@ -108,13 +109,13 @@ class Scope {
     }
   }
 
-  WidgetModel? _findWidgetModel(String id) {
+  Model? _findWidgetModel(String id) {
     if (models.containsKey(id)) return models[id];
     if (parent != null) return parent!._findWidgetModel(id);
     return null;
   }
 
-  static WidgetModel? findWidgetModel(String? id, Scope? scope) {
+  static Model? findWidgetModel(String? id, Scope? scope) {
     if (id == null) return null;
 
     // named scope reference?
@@ -237,6 +238,7 @@ class Scope {
   }
 
   void setObservable(String? key, dynamic value) {
+
     Binding? binding = Binding.fromString(key);
 
     if (binding == null) return;

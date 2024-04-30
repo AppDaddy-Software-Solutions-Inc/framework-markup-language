@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fml/application/application_model.dart';
 import 'package:fml/fml.dart';
@@ -7,8 +8,8 @@ import 'package:fml/store/store_app_view.dart';
 import 'package:fml/system.dart';
 import 'package:fml/theme/theme.dart';
 import 'package:fml/navigation/navigation_observer.dart';
-import 'package:fml/widgets/widget/widget_model_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model_interface.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
@@ -24,7 +25,9 @@ import 'package:url_launcher/url_launcher.dart';
 const bool enableTestPlayground = false;
 
 class StoreView extends StatefulWidget {
+
   final MenuModel model = MenuModel(null, 'Applications');
+
   StoreView({super.key});
 
   @override
@@ -42,32 +45,37 @@ class _ViewState extends State<StoreView>
   @override
   void initState() {
     super.initState();
+
     appURLInput = InputModel(null, null,
         hint: phrase.store,
         value: "",
         icon: Icons.link,
         keyboardType: 'url',
         keyboardInput: 'done');
-    Store().registerListener(this);
+
+    StoreModel().registerListener(this);
   }
 
   @override
   didChangeDependencies() {
+
     // listen to route changes
     NavigationObserver().registerListener(this);
+
     super.didChangeDependencies();
   }
 
   @override
   void dispose() {
+
     // stop listening to model changes
-    Store().removeListener(this);
+    StoreModel().removeListener(this);
 
     // stop listening to route changes
     NavigationObserver().removeListener(this);
 
     // Cleanup
-    Store().dispose();
+    StoreModel().dispose();
 
     super.dispose();
   }
@@ -96,26 +104,52 @@ class _ViewState extends State<StoreView>
 
   /// Callback to fire the [_ViewState.build] when the [StoreModel] changes
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (mounted) setState(() {});
+  onModelChange(Model model, {String? property, dynamic value}) {
+
+    // application model
+    if (model is ApplicationModel) {
+      ApplicationModel app = model;
+      var item = widget.model.items.firstWhereOrNull((item) => item.id == ObjectKey(app).toString());
+      if (item != null) {
+        var iconNew = _getThemedIcon(app);
+        var iconOld = item.image?.uri.data.toString();
+        if (iconNew != iconOld) {
+          var image = toDataUri(iconNew);
+          if (image != null) {
+            item.image = image;
+            item.notifyListeners("image", null);
+          }
+        }
+      }
+    }
+
+    // other
+    if (model is! ApplicationModel) {
+      if (mounted) setState(() {});
+    }
   }
 
-  Widget addAppDialog(BuildContext context) {
+  Widget addAppDialog(BuildContext context, bool popOnExit) {
+
     var view = StatefulBuilder(builder: (context, setState) {
+
       var style = TextStyle(color: Theme.of(context).colorScheme.primary);
 
       var ttl = Text(phrase.connectAnApplication, style: style);
-      var busy = BusyView(BusyModel(Store(),
-          visible: Store().busy, observable: Store().busyObservable, size: 14));
-      var pad = const Padding(padding: EdgeInsets.only(left: 20));
-      var title = Row(children: [ttl, pad, busy]);
 
-      var store = StoreApp(showMakeDefaultOption: widget.model.items.isEmpty);
+      var busy = BusyView(BusyModel(StoreModel(),
+          visible: StoreModel().busy, observable: StoreModel().busyObservable, size: 14));
+
+      var title = Row(children: [ttl, const Padding(padding: EdgeInsets.only(left: 20)), busy]);
 
       return AlertDialog(
         title: title,
-        content: Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: store),
+        content: Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: StoreApp(popOnExit: popOnExit)),
         contentPadding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 2.0),
+        surfaceTintColor: Colors.transparent,
+        backgroundColor: Theme.of(context).colorScheme.onSecondary,
+        elevation: 10.0,
+        shadowColor: Theme.of(context).colorScheme.shadow.withOpacity(.5),
         insetPadding: EdgeInsets.zero,
       );
     });
@@ -123,24 +157,25 @@ class _ViewState extends State<StoreView>
     return view;
   }
 
-  Future<void> showAddAppDialog() async {
+  Future<void> showAddAppDialog(bool dismissable) async {
     return showDialog<void>(
         context: context,
-        barrierDismissible: true,
+        barrierDismissible: dismissable,
         useRootNavigator: false,
-        builder: (BuildContext context) => addAppDialog(context));
+        builder: (BuildContext context) => addAppDialog(context, true));
   }
 
   void removeApp(ApplicationModel app, NavigatorState navigator) async {
 
     // delete the app
-    await Store().deleteApp(app);
+    await StoreModel().deleteApp(app);
 
-    // slose the window
+    // close the window
     navigator.pop();
   }
 
-  Widget? _getIcon(ApplicationModel app) {
+  String? _getThemedIcon(ApplicationModel app)
+  {
     var icon = app.icon;
     if (icon == null) return null;
     if (Theme.of(context).brightness == Brightness.light) {
@@ -149,7 +184,12 @@ class _ViewState extends State<StoreView>
     if (Theme.of(context).brightness == Brightness.dark) {
       icon = app.iconDark ?? icon;
     }
+    return icon;
+  }
 
+  Widget? _getIcon(ApplicationModel app) {
+
+    var icon = _getThemedIcon(app);
     var image = toDataUri(icon);
     if (image == null) return null;
 
@@ -168,6 +208,7 @@ class _ViewState extends State<StoreView>
   }
 
   Widget removeAppDialog(BuildContext context, ApplicationModel app) {
+
     var style = TextStyle(color: Theme.of(context).colorScheme.primary);
     var title = Column(
         mainAxisSize: MainAxisSize.max,
@@ -175,7 +216,7 @@ class _ViewState extends State<StoreView>
         children: [Text(phrase.removeApp, style: style)]);
 
     style = TextStyle(
-        color: Theme.of(context).colorScheme.onBackground, fontSize: 18);
+        color: Theme.of(context).colorScheme.primary, fontSize: 18);
     var appTitle = Text(app.title ?? "", style: style);
 
     Widget? appIcon = _getIcon(app);
@@ -187,12 +228,15 @@ class _ViewState extends State<StoreView>
         child: Text(app.url, style: style));
 
     style = TextStyle(color: Theme.of(context).colorScheme.primary);
+
     var cancel = TextButton(
         onPressed: () => Navigator.of(context).pop(),
         child: Text(phrase.cancel, style: style));
+
     var remove = TextButton(
         onPressed: () => removeApp(app, Navigator.of(context)),
         child: Text(phrase.remove, style: style));
+
     var buttons = Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -203,15 +247,21 @@ class _ViewState extends State<StoreView>
         ]);
 
     var view = Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(50),
         child:
             Column(children: [appIcon ?? const Offstage(), appTitle, appUrl]));
 
+    var shadow = BoxShadow(
+      color: Theme.of(context).colorScheme.shadow.withOpacity(.25),
+      blurRadius: 7,
+      spreadRadius: 0,
+      offset: const Offset(5, 5));
+
     var box = DecoratedBox(
         decoration: BoxDecoration(
-            border:
-                Border.all(color: Theme.of(context).colorScheme.onBackground),
-            borderRadius: const BorderRadius.all(Radius.circular(10))),
+            color: Theme.of(context).colorScheme.onSecondary,
+            boxShadow: [shadow],
+            borderRadius: const BorderRadius.all(Radius.circular(8))),
         child: view);
 
     var content = Column(mainAxisSize: MainAxisSize.min, children: [
@@ -224,6 +274,10 @@ class _ViewState extends State<StoreView>
 
     return AlertDialog(
         title: title,
+        backgroundColor: Theme.of(context).colorScheme.onSecondary,
+        surfaceTintColor: Colors.transparent,
+        elevation: 10.0,
+        shadowColor: Theme.of(context).colorScheme.shadow.withOpacity(.5),
         content: content,
         contentPadding: const EdgeInsets.fromLTRB(4.0, 16.0, 4.0, 2.0),
         insetPadding: EdgeInsets.zero);
@@ -237,43 +291,44 @@ class _ViewState extends State<StoreView>
         builder: (BuildContext context) => removeAppDialog(context, app));
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _multiAppView(BuildContext context, BoxConstraints constraints) {
+
+    // set menu color
+    widget.model.color = Theme.of(context).colorScheme.onSecondary;
+
     // build menu items
     widget.model.items = [];
 
+    widget.model.maxWidth = constraints.maxWidth;
+
     // traverse list of apps
     for (var app in System.apps) {
-      var icon = app.icon;
-      if (Theme.of(context).brightness == Brightness.light) {
-        icon = app.iconLight ?? icon;
-      }
-      if (Theme.of(context).brightness == Brightness.dark) {
-        icon = app.iconDark ?? icon;
-      }
 
-      var item = MenuItemModel(widget.model, app.id,
+      // build menu item
+      var item = MenuItemModel(
+          widget.model,
+          backgroundcolor: Theme.of(context).colorScheme.onSecondary,
+          ObjectKey(app).toString(),
           url: app.url,
           title: app.title,
-          icon: icon == null ? 'appdaddy' : null,
-          image: icon,
+          image: _getThemedIcon(app),
           onTap: () => System.launchApplication(app),
           onLongPress: () => showRemoveAppDialog(app));
+
+      // register a listener to the app
+      app.registerListener(this);
 
       widget.model.items.add(item);
     }
 
-    // store menu
-    Widget store = MenuView(widget.model);
-
     var addButton = FloatingActionButton.extended(
         label: Text(phrase.addApp),
         icon: const Icon(Icons.add),
-        onPressed: () => showAddAppDialog(),
+        onPressed: () => showAddAppDialog(true),
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
         splashColor: Theme.of(context).colorScheme.inversePrimary,
-        hoverColor: Theme.of(context).colorScheme.surface,
+        hoverColor: Theme.of(context).colorScheme.onSecondary,
         focusColor: Theme.of(context).colorScheme.inversePrimary,
         shape: rrbShape);
 
@@ -288,31 +343,50 @@ class _ViewState extends State<StoreView>
         shape: rrbShape);
 
     var busy = Center(
-        child: BusyModel(Store(),
-                visible: Store().busy,
-                observable: Store().busyObservable,
-                modal: true)
+        child: BusyModel(StoreModel(),
+            visible: StoreModel().busy,
+            observable: StoreModel().busyObservable,
+            modal: true)
             .getView());
 
-    var privacyUri =
-        Uri(scheme: 'https', host: 'fml.dev', path: '/privacy.html');
-    var privacyText = Text(phrase.privacyPolicy);
-    var privacyButton =
-        InkWell(child: privacyText, onTap: () => launchUrl(privacyUri));
+    var button = StoreModel().busy ? busyButton : addButton;
 
-    var version = Text('${phrase.version} ${FmlEngine.version}');
-
-    var text = Column(
-        mainAxisSize: MainAxisSize.min, children: [privacyButton, version]);
-    var button = Store().busy ? busyButton : addButton;
+    var view = MenuView(widget.model);
 
     return Scaffold(
         floatingActionButton: button,
         body: SafeArea(
             child: Stack(children: [
-          Center(child: store),
-          Positioned(left: 10, bottom: 10, child: text),
-          busy
-        ])));
+              Center(child: view),
+              Positioned(left: 5, bottom: 5, child: _privacyButton()),
+              busy
+            ])));
   }
+
+  Widget _privacyButton() {
+
+    var uri = Uri(
+        scheme: 'https',
+        host: 'fml.dev',
+        path: '/privacy.html');
+
+    var text = Text(phrase.privacyPolicy, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary));
+
+    return InkWell(
+        onTap: () => launchUrl(uri),
+        child: Padding(padding: const EdgeInsets.all(10), child: text));
+  }
+
+  Widget _brandedAppView(BuildContext context, BoxConstraints constraints) {
+    var view = addAppDialog(context, false);
+    return Scaffold(backgroundColor: Theme.of(context).colorScheme.onSecondary, body: SafeArea(child: Stack(children: [Center(child: view), Positioned(left: 5, bottom: 5, child: _privacyButton())])));
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints) =>
+    (FmlEngine.type == ApplicationType.branded) ?
+    _brandedAppView(context, constraints) :
+    _multiAppView(context, constraints);
 }

@@ -1,14 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/event/manager.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/scroller/scroller_shadow_view.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/event/event.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 
 /// Scroll View
 ///
@@ -16,7 +14,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 /// This widget creates a scrollable widget that expands to its parents size
 /// constraint, if the children would overflow because they are larger they will
 /// instead be contained within this scrollable widget.
-class ScrollerView extends StatefulWidget implements IWidgetView {
+class ScrollerView extends StatefulWidget implements ViewableWidgetView {
   @override
   final ScrollerModel model;
   ScrollerView(this.model) : super(key: ObjectKey(model));
@@ -25,7 +23,7 @@ class ScrollerView extends StatefulWidget implements IWidgetView {
   State<ScrollerView> createState() => ScrollerViewState();
 }
 
-class ScrollerViewState extends WidgetState<ScrollerView> {
+class ScrollerViewState extends ViewableWidgetState<ScrollerView> {
   final ScrollController controller = ScrollController();
 
   /// When true the scroller has been scrolled to the end
@@ -38,50 +36,85 @@ class ScrollerViewState extends WidgetState<ScrollerView> {
   }
 
   @override
-  didChangeDependencies() {
-    // register event listeners
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(ScrollerView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (oldWidget.model != widget.model) {
-      // remove old event listeners
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.scrollto, onScrollTo);
-
-      // register new event listeners
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
-    }
-  }
-
-  @override
   void dispose() {
-    // remove event listeners
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.scrollto, onScrollTo);
     controller.dispose();
     super.dispose();
   }
 
-  /// Takes an event (onscroll) and uses the id to scroll to that widget
-  onScrollTo(Event event) {
-    // BuildContext context;
-    if (event.parameters!.containsKey('id')) {
-      String? id = event.parameters!['id'];
-      var child = widget.model.findDescendantOfExactType(null, id: id);
+  /// scrolls the widget with the specified context into view
+  scrollToContext(BuildContext context, {required bool animate}) {
+    Scrollable.ensureVisible(context, duration: animate ? const Duration(seconds: 1) : Duration.zero, alignment: 0.2);
+  }
 
-      // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
-      if ((child != null) && (child.context != null)) {
-        event.handled = true;
-        Scrollable.ensureVisible(child.context,
-            duration: const Duration(seconds: 1), alignment: 0.2);
+  /// scrolls the widget with the specified context into view
+  scrollTo(double? position, {bool animate = false}) {
+    if (position == null) return;
+    if (position < 0) position = 0;
+
+    var max = controller.position.maxScrollExtent;
+    if (position > max) position = max;
+
+    if (animate) {
+      controller.animateTo(position,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.easeOut);
+    }
+    else {
+      controller.jumpTo(position);
+    }
+  }
+
+  /// moves the scroller by the specified pixels in the specified direction
+  void scroll(double? pixels, {required bool animate})  {
+
+    try {
+      // check if pixels is null
+      pixels ??= 0;
+
+      // scroll up/left
+      if (pixels < 0) {
+
+        // already at the start of the list
+        if (controller.offset == 0) return;
+
+        // calculate pixels
+        pixels = controller.offset - pixels.abs();
+        if (pixels < 0) pixels = 0;
+
+        if (animate) {
+          controller.animateTo(pixels,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut);
+        }
+        else {
+          controller.jumpTo(pixels);
+        }
+        return;
       }
+
+      // scroll down/right
+      if (pixels > 0) {
+
+        // already at the end of the list
+        if (controller.position.maxScrollExtent == controller.offset) return;
+
+        // calculate pixels
+        pixels = controller.offset + pixels;
+        if (pixels > controller.position.maxScrollExtent) pixels = controller.position.maxScrollExtent;
+
+        if (animate) {
+          controller.animateTo(pixels,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut);
+        }
+        else {
+          controller.jumpTo(pixels);
+        }
+        return;
+      }
+    }
+    catch (e) {
+      Log().exception(e, caller: 'scroller.View');
     }
   }
 
@@ -216,16 +249,19 @@ class ScrollerViewState extends WidgetState<ScrollerView> {
     if (!widget.model.visible) return const Offstage();
 
     // build the body
-    var contents = BoxView(widget.model.getContentModel());
+    var contents = BoxView(widget.model.getContentModel(), (_,__) => widget.model.inflate());
 
     // build the scroll bar
     Widget view = _buildScrollbar(contents);
 
+    // add margins
+    view = addMargins(view);
+
+    // apply visual transforms
+    view = applyTransforms(view);
+
     // apply constraints
     view = applyConstraints(view, widget.model.constraints);
-
-    // add margins around the entire widget
-    view = addMargins(view);
 
     // expand in both axis
     if (widget.model.expand) {

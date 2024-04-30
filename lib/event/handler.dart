@@ -9,7 +9,6 @@ import 'package:fml/dialog/manager.dart';
 import 'package:fml/eval/evaluator.dart';
 import 'package:fml/eval/expressions.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/fml.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
@@ -17,7 +16,7 @@ import 'package:fml/template/template_manager.dart';
 import 'package:fml/token/token.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/eval/eval.dart';
 import 'package:fml/widgets/trigger/trigger_model.dart';
@@ -29,7 +28,7 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 // platform
-import 'package:fml/platform/platform.web.dart'
+import 'package:fml/platform/platform.vm.dart'
     if (dart.library.io) 'package:fml/platform/platform.vm.dart'
     if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
@@ -42,7 +41,7 @@ class EventHandler extends Eval {
   static final RegExp nonQuotedSemiColons =
       RegExp(r"\;(?=([^'\\]*(\\.|'([^'\\]*\\.)*[^'\\]*'))*[^']*$)");
 
-  final WidgetModel model;
+  final Model model;
 
   static const ExpressionEvaluator evaluator = ExpressionEvaluator();
   bool initialized = false;
@@ -103,7 +102,7 @@ class EventHandler extends Eval {
 
   // returns a list of variables based on source and target alias names
   static Map<String, dynamic> getVariables(
-      List<Binding>? bindings, WidgetModel local, WidgetModel remote,
+      List<Binding>? bindings, Model local, Model remote,
       {List<String> localAliasNames = const ['this', 'source', 'src'],
       List<String> remoteAliasNames = const ['target', 'trg']}) {
     var variables = <String, dynamic>{};
@@ -176,8 +175,6 @@ class EventHandler extends Eval {
       functions[fromEnum(EventTypes.refresh)] = _handleEventRefresh;
       functions[fromEnum(EventTypes.reset)] = _handleEventReset;
       functions[fromEnum(EventTypes.saveas)] = _handleEventSaveAs;
-      functions[fromEnum(EventTypes.scroll)] = _handleEventScroll;
-      functions[fromEnum(EventTypes.scrollto)] = _handleEventScrollTo;
       functions[fromEnum(EventTypes.set)] = _handleEventSet;
       functions[fromEnum(EventTypes.showdebug)] = _handleEventShowDebug;
       functions[fromEnum(EventTypes.showlog)] = _handleEventShowLog;
@@ -427,7 +424,7 @@ class EventHandler extends Eval {
 
   // clears the default app setting
   Future<bool> _handleEventClearDefaultApp() async {
-    System.clearDefaultApplication();
+    System.clearBranding();
     return true;
   }
 
@@ -558,7 +555,7 @@ class EventHandler extends Eval {
     duration = toInt(duration) ?? 0;
 
     try {
-      if (FmlEngine.isDesktop) {
+      if (isDesktop) {
         Log().debug("[DESKTOP] Framework onSound()");
         Log().debug('TBD: sound support for desktops');
         return true;
@@ -694,16 +691,6 @@ class EventHandler extends Eval {
     return true;
   }
 
-  /// Broadcasts the scroll event to be handled by individual widgets
-  Future<bool> _handleEventScroll([dynamic direction, dynamic pixels]) async {
-    Map<String, String?> parameters = <String, String?>{};
-    parameters['direction'] = toStr(direction);
-    parameters['pixels'] = toStr(pixels);
-    EventManager.of(model)?.broadcastEvent(
-        model, Event(EventTypes.scroll, parameters: parameters));
-    return true;
-  }
-
   /// Broadcasts the animate event to be handled by individual widgets
   Future<bool> _handleEventAnimate([dynamic id, dynamic enabled]) async {
     Map<String, String?> parameters = <String, String?>{};
@@ -721,15 +708,6 @@ class EventHandler extends Eval {
     parameters['enabled'] = toStr(enabled);
     EventManager.of(model)?.broadcastEvent(
         model, Event(EventTypes.reset, parameters: parameters));
-    return true;
-  }
-
-  /// Broadcasts the scrollto event to be handled by individual widgets
-  Future<bool> _handleEventScrollTo([dynamic id]) async {
-    Map<String, String?> parameters = <String, String?>{};
-    parameters['id'] = toStr(id);
-    EventManager.of(model)?.broadcastEvent(
-        model, Event(EventTypes.scrollto, parameters: parameters));
     return true;
   }
 
@@ -829,7 +807,7 @@ class EventHandler extends Eval {
   Future<bool?> _handleEventExecute(
       String id, String function, dynamic arguments) async {
     // get widget model
-    WidgetModel? model = Scope.findWidgetModel(id, this.model.scope);
+    Model? model = Scope.findWidgetModel(id, this.model.scope);
 
     // execute the function
     if (model != null) {

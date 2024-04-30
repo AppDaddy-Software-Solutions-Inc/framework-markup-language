@@ -1,10 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/helpers/mime.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/helpers/string.dart';
+import 'package:fml/helpers/uri.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:universal_html/html.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fml/log/manager.dart';
@@ -12,33 +16,111 @@ import 'package:fml/system.dart';
 import 'package:universal_html/js.dart';
 import 'package:fml/event/manager.dart';
 
+bool get isWeb => Platform.isWeb;
+bool get isMobile => Platform.isMobile;
+bool get isDesktop => !isMobile;
+
 class Platform {
-  // application root path
-  static Future<String?> get path async => null;
 
-  static String? get useragent {
-    const appleType = "ios";
-    const androidType = "android";
-    const desktopType = "desktop";
+  // platform
+  static String get platform => "web";
 
-    final userAgent = window.navigator.userAgent.toString().toLowerCase();
+  static bool get isWeb => kIsWeb;
+  static bool get isMobile => false;
+  static bool get isDesktop => false;
 
-    // smartphone
-    if (userAgent.contains("iphone")) return appleType;
-    if (userAgent.contains("android")) return androidType;
+  static String get operatingSystem {
 
-    // tablet
-    if (userAgent.contains("ipad")) return appleType;
-    if (window.navigator.platform!.toLowerCase().contains("macintel") &&
-        window.navigator.maxTouchPoints! > 0) return appleType;
+    final s = window.navigator.userAgent.toLowerCase();
+    if (s.contains('iphone') ||
+        s.contains('ipad') ||
+        s.contains('ipod') ||
+        s.contains('watch os')) {
+      return 'ios';
+    }
+    if (s.contains('mac os')) {
+      return 'macos';
+    }
+    if (s.contains('fuchsia')) {
+      return 'fuchsia';
+    }
+    if (s.contains('android')) {
+      return 'android';
+    }
+    if (s.contains('linux') || s.contains('cros') || s.contains('chromebook')) {
+      return 'linux';
+    }
+    if (s.contains('windows')) {
+      return 'windows';
+    }
+    return "?";
+  }
 
-    return desktopType;
+  static String get operatingSystemVersion {
+
+    final s = window.navigator.userAgent;
+
+    // Android?
+    {
+      final regExp = RegExp('Android ([a-zA-Z0-9.-_]+)');
+      final match = regExp.firstMatch(s);
+      if (match != null) {
+        final version = match.group(1) ?? '';
+        return version.replaceAll(";", "");
+      }
+    }
+
+    // iPhone OS?
+        {
+      final regExp = RegExp('iPhone OS ([a-zA-Z0-9.-_]+) ([a-zA-Z0-9.-_]+)');
+      final match = regExp.firstMatch(s);
+      if (match != null) {
+        final version = (match.group(2) ?? '').replaceAll('_', '.');
+        return version.replaceAll(";", "");
+      }
+    }
+
+    // Mac OS X?
+        {
+      final regExp = RegExp('Mac OS X ([a-zA-Z0-9.-_]+)');
+      final match = regExp.firstMatch(s);
+      if (match != null) {
+        final version = (match.group(1) ?? '').replaceAll('_', '.');
+        return version.replaceAll(";", "");
+      }
+    }
+
+    // Chrome OS?
+        {
+      final regExp = RegExp('CrOS ([a-zA-Z0-9.-_]+) ([a-zA-Z0-9.-_]+)');
+      final match = regExp.firstMatch(s);
+      if (match != null) {
+        final version = match.group(2) ?? '';
+        return version.replaceAll(";", "");
+      }
+    }
+
+    // Windows?
+        {
+      final regExp = RegExp('Windows NT ([a-zA-Z0-9.-_]+)');
+      final match = regExp.firstMatch(s);
+      if (match != null) {
+        final version = (match.group(1) ?? '');
+        return version.replaceAll(";", "");
+      }
+    }
+
+    return "?";
   }
 
   static final dynamic iframe = window.document.getElementById('invisible');
 
-  static init() async {
+  static initialize() async {
     try {
+      // set the root path for the specified platform
+      URI.rootPath = "";
+
+      // hide the logo
       window.document.getElementById("logo")!.style.visibility = "hidden";
     } catch (e) {
       Log().debug('$e');
@@ -175,7 +257,7 @@ class Platform {
       // The script in index.html sets the data value that we assign to doc:
       // `js2fml({'data': `${event.data}`, 'from': `${event.origin}`, 'to': 'fml'});`
       String doc = json['data'];
-      WidgetModel? model = System();
+      Model? model = System();
       EventManager.of(model)?.broadcastEvent(
           model, Event(EventTypes.openjstemplate, parameters: {'templ8': doc}));
     };
@@ -193,5 +275,10 @@ class Platform {
     const jsonEncoder = JsonEncoder();
     final json = jsonEncoder.convert(data);
     context.callMethod('postMessage', [json, '*']);
+  }
+
+  static Color? get backgroundColor {
+    var color = document.body?.style.backgroundColor;
+    return toColor(color);
   }
 }

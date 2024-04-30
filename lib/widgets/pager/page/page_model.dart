@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -34,7 +34,7 @@ class PageModel extends BoxModel {
     this.url = url;
   }
 
-  static PageModel? fromXml(WidgetModel? parent, XmlElement? xml,
+  static PageModel? fromXml(Model? parent, XmlElement? xml,
       {dynamic data, dynamic onTap, dynamic onLongPress}) {
     PageModel? model;
     try {
@@ -61,5 +61,5 @@ class PageModel extends BoxModel {
   }
 
   @override
-  Widget getView({Key? key}) => BoxView(this);
+  Widget getView({Key? key}) => BoxView(this, (_,__) => inflate());
 }

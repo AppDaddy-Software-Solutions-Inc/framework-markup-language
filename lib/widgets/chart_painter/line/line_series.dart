@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
 /// ChartDataPoint Object
@@ -63,7 +63,7 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
     this.showpoints = showpoints;
   }
 
-  static LineChartSeriesModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static LineChartSeriesModel? fromXml(Model parent, XmlElement xml) {
     LineChartSeriesModel? model;
     try {
       model = LineChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));

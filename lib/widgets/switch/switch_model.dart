@@ -5,23 +5,20 @@ import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/switch/switch_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class SwitchModel extends FormFieldModel implements IFormField {
-  ///////////
-  /* Width */
-  ///////////
+
+  // width of the switch
   @override
   double get width {
-    return super.width ?? 56;
+    return super.width ?? 56 + (marginLeft ?? 0) + (marginRight ?? 0);
   }
 
-  ///////////
-  /* value */
-  ///////////
+  // value of the switch
   BooleanObservable? _value;
   @override
   set value(dynamic v) {
@@ -43,9 +40,7 @@ class SwitchModel extends FormFieldModel implements IFormField {
     return false;
   }
 
-  ///////////
-  /* label */
-  ///////////
+  // label of the switch
   StringObservable? _label;
   set label(dynamic v) {
     if (_label != null) {
@@ -55,11 +50,10 @@ class SwitchModel extends FormFieldModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get label => _label?.get();
 
   SwitchModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     String? type,
     dynamic visible,
@@ -89,7 +83,7 @@ class SwitchModel extends FormFieldModel implements IFormField {
     dirty = false;
   }
 
-  static SwitchModel? fromXml(WidgetModel parent, XmlElement xml,
+  static SwitchModel? fromXml(Model parent, XmlElement xml,
       {String? type}) {
     SwitchModel? model;
     try {

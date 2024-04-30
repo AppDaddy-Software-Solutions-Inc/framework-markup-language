@@ -3,7 +3,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/table/table_footer_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -52,9 +52,9 @@ class TableFooterCellModel extends BoxModel {
   // position in row
   int get index => hdr?.cells.indexOf(this) ?? -1;
 
-  TableFooterCellModel(WidgetModel super.parent, super.id);
+  TableFooterCellModel(Model super.parent, super.id);
 
-  static TableFooterCellModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TableFooterCellModel? fromXml(Model parent, XmlElement xml) {
     TableFooterCellModel? model;
     try {
       model = TableFooterCellModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -66,7 +66,7 @@ class TableFooterCellModel extends BoxModel {
     return model;
   }
 
-  static TableFooterCellModel? fromXmlString(WidgetModel parent, String xml) {
+  static TableFooterCellModel? fromXmlString(Model parent, String xml) {
     XmlDocument? document = Xml.tryParse(xml);
     return (document != null)
         ? TableFooterCellModel.fromXml(parent, document.rootElement)

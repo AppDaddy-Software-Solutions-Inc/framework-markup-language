@@ -1,14 +1,19 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_model_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
+import 'package:fml/widgets/widget/model_interface.dart';
+import 'package:fml/widgets/widget/model.dart';
 
-abstract class WidgetState<T extends StatefulWidget> extends State<T>
+abstract class ViewableWidgetView {
+  ViewableMixin get model;
+}
+
+abstract class ViewableWidgetState<T extends StatefulWidget> extends State<T>
     implements IModelListener {
-  ViewableWidgetMixin? get model =>
-      (widget is IWidgetView) ? (widget as IWidgetView).model : null;
+
+  ViewableMixin? get model =>
+      (widget is ViewableWidgetView) ? (widget as ViewableWidgetView).model : null;
 
   @override
   void initState() {
@@ -25,8 +30,8 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T>
   @override
   void didUpdateWidget(dynamic oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget is IWidgetView && oldWidget.model != model) {
-      oldWidget.model?.removeListener(this);
+    if (oldWidget is ViewableWidgetView && oldWidget.model != model) {
+      oldWidget.model.removeListener(this);
       model?.registerListener(this);
     }
   }
@@ -38,7 +43,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T>
   }
 
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
     try {
       if (mounted) setState(() {});
     } catch (e) {
@@ -46,7 +51,37 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T>
     }
   }
 
-  // applies margins to the view based on the widget model
+  /// applies transforms like rotate, flip, etc.
+  Widget applyTransforms(Widget view) {
+
+    // opacity
+    if (model?.opacity != null) {
+      view = Opacity(opacity: model!.opacity!, child: view);
+    }
+
+    // rotation
+    if (model?.rotation != null) {
+      view = Transform.rotate(
+          angle: model!.rotation! * pi / 180,
+          child: view);
+    }
+
+    // flip
+    if (model?.flip != null) {
+      switch (model?.flip?.toLowerCase()){
+        case 'vertical':
+          view = Transform.scale(scaleY: -1, child: view);
+          break;
+        case 'horizontal':
+          view = Transform.scale(scaleX: -1, child: view);
+          break;
+      }
+    }
+
+    return view;
+  }
+
+    /// applies margins to the view based on the widget model
   Widget addMargins(Widget view) {
     if (model?.marginTop != null ||
         model?.marginBottom != null ||
@@ -121,8 +156,5 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T>
     return view;
   }
 
-  void onLayout(BoxConstraints constraints) {
-    model?.setLayoutConstraints(constraints);
-    //WidgetsBinding.instance.addPostFrameCallback((_) => model?.onLayoutComplete(model));
-  }
+  void onLayout(BoxConstraints constraints) => model?.setLayoutConstraints(constraints);
 }

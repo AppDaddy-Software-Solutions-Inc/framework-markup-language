@@ -1,10 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/icon/icon_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class IconView extends StatefulWidget implements IWidgetView {
+class IconView extends StatefulWidget implements ViewableWidgetView {
   @override
   final IconModel model;
 
@@ -14,7 +13,7 @@ class IconView extends StatefulWidget implements IWidgetView {
   State<IconView> createState() => _IconViewState();
 }
 
-class _IconViewState extends WidgetState<IconView> {
+class _IconViewState extends ViewableWidgetState<IconView> {
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
@@ -37,6 +36,9 @@ class _IconViewState extends WidgetState<IconView> {
 
     // add margins
     view = addMargins(view);
+
+    // apply visual transforms
+    view = applyTransforms(view);
 
     return view;
   }

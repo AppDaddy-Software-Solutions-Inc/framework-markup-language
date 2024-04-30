@@ -28,7 +28,6 @@ class DecoratedInputModel extends FormFieldModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get dense => _dense?.get() ?? false;
 
   /// The hint that sits inside of the input, and floats above if not dense and filled.
@@ -163,19 +162,6 @@ class DecoratedInputModel extends FormFieldModel {
 
   bool get expand => _expand?.get() ?? false;
 
-  // label
-  StringObservable? _label;
-  set label(dynamic v) {
-    if (_label != null) {
-      _label!.set(v);
-    } else if (v != null) {
-      _label = StringObservable(Binding.toKey(id, 'label'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get label => _label?.get();
-
   // font size
   DoubleObservable? _size;
   set size(dynamic v) {
@@ -228,7 +214,6 @@ class DecoratedInputModel extends FormFieldModel {
     if (borderColor != null) this.borderColor = borderColor;
     if (borderWidth != null) this.borderWidth = borderWidth;
     if (textcolor != null) this.textcolor = textcolor;
-    if (label != null) this.label = label;
   }
 
   /// Deserializes the FML template elements, attributes and children
@@ -242,6 +227,7 @@ class DecoratedInputModel extends FormFieldModel {
     borderColor = Xml.get(node: xml, tag: 'bordercolor');
     borderWidth = Xml.get(node: xml, tag: 'borderwidth');
     radius = Xml.get(node: xml, tag: 'radius');
+    dense = Xml.get(node: xml, tag: 'dense');
   }
 
   // set the field color based on the error state
@@ -266,7 +252,7 @@ class DecoratedInputModel extends FormFieldModel {
     if (!enabled) return Theme.of(context).colorScheme.primary.withOpacity(0.5);
 
     // alarm
-    if (!isNullOrEmpty(alarmText)) return Theme.of(context).colorScheme.error;
+    if (!isNullOrEmpty(alarm)) return Theme.of(context).colorScheme.error;
 
     // user defined
     if (color != null) return color;

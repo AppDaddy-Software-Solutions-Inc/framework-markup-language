@@ -3,14 +3,13 @@ import 'dart:convert';
 import 'package:fml/phrase.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/scribble/scribble_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui';
-import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:perfect_freehand/perfect_freehand.dart';
 
-class ScribbleView extends StatefulWidget implements IWidgetView {
+class ScribbleView extends StatefulWidget implements ViewableWidgetView {
   @override
   final ScribbleModel model;
   ScribbleView(this.model) : super(key: ObjectKey(model));
@@ -19,7 +18,7 @@ class ScribbleView extends StatefulWidget implements IWidgetView {
   State<ScribbleView> createState() => _ScribbleViewState();
 }
 
-class _ScribbleViewState extends WidgetState<ScribbleView> {
+class _ScribbleViewState extends ViewableWidgetState<ScribbleView> {
   double width = 300;
   double height = 200;
 
@@ -90,7 +89,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView> {
   }
 
   void onPointerDown(PointerDownEvent details) {
-    if (canScribble == true) {
+    if (canScribble) {
       options = StrokeOptions(
         simulatePressure: details.kind != PointerDeviceKind.stylus,
       );
@@ -115,7 +114,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView> {
   }
 
   void onPointerMove(PointerMoveEvent details) {
-    if (canScribble == true) {
+    if (canScribble) {
       final box = context.findRenderObject() as RenderBox;
       final offset = box.globalToLocal(details.position);
       late final PointVector point;
@@ -141,7 +140,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView> {
   }
 
   void onPointerUp(PointerUpEvent details) {
-    if (canScribble == true) {
+    if (canScribble) {
       lines = List.from(lines)..add(line!);
       linesStreamController.add(lines);
     }
@@ -290,7 +289,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               buildClearButton(),
-                              saveVisible == true
+                              saveVisible
                                   ? buildSaveButton()
                                   : Container(),
                             ])))
@@ -305,13 +304,13 @@ class _ScribbleViewState extends WidgetState<ScribbleView> {
             borderRadius: BorderRadius.only(
           topLeft: const Radius.circular(10.0),
           topRight:
-              saveVisible == true ? Radius.zero : const Radius.circular(10.0),
+              saveVisible ? Radius.zero : const Radius.circular(10.0),
         )),
       )),
       onPressed: clear,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-        child: saveVisible == true ? Text(phrase.clear) : Text(phrase.reset),
+        child: saveVisible ? Text(phrase.clear) : Text(phrase.reset),
       ),
     );
   }
@@ -414,7 +413,12 @@ class _ScribbleViewState extends WidgetState<ScribbleView> {
     );
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.constraints);
+    view = applyConstraints(view, widget.model.constraints);
+
+    // apply visual transforms
+    view = applyTransforms(view);
+
+    return view;
   }
 }
 

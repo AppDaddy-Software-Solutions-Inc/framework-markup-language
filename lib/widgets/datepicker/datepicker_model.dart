@@ -5,7 +5,7 @@ import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/datepicker/datepicker_view.dart';
 import 'package:intl/intl.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -118,7 +118,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
     if (_value != null) {
       _value!.set(v);
     } else if (v != null ||
-        WidgetModel.isBound(this, Binding.toKey(id, 'value'))) {
+        Model.isBound(this, Binding.toKey(id, 'value'))) {
       _value = StringObservable(Binding.toKey(id, 'value'), v,
           scope: scope, listener: onPropertyChange);
     }
@@ -141,7 +141,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
   bool get clear => _clear?.get() ?? false;
 
   DatepickerModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     String? type,
     dynamic format,
@@ -152,7 +152,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
     if (clear != null) this.clear = clear;
   }
 
-  static DatepickerModel? fromXml(WidgetModel parent, XmlElement xml,
+  static DatepickerModel? fromXml(Model parent, XmlElement xml,
       {String? type}) {
     DatepickerModel? model;
     try {
@@ -188,11 +188,9 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
     textcolor = Xml.get(node: xml, tag: 'textcolor');
     weight = Xml.get(node: xml, tag: 'weight');
     style = Xml.get(node: xml, tag: 'style');
-    dense = Xml.get(node: xml, tag: 'dense');
     clear = Xml.get(node: xml, tag: 'clear');
     size = Xml.get(node: xml, tag: 'size');
     icon = Xml.get(node: xml, tag: 'icon');
-    padding = Xml.get(node: xml, tag: 'padding');
   }
 
   @override

@@ -5,27 +5,67 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/list/list_view.dart';
 import 'package:fml/widgets/list/item/list_item_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class ListModel extends DecoratedWidgetModel implements IForm, IScrollable {
+class ListModel extends BoxModel implements IForm, IScrollable {
+
+  // indicates if the widget expands infinitely in
+  // it's horizontal axis if not constrained
+  @override
+  bool get canExpandInfinitelyWide => !hasBoundedWidth;
+
+  // indicates if the widget expands infinitely in
+  // it's vertical axis if not constrained
+  @override
+  bool get canExpandInfinitelyHigh => !hasBoundedHeight;
+
+  // indicates if the widget will grow in
+  // its horizontal axis
+  @override
+  bool get expandHorizontally => !hasBoundedWidth;
+
+  // indicates if the widget will grow in
+  // its vertical axis
+  @override
+  bool get expandVertically => !hasBoundedHeight;
+
+  // maintains list of items
   final HashMap<int, ListItemModel> items = HashMap<int, ListItemModel>();
 
   // full list of data
   // pointing to data broker data
   Data? _dataset;
 
-  // data sourced prototype
+  // item extent
+  double get itemExtent {
+   if (items.isEmpty) return 0;
+   switch (direction) {
+     case 'horizontal':
+       return items.values.first.viewWidth ?? items.values.first.width ?? 0;
+     case 'vertical':
+     default:
+       return items.values.first.viewHeight ?? items.values.first.height ?? 0;
+   }
+  }
+
+  // max extent - items * item extent
+  double get maxExtent {
+    int i = isNullOrEmpty(datasource) ? items.length : _dataset?.length ?? 0;
+    return itemExtent * i;
+  }
+
+  // the list item prototype
   XmlElement? prototype;
 
   // returns the number of records in the dataset
@@ -33,30 +73,6 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable {
 
   // IDataSource
   IDataSource? myDataSource;
-
-  BooleanObservable? _scrollShadows;
-  set scrollShadows(dynamic v) {
-    if (_scrollShadows != null) {
-      _scrollShadows!.set(v);
-    } else if (v != null) {
-      _scrollShadows = BooleanObservable(Binding.toKey(id, 'scrollshadows'), v,
-          scope: scope);
-    }
-  }
-
-  bool get scrollShadows => _scrollShadows?.get() ?? false;
-
-  BooleanObservable? _scrollButtons;
-  set scrollButtons(dynamic v) {
-    if (_scrollButtons != null) {
-      _scrollButtons!.set(v);
-    } else if (v != null) {
-      _scrollButtons = BooleanObservable(Binding.toKey(id, 'scrollbuttons'), v,
-          scope: scope);
-    }
-  }
-
-  bool get scrollButtons => _scrollButtons?.get() ?? false;
 
   /// Post tells the form whether or not to include the field in the posting body. If post is null, visible determines post.
   BooleanObservable? _post;
@@ -187,8 +203,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable {
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  dynamic get direction => _direction?.get();
+  String get direction => _direction?.get()?.toLowerCase().trim() ?? 'vertical';
 
   BooleanObservable? _collapsed;
   set collapsed(dynamic v) {
@@ -244,7 +259,6 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable {
       {dynamic direction,
       dynamic reverse,
       dynamic allowDrag,
-      dynamic scrollShadows,
       dynamic onpulldown}) {
     // instantiate busy observable
     busy = false;
@@ -253,16 +267,13 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable {
     this.reverse = reverse;
     this.allowDrag = allowDrag;
     this.onpulldown = onpulldown;
-    this.scrollShadows = scrollShadows;
-    scrollButtons = scrollButtons;
-    collapsed = collapsed;
     moreUp = false;
     moreDown = false;
     moreLeft = false;
     moreRight = false;
   }
 
-  static ListModel? fromXml(WidgetModel? parent, XmlElement xml) {
+  static ListModel? fromXml(Model? parent, XmlElement xml) {
     ListModel? model;
     try {
       model = ListModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -284,8 +295,6 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable {
     // properties
     direction = Xml.get(node: xml, tag: 'direction');
     allowDrag = Xml.get(node: xml, tag: 'allowDrag');
-    scrollShadows = Xml.get(node: xml, tag: 'scrollshadows');
-    scrollButtons = Xml.get(node: xml, tag: 'scrollbuttons');
     collapsed = Xml.get(node: xml, tag: 'collapsed');
     onpulldown = Xml.get(node: xml, tag: 'onpulldown');
     reverse = Xml.get(node: xml, tag: 'reverse');
@@ -304,7 +313,9 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable {
         findChildrenOfExactType(ListItemModel).cast<ListItemModel>();
 
     // set prototype
-    if ((!isNullOrEmpty(datasource)) && (items.isNotEmpty)) {
+    if (!isNullOrEmpty(datasource) && items.isNotEmpty) {
+
+      // set prototype
       prototype = prototypeOf(items.first.element);
       items.removeAt(0);
     }
@@ -463,85 +474,70 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable {
     }
   }
 
+  /// scroll +/- pixels or to an item
   @override
-  Future<bool?> execute(
-      String caller, String propertyOrFunction, List<dynamic> arguments) async {
-    /// setter
-    if (scope == null) return null;
-    var function = propertyOrFunction.toLowerCase().trim();
+  void scroll(double? pixels, {bool animate = false}) {
 
-    switch (function) {
-      // selects the item by index
-      case "select":
-        int index = toInt(elementAt(arguments, 0)) ?? -1;
-        if (index >= 0 && index < items.length) {
-          var model = items[index];
-          if (model != null && model.selected == false) onTap(model);
-        }
-        return true;
+    // get the view
+    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
 
-      // de-selects the item by index
-      case "deselect":
-        int index = toInt(elementAt(arguments, 0)) ?? -1;
-        if (index >= 0 && _dataset != null && index < _dataset!.length) {
-          var model = items[index];
-          if (model != null && model.selected == true) onTap(model);
-        }
-        return true;
+    // scroll specified number of pixels
+    // from current position
+    view?.scroll(pixels, animate: animate);
+  }
 
-      // move an item
-      case "move":
-        moveItem(toInt(elementAt(arguments, 0)) ?? 0,
-            toInt(elementAt(arguments, 1)) ?? 0);
-        return true;
+  /// scroll +/- pixels or to an item
+  @override
+  void scrollTo(String? id, String? value, {bool animate = false}) {
 
-      // delete an item
-      case "delete":
-        deleteItem(toInt(elementAt(arguments, 0)));
-        return true;
+    if (id == null) return;
 
-      // add an item
-      case "insert":
-        insertItem(
-            toStr(elementAt(arguments, 0)), toInt(elementAt(arguments, 1)));
-        return true;
+    // get the view
+    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
 
-      // de-selects the item by index
-      case "clear":
-        onTap(null);
-        return true;
+    // scroll to top
+    if (id.trim().toLowerCase() == 'top' && isNullOrEmpty(value)) {
+      view?.scrollTo(0, animate: false);
+      return;
     }
-    return super.execute(caller, propertyOrFunction, arguments);
-  }
 
-  @override
-  void scrollUp(int pixels) {
-    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
-    if (view == null) return;
+    // scroll to bottom
+    if (id.trim().toLowerCase() == 'bottom' && isNullOrEmpty(value)) {
+      view?.scrollTo(double.maxFinite, animate: false);
+      return;
+    }
 
-    // already at top
-    if (view.controller.offset == 0) return;
+    // scroll to specific pixel position
+    if (isNumeric(id) && isNullOrEmpty(value)) {
+      view?.scrollTo(toDouble(id), animate: false);
+    }
 
-    var to = view.controller.offset - pixels;
-    to = (to < 0) ? 0 : to;
+    // build out the items
+    // this may lag the system if the list is large
+    if (items.length != _dataset?.length) {
+      for (int i = 0; i < _dataset!.length; i++) {
+        if (!items.containsKey(i)) {
+          var item = getItemModel(i);
+          if (item != null) {
+            items[i] = item;
+          }
+        }
+      }
+    }
 
-    view.controller.jumpTo(to);
-  }
+    // find the first item containing a child with the specified
+    // id and matching value
+    for (var item in items.values) {
+      var child = item.descendants?.toList().firstWhereOrNull((child) => child.id == id && child.value == (value ?? child.value));
+      if (child != null) {
 
-  @override
-  void scrollDown(int pixels) {
-    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
-    if (view == null) return;
+        // get the item's position in the list
+        int i = items.values.toList().indexOf(item);
 
-    if (view.controller.position.pixels >=
-        view.controller.position.maxScrollExtent) return;
-
-    var to = view.controller.offset + pixels;
-    to = (to > view.controller.position.maxScrollExtent)
-        ? view.controller.position.maxScrollExtent
-        : to;
-
-    view.controller.jumpTo(to);
+        // scroll to that item
+        view?.scrollTo(i * itemExtent, animate: animate);
+      }
+    }
   }
 
   @override
@@ -661,6 +657,67 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable {
       Log().exception(e);
     }
     return true;
+  }
+
+  @override
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function) {
+    // selects the item by index
+      case "select":
+        int index = toInt(elementAt(arguments, 0)) ?? -1;
+        if (index >= 0 && index < items.length) {
+          var model = items[index];
+          if (model != null && model.selected == false) onTap(model);
+        }
+        return true;
+
+    // de-selects the item by index
+      case "deselect":
+        int index = toInt(elementAt(arguments, 0)) ?? -1;
+        if (index >= 0 && _dataset != null && index < _dataset!.length) {
+          var model = items[index];
+          if (model != null && model.selected == true) onTap(model);
+        }
+        return true;
+
+    // move an item
+      case "move":
+        moveItem(toInt(elementAt(arguments, 0)) ?? 0,
+            toInt(elementAt(arguments, 1)) ?? 0);
+        return true;
+
+    // delete an item
+      case "delete":
+        deleteItem(toInt(elementAt(arguments, 0)));
+        return true;
+
+    // add an item
+      case "insert":
+        insertItem(
+            toStr(elementAt(arguments, 0)), toInt(elementAt(arguments, 1)));
+        return true;
+
+    // de-selects the item by index
+      case "clear":
+        onTap(null);
+        return true;
+
+      // scroll +/- pixels
+      case "scroll":
+        scroll(toDouble(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? true);
+        return true;
+
+      // scroll to item by id
+      case "scrollto":
+        scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 2)) ?? true);
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   @override

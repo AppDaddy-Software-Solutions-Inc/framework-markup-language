@@ -2,11 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/slider/slider_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class SliderView extends StatefulWidget implements IWidgetView {
+class SliderView extends StatefulWidget implements ViewableWidgetView {
   @override
   final SliderModel model;
   final dynamic onChangeCallback;
@@ -16,10 +15,62 @@ class SliderView extends StatefulWidget implements IWidgetView {
   State<SliderView> createState() => _SliderViewState();
 }
 
-class _SliderViewState extends WidgetState<SliderView>
+class _SliderViewState extends ViewableWidgetState<SliderView>
     with WidgetsBindingObserver {
+
+  onChange(double value) async {
+    if (!widget.model.editable || !widget.model.enabled) return;
+
+    // value changed?
+    if (widget.model.value != value) {
+      // set answer
+      await widget.model.answer(value);
+
+      // fire the onChange event
+      await widget.model.onChange(mounted ? context : null);
+    }
+  }
+
+  onRangeChange(RangeValues values) async {
+    List modelValues = widget.model.value?.split(',') ??
+        [widget.model.minimum, widget.model.maximum];
+    double value1 = toDouble(modelValues[0]) ?? widget.model.minimum ?? 0;
+    double value2 =
+        (modelValues.length > 1 ? toDouble(modelValues[1]) : value1) ??
+            widget.model.maximum ??
+            0;
+
+    if (!widget.model.editable || !widget.model.enabled) return;
+
+    if (toDouble(value1) != values.start) {
+      /* Retain Rollback Value */
+      dynamic old = '$value1,$value2';
+
+      /* Fire on Change Event */
+      await widget.model.answer('${values.start},${values.end}', range: true);
+      if ('${values.start},${values.end}' != old) {
+        await widget.model.onChange(mounted ? context : null);
+      }
+    }
+
+    // End Value Changed?
+    else if (toDouble(value2) != values.end) {
+      /* Retain Rollback Value */
+      dynamic old = '$value1,$value2';
+
+      // Set Answer
+      await widget.model.answer('${values.start},${values.end}', range: true);
+
+      // Fire on Change Event
+      if ('${values.start},${values.end}' != old) {
+        await widget.model.onChange(mounted ? context : null);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
@@ -94,7 +145,7 @@ class _SliderViewState extends WidgetState<SliderView>
     // get the model constraints
     var modelConstraints = widget.model.constraints;
 
-    // constrain the input to 200 pixels if not constrained by the model
+    // constrain the input to 200 pixels in width if not constrained by the model
     if (!modelConstraints.hasHorizontalExpansionConstraints) {
       modelConstraints.width = 200;
     }
@@ -102,63 +153,12 @@ class _SliderViewState extends WidgetState<SliderView>
     // add margins
     view = addMargins(view);
 
+    // apply visual transforms
+    view = applyTransforms(view);
+
     // apply constraints
     view = applyConstraints(view, modelConstraints);
 
     return view;
-  }
-
-  String validate(String text) {
-    return 'field must be supplied';
-  }
-
-  onChange(double value) async {
-    if (!widget.model.editable || !widget.model.enabled) return;
-
-    // value changed?
-    if (widget.model.value != value) {
-      // set answer
-      await widget.model.answer(value);
-
-      // fire the onChange event
-      await widget.model.onChange(mounted ? context : null);
-    }
-  }
-
-  onRangeChange(RangeValues values) async {
-    List modelValues = widget.model.value?.split(',') ??
-        [widget.model.minimum, widget.model.maximum];
-    double value1 = toDouble(modelValues[0]) ?? widget.model.minimum ?? 0;
-    double value2 =
-        (modelValues.length > 1 ? toDouble(modelValues[1]) : value1) ??
-            widget.model.maximum ??
-            0;
-
-    if (!widget.model.editable || !widget.model.enabled) return;
-
-    if (toDouble(value1) != values.start) {
-      /* Retain Rollback Value */
-      dynamic old = '$value1,$value2';
-
-      /* Fire on Change Event */
-      await widget.model.answer('${values.start},${values.end}', range: true);
-      if ('${values.start},${values.end}' != old) {
-        await widget.model.onChange(mounted ? context : null);
-      }
-    }
-
-    // End Value Changed?
-    else if (toDouble(value2) != values.end) {
-      /* Retain Rollback Value */
-      dynamic old = '$value1,$value2';
-
-      // Set Answer
-      await widget.model.answer('${values.start},${values.end}', range: true);
-
-      // Fire on Change Event
-      if ('${values.start},${values.end}' != old) {
-        await widget.model.onChange(mounted ? context : null);
-      }
-    }
   }
 }

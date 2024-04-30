@@ -1,16 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/positioned/positioned_model.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class PagerView extends StatefulWidget implements IWidgetView {
+class PagerView extends StatefulWidget implements ViewableWidgetView {
   @override
   final PagerModel model;
   PagerView(this.model) : super(key: ObjectKey(model));
@@ -19,7 +17,7 @@ class PagerView extends StatefulWidget implements IWidgetView {
   State<PagerView> createState() => PagerViewState();
 }
 
-class PagerViewState extends WidgetState<PagerView> {
+class PagerViewState extends ViewableWidgetState<PagerView> {
   PageController? _controller;
   List<Widget> _pages = [];
   Widget? busy;
@@ -46,6 +44,7 @@ class PagerViewState extends WidgetState<PagerView> {
     if (pageNum == null && page is String) {
       switch (page.trim().toLowerCase()) {
         case 'previous':
+        case 'prev':
           pageNum = currentPage - 1;
           if (pageNum < 1) pageNum = pages;
           break;
@@ -83,39 +82,46 @@ class PagerViewState extends WidgetState<PagerView> {
     }
   }
 
-  // called by models inflate
-  List<Widget> inflate() {
+  @override
+  Widget build(BuildContext context) => BoxView(widget.model, builder);
+
+  List<Widget> builder(BuildContext context, BoxConstraints constraints) {
+
     List<Widget> list = [];
 
     // create page view
     if (pageView == null) {
+
       // Build Pages
       _pages = [];
       for (PageModel model in widget.model.pages) {
-        var view = LayoutBoxChildData(model: model, child: model.getView());
+        var view = model.getView();
         _pages.add(view);
       }
+
       pageView = PageView.builder(
           controller: _controller,
           itemBuilder: buildPage,
           itemCount: _pages.length,
           onPageChanged: (int page) => widget.model.currentpage = page + 1);
-      pageView = LayoutBoxChildData(model: widget.model, child: pageView!);
     }
+
     list.add(pageView!);
 
     // create pager
     if (pager == null && widget.model.pager) {
-      var model = ViewableWidgetModel(widget.model, null);
+
       pager = DotsIndicator(
           controller: _controller!,
           itemCount: _pages.length,
           color:
-              widget.model.color ?? Theme.of(context).colorScheme.onBackground,
+          widget.model.color ?? Theme.of(context).colorScheme.onBackground,
           onPageSelected: (int page) =>
               pageTo(page + 1, widget.model.transition));
-      pager = LayoutBoxChildData(model: model, bottom: 8, child: pager!);
+
+      pager = PositionedModel(widget.model, null, bottom: 8, child: pager!).getView();
     }
+
     if (pager != null) {
       list.add(pager!);
     }
@@ -125,15 +131,11 @@ class PagerViewState extends WidgetState<PagerView> {
       var model = BusyModel(widget.model,
           visible: widget.model.busy, observable: widget.model.busyObservable);
       busy = model.getView();
-      busy = LayoutBoxChildData(model: model, child: busy!);
     }
     list.add(busy!);
 
     return list;
   }
-
-  @override
-  Widget build(BuildContext context) => BoxView(widget.model);
 }
 
 class DotsIndicator extends AnimatedWidget {
@@ -174,6 +176,7 @@ class DotsIndicator extends AnimatedWidget {
             (index == (controller.page ?? controller.initialPage) ? 1 : 0);
     return SizedBox(
       width: _kDotSpacing,
+      height: (_kDotSize * zoom),
       child: Center(
         child: Material(
           color: color,

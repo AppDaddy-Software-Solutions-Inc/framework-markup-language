@@ -1,21 +1,22 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/menu/menu_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class MenuModel extends DecoratedWidgetModel implements IScrollable {
+class MenuModel extends ViewableModel implements IScrollable {
   static const String typeList = "list";
   static const String typeButton = "button";
 
@@ -65,7 +66,7 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable {
     busy = false;
   }
 
-  static MenuModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static MenuModel? fromXml(Model parent, XmlElement xml) {
     MenuModel? model;
     try {
       model = MenuModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -77,7 +78,7 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable {
     return model;
   }
 
-  static MenuModel? fromMap(WidgetModel parent, Map<String, String> map) {
+  static MenuModel? fromMap(Model parent, Map<String, String> map) {
     MenuModel? model;
     try {
       model = MenuModel(parent, newId());
@@ -176,34 +177,54 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable {
     super.dispose();
   }
 
+  /// scroll +/- pixels or to an item
   @override
-  void scrollUp(int pixels) {
+  void scroll(double? pixels, {bool animate = false}) {
+
+    // get the view
     MenuViewState? view = findListenerOfExactType(MenuViewState);
-    if (view == null) return;
 
-    // already at top
-    if (view.controller.offset == 0) return;
-
-    var to = view.controller.offset - pixels;
-    to = (to < 0) ? 0 : to;
-
-    view.controller.jumpTo(to);
+    // scroll specified number of pixels
+    // from current position
+    view?.scroll(pixels, animate: animate);
   }
 
+  /// scroll to specified item by id and value
   @override
-  void scrollDown(int pixels) {
+  void scrollTo(String? id, String? value, {bool animate = false}) {
+
+    if (id == null) return;
+
+    // get the view
     MenuViewState? view = findListenerOfExactType(MenuViewState);
-    if (view == null) return;
 
-    if (view.controller.position.pixels >=
-        view.controller.position.maxScrollExtent) return;
+    // scroll to top
+    if (id.trim().toLowerCase() == 'top' && isNullOrEmpty(value)) {
+      view?.scrollTo(0, animate: false);
+      return;
+    }
 
-    var to = view.controller.offset + pixels;
-    to = (to > view.controller.position.maxScrollExtent)
-        ? view.controller.position.maxScrollExtent
-        : to;
+    // scroll to bottom
+    if (id.trim().toLowerCase() == 'bottom' && isNullOrEmpty(value)) {
+      view?.scrollTo(double.maxFinite, animate: false);
+      return;
+    }
 
-    view.controller.jumpTo(to);
+    // scroll to specific pixel position
+    if (isNumeric(id) && isNullOrEmpty(value)) {
+      view?.scrollTo(toDouble(id), animate: false);
+    }
+
+
+    // find the first item containing a child with the specified
+    // id and matching value
+    for (var item in items) {
+      var child = item.descendants?.toList().firstWhereOrNull((child) => child.id == id && child.value == (value ?? child.value));
+      if (child != null) {
+        view?.scrollToContext(child.context, animate: animate);
+        break;
+      }
+    }
   }
 
   @override
@@ -250,6 +271,27 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable {
         notifyListeners('list', items);
       }
     }
+  }
+
+  @override
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function) {
+    // scroll +/- pixels
+      case "scroll":
+        scroll(toDouble(elementAt(arguments, 0)), animate: toBool(elementAt(arguments, 1)) ?? true);
+        return true;
+
+    // scroll to item by id
+      case "scrollto":
+        scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 1)) ?? true);
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   @override

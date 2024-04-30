@@ -6,7 +6,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -65,7 +65,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
     this.showpoints = showpoints;
   }
 
-  static BarChartSeriesModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static BarChartSeriesModel? fromXml(Model parent, XmlElement xml) {
     BarChartSeriesModel? model;
     try {
       model = BarChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));

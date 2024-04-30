@@ -8,7 +8,7 @@ import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
 enum METHODS { launch }
@@ -36,9 +36,9 @@ class ColorpickerModel extends DecoratedInputModel implements IFormField {
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
-  ColorpickerModel(WidgetModel super.parent, super.id);
+  ColorpickerModel(Model super.parent, super.id);
 
-  static ColorpickerModel? fromXml(WidgetModel parent, XmlElement xml,
+  static ColorpickerModel? fromXml(Model parent, XmlElement xml,
       {String? type}) {
     ColorpickerModel? model;
     try {

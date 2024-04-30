@@ -5,7 +5,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:xml/xml.dart';
 import 'mqtt_interface.dart';
@@ -179,7 +179,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener {
   // subscriptions
   List<String> subscriptions = [];
 
-  MqttModel(WidgetModel parent, String? id) : super(parent, id) {
+  MqttModel(Model parent, String? id) : super(parent, id) {
     _received =
         IntegerObservable(Binding.toKey(id, 'received'), 0, scope: scope);
     _topic = StringObservable(Binding.toKey(id, 'topic'), null, scope: scope);
@@ -187,7 +187,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener {
         StringObservable(Binding.toKey(id, 'message'), null, scope: scope);
   }
 
-  static MqttModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static MqttModel? fromXml(Model parent, XmlElement xml) {
     MqttModel? model;
     try {
       model = MqttModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -294,7 +294,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener {
   @override
   onMessage(Payload payload) {
     // enabled?
-    if (enabled == false) return;
+    if (!enabled) return;
 
     // increment the number of messages received
     _received.set(received + 1);

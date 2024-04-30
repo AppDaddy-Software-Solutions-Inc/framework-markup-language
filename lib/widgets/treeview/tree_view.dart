@@ -2,14 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/treeview/tree_model.dart';
 import 'package:fml/widgets/treeview/node/tree_node_view.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 
-class TreeView extends StatefulWidget implements IWidgetView {
+class TreeView extends StatefulWidget implements ViewableWidgetView {
   @override
   final TreeModel model;
   TreeView(this.model) : super(key: ObjectKey(model));
@@ -18,7 +16,7 @@ class TreeView extends StatefulWidget implements IWidgetView {
   State<TreeView> createState() => _TreeViewState();
 }
 
-class _TreeViewState extends WidgetState<TreeView> {
+class _TreeViewState extends ViewableWidgetState<TreeView> {
   @override
   didChangeDependencies() {
     // register event listeners
@@ -52,9 +50,12 @@ class _TreeViewState extends WidgetState<TreeView> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => BoxView(widget.model, builder);
+
+  List<Widget> builder(BuildContext context, BoxConstraints constraints) {
+
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return const Offstage();
+    if (!widget.model.visible) return const [Offstage()];
 
     // View
     Widget view = ClipRect(
@@ -64,10 +65,7 @@ class _TreeViewState extends WidgetState<TreeView> {
             itemBuilder: (context, index) =>
                 TreeNodeView(widget.model.nodes[index])));
 
-    // create as Box
-    view = BoxView(widget.model,
-        children: [LayoutBoxChildData(model: widget.model, child: view)]);
-
-    return view;
+    // wrap in box
+    return [view];
   }
 }

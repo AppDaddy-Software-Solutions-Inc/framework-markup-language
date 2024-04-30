@@ -1,14 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/theme/theme_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class ThemeModel extends DecoratedWidgetModel {
+class ThemeModel extends ViewableModel {
   static String myId = 'THEME';
 
   StringObservable? _brightness;
@@ -32,7 +32,6 @@ class ThemeModel extends DecoratedWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   Color? get colorScheme => _colorScheme?.get();
 
   StringObservable? _font;
@@ -352,12 +351,12 @@ class ThemeModel extends DecoratedWidgetModel {
 
   Color? get onErrorContainer => _onErrorContainer?.get();
 
-  ThemeModel(WidgetModel super.parent, super.id)
+  ThemeModel(Model super.parent, super.id)
       : super(scope: Scope(id: myId));
 
   // Map<String, dynamic> themeValues = Map<String, dynamic>();
 
-  static ThemeModel? fromXml(WidgetModel parent, XmlElement xml,
+  static ThemeModel? fromXml(Model parent, XmlElement xml,
       {String? type}) {
     ThemeModel? model;
     try {

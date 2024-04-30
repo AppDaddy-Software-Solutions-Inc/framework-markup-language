@@ -1,36 +1,35 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
-import 'package:fml/observable/observables/color.dart';
 import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/observables/integer.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
 enum OpenMethods { tap, longpress, hover, manual }
 
-class TooltipModel extends ViewableWidgetModel {
+class TooltipModel extends ViewableModel {
+
   OpenMethods? openMethod;
 
-  // color
-  ColorObservable? _color;
-  set color(dynamic v) {
-    if (_color != null) {
-      _color!.set(v);
+  /// [padding] Padding within the tooltip.
+  DoubleObservable? _padding;
+  set padding(dynamic v) {
+    if (_padding != null) {
+      _padding!.set(v);
     } else if (v != null) {
-      _color = ColorObservable(Binding.toKey(id, 'color'), v,
+      _padding = DoubleObservable(Binding.toKey(id, 'padding'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  Color? get color => _color?.get();
-
+  double get padding => _padding?.get() ?? 10.0;
+  
+  // position of the tooltip display
   StringObservable? _position;
   set position(dynamic v) {
     if (_position != null) {
@@ -40,7 +39,6 @@ class TooltipModel extends ViewableWidgetModel {
           StringObservable(Binding.toKey(id, 'position'), v, scope: scope);
     }
   }
-
   String? get position => _position?.get();
 
   /// [distance] Space between the tooltip and the trigger.
@@ -53,7 +51,6 @@ class TooltipModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double get distance => _distance?.get() ?? 8.0;
 
   /// [radius] Border radius around the tooltip.
@@ -66,7 +63,6 @@ class TooltipModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double get radius => _radius?.get() ?? 8.0;
 
   /// [modal] Shows a dark layer behind the tooltip.
@@ -79,7 +75,6 @@ class TooltipModel extends ViewableWidgetModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get modal => _modal?.get() ?? false;
 
   /// [arrow] Show the tip arrow?
@@ -110,9 +105,9 @@ class TooltipModel extends ViewableWidgetModel {
 
   int get timeout => _timeout?.get() ?? 0;
 
-  TooltipModel(WidgetModel super.parent, super.id);
+  TooltipModel(Model super.parent, super.id);
 
-  static TooltipModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TooltipModel? fromXml(Model parent, XmlElement xml) {
     TooltipModel? model;
     try {
       model = TooltipModel(parent, Xml.get(node: xml, tag: 'id'));

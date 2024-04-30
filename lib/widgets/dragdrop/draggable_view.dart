@@ -2,14 +2,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
-import 'package:fml/widgets/viewable/viewable_widget_mixin.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:flutter/services.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class DraggableView extends StatefulWidget implements IWidgetView {
+class DraggableView extends StatefulWidget implements ViewableWidgetView {
   @override
-  final ViewableWidgetMixin model;
+  final ViewableMixin model;
   final Widget view;
 
   DraggableView(this.model, this.view) : super(key: ObjectKey(model));
@@ -18,7 +17,7 @@ class DraggableView extends StatefulWidget implements IWidgetView {
   State<DraggableView> createState() => _DraggableViewState();
 }
 
-class _DraggableViewState extends WidgetState<DraggableView> {
+class _DraggableViewState extends ViewableWidgetState<DraggableView> {
   Timer? autoscroll;
 
   double? width;
@@ -121,18 +120,18 @@ class _DraggableViewState extends WidgetState<DraggableView> {
       double topY = position.dy;
       double bottomY = topY + size.height;
 
-      const detectedRange = 100;
-      const pixels = 3;
+      const detectedRange = 100.0;
+      const pixels = 3.0;
       if (event.position.dy < topY + detectedRange) {
-        scroller.scrollUp(pixels);
+        scroller.scroll(-1 * pixels);
         autoscroll = Timer.periodic(const Duration(milliseconds: 100),
-            (_) => scroller.scrollUp(detectedRange));
+            (_) => scroller.scroll(-1 * detectedRange));
       }
 
       if (event.position.dy > bottomY - detectedRange) {
-        scroller.scrollDown(pixels);
+        scroller.scroll(pixels);
         autoscroll = Timer.periodic(const Duration(milliseconds: 100),
-            (_) => scroller.scrollDown(detectedRange));
+            (_) => scroller.scroll(detectedRange));
       }
     }
   }

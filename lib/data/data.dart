@@ -277,7 +277,6 @@ class Data with ListMixin<dynamic> {
 
   static List<String> cities = [
     "Tokyo",
-    "Japan",
     "Jakarta",
     "Delhi",
     "Guangzhou",

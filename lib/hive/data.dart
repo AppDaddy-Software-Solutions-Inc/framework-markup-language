@@ -28,14 +28,14 @@ class Data {
   }
 
   Future<bool> insert() async =>
-      (await Database().insert(tableName, key, _map) == null);
+      (await Database.insert(tableName, key, _map) == null);
   Future<bool> update() async =>
-      (await Database().update(tableName, key, _map) == null);
+      (await Database.update(tableName, key, _map) == null);
   Future<bool> delete() async =>
-      (await Database().delete(tableName, key) == null);
+      (await Database.delete(tableName, key) == null);
 
   static Future<bool> deleteAll() async =>
-      (await Database().deleteAll(tableName) == null);
+      (await Database.deleteAll(tableName) == null);
 
   static Data? _fromMap(dynamic map) {
     Data? data;
@@ -54,7 +54,7 @@ class Data {
       key = Cryptography.hash(key: _cacheHashKey, text: key);
     }
 
-    Map<String, dynamic>? entry = await Database().find(tableName, key);
+    Map<String, dynamic>? entry = await Database.find(tableName, key);
     Data? data = _fromMap(entry);
     return data;
   }

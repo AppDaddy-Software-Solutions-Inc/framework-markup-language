@@ -3,7 +3,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/transforms/transform_interface.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -22,13 +22,13 @@ class Distinct extends TransformModel implements ITransform {
 
   String? get field => _field?.get();
 
-  Distinct(WidgetModel? parent, {String? id, dynamic enabled, dynamic field})
+  Distinct(Model? parent, {String? id, dynamic enabled, dynamic field})
       : super(parent, id) {
     this.enabled = enabled ?? true;
     this.field = field;
   }
 
-  static Distinct? fromXml(WidgetModel? parent, XmlElement xml) {
+  static Distinct? fromXml(Model? parent, XmlElement xml) {
     String? id = Xml.get(node: xml, tag: 'id');
     if (isNullOrEmpty(id)) id = newId();
 

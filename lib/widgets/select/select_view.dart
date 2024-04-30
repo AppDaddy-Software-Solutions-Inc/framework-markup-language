@@ -1,13 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/select/select_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class SelectView extends StatefulWidget implements IWidgetView {
+class SelectView extends StatefulWidget implements ViewableWidgetView {
   @override
   final SelectModel model;
 
@@ -17,7 +16,7 @@ class SelectView extends StatefulWidget implements IWidgetView {
   State<SelectView> createState() => _SelectViewState();
 }
 
-class _SelectViewState extends WidgetState<SelectView> {
+class _SelectViewState extends ViewableWidgetState<SelectView> {
   FocusNode focus = FocusNode();
 
   void onChangeOption(OptionModel? option) async {
@@ -85,11 +84,11 @@ class _SelectViewState extends WidgetState<SelectView> {
   }
 
   Widget addAlarmText(Widget view) {
-    if (isNullOrEmpty(widget.model.alarmText)) return view;
+    if (isNullOrEmpty(widget.model.alarm)) return view;
 
     Widget? errorText = Padding(
         padding: const EdgeInsets.only(top: 6.0, bottom: 2.0),
-        child: Text("${widget.model.alarmText}",
+        child: Text("${widget.model.alarm}",
             style: TextStyle(color: Theme.of(context).colorScheme.error)));
     view = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,6 +240,9 @@ class _SelectViewState extends WidgetState<SelectView> {
 
     // add margins
     view = addMargins(view);
+
+    // apply visual transforms
+    view = applyTransforms(view);
 
     // apply constraints
     view = applyConstraints(view, modelConstraints);

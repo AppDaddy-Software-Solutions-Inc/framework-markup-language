@@ -8,13 +8,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/googlemap/map_model.dart';
 import 'package:fml/widgets/googlemap/location/map_location_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class MapView extends StatefulWidget implements IWidgetView {
+class MapView extends StatefulWidget implements ViewableWidgetView {
   @override
   final MapModel model;
   MapView(this.model) : super(key: ObjectKey(model));
@@ -23,7 +22,7 @@ class MapView extends StatefulWidget implements IWidgetView {
   State<MapView> createState() => _MapViewState();
 }
 
-class _MapViewState extends WidgetState<MapView> {
+class _MapViewState extends ViewableWidgetState<MapView> {
   Widget? busy;
   Future<MapModel>? future;
   bool startup = true;
@@ -143,7 +142,12 @@ class _MapViewState extends WidgetState<MapView> {
                 ]))));
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.constraints);
+    view = applyConstraints(view, widget.model.constraints);
+
+    // apply visual transforms
+    view = applyTransforms(view);
+
+    return view;
   }
 
   GoogleMap? _buildGoogleMap() {

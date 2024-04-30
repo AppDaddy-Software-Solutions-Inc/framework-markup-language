@@ -9,15 +9,14 @@ import 'package:flutter_multi_formatter/formatters/currency_input_formatter.dart
 import 'package:flutter_multi_formatter/formatters/phone_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/input/input_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class InputView extends StatefulWidget implements IWidgetView {
+class InputView extends StatefulWidget implements ViewableWidgetView {
   @override
   final InputModel model;
   final dynamic onChangeCallback;
@@ -30,7 +29,7 @@ class InputView extends StatefulWidget implements IWidgetView {
   State<InputView> createState() => _InputViewState();
 }
 
-class _InputViewState extends WidgetState<InputView>
+class _InputViewState extends ViewableWidgetState<InputView>
     with WidgetsBindingObserver {
   final focus = FocusNode();
   Timer? commitTimer;
@@ -115,7 +114,7 @@ class _InputViewState extends WidgetState<InputView>
 
   /// Callback to fire the [_InputViewState.build] when the [InputModel] changes
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(Model model, {String? property, dynamic value}) {
     // ensure we don't call setstate if the model update was entered via
     // keyboard by comparing the controller to the callback's value
     //return if not mounted
@@ -283,8 +282,10 @@ class _InputViewState extends WidgetState<InputView>
     if (commitTimer?.isActive ?? false) commitTimer!.cancel();
 
     // reset the timer
-    commitTimer =
-        Timer(const Duration(milliseconds: 1000), () async => _commit());
+    var milliseconds = widget.model.debounce;
+    if (milliseconds > 0) {
+      commitTimer = Timer(Duration(milliseconds: milliseconds), () async => _commit());
+    }
   }
 
   void onClear() {
@@ -487,7 +488,7 @@ class _InputViewState extends WidgetState<InputView>
     }
     var padding = EdgeInsets.only(
         left: 10, top: paddingTop, right: 10, bottom: paddingBottom);
-    if (widget.model.dense == true) {
+    if (widget.model.dense) {
       padding = const EdgeInsets.only(left: 6, top: 0, right: 6, bottom: 0);
     }
 
@@ -523,7 +524,7 @@ class _InputViewState extends WidgetState<InputView>
         fontWeight: FontWeight.w300,
         color: errorTextColor,
       ),
-      errorText: widget.model.alarmText,
+      errorText: widget.model.alarm,
       hintText: widget.model.dense ? hint : null,
       hintStyle: TextStyle(
         fontSize: fontsize ?? 14,
@@ -639,6 +640,9 @@ class _InputViewState extends WidgetState<InputView>
 
     // add margins
     view = addMargins(view);
+
+    // apply visual transforms
+    view = applyTransforms(view);
 
     // apply constraints
     view = applyConstraints(view, modelConstraints);

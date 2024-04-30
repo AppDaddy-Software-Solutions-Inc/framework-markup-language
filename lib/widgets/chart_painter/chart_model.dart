@@ -6,7 +6,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:xml/xml.dart';
@@ -43,7 +43,7 @@ class ChartPainterModel extends BoxModel {
   String? get title => _title?.get();
 
   ChartPainterModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     dynamic type,
     dynamic showlegend,
@@ -65,7 +65,7 @@ class ChartPainterModel extends BoxModel {
   }
 
   static ChartPainterModel? fromTemplate(
-      WidgetModel parent, Template template) {
+      Model parent, Template template) {
     ChartPainterModel? model;
     try {
       XmlElement? xml =
@@ -79,7 +79,7 @@ class ChartPainterModel extends BoxModel {
     return model;
   }
 
-  static ChartPainterModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static ChartPainterModel? fromXml(Model parent, XmlElement xml) {
     ChartPainterModel? model;
     try {
       model = ChartPainterModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -206,7 +206,7 @@ class ChartPainterModel extends BoxModel {
 
   /// Called when the databroker returns a successful result
   ///
-  /// [ChartModel] overrides [WidgetModel]'s onDataSourceSuccess
+  /// [ChartModel] overrides [Model]'s onDataSourceSuccess
   /// to populate the series data from the datasource and
   /// to populate the label data from the datasource data.
 

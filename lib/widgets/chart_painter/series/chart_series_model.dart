@@ -5,7 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -25,7 +25,7 @@ class ChartDataPoint {
 /// Chart Series [ChartSeriesModel]
 ///
 /// Defines the properties used to build a Charts's Series
-class ChartPainterSeriesModel extends WidgetModel {
+class ChartPainterSeriesModel extends Model {
   List<dynamic> xValues = [];
   Function? plotFunction;
   dynamic dataList;
@@ -62,7 +62,7 @@ class ChartPainterSeriesModel extends WidgetModel {
   BoxModel? tooltip;
 
   ChartPainterSeriesModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     dynamic x,
     dynamic y,
@@ -100,7 +100,7 @@ class ChartPainterSeriesModel extends WidgetModel {
     this.showpoints = showpoints;
   }
 
-  static ChartPainterSeriesModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static ChartPainterSeriesModel? fromXml(Model parent, XmlElement xml) {
     ChartPainterSeriesModel? model;
     try {
       model = ChartPainterSeriesModel(parent, Xml.get(node: xml, tag: 'id'));

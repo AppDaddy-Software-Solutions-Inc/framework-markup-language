@@ -4,8 +4,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/modal/modal_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/map/map_view.dart';
@@ -63,17 +62,7 @@ class MapModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  double get zoom {
-    double? scale = _zoom?.get() ?? 1;
-    if (_zoom == null) return scale;
-
-    scale = _zoom?.get();
-    scale ??= 1;
-    if ((scale < 1)) scale = 1;
-    if ((scale > 20)) scale = 20;
-    return scale;
-  }
+  double? get zoom => _zoom?.get();
 
   // autozoom
   BooleanObservable? _autozoom;
@@ -85,12 +74,11 @@ class MapModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get autozoom => _autozoom?.get() ?? true;
 
-  final List<MapMarkerModel> markers = [];
+  List<MapMarkerModel> markers = [];
 
-  MapModel(WidgetModel super.parent, super.id,
+  MapModel(Model super.parent, super.id,
       {dynamic zoom, dynamic visible}) {
     // instantiate busy observable
     busy = false;
@@ -99,7 +87,7 @@ class MapModel extends BoxModel {
     this.visible = visible;
   }
 
-  static MapModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static MapModel? fromXml(Model parent, XmlElement xml) {
     MapModel? model;
     try {
       model = MapModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -170,8 +158,6 @@ class MapModel extends BoxModel {
     return ok;
   }
 
-  // HashMap<String, Uint8List> _icons = HashMap<String, Uint8List>();
-
   Future<bool> _build(Data? list, IDataSource source) async {
     try {
       var prototypes = this.prototypes.containsKey(source.id)
@@ -197,25 +183,17 @@ class MapModel extends BoxModel {
           }
         }
       }
+
+      // we recreate the markers array which genertaes a new hashCode
+      // the view checks this hashCode to see if it needs to rebuild the marker list
+      markers = markers.toList();
+
     } catch (e) {
       Log().error('Error building list. Error is $e', caller: 'MAP');
       return false;
     }
 
     return true;
-  }
-
-  @override
-  List<Widget> inflate() {
-    // process children
-    List<Widget> views = [];
-    for (var model in viewableChildren) {
-      if (model is! ModalModel) {
-        var view = model.getView();
-        if (view != null) views.add(view);
-      }
-    }
-    return views;
   }
 
   @override

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -49,11 +49,11 @@ class ChartDataLabel {
 /// Chart Labels [ChartLabelModel]
 ///
 /// Defines the properties used to build Labels on the Charts
-class ChartLabelModel extends WidgetModel {
+class ChartLabelModel extends Model {
   List<ChartDataLabel> dataLabel = [];
 
   ChartLabelModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     dynamic color,
     dynamic anchor,
@@ -89,7 +89,7 @@ class ChartLabelModel extends WidgetModel {
     this.y2 = y2;
   }
 
-  static ChartLabelModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static ChartLabelModel? fromXml(Model parent, XmlElement xml) {
     ChartLabelModel? model;
     try {
       model = ChartLabelModel(parent, Xml.get(node: xml, tag: 'id'));

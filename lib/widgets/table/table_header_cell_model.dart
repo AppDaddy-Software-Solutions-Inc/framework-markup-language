@@ -9,7 +9,7 @@ import 'package:fml/widgets/table/table_header_group_model.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -61,6 +61,9 @@ class TableHeaderCellModel extends BoxModel {
   @override
   double? get height => null;
 
+  @override
+  String? get layout => super.layout ?? "column";
+
   // column type
   StringObservable? _type;
   set type(dynamic v) {
@@ -111,6 +114,9 @@ class TableHeaderCellModel extends BoxModel {
   }
 
   bool get resizeable => _resizeable?.get() ?? hdr?.resizeable ?? true;
+
+  // column uses editable
+  bool get maybeEditable => _editable != null;
 
   // editable - used on non row prototype only
   BooleanObservable? _editable;
@@ -179,9 +185,9 @@ class TableHeaderCellModel extends BoxModel {
 
   String? get onChange => _onChange?.get();
 
-  TableHeaderCellModel(WidgetModel super.parent, super.id);
+  TableHeaderCellModel(Model super.parent, super.id);
 
-  static TableHeaderCellModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TableHeaderCellModel? fromXml(Model parent, XmlElement xml) {
     TableHeaderCellModel? model;
     try {
       model = TableHeaderCellModel(parent, Xml.get(node: xml, tag: 'id'));

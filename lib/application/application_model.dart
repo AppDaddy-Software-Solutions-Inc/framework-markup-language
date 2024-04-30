@@ -1,7 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fml/config/config_model.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/hive/database.dart';
@@ -15,11 +17,16 @@ import 'package:fml/system.dart';
 import 'package:fml/template/template_manager.dart';
 import 'package:fml/token/token.dart';
 import 'package:fml/user/user_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/theme/theme.dart';
 
-class ApplicationModel extends WidgetModel {
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
+class ApplicationModel extends Model {
   static const String myId = "APPLICATION";
 
   static String tableName = "APP";
@@ -28,8 +35,10 @@ class ApplicationModel extends WidgetModel {
   // the HIVE database.
   late String _dbKey;
 
-  final initialized = Completer<bool>();
-  bool get isInitialized => initialized.isCompleted;
+  /// initialization info
+  final _initialized  = Completer<bool>();
+  final _initializing = Completer<bool>();
+  Future<bool> get initialized => _initialized.future;
 
   bool started = false;
 
@@ -45,12 +54,16 @@ class ApplicationModel extends WidgetModel {
 
   ScopeManager scopeManager = ScopeManager();
 
+  // application url
+  late String url;
+
+  // application title
+  String? title;
+
   // mirrors
   Mirror? mirror;
+  String? get mirrorApi => setting("MIRROR") ?? setting("MIRROR_API");
   bool get cacheContent => (mirror != null);
-
-  // secure?
-  bool get secure => scheme == "https" || scheme == "wss";
 
   // forces pages to repaint every visit
   bool get refresh => toBool(setting("REFRESH")) ?? false;
@@ -59,36 +72,19 @@ class ApplicationModel extends WidgetModel {
   // single page applications restrict navigation to sub pages
   bool get singlePage => toBool(setting('SINGLE_PAGE_APPLICATION')) ?? false;
 
-  late String url;
-
-  // application title
-  String? title;
-
-  // default page transition
-  bool isDefault = false;
-
   // company name
   String? get company =>  toStr(setting("COMPANY"));
 
-  // company logo
-  String? get logo =>  toStr(setting("LOGO"));
-
   // application name
-  String? get name =>  toStr(setting("NAME"));
+  String? get name =>  toStr(setting("NAME") ?? setting("APPLICATION_NAME"));
 
-  // application icon
-  String? _icon;
-  String? get icon => _icon;
-
-  String? _iconLight;
-  String? get iconLight => _iconLight;
-
-  String? _iconDark;
-  String? get iconDark => _iconDark;
+  // application icons
+  String? get icon => toStr(setting("ICON"));
+  String? get iconLight => toStr(setting("ICON_LIGHT"));
+  String? get iconDark => toStr(setting("ICON_DARK"));
 
   // splash
-  String? _splash;
-  String? get splash => _splash;
+  String? get splash => toStr(setting("SPLASH"));
 
   // splash background color
   String? get splashBackground =>  toStr(setting("SPLASH_BACKGROUND"));
@@ -97,7 +93,8 @@ class ApplicationModel extends WidgetModel {
   String? get splashWidth => toStr(setting("SPLASH_WIDTH"));
 
   // splash display duration
-  String? get splashDelay =>  toStr(setting("SPLASH_DELAY"));
+  // defaults to 2 seconds if splash image is defined, otherwise 0
+  int get splashDuration =>  max(0,toInt(setting("SPLASH_DURATION")) ?? (splash == null ? 0 : 2));
 
   // hash key - used by encryption event
   String? get hashKey => toStr(setting("HASHKEY"));
@@ -125,13 +122,23 @@ class ApplicationModel extends WidgetModel {
   int? page;
   int? order;
 
+  // fml version support
+  int? get fmlVersion => toVersionNumber(setting("FML_VERSION"));
+
+  String get homePage => setting("HOME_PAGE") ?? "main.xml";
+  String? get loginPage => setting("LOGIN_PAGE");
+  String? get errorPage => setting("ERROR_PAGE");
+
   // config
-  ConfigModel? config;
-  String? setting(String key) => (config?.settings.containsKey(key) ?? false) ? config?.settings[key] : null;
+  ConfigModel? _config;
+  String? setting(String key) => (_config?.settings.containsKey(key) ?? false) ? _config?.settings[key] : null;
+  bool get configured => _config != null;
 
   // application stash
-  late Stash _stash;
-  late Scope stash;
+  Stash? _stash;
+
+  // secure?
+  bool get secure => scheme == "https" || scheme == "wss";
 
   String? _scheme;
   String? get scheme => _scheme;
@@ -148,22 +155,14 @@ class ApplicationModel extends WidgetModel {
   Map<String, String>? _queryParameters;
   Map<String, String>? get queryParameters => _queryParameters;
 
-  // fml version support
-  int? get fmlVersion => toVersionNumber(setting("FML_VERSION"));
+  Map<String, String?>? get configParameters => _config?.parameters;
 
-  String get homePage => setting("HOME_PAGE") ?? "main.xml";
-  String? get loginPage => setting("LOGIN_PAGE");
-  String? get errorPage => setting("ERROR_PAGE");
-
-  Map<String, String?>? get configParameters => config?.parameters;
-
-  ApplicationModel(WidgetModel parent,
+  ApplicationModel(Model parent,
       {String? key,
-        required this.url,
+        required String url,
         this.title,
         this.page,
         this.order,
-        this.isDefault = false,
         Map<String,dynamic>? settings})
       : super(parent, myId, scope: Scope(id: myId)) {
 
@@ -171,13 +170,27 @@ class ApplicationModel extends WidgetModel {
     Uri? uri = Uri.tryParse(url);
     if (uri == null) return;
 
-    // set database key
-    _dbKey = key ?? url;
-
     // no scheme provided
     if (!uri.hasScheme) uri = Uri.tryParse("https://${uri.url}");
     if (uri == null) return;
 
+    // file uri - must start in the applications root
+    if (uri.scheme == "file") {
+      var host = uri.host;
+      if (host.toLowerCase().trim() != "applications") {
+        var url = uri.url.replaceFirst(host, "applications/$host");
+        uri = Uri.tryParse(url);
+        if (uri == null) return;
+      }
+    }
+
+    // set the url
+    this.url = uri.removeEmptySegments().url;
+
+    // set database key
+    _dbKey = key ?? this.url;
+
+    // set the scheme and host
     _scheme = uri.scheme;
     _host = uri.host;
 
@@ -202,7 +215,7 @@ class ApplicationModel extends WidgetModel {
         .url;
 
     // initialize the config
-    if (settings != null) config = ConfigModel.fromMap(settings);
+    if (settings != null) _config = ConfigModel.fromMap(settings);
 
     // set active user
     var jwt = setting("jwt");
@@ -214,16 +227,30 @@ class ApplicationModel extends WidgetModel {
 
   // initializes the app
   @override
-  Future<bool> initialize() async {
+  Future<void> initialize() async {
 
-    // already initialized?
-    if (isInitialized) return true;
+    // initialize should only run once
+    if (_initialized.isCompleted || _initializing.isCompleted) return;
+
+    // signal initializing in progress
+    _initializing.complete(true);
 
     // build stash
-    stash = Scope(id: 'STASH');
-    if (domain != null) _stash = await Stash.get(domain!);
-    for (var entry in _stash.map.entries) {
-      stash.setObservable(entry.key, entry.value);
+    if (domain != null) {
+
+      // initialize stash scope
+      var scope = Scope(id: 'STASH');
+
+      // initialize the stash
+      _stash = await Stash.get(domain!, scope: scope);
+
+      // set stash observables
+      for (var entry in _stash!.map.entries) {
+        _stash!.scope!.setObservable(entry.key, entry.value);
+      }
+
+      // add STASH scope
+      scopeManager.add(scope);
     }
 
     // add SYSTEM scope
@@ -231,9 +258,6 @@ class ApplicationModel extends WidgetModel {
 
     // add THEME scope
     scopeManager.add(System.theme.scope!);
-
-    // add STASH scope
-    scopeManager.add(stash);
 
     // add USER scope
     scopeManager.add(_user.scope!);
@@ -260,9 +284,7 @@ class ApplicationModel extends WidgetModel {
     }
 
     // mark initialized
-    initialized.complete(true);
-
-    return true;
+    _initialized.complete(true);
   }
 
   // converts versions of 0.0.0 to a number
@@ -280,13 +302,7 @@ class ApplicationModel extends WidgetModel {
     }
   }
 
-  // loads the config
-  bool isLoading = false;
-
   Future<void> _loadConfig() async {
-
-    // loading in progress
-    if (isLoading) return;
 
     ConfigModel? model;
 
@@ -298,72 +314,75 @@ class ApplicationModel extends WidgetModel {
     // model created?
     if (model != null) {
 
-      // get the icon
-      _icon = await _getIcon(model.settings["ICON"]);
-      _iconLight = await _getIcon(model.settings["ICON_LIGHT"]);
-      _iconDark  = await _getIcon(model.settings["ICON_DARK"]);
+      // set icons
+      if (!kIsWeb)
+      {
+        model.settings["ICON"] = await _getIcon(model.settings["ICON"] ?? model.settings["APP_ICON"], domain);
+        model.settings["ICON_LIGHT"] = await _getIcon(model.settings["ICON_LIGHT"], domain);
+        model.settings["ICON_DARK"] = await _getIcon(model.settings["ICON_DARK"], domain);
+      }
 
-      // get the splash image
-      _splash = await _getIcon(model.settings["SPLASH"]);
+      // splash delay
+      var delay = toInt(model.settings["SPLASH_DURATION"]) ?? 10;
 
-      // start the mirror?
-      var mirrorApi = model.settings["MIRROR_API"];
-      if (mirrorApi != null && !FmlEngine.isWeb && scheme != "file") {
-        Uri? uri = URI.parse(mirrorApi, domain: domain);
-        if (uri != null) {
-          mirror = Mirror(uri.url);
-          mirror!.execute();
-        }
+      // get the splash image if delay is > 0
+      if (delay > 0)
+      {
+        model.settings["SPLASH"] = await _getIcon(model.settings["SPLASH"], domain);
       }
 
       // set the config
-      config = model;
+      _config = model;
 
       // save the application to hive
-      await upsert();
+      upsert();
 
       // notify listeners that the config has changed
-      notifyListeners("config", null);
+      notifyListeners("config", _config);
     }
-
-    // clear loading flag
-    isLoading = false;
   }
 
-  Future<String?> _getIcon(String? icon) async {
+  Future<String?> _getIcon(String? icon, String? domain) async {
     if (icon == null) return null;
 
-    Uri? uri = URI.parse(icon, domain: domain);
+    // already a data uri?
+    var dataUri = await URI.toUriData(icon, domain: domain);
+    if (dataUri != null) return dataUri.toString();
+
+    // get
+    var uri = URI.parse(icon, domain: domain);
     if (uri == null) return null;
 
-    var data = await URI.toUriData(uri.url);
-    return data?.toString();
+    dataUri = await URI.toUriData(uri.url, domain: domain);
+    return dataUri?.toString();
   }
 
   Future<bool> stashValue(String key, dynamic value) async {
     bool ok = true;
+    if (_stash == null) return ok;
+
     try {
       // key must be supplied
       if (isNullOrEmpty(key)) return ok;
 
       if (value == null) {
-        _stash.map.remove(key);
-        _stash.upsert();
+        _stash!.map.remove(key);
+        _stash!.upsert();
         Binding? binding = Binding.fromString('$key.value');
         if (binding != null) {
-          stash.observables.remove(stash.getObservable(binding)?.key);
+          _stash!.scope?.observables.remove(_stash!.scope?.getObservable(binding)?.key);
         }
         return ok;
       }
 
       // write application stash entry
-      _stash.map[key] = value;
+      _stash!.map[key] = value;
 
       // save to the hive
-      await _stash.upsert();
+      await _stash!.upsert();
 
       // set observable
-      stash.setObservable(key, value);
+      _stash!.scope?.setObservable(key, value);
     } catch (e) {
       // stash failure always returns true
       ok = true;
@@ -373,12 +392,14 @@ class ApplicationModel extends WidgetModel {
 
   Future<bool> clearStash() async {
     bool ok = true;
+    if (_stash == null) return ok;
+
     try {
       // clear rthe stash map
-      _stash.map.clear();
+      _stash!.map.clear();
 
       // save to the hive
-      await _stash.upsert();
+      await _stash!.upsert();
     } catch (e) {
       // stash failure always returns true
       ok = true;
@@ -386,20 +407,35 @@ class ApplicationModel extends WidgetModel {
     return ok;
   }
 
-  void setActive()
+  Future<void> setActive() async
   {
+    // wait for initialization to complete
+    await initialized;
+
+    // set current
+    System.currentApp = this;
+
     // set active
     started = true;
 
-    // force an app refresh
-    _loadConfig();
+    // reload the config?
+    //_loadConfig();
+
+    // start mirror
+    if (mirrorApi != null && !isWeb && scheme != "file") {
+      Uri? uri = URI.parse(mirrorApi, domain: domain);
+      if (uri != null) mirror = Mirror(uri.url)..execute();
+    }
 
     // set credentials
     logon(jwt);
 
     // set stash values
-    for (var entry in _stash.map.entries) {
-      stash.setObservable(entry.key, entry.value);
+    if (_stash != null)
+    {
+      for (var entry in _stash!.map.entries) {
+        _stash!.scope?.setObservable(entry.key, entry.value);
+      }
     }
 
     // start all datasources
@@ -436,26 +472,21 @@ class ApplicationModel extends WidgetModel {
     // close the app
     close();
 
+    // remove stash scope
+    _stash?.scope?.dispose();
+
     // dispose of all children
     super.dispose();
   }
 
   Map<String, dynamic> _toMap() {
     Map<String, dynamic> map = {};
+    _config?.settings.forEach((key, value) => map[key] = value);
     map["key"] = _dbKey;
     map["url"] = url;
-    map["default"] = isDefault;
-    map["name"] = name;
     map["title"] = title;
-    map["logo"] = logo;
-    map["icon"] = icon;
-    map["icon_light"] = iconLight;
-    map["icon_dark"] = iconDark;
-    map["splash"] = splash;
-    map["transition"] = fromEnum(transition);
     map["page"] = page;
     map["order"] = order;
-    map["jwt"] = jwt?.token;
     return map;
   }
 
@@ -470,7 +501,6 @@ class ApplicationModel extends WidgetModel {
           title: fromMap(map, "title"),
           page: fromMapAsInt(map, "page"),
           order: fromMapAsInt(map, "order"),
-          isDefault: fromMapAsBool(map, "default") ?? false,
           settings: map);
     }
     return app;
@@ -478,25 +508,31 @@ class ApplicationModel extends WidgetModel {
 
   // inserts a new app into the local hive
   Future<bool> insert() async {
-    var exception = await Database().insert(tableName, _dbKey, _toMap());
+    var exception = await Database.insert(tableName, _dbKey, _toMap());
+    return (exception == null);
+  }
+
+  // updates the app in the local hive
+  Future<bool> update() async {
+    var exception = await Database.update(tableName, _dbKey, _toMap());
     return (exception == null);
   }
 
   // updates the app in the local hive
   Future<bool> upsert() async {
-    var exception = await Database().upsert(tableName, _dbKey, _toMap());
+    var exception = await Database.upsert(tableName, _dbKey, _toMap());
     return (exception == null);
   }
 
   // delete an app from the local hive
   Future<bool> delete() async {
-    var exception = await Database().delete(tableName, _dbKey);
+    var exception = await Database.delete(tableName, _dbKey);
     return (exception == null);
   }
 
   static Future<List<ApplicationModel>> loadAll() async {
     List<ApplicationModel> apps = [];
-    List<Map<String, dynamic>> entries = await Database().query(tableName);
+    List<Map<String, dynamic>> entries = await Database.query(tableName);
     for (var entry in entries) {
       ApplicationModel? app = await _fromMap(entry);
       if (app != null) apps.add(app);

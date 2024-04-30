@@ -7,8 +7,8 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:fml/widgets/goback/goback.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -16,9 +16,8 @@ import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/datasources/gps/gps_listener_interface.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class FormView extends StatefulWidget implements IWidgetView {
+class FormView extends StatefulWidget implements ViewableWidgetView {
   @override
   final FormModel model;
   FormView(this.model) : super(key: ObjectKey(model));
@@ -27,7 +26,7 @@ class FormView extends StatefulWidget implements IWidgetView {
   FormViewState createState() => FormViewState();
 }
 
-class FormViewState extends WidgetState<FormView> implements IGpsListener {
+class FormViewState extends ViewableWidgetState<FormView> implements IGpsListener {
   Widget? busy;
 
   @override
@@ -56,7 +55,7 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener {
   }
 
   Future<bool> quit() async {
-    WidgetModel.unfocus();
+    Model.unfocus();
     bool exit = true;
 
     // model is dirty?
@@ -87,7 +86,7 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener {
           found = true;
           try {
             List<dynamic>? pagers =
-                (field as WidgetModel).findAncestorsOfExactType(PageModel);
+                (field as Model).findAncestorsOfExactType(PageModel);
             if (pagers != null) {
               Log().debug('found ${pagers.length} page(s)');
               for (PageModel page in pagers as Iterable<PageModel>) {
@@ -127,7 +126,7 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener {
     if (!widget.model.visible) return const Offstage();
 
     // Center
-    Widget view = BoxView(widget.model);
+    Widget view = BoxView(widget.model, (_,__) => widget.model.inflate());
 
     // Close Keyboard
     //final gesture = GestureDetector(onTap: () => WidgetModel.unfocus(), child: view);

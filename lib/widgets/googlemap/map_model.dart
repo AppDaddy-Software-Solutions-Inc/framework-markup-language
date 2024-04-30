@@ -3,8 +3,8 @@ import 'dart:collection';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/googlemap/map_view.dart';
@@ -14,7 +14,7 @@ import 'package:fml/helpers/helpers.dart';
 
 enum MapTypes { satellite, hybrid, terrain, roadmap }
 
-class MapModel extends DecoratedWidgetModel {
+class MapModel extends ViewableModel {
   String? style;
   bool editmode = false;
 
@@ -81,7 +81,7 @@ class MapModel extends DecoratedWidgetModel {
   final List<MapLocationModel> locations = [];
 
   MapModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     this.style,
     dynamic zoom,
@@ -96,7 +96,7 @@ class MapModel extends DecoratedWidgetModel {
     this.showAll = (showAll ?? true);
   }
 
-  static MapModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static MapModel? fromXml(Model parent, XmlElement xml) {
     MapModel? model;
     try {
       model = MapModel(parent, Xml.get(node: xml, tag: 'id'));

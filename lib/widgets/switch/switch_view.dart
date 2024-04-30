@@ -1,12 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/switch/switch_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/text/text_view.dart';
 
-class SwitchView extends StatefulWidget implements IWidgetView {
+class SwitchView extends StatefulWidget implements ViewableWidgetView {
   @override
   final SwitchModel model;
   final dynamic onChangeCallback;
@@ -16,7 +15,7 @@ class SwitchView extends StatefulWidget implements IWidgetView {
   State<SwitchView> createState() => _SwitchViewState();
 }
 
-class _SwitchViewState extends WidgetState<SwitchView>
+class _SwitchViewState extends ViewableWidgetState<SwitchView>
     with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
@@ -26,14 +25,10 @@ class _SwitchViewState extends WidgetState<SwitchView>
     bool value = widget.model.value;
     String? label = widget.model.label;
     bool canSwitch = widget.model.enabled && widget.model.editable;
-    double width = widget.model.width;
 
-    //////////
-    /* View */
-    //////////
-    Widget view;
+    // view
     ColorScheme th = Theme.of(context).colorScheme;
-    view = Switch.adaptive(
+    Widget view = Switch.adaptive(
       value: value, onChanged: canSwitch ? onChange : null,
       // activeColor: th.inversePrimary, activeTrackColor: th.primaryContainer, inactiveThumbColor: th.onInverseSurface, inactiveTrackColor: th.surfaceVariant,);
       activeColor: widget.model.color ?? th.primary,
@@ -43,9 +38,7 @@ class _SwitchViewState extends WidgetState<SwitchView>
       inactiveTrackColor: th.surfaceVariant,
     );
 
-    ///////////////
-    /* Disabled? */
-    ///////////////
+    // disabled?
     if (!canSwitch) {
       view = MouseRegion(
           cursor: SystemMouseCursors.forbidden,
@@ -56,9 +49,7 @@ class _SwitchViewState extends WidgetState<SwitchView>
               child: view));
     }
 
-    ///////////////
-    /* Labelled? */
-    ///////////////
+    // labelled?
     if (widget.model.label != null) {
       view = Column(
         mainAxisSize: MainAxisSize.min,
@@ -73,10 +64,14 @@ class _SwitchViewState extends WidgetState<SwitchView>
       );
     }
 
-    ////////////////////
-    /* Constrain Size */
-    ////////////////////
-    view = SizedBox(width: width, child: view);
+    // add margins
+    view = addMargins(view);
+
+    // apply visual transforms
+    view = applyTransforms(view);
+
+    // apply constraints
+    view = applyConstraints(view, widget.model.constraints);
 
     return view;
   }

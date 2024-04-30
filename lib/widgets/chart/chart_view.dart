@@ -12,11 +12,10 @@ import 'package:fml/widgets/chart/chart_model.dart';
 import 'package:fml/widgets/chart/label/chart_label_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:community_charts_flutter/community_charts_flutter.dart'
     as charts_flutter;
-import 'package:fml/widgets/widget/widget_state.dart';
 
 enum ChartType {
   timeSeriesChart,
@@ -30,7 +29,7 @@ enum ChartType {
 ///
 /// Builds a Chart View using [CHART.ChartModel], [SERIES.ChartSeriesModel], [AXIS.ChartAxisModel] and
 /// [EXCERPT.Model] properties
-class ChartView extends StatefulWidget implements IWidgetView {
+class ChartView extends StatefulWidget implements ViewableWidgetView {
   @override
   final ChartModel model;
   ChartView(this.model) : super(key: ObjectKey(model));
@@ -39,7 +38,7 @@ class ChartView extends StatefulWidget implements IWidgetView {
   State<ChartView> createState() => _ChartViewState();
 }
 
-class _ChartViewState extends WidgetState<ChartView> {
+class _ChartViewState extends ViewableWidgetState<ChartView> {
   Future<Template>? template;
   Future<ChartModel>? chartViewModel;
   Widget? busy;
@@ -173,7 +172,7 @@ class _ChartViewState extends WidgetState<ChartView> {
           labelOffsetFromAxisPx:
               (sin(widget.model.xaxis.labelrotation.abs() * (pi / 180)) * 80)
                       .ceil() +
-                  (widget.model.horizontal == true
+                  (widget.model.horizontal
                       ? 28
                       : 8), // 80 is rough estimate of our text length
           labelOffsetFromTickPx: 10,
@@ -198,7 +197,7 @@ class _ChartViewState extends WidgetState<ChartView> {
         labelOffsetFromAxisPx:
             (sin(widget.model.xaxis.labelrotation.abs() * (pi / 180)) * 80)
                     .ceil() +
-                (widget.model.horizontal == true
+                (widget.model.horizontal
                     ? 28
                     : 8), // 80 is rough estimate of our text length
         labelOffsetFromTickPx: 10,
@@ -316,7 +315,7 @@ class _ChartViewState extends WidgetState<ChartView> {
       primaryMeasureAxis: yNumericAxisSpec(ticks: yTicksCount),
       domainAxis: xStringAxisSpec(),
       barGroupingType: barGroupingType,
-      vertical: widget.model.horizontal == true ? false : true,
+      vertical: widget.model.horizontal ? false : true,
       barRendererDecorator: charts_flutter.BarLabelDecorator<String>(
           labelPosition: charts_flutter.BarLabelPosition.inside,
           labelAnchor: charts_flutter.BarLabelAnchor.middle),
@@ -1355,7 +1354,7 @@ class _ChartViewState extends WidgetState<ChartView> {
                 code:
                     '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
           ),
-          behaviorPosition: widget.model.horizontal == true
+          behaviorPosition: widget.model.horizontal
               ? charts_flutter.BehaviorPosition.start
               : charts_flutter.BehaviorPosition.bottom,
           titleOutsideJustification:
@@ -1369,7 +1368,7 @@ class _ChartViewState extends WidgetState<ChartView> {
                 code:
                     '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
           ),
-          behaviorPosition: widget.model.horizontal == true
+          behaviorPosition: widget.model.horizontal
               ? charts_flutter.BehaviorPosition.bottom
               : charts_flutter.BehaviorPosition.start,
           titleOutsideJustification:
@@ -1479,6 +1478,9 @@ class _ChartViewState extends WidgetState<ChartView> {
 
     // add margins
     view = addMargins(view);
+
+    // apply visual transforms
+    view = applyTransforms(view);
 
     // apply user defined constraints
     view = applyConstraints(view, widget.model.tightestOrDefault);

@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'busy_model.dart';
 
 /// Busy View
@@ -9,7 +8,7 @@ import 'busy_model.dart';
 /// Builds the View from [BUSY.Model] properties
 /// Acts as an indicator that a page or widget is loading
 /// to let the user know its 'busy' working in the background
-class BusyView extends StatefulWidget implements IWidgetView {
+class BusyView extends StatefulWidget implements ViewableWidgetView {
   @override
   final BusyModel model;
 
@@ -19,9 +18,11 @@ class BusyView extends StatefulWidget implements IWidgetView {
   State<BusyView> createState() => _BusyViewState();
 }
 
-class _BusyViewState extends WidgetState<BusyView> {
+class _BusyViewState extends ViewableWidgetState<BusyView> {
+
   @override
   Widget build(BuildContext context) {
+
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
@@ -66,6 +67,9 @@ class _BusyViewState extends WidgetState<BusyView> {
 
     // add margins
     view = addMargins(view);
+
+    // apply visual transforms
+    view = applyTransforms(view);
 
     // apply user defined constraints
     view = applyConstraints(view, widget.model.constraints);

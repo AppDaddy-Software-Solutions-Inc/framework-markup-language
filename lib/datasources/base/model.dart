@@ -11,7 +11,7 @@ import 'package:fml/hive/data.dart' as hive;
 import 'package:fml/datasources/data/model.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -19,7 +19,7 @@ import 'package:fml/helpers/helpers.dart';
 
 enum ListTypes { replace, lifo, fifo, append, prepend }
 
-class DataSourceModel extends WidgetModel implements IDataSource {
+class DataSourceModel extends Model implements IDataSource {
   // data override
   @override
   Data? get data {
@@ -392,7 +392,7 @@ class DataSourceModel extends WidgetModel implements IDataSource {
   // body type
   String? _bodyType;
 
-  DataSourceModel(WidgetModel super.parent, super.id);
+  DataSourceModel(Model super.parent, super.id);
 
   @override
   void deserialize(XmlElement xml) {
@@ -457,6 +457,7 @@ class DataSourceModel extends WidgetModel implements IDataSource {
                   ? false
                   : true) ==
           null);
+
       return isText ? body.innerText.trim() : body.innerXml.trim();
     }
 
@@ -468,6 +469,11 @@ class DataSourceModel extends WidgetModel implements IDataSource {
 
     // more than 1 non-textual element?
     if (xml.childElements.length > 1) return null;
+
+    // legacy - <value/> tag specified
+    if (xml.childElements.length == 1 && xml.childElements.first.localName == 'value') {
+      return null;
+    }
 
     // single non-textual element
     if (xml.childElements.length == 1) {
@@ -682,7 +688,7 @@ class DataSourceModel extends WidgetModel implements IDataSource {
 
     // apply data transforms
     if (children != null) {
-      for (WidgetModel model in children!) {
+      for (Model model in children!) {
         if (model is ITransform) {
           await (model as ITransform).apply(data);
         }

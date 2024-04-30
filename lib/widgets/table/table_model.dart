@@ -11,7 +11,7 @@ import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/table/table_footer_model.dart';
 import 'package:fml/widgets/table/nodata_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/table/table_view.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
@@ -24,7 +24,7 @@ import 'package:fml/helpers/helpers.dart';
 import 'package:fml/helpers/mime.dart';
 
 // platform
-import 'package:fml/platform/platform.web.dart'
+import 'package:fml/platform/platform.vm.dart'
     if (dart.library.io) 'package:fml/platform/platform.vm.dart'
     if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
@@ -80,7 +80,7 @@ class TableModel extends BoxModel implements IForm {
   double? get paddingLeft => super.paddingLeft ?? defaultPadding;
 
   @override
-  String get radius => super.radius ?? "10";
+  String get borderRadius => super.borderRadius ?? "10";
 
   @override
   String get halign => super.halign ?? "center";
@@ -178,6 +178,9 @@ class TableModel extends BoxModel implements IForm {
   }
 
   bool get resizeable => _resizeable?.get() ?? true;
+
+  // column uses editable
+  bool get maybeEditable => _editable != null;
 
   // editable - used on non row prototype only
   BooleanObservable? _editable;
@@ -325,12 +328,12 @@ class TableModel extends BoxModel implements IForm {
 
   int get pageSize => _pageSize?.get() ?? 0;
 
-  TableModel(WidgetModel super.parent, super.id) {
+  TableModel(Model super.parent, super.id) {
     // instantiate busy observable
     busy = false;
   }
 
-  static TableModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TableModel? fromXml(Model parent, XmlElement xml) {
     TableModel? model;
     try {
       model = TableModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -398,18 +401,21 @@ class TableModel extends BoxModel implements IForm {
   }
 
   void _setInitialRows() {
+
     // get all child rows
     List<TableRowModel> rows =
         findChildrenOfExactType(TableRowModel).cast<TableRowModel>();
 
     // iterate through all rows
     for (var row in rows) {
-      var isFirstRow = rows.first == row;
 
       // first row?
+      var isFirstRow = rows.first == row;
+
       // set header as simple
       if (isFirstRow) {
-        // set usesRenderer
+
+        // set column usesRenderer
         for (var cell in row.cells) {
           var cellIdx = row.cells.indexOf(cell);
           var column = header != null && cellIdx < header!.cells.length
@@ -613,7 +619,7 @@ class TableModel extends BoxModel implements IForm {
     // build new header cells
     header!.prototypes.forEach((prototype, parentModel) {
       // create a new header cells
-      WidgetModel parent = parentModel ?? header!;
+      Model parent = parentModel ?? header!;
       parent.children ??= [];
 
       // build dynamic cell(s)
@@ -681,6 +687,7 @@ class TableModel extends BoxModel implements IForm {
   }
 
   void _buildRowPrototype(Data? data) {
+
     if (prototype == null) return;
 
     // build row prototype cells
@@ -693,8 +700,9 @@ class TableModel extends BoxModel implements IForm {
       // create new row prototype
       var tr = prototype!.copy();
 
-      // clear children
-      tr.children.clear();
+      // clear cell children
+      var cells = {'CELL', 'TD', 'TABLEDATA'};
+      tr.children.removeWhere((child) => child is XmlElement && cells.contains(child.localName));
 
       // process each cell
       int cellIdx = 0;
@@ -762,7 +770,10 @@ class TableModel extends BoxModel implements IForm {
   }
 
   Future<bool> onChangeHandler(
-      int rowIdx, int colIdx, dynamic value, dynamic oldValue) async {
+      int rowIdx,
+      int colIdx,
+      dynamic value,
+      dynamic oldValue) async {
 
     var row = (rowIdx >= 0 && rowIdx < rows.length) ? rows[rowIdx] : null;
     var rowCell = row?.cell(colIdx);
@@ -772,7 +783,15 @@ class TableModel extends BoxModel implements IForm {
 
     bool ok = true;
     if (data != null && colCell != null && fld != null) {
+
+      // mark dirty
+      row?.dirty = true;
+      rowCell?.dirty = true;
+      //rowCell?.touched = true;
+
       // write new value
+      // the data needs to be written ahead of alarm validation
+      // in order for binding to work correctly
       Data.write(data, fld, value);
 
       // set current data
@@ -781,8 +800,9 @@ class TableModel extends BoxModel implements IForm {
       // set selected to current data
       selected = data;
 
-      // fire column change handler
-      ok = true;
+      // validation alarm?
+      ok = !(rowCell?.alarming ?? false);
+      if (!ok) rowCell?.onAlarm();
 
       // fire the row's cell change handler
       if (ok) ok = await rowCell?.onChangeHandler() ?? true;
@@ -805,6 +825,8 @@ class TableModel extends BoxModel implements IForm {
 
       // on fail, restore old value
       if (!ok) {
+
+        // write back old value
         Data.write(data, fld, oldValue);
 
         // reset current row data
@@ -894,6 +916,17 @@ class TableModel extends BoxModel implements IForm {
         var mode = toStr(elementAt(arguments, 0));
         autosize(mode);
         return true;
+
+      case 'post':
+      case 'submit':
+      case 'complete':
+        return await complete();
+
+      case 'save':
+        return await save();
+
+      case 'validate':
+        return await validate();
     }
 
     return super.execute(caller, propertyOrFunction, arguments);
@@ -921,7 +954,7 @@ class TableModel extends BoxModel implements IForm {
     }
   }
 
-  // delete a row
+  // insert a row
   Future<bool> insertRow(String? jsonOrXml, int? rowIndex) async {
     try {
       var view = findListenerOfExactType(TableViewState);

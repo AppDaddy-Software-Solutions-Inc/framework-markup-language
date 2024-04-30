@@ -2,11 +2,12 @@
 import 'package:collection/collection.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/alarm/alarm_model.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/input/input_model.dart';
 import 'package:fml/widgets/table/table_row_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -40,7 +41,22 @@ class TableRowCellModel extends BoxModel {
   @override
   double? get height => null;
 
-  // Position in Row
+  @override
+  String? get layout => super.layout ?? "row";
+
+  /// cell has been changed?
+  BooleanObservable? _dirty;
+  set dirty(dynamic v) {
+    if (_dirty != null) {
+      _dirty!.set(v);
+    } else if (v != null) {
+      _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get dirty => _dirty?.get() ?? false;
+
+  // position in Row
   int? get index {
     if ((parent != null) && (parent is TableRowModel)) {
       return (parent as TableRowModel).cells.indexOf(this);
@@ -58,6 +74,9 @@ class TableRowCellModel extends BoxModel {
     }
   }
   String? get value => _value?.get();
+
+  // column uses editable
+  bool get maybeEditable => _editable != null;
 
   // editable
   BooleanObservable? _editable;
@@ -95,9 +114,36 @@ class TableRowCellModel extends BoxModel {
   }
   String? get onChange => _onChange?.get();
 
-  TableRowCellModel(WidgetModel super.parent, super.id);
+  /// [Alarm]s based on validation checks
+  List<AlarmModel>? _alarms;
 
-  static TableRowCellModel? fromXml(WidgetModel parent, XmlElement xml) {
+  /// active alarm text
+  StringObservable? _alarm;
+  set alarm(dynamic v) {
+    if (_alarm != null) {
+      _alarm!.set(v);
+    } else {
+      _alarm = StringObservable(Binding.toKey(id, 'alarm'), v,
+          scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  String? get alarm => _alarm?.get();
+
+  /// true if there is an alarm sounding on a [iFormField]
+  BooleanObservable? _alarming;
+  set alarming(dynamic v) {
+    if (_alarming != null) {
+      _alarming!.set(v);
+    } else if (v != null) {
+      _alarming =
+          BooleanObservable(Binding.toKey(id, 'alarming'), v, scope: scope);
+    }
+  }
+  bool get alarming => _alarming?.get() ?? false;
+
+  TableRowCellModel(Model super.parent, super.id);
+
+  static TableRowCellModel? fromXml(Model parent, XmlElement xml) {
     TableRowCellModel? model;
     try {
       model = TableRowCellModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -123,23 +169,60 @@ class TableRowCellModel extends BoxModel {
       if (txt is TextModel) value = txt.value;
     }
     editable = Xml.get(node: xml, tag: 'editable');
+
+    // add alarms
+    List<AlarmModel> alarms = findChildrenOfExactType(AlarmModel).cast<AlarmModel>();
+    for (var alarm in alarms) {
+      _alarms ??= [];
+      _alarms!.add(alarm);
+
+      // register a listener to the alarm
+      alarm.onChange(_onAlarmChange);
+    }
+
+    // fire initial alarm change
+    if (_alarms != null) {
+      _onAlarmChange(null);
+    }
+  }
+
+  void _onAlarmChange(_) {
+    var active = getActiveAlarm();
+    alarming = (active != null);
+    alarm = active?.text;
+  }
+
+  // fire onAlarm event
+  Future<bool> onAlarm() async => await getActiveAlarm()?.onAlarm() ?? true;
+
+  /// returns active alarm
+  AlarmModel? getActiveAlarm() {
+    if (_alarms == null) return null;
+    for (var alarm in _alarms!) {
+      if (alarm.alarming) return alarm;
+    }
+    return null;
   }
 
   // on change handler - fired on cell edit
-  Future<bool> onChangeHandler() async =>
-      _onChange != null ? await EventHandler(this).execute(_onChange) : true;
+  Future<bool> onChangeHandler() async {
+    return _onChange != null ? await EventHandler(this).execute(_onChange) : true;
+  }
 
   static bool usesRenderer(TableRowCellModel cell) {
+
+    var children = cell.viewableChildren;
+
     // no children
-    if (cell.children?.isEmpty ?? true) return false;
+    if (children.isEmpty) return false;
 
     // multiple children
-    if (cell.children!.length > 1) return true;
+    if (children.length > 1) return true;
 
     // only child is not a text model
-    if (cell.children!.first is! TextModel) return true;
+    if (children.first is! TextModel) return true;
 
-    var xml = cell.children!.first.element!;
+    var xml = children.first.element!;
 
     // value is an eval
     if (cell.valueIsEval) return true;

@@ -1,10 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/event/manager.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
-
-abstract class IEventScrolling {
-  onScroll(Event event);
-}
+import 'package:fml/widgets/widget/model.dart';
 
 enum EventTypes {
   alert,
@@ -38,13 +34,10 @@ enum EventTypes {
   reset,
   saveas,
   save,
-  scroll,
-  scrollto,
   set,
   showdebug,
   showlog,
   showtemplate,
-  sort,
   sound,
   start,
   stash,
@@ -64,7 +57,7 @@ class Event {
   /// When an event is processed and you want it to stop broadcasting set handled = true
   bool _handled = false;
   set handled(bool b) {
-    if ((cancellable != false) && (b == true)) _handled = true;
+    if (cancellable && b) _handled = true;
   }
 
   bool get handled {
@@ -88,7 +81,7 @@ class Event {
   /// List of all [IEventManager] objects related to handling this event
   final List<EventManager> functions = [];
 
-  final WidgetModel? model;
+  final Model? model;
 
   Event(this.type,
       {this.parameters,

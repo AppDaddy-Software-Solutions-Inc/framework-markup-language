@@ -3,13 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/typeahead/typeahead_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
-class TypeaheadView extends StatefulWidget implements IWidgetView {
+class TypeaheadView extends StatefulWidget implements ViewableWidgetView {
   @override
   final TypeaheadModel model;
 
@@ -19,12 +18,12 @@ class TypeaheadView extends StatefulWidget implements IWidgetView {
   State<TypeaheadView> createState() => TypeaheadViewState();
 }
 
-class TypeaheadViewState extends WidgetState<TypeaheadView> {
+class TypeaheadViewState extends ViewableWidgetState<TypeaheadView> {
   // typeahead has been initialized
   bool initialized = false;
 
   // text editing controller
-  final controller = TextEditingController();
+  var controller = TextEditingController();
 
   // suggestion controller
   final suggestionController = SuggestionsController<OptionModel>();
@@ -186,20 +185,20 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
 
   EdgeInsets _getTextPadding() {
     // set padding
-    double paddingTop = 0; //widget.model.paddingTop ?? 15;
-    double paddingBottom = widget.model.paddingBottom ?? 15;
-    double paddingLeft = widget.model.paddingLeft ?? 10;
-    double paddingRight = widget.model.paddingRight ?? 10;
+    double paddingTop = 0;
+    double paddingBottom = widget.model.dense ? 0 : 15;
+    double paddingLeft = widget.model.dense ? 0 : 10;
+    double paddingRight = widget.model.dense ? 0 : 10;
     if (widget.model.border == "bottom" || widget.model.border == "underline") {
-      paddingTop = widget.model.paddingTop ?? 3;
-      paddingBottom = widget.model.paddingBottom ?? 14;
+      paddingTop = widget.model.dense ? 0 : 3;
+      paddingBottom = widget.model.dense ? 0 : 14;
     }
     var padding = EdgeInsets.only(
         left: paddingLeft,
         top: paddingTop,
         right: paddingRight,
         bottom: paddingBottom);
-    if (widget.model.dense == true) {
+    if (widget.model.dense) {
       padding = const EdgeInsets.only(left: 6, top: 0, right: 6, bottom: 0);
     }
 
@@ -214,7 +213,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
         widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
 
     var decoration = InputDecoration(
-      isDense: false,
+      isDense: widget.model.dense,
       errorMaxLines: 8,
       hintMaxLines: 8,
       fillColor: widget.model.getFieldColor(context),
@@ -225,7 +224,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
       labelText: widget.model.dense ? null : widget.model.hint,
       labelStyle: _getLabelStyle(color: color),
 
-      errorText: widget.model.alarmText,
+      errorText: widget.model.alarm,
       errorStyle: TextStyle(
         fontSize: widget.model.size ?? 14,
         fontWeight: FontWeight.w300,
@@ -283,6 +282,10 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
     }
   }
 
+  // this holds the last typed pattern
+  // so that we cab show the filtered list on subsequent opens
+  String lastPattern = "";
+
   Future<List<OptionModel>> buildSuggestions(String pattern) async {
     // if not enable then show no list
     if (!widget.model.enabled) return [];
@@ -290,7 +293,12 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
     // hack to force entire list to show
     // note the SuggestionsControllerOverride override
     // on the open method below
-    if (controller.text == widget.model.selectedOption?.label) pattern = "";
+    if (controller.text == widget.model.selectedOption?.label) {
+      pattern = lastPattern;
+    }
+    else {
+      lastPattern = pattern;
+    }
 
     // get matching options
     return widget.model.getMatchingOptions(pattern);
@@ -320,12 +328,23 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
   }
 
   Widget itemBuilder(BuildContext context, OptionModel option) {
+
     Widget? view = option.getView();
-    if (option == widget.model.selectedOption) {
-      view = Container(color: Theme.of(context).focusColor, child: view);
+
+    // pad
+    if (!widget.model.dense) {
+      view = Padding(padding: const EdgeInsets.all(8), child: view);
     }
-    view = Padding(padding: const EdgeInsets.all(8), child: view);
-    return DropdownMenuItem(child: view);
+
+    // selected color
+    var color = option == widget.model.selectedOption ? Theme.of(context).focusColor : null;
+
+    // set min height
+    var constraints = widget.model.dense ? null : const BoxConstraints(minHeight: 48);
+
+    view = Container(color: color, constraints: constraints, child: view);
+
+    return view;
   }
 
   OptionModel? getSelectedOption() {
@@ -348,8 +367,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
 
     // select all
     if (focus.hasFocus && widget.model.editable) {
-      controller.selection =
-          TextSelection(baseOffset: 0, extentOffset: controller.text.length);
+      controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
     }
   }
 
@@ -371,6 +389,10 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
+
+    controller.dispose();
+
+    controller = TextEditingController();
 
     // set the controller text
     setControllerText(widget.model.selectedOption?.label);
@@ -413,6 +435,9 @@ class TypeaheadViewState extends WidgetState<TypeaheadView> {
 
     // add margins
     view = addMargins(view);
+
+    // apply visual transforms
+    view = applyTransforms(view);
 
     // apply constraints
     view = applyConstraints(view, modelConstraints);

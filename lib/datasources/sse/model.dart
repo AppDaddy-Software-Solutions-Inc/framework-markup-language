@@ -7,7 +7,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -33,7 +33,7 @@ class SseModel extends HttpModel implements IDataSource {
     connected = false;
   }
 
-  static SseModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static SseModel? fromXml(Model parent, XmlElement xml) {
     SseModel? model;
     try {
       model = SseModel(parent, Xml.get(node: xml, tag: 'id'));

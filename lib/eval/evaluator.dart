@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-library expressions.evaluator;
+// ignore_for_file: depend_on_referenced_packages
 
-import '../log/manager.dart';
+import 'package:fml/log/manager.dart';
 import 'expressions.dart';
 import 'dart:math';
 import 'package:decimal/decimal.dart';
@@ -27,12 +27,7 @@ class ExpressionEvaluator {
       return evalUnaryExpression(expression, context);
     }
     if (expression is BinaryExpression) {
-      dynamic result = evalBinaryExpression(expression, context);
-      if (result is Decimal) {
-        return result.toDouble();
-      } else {
-        return result;
-      }
+      return evalBinaryExpression(expression, context);
     }
     if (expression is ConditionalExpression) {
       return evalConditionalExpression(expression, context);
@@ -47,11 +42,16 @@ class ExpressionEvaluator {
       return value.map(
           (key, value) => MapEntry(eval(key, context), eval(value, context)));
     }
+    if (value is String) {
+      if (value.startsWith("___V") && context.containsKey(value)) {
+        return context[value];
+      }
+    }
     return value;
   }
 
   dynamic evalVariable(Variable variable, Map<String?, dynamic> context) {
-    return context[variable.identifier.name];
+    return context[variable.identifier.name] ?? context[variable.identifier.name.toLowerCase()];
   }
 
   dynamic evalThis(ThisExpression expression, Map<String?, dynamic> context) {
@@ -177,20 +177,20 @@ class ExpressionEvaluator {
       case '=': // added by olajos
         return set(context, left, right());
       case '+':
-        return Decimal.parse(left.toString()) +
-            Decimal.parse(right().toString());
+        return (Decimal.parse(left.toString()) +
+            Decimal.parse(right().toString())).toDouble();
       case '-':
-        return Decimal.parse(left.toString()) -
-            Decimal.parse(right().toString());
+        return (Decimal.parse(left.toString()) -
+            Decimal.parse(right().toString())).toDouble();
       case '*':
-        return Decimal.parse(left.toString()) *
-            Decimal.parse(right().toString());
+        return (Decimal.parse(left.toString()) *
+            Decimal.parse(right().toString())).toDouble();
       case '/':
-        return Decimal.parse(left.toString()) /
-            Decimal.parse(right().toString());
+        return (Decimal.parse(left.toString()) /
+            Decimal.parse(right().toString())).toDouble();
       case '%':
-        return Decimal.parse(left.toString()) %
-            Decimal.parse(right().toString());
+        return (Decimal.parse(left.toString()) %
+            Decimal.parse(right().toString())).toDouble();
     }
     throw ArgumentError(
         'Unknown operator ${expression.operator} in expression');

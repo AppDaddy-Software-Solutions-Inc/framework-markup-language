@@ -4,7 +4,7 @@ import 'package:fml/datasources/transforms/transform_interface.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:fml/log/manager.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -50,7 +50,7 @@ class Pivot extends TransformModel implements ITransform {
 
   String? get field => _field?.get();
 
-  Pivot(WidgetModel? parent,
+  Pivot(Model? parent,
       {String? id, String? row, String? column, String? field})
       : super(parent, id) {
     this.row = row;
@@ -58,7 +58,7 @@ class Pivot extends TransformModel implements ITransform {
     this.field = field;
   }
 
-  static Pivot? fromXml(WidgetModel? parent, XmlElement xml) {
+  static Pivot? fromXml(Model? parent, XmlElement xml) {
     Pivot model = Pivot(parent,
         id: Xml.get(node: xml, tag: 'id'),
         row: Xml.get(node: xml, tag: "row"),

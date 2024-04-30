@@ -2,9 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/widget/widget_model_interface.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
+import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:fml/widgets/animation/animation_model.dart'
     as base_animation_model;
 import 'package:fml/event/event.dart';
@@ -13,7 +12,7 @@ import 'package:fml/helpers/helpers.dart';
 /// Animation View
 ///
 /// Builds the View from [ANIMATION.AnimationModel] properties
-class AnimationView extends StatefulWidget implements IWidgetView {
+class AnimationView extends StatefulWidget implements ViewableWidgetView {
   @override
   final base_animation_model.AnimationModel model;
   final List<Widget> children = [];
@@ -25,7 +24,7 @@ class AnimationView extends StatefulWidget implements IWidgetView {
   AnimationViewState createState() => AnimationViewState();
 }
 
-class AnimationViewState extends WidgetState<AnimationView>
+class AnimationViewState extends ViewableWidgetState<AnimationView>
     with TickerProviderStateMixin
     implements IModelListener {
   AnimationController? _controller;
@@ -34,21 +33,25 @@ class AnimationViewState extends WidgetState<AnimationView>
   @override
   void initState() {
     super.initState();
+
+    // build the controller
     _controller = AnimationController(
         vsync: this,
         duration: Duration(milliseconds: widget.model.duration),
         reverseDuration: Duration(
           milliseconds: widget.model.reverseduration ?? widget.model.duration,
         ));
-    if (widget.model.controllerValue == 1 && widget.model.runonce == true) {
+
+    if (widget.model.controllerValue == 1 && widget.model.runonce) {
       _controller?.animateTo(widget.model.controllerValue,
           duration: const Duration());
     }
+
     _controller?.addStatusListener((status) {
       _animationListener(status);
     });
 
-    if (widget.model.autoplay == true && _controller?.isAnimating != true) {
+    if (widget.model.autoplay && !_controller!.isAnimating) {
       start();
     }
   }

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/tabview/tab_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -71,7 +71,7 @@ class TabModel extends BoxModel {
   bool get tabbutton => _tabbutton?.get() ?? true;
 
   TabModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     String? type,
     String? title,
@@ -142,7 +142,7 @@ class TabModel extends BoxModel {
     views = except;
   }
 
-  static TabModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static TabModel? fromXml(Model parent, XmlElement xml) {
     TabModel? model;
 
     try {

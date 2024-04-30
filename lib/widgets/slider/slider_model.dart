@@ -6,7 +6,7 @@ import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/widgets/slider/slider_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -15,12 +15,14 @@ import 'package:fml/helpers/helpers.dart';
 enum InputTypes { numeric, integer, text, boolean }
 
 class SliderModel extends FormFieldModel implements IFormField {
+
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
-  ////////////////////
-  /* capitalization */
-  ////////////////////
+  @override
+  double? get height => super.height ?? 46;
+
+  // capitalization
   InputTypes? _inputtype;
   set inputtype(dynamic v) {
     if (v is InputTypes) _inputtype = v;
@@ -31,9 +33,7 @@ class SliderModel extends FormFieldModel implements IFormField {
     return _inputtype;
   }
 
-  /////////////
-  /* Minimum */
-  /////////////
+  // minimum range value
   DoubleObservable? _minimum;
   set minimum(dynamic v) {
     if (_minimum != null) {
@@ -43,12 +43,9 @@ class SliderModel extends FormFieldModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get minimum => _minimum?.get() ?? 0;
 
-  /////////////
-  /* Maximum */
-  /////////////
+  // maximum range value
   DoubleObservable? _maximum;
   set maximum(dynamic v) {
     if (_maximum != null) {
@@ -58,12 +55,9 @@ class SliderModel extends FormFieldModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get maximum => _maximum?.get() ?? 0;
 
-  ///////////////
-  /* Divisions */
-  ///////////////
+  // divisions
   IntegerObservable? _divisions;
   set divisions(dynamic v) {
     if (_divisions != null) {
@@ -73,19 +67,16 @@ class SliderModel extends FormFieldModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   int? get divisions => _divisions?.get();
 
-  ///////////
-  /* Value */
-  ///////////
+  // value
   StringObservable? _value;
   @override
   set value(dynamic v) {
     if (_value != null) {
       _value!.set(v);
     } else if (v != null ||
-        WidgetModel.isBound(this, Binding.toKey(id, 'value'))) {
+        Model.isBound(this, Binding.toKey(id, 'value'))) {
       _value = StringObservable(Binding.toKey(id, 'value'), v,
           scope: scope, listener: onPropertyChange);
     }
@@ -94,9 +85,7 @@ class SliderModel extends FormFieldModel implements IFormField {
   @override
   dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
-  ////////////
-  /* Answer */
-  ////////////
+  // answer
   @override
   Future<bool> answer(dynamic v, {bool range = false}) async {
     bool ok = true;
@@ -144,7 +133,7 @@ class SliderModel extends FormFieldModel implements IFormField {
     return ok;
   }
 
-  // Range
+  // range
   BooleanObservable? _range;
   set range(dynamic v) {
     if (_range != null) {
@@ -158,7 +147,7 @@ class SliderModel extends FormFieldModel implements IFormField {
   bool get range => _range?.get() ?? false;
 
   SliderModel(
-    WidgetModel super.parent,
+    Model super.parent,
     super.id, {
     String? type,
     dynamic visible,
@@ -198,7 +187,7 @@ class SliderModel extends FormFieldModel implements IFormField {
     dirty = false;
   }
 
-  static SliderModel? fromXml(WidgetModel parent, XmlElement xml,
+  static SliderModel? fromXml(Model parent, XmlElement xml,
       {String? type}) {
     SliderModel? model;
     try {

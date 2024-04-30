@@ -4,17 +4,16 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_chart_model.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
-import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
 /// Chart View
 ///
 /// Builds a Chart View using [CHART.ChartModel], [SERIES.ChartSeriesModel], [AXIS.ChartAxisModel] and
 /// [EXCERPT.Model] properties
-class PieChartView extends StatefulWidget implements IWidgetView {
+class PieChartView extends StatefulWidget implements ViewableWidgetView {
   @override
   final PieChartModel model;
   PieChartView(this.model) : super(key: ObjectKey(model));
@@ -23,7 +22,7 @@ class PieChartView extends StatefulWidget implements IWidgetView {
   State<PieChartView> createState() => _PieChartViewState();
 }
 
-class _PieChartViewState extends WidgetState<PieChartView> {
+class _PieChartViewState extends ViewableWidgetState<PieChartView> {
   Future<Template>? template;
   Future<PieChartModel>? chartViewModel;
   BusyView? busy;
@@ -85,6 +84,9 @@ class _PieChartViewState extends WidgetState<PieChartView> {
 
     // add margins
     view = addMargins(view);
+
+    // apply visual transforms
+    view = applyTransforms(view);
 
     // apply user defined constraints
     view = applyConstraints(view, widget.model.tightestOrDefault);

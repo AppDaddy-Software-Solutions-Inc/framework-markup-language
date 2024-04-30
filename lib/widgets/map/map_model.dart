@@ -4,6 +4,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -205,5 +206,8 @@ class MapModel extends BoxModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(MapView(this));
+  Widget getView({Key? key}) {
+    var view = MapView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

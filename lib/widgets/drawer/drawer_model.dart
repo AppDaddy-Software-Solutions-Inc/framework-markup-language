@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/drawer/drawer_view.dart';
@@ -252,5 +253,8 @@ class DrawerModel extends ViewableModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(DrawerView(this, Container()));
+  Widget getView({Key? key}) {
+    var view = DrawerView(this, Container());
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

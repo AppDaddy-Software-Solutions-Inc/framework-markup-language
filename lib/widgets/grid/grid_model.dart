@@ -10,6 +10,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/grid/grid_view.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/grid/grid_view.dart' as grid_view;
@@ -526,5 +527,8 @@ class GridModel extends BoxModel implements IScrollable {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(grid_view.GridView(this));
+  Widget getView({Key? key}) {
+    var view = grid_view.GridView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

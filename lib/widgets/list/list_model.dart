@@ -9,6 +9,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart';
@@ -721,5 +722,8 @@ class ListModel extends BoxModel implements IForm, IScrollable {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(ListLayoutView(this));
+  Widget getView({Key? key}) {
+    var view = ListLayoutView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

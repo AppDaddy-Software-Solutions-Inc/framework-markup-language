@@ -4,6 +4,7 @@ import 'package:fml/widgets/alarm/alarm_model.dart';
 import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/input/input_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -379,7 +380,10 @@ class InputModel extends DecoratedInputModel implements IFormField {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(InputView(this));
+  Widget getView({Key? key}) {
+    var view = InputView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }
 
 class Suggestion {

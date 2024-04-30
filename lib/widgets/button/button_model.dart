@@ -6,6 +6,7 @@ import 'package:fml/event/handler.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
@@ -266,5 +267,8 @@ class ButtonModel extends BoxModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(ButtonView(this));
+  Widget getView({Key? key}) {
+    var view = ButtonView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

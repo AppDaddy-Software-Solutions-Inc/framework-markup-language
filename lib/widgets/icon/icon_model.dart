@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
@@ -83,5 +84,8 @@ class IconModel extends ViewableModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(IconView(this));
+  Widget getView({Key? key}) {
+    var view = IconView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

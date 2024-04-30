@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/treeview/tree_model.dart';
@@ -143,5 +144,8 @@ class TreeNodeModel extends ViewableModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(TreeNodeView(this));
+  Widget getView({Key? key}) {
+    var view = TreeNodeView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

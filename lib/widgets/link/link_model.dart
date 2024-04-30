@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/column/column_model.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -160,5 +161,8 @@ class LinkModel extends ColumnModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(LinkView(this));
+  Widget getView({Key? key}) {
+    var view = LinkView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

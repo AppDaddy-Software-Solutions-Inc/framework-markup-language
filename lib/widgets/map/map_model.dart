@@ -63,17 +63,7 @@ class MapModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  double get zoom {
-    double? scale = _zoom?.get() ?? 1;
-    if (_zoom == null) return scale;
-
-    scale = _zoom?.get();
-    scale ??= 1;
-    if ((scale < 1)) scale = 1;
-    if ((scale > 20)) scale = 20;
-    return scale;
-  }
+  double? get zoom => _zoom?.get();
 
   // autozoom
   BooleanObservable? _autozoom;
@@ -85,10 +75,9 @@ class MapModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get autozoom => _autozoom?.get() ?? true;
 
-  final List<MapMarkerModel> markers = [];
+  List<MapMarkerModel> markers = [];
 
   MapModel(Model super.parent, super.id,
       {dynamic zoom, dynamic visible}) {
@@ -170,8 +159,6 @@ class MapModel extends BoxModel {
     return ok;
   }
 
-  // HashMap<String, Uint8List> _icons = HashMap<String, Uint8List>();
-
   Future<bool> _build(Data? list, IDataSource source) async {
     try {
       var prototypes = this.prototypes.containsKey(source.id)
@@ -197,6 +184,11 @@ class MapModel extends BoxModel {
           }
         }
       }
+
+      // we recreate the markers array which genertaes a new hashCode
+      // the view checks this hashCode to see if it needs to rebuild the marker list
+      markers = markers.toList();
+
     } catch (e) {
       Log().error('Error building list. Error is $e', caller: 'MAP');
       return false;

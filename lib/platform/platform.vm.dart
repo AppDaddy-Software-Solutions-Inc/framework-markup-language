@@ -27,23 +27,22 @@ class Platform {
   // platform
   static String get platform => isMobile ? "mobile" : "desktop";
 
-  // touch device?
-  static bool get isTouchDevice => (io.Platform.isAndroid || io.Platform.isIOS);
-
-  static String? get useragent {
+  static String get operatingSystem {
     if (io.Platform.isIOS) return "ios";
     if (io.Platform.isAndroid) return "android";
     if (io.Platform.isMacOS) return "macos";
     if (io.Platform.isWindows) return "windows";
     if (io.Platform.isLinux) return "linux";
     if (io.Platform.isFuchsia) return "fuchsia";
-    return null;
+    return "unknown";
   }
+
+  static String get operatingSystemVersion => io.Platform.operatingSystemVersion;
 
   static initialize() async
   {
     // initialize the app root folder
-    if (isMobile || (isDesktop && useragent == "macos")) {
+    if (isMobile || (isDesktop && operatingSystem == "macos")) {
       return (await getApplicationDocumentsDirectory()).path;
     }
 

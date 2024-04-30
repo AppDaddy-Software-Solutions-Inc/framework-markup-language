@@ -67,7 +67,7 @@ class Eval {
     'noe': _isNullOrEmpty,
     'number': _number,
     'nvl': _nvl,
-    'pi': pi / 5,
+    'pi': () => pi,
     'regex': _regex,
     'replace': _replace,
     'round': _round,

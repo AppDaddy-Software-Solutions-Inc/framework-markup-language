@@ -101,7 +101,13 @@ class System extends Model implements IEventManager {
   String? get userplatform => _userplatform?.get() ?? Platform.platform;
 
   StringObservable? _useragent;
-  String? get useragent => _useragent?.get() ?? Platform.useragent;
+  String? get useragent => _useragent?.get() ?? Platform.operatingSystem;
+
+  StringObservable? _operatingSystem;
+  String? get operatingSystem => _operatingSystem?.get() ?? Platform.operatingSystem;
+
+  StringObservable? _operatingSystemVersion;
+  String? get operatingSystemVersion => _operatingSystemVersion?.get() ?? Platform.operatingSystemVersion;
 
   StringObservable? _version;
   String get release => _version?.get() ?? "?";
@@ -211,6 +217,10 @@ class System extends Model implements IEventManager {
   }
 
   Future<bool> _initBindables() async {
+
+    // ensure binding service is initialized
+    WidgetsFlutterBinding.ensureInitialized();
+
     _rootpath =
         StringObservable(Binding.toKey('rootpath'), URI.rootPath, scope: scope);
 
@@ -230,20 +240,35 @@ class System extends Model implements IEventManager {
     _mouse = BooleanObservable(Binding.toKey('mouse'),
         RendererBinding.instance.mouseTracker.mouseIsConnected,
         scope: scope);
+
     _screenheight = IntegerObservable(Binding.toKey('screenheight'),
         PlatformDispatcher.instance.views.first.physicalSize.height,
         scope: scope);
+
     _screenwidth = IntegerObservable(Binding.toKey('screenwidth'),
         PlatformDispatcher.instance.views.first.physicalSize.width,
         scope: scope);
+
     _userplatform = StringObservable(
         Binding.toKey('platform'), Platform.platform,
         scope: scope);
+
+    // legacy - use "os" instead
     _useragent = StringObservable(
-        Binding.toKey('useragent'), Platform.useragent,
+        Binding.toKey('useragent'), Platform.operatingSystem,
         scope: scope);
+
+    _operatingSystem = StringObservable(
+        Binding.toKey('os'), Platform.operatingSystem,
+        scope: scope);
+
+    _operatingSystemVersion = StringObservable(
+        Binding.toKey('osversion'), Platform.operatingSystemVersion,
+        scope: scope);
+
     _version = StringObservable(Binding.toKey('version'), FmlEngine.version,
         scope: scope);
+
     _uuid = StringObservable(Binding.toKey('uuid'), newId(),
         scope: scope, getter: newId);
 

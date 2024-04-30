@@ -24,22 +24,22 @@ class ListModel extends BoxModel implements IForm, IScrollable {
   // indicates if the widget expands infinitely in
   // it's horizontal axis if not constrained
   @override
-  bool get canExpandInfinitelyWide => expand && !hasBoundedWidth && direction == 'horizontal';
+  bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
   // indicates if the widget expands infinitely in
   // it's vertical axis if not constrained
   @override
-  bool get canExpandInfinitelyHigh => expand && !hasBoundedHeight && direction != 'horizontal';
+  bool get canExpandInfinitelyHigh => !hasBoundedHeight;
 
   // indicates if the widget will grow in
   // its horizontal axis
   @override
-  bool get expandHorizontally => expand && !hasBoundedWidth && direction == 'horizontal';
+  bool get expandHorizontally => !hasBoundedWidth;
 
   // indicates if the widget will grow in
   // its vertical axis
   @override
-  bool get expandVertically => expand && !hasBoundedHeight && direction != 'horizontal';
+  bool get expandVertically => !hasBoundedHeight;
 
   // maintains list of items
   final HashMap<int, ListItemModel> items = HashMap<int, ListItemModel>();

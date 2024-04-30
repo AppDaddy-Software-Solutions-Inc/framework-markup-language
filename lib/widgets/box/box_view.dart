@@ -285,7 +285,7 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     Border? border = _getBorder(model, context);
     if (border == null) return view;
 
-    var hasLabel = model.border == "all";
+    var hasLabel = model.borderLabel != null;
     if (hasLabel) {
       var lbl = TextModel(null, null,
           value: model.borderLabel, overflow: "ellipsis")
@@ -294,6 +294,7 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
       return LabelledBorderContainer(box, lbl,
           decoration: BoxDecoration(border: border, borderRadius: radius));
     }
+
     return Container(
         decoration: BoxDecoration(border: border, borderRadius: radius),
         child: view);

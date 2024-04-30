@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
@@ -62,46 +63,64 @@ class SplitViewState extends ViewableWidgetState<SplitView> {
   }
 
   Widget _buildHandle(BoxConstraints constraints) {
-    var myDividerColor =
-        widget.model.dividerColor ?? Theme.of(context).colorScheme.onInverseSurface;
-    var myDividerWidth = widget.model.dividerWidth;
 
-    Widget view = widget.model.vertical
-        ? GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onVerticalDragUpdate: (DragUpdateDetails details) =>
-                _onDrag(details, constraints),
-            onTap: () => widget.model.ratio = 0,
-            child: Container(
-                color: myDividerColor,
-                child: SizedBox(
-                    width: constraints.maxWidth,
-                    height: myDividerWidth,
-                    child: MouseRegion(
-                        cursor: SystemMouseCursors.resizeUpDown,
-                        child: Stack(children: [
-                          Positioned(
-                              top: -10,
-                              child: Icon(Icons.drag_handle,
-                                  color: widget.model.dividerHandleColor))
-                        ])))))
-        : GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onHorizontalDragUpdate: (DragUpdateDetails details) =>
-                _onDrag(details, constraints),
-            child: Container(
-                color: myDividerColor,
-                child: SizedBox(
-                    width: myDividerWidth,
-                    height: constraints.maxHeight,
-                    child: MouseRegion(
-                        cursor: SystemMouseCursors.resizeLeftRight,
-                        child: RotationTransition(
-                            turns: const AlwaysStoppedAnimation(.25),
-                            child: Icon(Icons.drag_handle,
-                                color: widget.model.dividerHandleColor))))));
+    var color = widget.model.dividerColor ?? Theme.of(context).colorScheme.onInverseSurface;
 
-    return view;
+    // vertical splitter
+    if (widget.model.vertical) {
+
+      var width = constraints.maxWidth;
+      var height = widget.model.dividerWidth;
+
+      Widget bar = Container(
+          color: color,
+          width: width, height: height);
+
+      bar = GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onVerticalDragUpdate: (DragUpdateDetails details) =>
+              _onDrag(details, constraints),
+          child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown, child: bar));
+
+      Widget handle = Icon(Icons.drag_handle, color: widget.model.dividerHandleColor);
+      handle = GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onVerticalDragUpdate: (DragUpdateDetails details) =>
+              _onDrag(details, constraints),
+          child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: handle));
+
+      Widget view = Stack(alignment: Alignment.center, children: [bar, Positioned(left: 10,  right: 10, child: handle)]);
+
+      return view;
+    }
+
+    // horizontal splitter
+    else {
+      var width = widget.model.dividerWidth;
+      var height = constraints.maxHeight;
+
+      Widget bar = Container(
+          color: color,
+          width: width, height: height);
+
+      bar = GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onHorizontalDragUpdate: (DragUpdateDetails details) =>
+              _onDrag(details, constraints),
+          child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: bar));
+
+      Widget handle = Icon(Icons.drag_handle, color: widget.model.dividerHandleColor);
+      handle = Transform.rotate(angle: 90 * pi / 180, child: handle);
+      handle = GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onHorizontalDragUpdate: (DragUpdateDetails details) =>
+              _onDrag(details, constraints),
+          child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: handle));
+
+      Widget view = Stack(alignment: Alignment.center, children: [bar, Positioned(top: 10,  bottom: 10, child: handle)]);
+
+      return view;
+    }
   }
 
   BoxView view(int i)

@@ -9,11 +9,6 @@ import 'package:fml/widgets/splitview/splitview_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-// platform
-import 'package:fml/platform/platform.vm.dart'
-if (dart.library.io) 'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';
-
 class SplitViewModel extends BoxModel {
   @override
   String? get layout => vertical ? "column" : "row";
@@ -59,9 +54,8 @@ class SplitViewModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double get dividerWidth {
-    var width = _dividerWidth?.get() ?? (Platform.isTouchDevice ? 20 : 6);
+    var width = _dividerWidth?.get() ?? 6;
     if (width % 2 != 0) width = width + 1;
     return width;
   }

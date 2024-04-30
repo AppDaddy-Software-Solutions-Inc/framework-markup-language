@@ -282,8 +282,10 @@ class _InputViewState extends ViewableWidgetState<InputView>
     if (commitTimer?.isActive ?? false) commitTimer!.cancel();
 
     // reset the timer
-    commitTimer =
-        Timer(const Duration(milliseconds: 1000), () async => _commit());
+    var milliseconds = widget.model.debounce;
+    if (milliseconds > 0) {
+      commitTimer = Timer(Duration(milliseconds: milliseconds), () async => _commit());
+    }
   }
 
   void onClear() {

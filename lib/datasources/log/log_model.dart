@@ -39,6 +39,7 @@ class LogModel extends DataSourceModel implements IDataSource {
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
     var function = propertyOrFunction.toLowerCase().trim();
     switch (function) {
+
       case "write":
         String? message = toStr(elementAt(arguments, 0));
         if (message != null) Log().info(message, caller: id);

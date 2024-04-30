@@ -31,7 +31,7 @@ class _PositionedViewState extends ViewableWidgetState<PositionedView> {
     List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
-    var view = children.length == 1 ? children[0] : Column(children: children);
+    var view = children.length == 1 ? children[0] : Column(children: children, mainAxisSize: MainAxisSize.min);
     view = BoxLayout(model: widget.model, child: view);
 
     return view;

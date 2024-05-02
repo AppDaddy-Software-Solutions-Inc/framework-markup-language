@@ -395,7 +395,7 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
   // build a decorated box around the specified child
   static Widget _buildView(BuildContext context, BoxConstraints constraints, BoxModel model, List<Widget> children) {
 
-    // inner children must be wrapped if parent is a row, column, stack or box
+    // wrap inner children in layout box
     List<Widget> list = [];
     for (var child in children) {
       var model = (child is ViewableWidgetView) ? (child as ViewableWidgetView).model : null;

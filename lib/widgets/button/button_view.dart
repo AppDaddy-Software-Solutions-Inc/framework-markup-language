@@ -29,7 +29,7 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
         bottomLeft: Radius.circular(widget.model.radiusBottomLeft),
         topLeft: Radius.circular(widget.model.radiusTopLeft));
 
-    if (model.buttontype == 'elevated') {
+    if (model.type == 'elevated') {
       return ElevatedButton.styleFrom(
           minimumSize: Size(
               model.constraints.minWidth ?? 64,
@@ -45,7 +45,7 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
 
     var borderWidth = widget.model.borderWidth ?? 1;
 
-    var borderSideStyle = model.buttontype == 'outlined'
+    var borderSideStyle = model.type == 'outlined'
         ? MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.disabled)) {
               return BorderSide(
@@ -60,7 +60,7 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
           })
         : null;
 
-    var elevationStyle = model.buttontype == 'elevated'
+    var elevationStyle = model.type == 'elevated'
         ? MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.hovered)) return 8.0;
             if (states.contains(MaterialState.focused) ||
@@ -71,7 +71,7 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
 
     // Button Type Styling
     var foregroundColorStyle =
-        (!isNullOrEmpty(model.color) && model.buttontype != 'elevated')
+        (!isNullOrEmpty(model.color) && model.type != 'elevated')
             ? MaterialStateProperty.resolveWith<Color?>(
                 (Set<MaterialState> states) {
                 if (states.contains(MaterialState.disabled)) {
@@ -83,7 +83,7 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
             : null;
 
     var backgroundColorStyle =
-        (!isNullOrEmpty(model.color) && model.buttontype == 'elevated')
+        (!isNullOrEmpty(model.color) && model.type == 'elevated')
             ? MaterialStateProperty.resolveWith<Color?>(
                 (Set<MaterialState> states) {
                 if (states.contains(MaterialState.hovered)) {
@@ -117,22 +117,46 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
     );
   }
 
+  var lastOnClick = 0;
+
+  void onClickHandler() {
+    // if 0 or less fire set last clicked to 0
+    // this will force an onclick event
+    if (widget.model.debounce <= 0) lastOnClick = 0;
+
+    // get elapsed time in milliseconds
+    var elapsed = DateTime.now().millisecondsSinceEpoch - lastOnClick;
+
+    // elapsed time is greater than debounce time?
+    // fire the onclick event
+    if (elapsed > widget.model.debounce) {
+      // record last clicked time
+      lastOnClick = DateTime.now().millisecondsSinceEpoch;
+
+      // fire onclick event
+      widget.model.onClick();
+    }
+  }
+
   Widget _buildButton(Widget body) {
+
+    // get style
     var style = _getStyle();
-    var onPressed = (widget.model.onclick != null && widget.model.enabled)
-        ? () => widget.model.onPress(context)
-        : null;
+
+    // on click
+    var onClick = (widget.model.onclick != null && widget.model.enabled) ?
+        () => onClickHandler() : null;
 
     Widget view;
-    switch (widget.model.buttontype) {
+    switch (widget.model.type) {
       case 'outlined':
-        view = OutlinedButton(style: style, onPressed: onPressed, child: body);
+        view = OutlinedButton(style: style, onPressed: onClick, child: body);
         break;
       case 'elevated':
-        view = ElevatedButton(style: style, onPressed: onPressed, child: body);
+        view = ElevatedButton(style: style, onPressed: onClick, child: body);
         break;
       default:
-        view = TextButton(style: style, onPressed: onPressed, child: body);
+        view = TextButton(style: style, onPressed: onClick, child: body);
         break;
     }
 

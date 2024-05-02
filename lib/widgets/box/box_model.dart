@@ -168,28 +168,28 @@ class BoxModel extends ViewableModel {
   }
   String? get borderLabel => _borderLabel?.get();
 
-  // box radius
-  StringObservable? _borderRadius;
-  set borderRadius(dynamic v) {
-    if (_borderRadius != null) {
-      _borderRadius!.set(v);
+  // the boxes border radius
+  StringObservable? _radius;
+  set radius(dynamic v) {
+    if (_radius != null) {
+      _radius!.set(v);
     } else if (v != null) {
-      _borderRadius = StringObservable(Binding.toKey(id, 'borderradius'), v,
+      _radius = StringObservable(Binding.toKey(id, 'radius'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-  String? get borderRadius => _borderRadius?.get()?.toLowerCase();
+  String? get radius => _radius?.get()?.toLowerCase();
 
   double get radiusTopRight {
-    if (borderRadius == null) return 0;
-    var radii = borderRadius!.split(',');
+    if (radius == null) return 0;
+    var radii = radius!.split(',');
     if (radii.isEmpty) return 0;
     return toDouble(radii[0]) ?? 0;
   }
 
   double get radiusBottomRight {
-    if (borderRadius == null) return 0;
-    var radii = borderRadius!.split(',');
+    if (radius == null) return 0;
+    var radii = radius!.split(',');
     if (radii.isEmpty) return 0;
     if (radii.length == 1) {
       return toDouble(radii[0]) ?? 0;
@@ -201,8 +201,8 @@ class BoxModel extends ViewableModel {
   }
 
   double get radiusBottomLeft {
-    if (borderRadius == null) return 0;
-    var radii = borderRadius!.split(',');
+    if (radius == null) return 0;
+    var radii = radius!.split(',');
     if (radii.isEmpty) return 0;
     if (radii.length == 1) {
       return toDouble(radii[0]) ?? 0;
@@ -214,8 +214,8 @@ class BoxModel extends ViewableModel {
   }
 
   double get radiusTopLeft {
-    if (borderRadius == null) return 0;
-    var radii = borderRadius!.split(',');
+    if (radius == null) return 0;
+    var radii = radius!.split(',');
     if (radii.isEmpty) return 0;
     if (radii.length == 1) {
       return toDouble(radii[0]) ?? 0;
@@ -391,14 +391,14 @@ class BoxModel extends ViewableModel {
     super.deserialize(xml);
 
     /// border attributes
-    border       = Xml.get(node: xml, tag: 'border');
-    borderRadius = Xml.get(node: xml, tag: 'borderradius') ?? Xml.get(node: xml, tag: 'radius');
+    border = Xml.get(node: xml, tag: 'border');
+    radius = Xml.get(node: xml, tag: 'radius');
     borderColor  = Xml.get(node: xml, tag: 'bordercolor');
     borderWidth  = Xml.get(node: xml, tag: 'borderwidth');
     borderLabel  = Xml.get(node: xml, tag: 'borderlabel');
     // set default border on any border property specified
     if (_border == null &&
-        (_borderRadius != null ||
+        (_radius != null ||
          _borderColor != null ||
          _borderWidth != null ||
          _borderLabel != null)) {

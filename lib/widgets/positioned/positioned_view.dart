@@ -1,8 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_layout.dart';
-import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/stack/stack_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'positioned_model.dart';
 
@@ -31,7 +29,7 @@ class _PositionedViewState extends ViewableWidgetState<PositionedView> {
     List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
-    var view = children.length == 1 ? children[0] : Column(children: children, mainAxisSize: MainAxisSize.min);
+    var view = children.length == 1 ? children[0] : Column(mainAxisSize: MainAxisSize.min, children: children);
     view = BoxLayout(model: widget.model, child: view);
 
     return view;

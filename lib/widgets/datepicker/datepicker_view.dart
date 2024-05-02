@@ -289,12 +289,12 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
     Color? errorBorderColor = Theme.of(context).colorScheme.error;
 
     // set the text color arrays
-    Color? enabledTextColor = widget.model.textcolor;
+    Color? enabledTextColor = widget.model.textColor;
     Color? disabledTextColor = Theme.of(context).disabledColor;
     Color? errorTextColor = Theme.of(context).colorScheme.error;
 
-    double? fontsize = widget.model.size;
-    String? hint = widget.model.hint;
+    var fontsize = widget.model.textSize;
+    var hint = widget.model.hint;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
@@ -351,19 +351,19 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
                   bottom: pad + 15),
               alignLabelWithHint: true,
               labelStyle: TextStyle(
-                fontSize: fontsize != null ? fontsize - 2 : 14,
+                fontSize: fontsize - 2,
                 color: widget.model.getErrorHintColor(context),
               ),
               counterText: "",
               errorText: widget.model.alarm,
               errorStyle: TextStyle(
-                fontSize: fontsize ?? 12,
+                fontSize: fontsize,
                 fontWeight: FontWeight.w300,
                 color: errorTextColor,
               ),
               hintText: hint,
               hintStyle: TextStyle(
-                fontSize: fontsize ?? 14,
+                fontSize: fontsize,
                 fontWeight: FontWeight.w300,
                 color: widget.model.getErrorHintColor(context),
               ),

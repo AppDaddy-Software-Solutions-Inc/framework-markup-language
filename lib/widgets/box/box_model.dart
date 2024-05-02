@@ -120,6 +120,54 @@ class BoxModel extends ViewableModel {
   }
   String get gradientEnd => _gradientEnd?.get()?.toLowerCase() ?? 'bottom';
 
+  /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
+  StringObservable? _border;
+  set border(dynamic v) {
+    if (_border != null) {
+      _border!.set(v);
+    } else if (v != null) {
+      _border = StringObservable(Binding.toKey(id, 'border'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String get border => _border?.get()?.toLowerCase() ?? 'none';
+
+  /// The color of the border for box, defaults to black54
+  ColorObservable? _borderColor;
+  set borderColor(dynamic v) {
+    if (_borderColor != null) {
+      _borderColor!.set(v);
+    } else if (v != null) {
+      _borderColor = ColorObservable(Binding.toKey(id, 'bordercolor'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get borderColor => _borderColor?.get();
+
+  /// The width of the containers border, defaults to 0
+  DoubleObservable? _borderWidth;
+  set borderWidth(dynamic v) {
+    if (_borderWidth != null) {
+      _borderWidth!.set(v);
+    } else if (v != null) {
+      _borderWidth = DoubleObservable(Binding.toKey(id, 'borderwidth'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get borderWidth => _borderWidth?.get();
+
+  /// The border label
+  StringObservable? _borderLabel;
+  set borderLabel(dynamic v) {
+    if (_borderLabel != null) {
+      _borderLabel!.set(v);
+    } else if (v != null) {
+      _borderLabel = StringObservable(Binding.toKey(id, 'borderlabel'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get borderLabel => _borderLabel?.get();
+
   // box radius
   StringObservable? _borderRadius;
   set borderRadius(dynamic v) {
@@ -177,54 +225,6 @@ class BoxModel extends ViewableModel {
     }
     return 0;
   }
-
-  /// The color of the border for box, defaults to black54
-  ColorObservable? _borderColor;
-  set borderColor(dynamic v) {
-    if (_borderColor != null) {
-      _borderColor!.set(v);
-    } else if (v != null) {
-      _borderColor = ColorObservable(Binding.toKey(id, 'bordercolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  Color? get borderColor => _borderColor?.get();
-
-  /// The width of the containers border, defaults to 0
-  DoubleObservable? _borderWidth;
-  set borderWidth(dynamic v) {
-    if (_borderWidth != null) {
-      _borderWidth!.set(v);
-    } else if (v != null) {
-      _borderWidth = DoubleObservable(Binding.toKey(id, 'borderwidth'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  double get borderWidth => _borderWidth?.get() ?? 1;
-
-  /// The border label
-  StringObservable? _borderLabel;
-  set borderLabel(dynamic v) {
-    if (_borderLabel != null) {
-      _borderLabel!.set(v);
-    } else if (v != null) {
-      _borderLabel = StringObservable(Binding.toKey(id, 'borderlabel'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get borderLabel => _borderLabel?.get();
-
-  /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
-  StringObservable? _border;
-  set border(dynamic v) {
-    if (_border != null) {
-      _border!.set(v);
-    } else if (v != null) {
-      _border = StringObservable(Binding.toKey(id, 'border'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  String get border => _border?.get()?.toLowerCase() ?? 'none';
 
   /// shadow attributes
   ///

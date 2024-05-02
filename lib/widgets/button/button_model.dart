@@ -110,7 +110,7 @@ class ButtonModel extends BoxModel {
   }
 
   @override
-  String get borderRadius => super.borderRadius ?? '20';
+  String get borderRadius => super.borderRadius ?? '5';
 
   /// Type of button
   ///
@@ -124,7 +124,6 @@ class ButtonModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get buttontype => _buttontype?.get();
 
   BooleanObservable? _expand;
@@ -206,7 +205,7 @@ class ButtonModel extends BoxModel {
 
     // create text model bound to this label as default
     if (viewableChildren.isEmpty && label != null) {
-      var model = TextModel(this, null, value: "{$id.label}", weight: 500);
+      var model = TextModel(this, null, value: "{$id.label}", weight: 500, color: buttontype == 'elevated' ? "{THEME.onprimary}" : null);
       (children ??= []).add(model);
     }
   }

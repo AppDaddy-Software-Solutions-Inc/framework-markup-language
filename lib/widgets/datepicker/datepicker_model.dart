@@ -36,15 +36,10 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  bool? get view {
-    if (_view == null) return true;
-    return _view?.get();
-  }
+  bool? get view => _view?.get();
 
   /// Mode is the entrymode type of the datepicker. Can be gui, input, bothgui, bothinput.
   StringObservable? _type;
-
   set type(dynamic v) {
     if (_type != null) {
       _type!.set(v);
@@ -53,7 +48,6 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String get type => _type?.get() ?? "date";
 
   /// Mode is the entrymode type of the datepicker. Can be gui, input, bothgui, bothinput.
@@ -67,8 +61,19 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String get mode => _mode?.get() ?? "bothgui";
+
+  /// Format string expected from the input and output. See https://api.flutter.dev/flutter/intl/DateFormat-class.html.
+  StringObservable? _format;
+  set format(dynamic v) {
+    if (_format != null) {
+      _format!.set(v);
+    } else if (v != null) {
+      _format = StringObservable(Binding.toKey(id, 'format'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get format => _format?.get();
 
   /// Newest date available for selection. DATE___ only.
   StringObservable? _newest;
@@ -80,12 +85,10 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get newest => _newest?.get();
 
   // Oldest date available on selection. DATE___ only.
   StringObservable? _oldest;
-
   set oldest(dynamic v) {
     if (_oldest != null) {
       _oldest!.set(v);
@@ -94,22 +97,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get oldest => _oldest?.get();
-
-  /// Format string expected from the input and output. See https://api.flutter.dev/flutter/intl/DateFormat-class.html.
-  StringObservable? _format;
-
-  set format(dynamic v) {
-    if (_format != null) {
-      _format!.set(v);
-    } else if (v != null) {
-      _format = StringObservable(Binding.toKey(id, 'format'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get format => _format?.get();
 
   // Value
   StringObservable? _value;
@@ -138,7 +126,6 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get clear => _clear?.get() ?? false;
 
   DatepickerModel(
@@ -170,28 +157,19 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
+
     // deserialize
     super.deserialize(xml);
 
     // set properties
     value = Xml.get(node: xml, tag: 'value') ?? defaultValue ?? "";
     type = Xml.get(node: xml, tag: 'type') ?? type;
-    hint = Xml.get(node: xml, tag: 'hint');
     view = Xml.get(node: xml, tag: 'view');
     oldest = Xml.get(node: xml, tag: 'oldest');
     newest = Xml.get(node: xml, tag: 'newest');
     format = Xml.get(node: xml, tag: 'format');
     mode = Xml.get(node: xml, tag: 'mode');
-    borderColor = Xml.get(node: xml, tag: 'bordercolor');
-    borderWidth = Xml.get(node: xml, tag: 'borderwidth');
-    radius = Xml.get(node: xml, tag: 'radius');
-    border = Xml.get(node: xml, tag: 'border');
-    textcolor = Xml.get(node: xml, tag: 'textcolor');
-    weight = Xml.get(node: xml, tag: 'weight');
-    style = Xml.get(node: xml, tag: 'style');
     clear = Xml.get(node: xml, tag: 'clear');
-    size = Xml.get(node: xml, tag: 'size');
-    icon = Xml.get(node: xml, tag: 'icon');
   }
 
   @override

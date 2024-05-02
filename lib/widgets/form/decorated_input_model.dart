@@ -40,47 +40,56 @@ class DecoratedInputModel extends FormFieldModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get hint => _hint?.get();
 
+  /// The font size of the text.
+  DoubleObservable? _textSize;
+  set textSize(dynamic v) {
+    if (_textSize != null) {
+      _textSize!.set(v);
+    } else {
+      if (v != null) {
+        _textSize = DoubleObservable(Binding.toKey(id, 'size'), v,
+            scope: scope, listener: onPropertyChange);
+      }
+    }
+  }
+  double get textSize => _textSize?.get() ?? 14;
+
   /// The color of the text. Can be an array of 3 colors seperated by commas for enabled, disabled, and error.
-  ColorObservable? _textcolor;
-  set textcolor(dynamic v) {
-    if (_textcolor != null) {
-      _textcolor!.set(v);
+  ColorObservable? _textColor;
+  set textColor(dynamic v) {
+    if (_textColor != null) {
+      _textColor!.set(v);
     } else if (v != null) {
-      _textcolor = ColorObservable(Binding.toKey(id, 'textcolor'), v,
+      _textColor = ColorObservable(Binding.toKey(id, 'textcolor'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  Color? get textcolor => _textcolor?.get();
+  Color? get textColor => _textColor?.get();
 
   /// The weight of the font
-  StringObservable? _weight;
-  set weight(dynamic v) {
-    if (_weight != null) {
-      _weight!.set(v);
+  StringObservable? _textWeight;
+  set textWeight(dynamic v) {
+    if (_textWeight != null) {
+      _textWeight!.set(v);
     } else if (v != null) {
-      _weight = StringObservable(Binding.toKey(id, 'weight'), v,
+      _textWeight = StringObservable(Binding.toKey(id, 'weight'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  String? get weight => _weight?.get();
+  String? get textWeight => _textWeight?.get();
 
   /// The style of the font. Will override weight and size.
-  StringObservable? _style;
-  set style(dynamic v) {
-    if (_style != null) {
-      _style!.set(v);
+  StringObservable? _textStyle;
+  set textStyle(dynamic v) {
+    if (_textStyle != null) {
+      _textStyle!.set(v);
     } else if (v != null) {
-      _style = StringObservable(Binding.toKey(id, 'style'), v,
-          scope: scope, listener: onPropertyChange);
+      _textStyle = StringObservable(Binding.toKey(id, 'style'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
-  String? get style => _style?.get();
+  String? get textStyle => _textStyle?.get();
 
   /// The prefix icon within the input
   IconObservable? _icon;
@@ -92,47 +101,7 @@ class DecoratedInputModel extends FormFieldModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   IconData? get icon => _icon?.get();
-
-  /// The radius of the border if all.
-  DoubleObservable? _radius;
-  set radius(dynamic v) {
-    if (_radius != null) {
-      _radius!.set(v);
-    } else if (v != null) {
-      _radius = DoubleObservable(Binding.toKey(id, 'radius'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double get radius => _radius?.get() ?? 5;
-
-  /// The color of the border for input, defaults to black54. Accepts 4 colors positionally. Enabled, disabled, focused, and error colors.
-  ColorObservable? _borderColor;
-  set borderColor(dynamic v) {
-    if (_borderColor != null) {
-      _borderColor!.set(v);
-    } else if (v != null) {
-      _borderColor = ColorObservable(Binding.toKey(id, 'bordercolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  Color? get borderColor => _borderColor?.get();
-
-  /// The width of the containers border, defaults to 2
-  DoubleObservable? _borderWidth;
-  set borderWidth(dynamic v) {
-    if (_borderWidth != null) {
-      _borderWidth!.set(v);
-    } else if (v != null) {
-      _borderWidth = DoubleObservable(Binding.toKey(id, 'borderwidth'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double get borderWidth => _borderWidth?.get() ?? 1;
 
   /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
   StringObservable? _border;
@@ -144,11 +113,43 @@ class DecoratedInputModel extends FormFieldModel {
           scope: scope, listener: onPropertyChange);
     }
   }
+  String get border => _border?.get()?.toLowerCase() ?? 'all';
 
-  String? get border {
-    if (_border == null) return 'all';
-    return _border!.get()?.toLowerCase();
+  /// The color of the border for box, defaults to black54
+  ColorObservable? _borderColor;
+  set borderColor(dynamic v) {
+    if (_borderColor != null) {
+      _borderColor!.set(v);
+    } else if (v != null) {
+      _borderColor = ColorObservable(Binding.toKey(id, 'bordercolor'), v,
+          scope: scope, listener: onPropertyChange);
+    }
   }
+  Color? get borderColor => _borderColor?.get();
+
+  /// The width of the containers border, defaults to 1
+  DoubleObservable? _borderWidth;
+  set borderWidth(dynamic v) {
+    if (_borderWidth != null) {
+      _borderWidth!.set(v);
+    } else if (v != null) {
+      _borderWidth = DoubleObservable(Binding.toKey(id, 'borderwidth'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double get borderWidth => _borderWidth?.get() ?? 1;
+
+  /// The radius of the containers border, defaults to 5
+  DoubleObservable? _radius;
+  set radius(dynamic v) {
+    if (_radius != null) {
+      _radius!.set(v);
+    } else if (v != null) {
+      _radius = DoubleObservable(Binding.toKey(id, 'radius'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double get radius => _radius?.get() ?? 5;
 
   BooleanObservable? _expand;
   set expand(dynamic v) {
@@ -159,23 +160,7 @@ class DecoratedInputModel extends FormFieldModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get expand => _expand?.get() ?? false;
-
-  // font size
-  DoubleObservable? _size;
-  set size(dynamic v) {
-    if (_size != null) {
-      _size!.set(v);
-    } else {
-      if (v != null) {
-        _size = DoubleObservable(Binding.toKey(id, 'size'), v,
-            scope: scope, listener: onPropertyChange);
-      }
-    }
-  }
-
-  double? get size => _size?.get() ?? 14;
 
   DecoratedInputModel(
     super.parent,
@@ -184,9 +169,10 @@ class DecoratedInputModel extends FormFieldModel {
     dynamic hint,
     dynamic expand,
     dynamic color,
-    dynamic size,
-    dynamic weight,
-    dynamic style,
+    dynamic textSize,
+    dynamic textColor,
+    dynamic textWeight,
+    dynamic textStyle,
     dynamic padding,
     dynamic icon,
     dynamic dense,
@@ -194,39 +180,53 @@ class DecoratedInputModel extends FormFieldModel {
     dynamic radius,
     dynamic borderColor,
     dynamic borderWidth,
-    dynamic textcolor,
     dynamic label,
   }) {
+
     if (width != null) this.width = width;
     if (hint != null) this.hint = hint;
     if (expand != null) this.expand = expand;
     if (color != null) this.color = color;
-    if (width != null) this.width = width;
-    if (hint != null) this.hint = hint;
-    if (size != null) this.size = size;
-    if (weight != null) this.weight = weight;
-    if (style != null) this.style = style;
+
+    // text properties
+    if (textSize != null) this.textSize = textSize;
+    if (textColor != null) this.textColor = textColor;
+    if (textWeight != null) this.textWeight = textWeight;
+    if (textStyle != null) this.textStyle = textStyle;
+
     if (padding != null) margins = padding;
     if (icon != null) this.icon = icon;
     if (dense != null) this.dense = dense;
+
+    // border properties
     if (border != null) this.border = border;
     if (radius != null) this.radius = radius;
     if (borderColor != null) this.borderColor = borderColor;
     if (borderWidth != null) this.borderWidth = borderWidth;
-    if (textcolor != null) this.textcolor = textcolor;
   }
 
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
+
     // deserialize
     super.deserialize(xml);
 
-    hint = Xml.get(node: xml, tag: 'hint');
+    // font properties
+    textSize   = Xml.get(node: xml, tag: 'textsize') ?? Xml.get(node: xml, tag: 'size');
+    textColor  = Xml.get(node: xml, tag: 'textcolor');
+    textWeight = Xml.get(node: xml, tag: 'textweight') ?? Xml.get(node: xml, tag: 'weight');
+    textStyle  = Xml.get(node: xml, tag: 'textstyle') ?? Xml.get(node: xml, tag: 'style');
+
+    // border / shape properties
     border = Xml.get(node: xml, tag: 'border');
     borderColor = Xml.get(node: xml, tag: 'bordercolor');
     borderWidth = Xml.get(node: xml, tag: 'borderwidth');
     radius = Xml.get(node: xml, tag: 'radius');
+
+    // visual properties
+    hint = Xml.get(node: xml, tag: 'hint');
+    icon = Xml.get(node: xml, tag: 'icon');
     dense = Xml.get(node: xml, tag: 'dense');
   }
 

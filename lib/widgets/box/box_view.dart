@@ -98,7 +98,7 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     // no border
     if (model.border == 'none') return null;
 
-    var width = model.borderWidth;
+    var width = model.borderWidth ?? 1;
     var color = model.borderColor ?? theme.colorScheme.onInverseSurface;
 
     // simple border on all sides

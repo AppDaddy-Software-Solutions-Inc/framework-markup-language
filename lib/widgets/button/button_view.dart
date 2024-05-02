@@ -43,18 +43,20 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
           elevation: 3);
     }
 
+    var borderWidth = widget.model.borderWidth ?? 1;
+
     var borderSideStyle = model.buttontype == 'outlined'
         ? MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.disabled)) {
               return BorderSide(
                   style: BorderStyle.solid,
                   color: Theme.of(context).colorScheme.surfaceVariant,
-                  width: 2);
+                  width: borderWidth);
             }
             return BorderSide(
                 style: BorderStyle.solid,
                 color: model.color ?? Theme.of(context).colorScheme.primary,
-                width: 2);
+                width: borderWidth);
           })
         : null;
 

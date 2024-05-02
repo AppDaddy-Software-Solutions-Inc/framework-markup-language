@@ -50,7 +50,7 @@ class _SelectViewState extends ViewableWidgetState<SelectView> {
     }
 
     // border radius
-    var radius = BorderRadius.circular(widget.model.radius.toDouble());
+    var radius = BorderRadius.circular(widget.model.radius);
 
     // border color
     var color =
@@ -111,16 +111,16 @@ class _SelectViewState extends ViewableWidgetState<SelectView> {
 
     // set text style
     var hintTextStyle = TextStyle(
-        fontSize: (widget.model.size ?? 14) - 2,
+        fontSize: widget.model.textSize - 2,
         fontWeight: FontWeight.w300,
         color: hintColor);
 
     var style = TextStyle(
         color: widget.model.enabled
-            ? widget.model.textcolor ??
+            ? widget.model.textColor ??
                 Theme.of(context).colorScheme.onBackground
             : Theme.of(context).colorScheme.surfaceVariant,
-        fontSize: widget.model.size);
+        fontSize: widget.model.textSize);
 
     var decoration = InputDecoration(
         contentPadding: const EdgeInsets.only(bottom: 2),
@@ -144,8 +144,8 @@ class _SelectViewState extends ViewableWidgetState<SelectView> {
 
     // border radius
     var borderRadius = BorderRadius.circular(
-        widget.model.radius.toDouble() <= 24
-            ? widget.model.radius.toDouble()
+        widget.model.radius <= 24
+            ? widget.model.radius
             : 24);
 
     // widget is enabled?

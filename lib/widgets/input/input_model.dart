@@ -17,8 +17,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
-  List<Suggestion> suggestions = [];
-
   /// Capitilization sets the input to uppercase or lowercase with `upper` and `lower`
   // TODO: maybe change this to caps or uppercase = t/f?
   CapitalizationTypes? _capitalization;
@@ -42,7 +40,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get allow => _allow?.get();
 
   /// The regex of characters to deny, will allow everything else.
@@ -55,10 +52,7 @@ class InputModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get deny => _deny?.get();
-
-  Suggestion? suggestion;
 
   /// If the input shows the clear icon on its right.
   BooleanObservable? _clear;
@@ -70,7 +64,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get clear => _clear?.get() ?? false;
 
   /// If the input will obscure its characters.
@@ -83,7 +76,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get obscure =>
       _obscure?.get() ?? formatType == 'password' ? true : false;
 
@@ -113,7 +105,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   dynamic get mask => _mask?.get();
 
   // The format of the input for quick formatting. Currently boolean, integer, numeric, phone, currency, card, expiry, password, email .
@@ -126,7 +117,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get format => _format?.get();
 
   // format type
@@ -142,7 +132,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   int? get lines => _lines?.get();
 
   /// The number of milliseconds used for commiting
@@ -180,7 +169,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   int? get length => _length?.get();
 
   /// The keyoard type the input uses.
@@ -193,10 +181,9 @@ class InputModel extends DecoratedInputModel implements IFormField {
           StringObservable(Binding.toKey(id, 'keyboardtype'), v, scope: scope);
     }
   }
-
   String? get keyboardType => _keyboardType?.get();
 
-  // keyboardinput
+  // keyboard input
   StringObservable? _keyboardInput;
   set keyboardInput(dynamic v) {
     if (_keyboardInput != null) {
@@ -206,7 +193,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
           StringObservable(Binding.toKey(id, 'keyboardinput'), v, scope: scope);
     }
   }
-
   String? get keyboardInput => _keyboardInput?.get();
 
   BooleanObservable? _wrap;
@@ -218,7 +204,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get wrap => _wrap?.get() ?? false;
 
   InputModel(
@@ -308,10 +293,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
     // set validator
     setValidator(Xml.get(node: xml, tag: 'errortext'));
 
-    hint = Xml.get(node: xml, tag: 'hint') ?? "";
-    size = Xml.get(node: xml, tag: 'size');
-    weight = Xml.get(node: xml, tag: 'weight');
-    style = Xml.get(node: xml, tag: 'style');
     lines = Xml.get(node: xml, tag: 'lines');
     length = Xml.get(node: xml, tag: 'length');
     obscure = Xml.get(node: xml, tag: 'obscure');
@@ -319,17 +300,11 @@ class InputModel extends DecoratedInputModel implements IFormField {
     maxlines = Xml.get(node: xml, tag: 'maxlines');
     expand = Xml.get(node: xml, tag: 'expand');
     onfocuslost = Xml.get(node: xml, tag: 'onfocuslost');
-    icon = Xml.get(node: xml, tag: 'icon');
     keyboardType = Xml.get(node: xml, tag: 'keyboardtype');
     keyboardInput = Xml.get(node: xml, tag: 'keyboardinput');
     allow = Xml.get(node: xml, tag: 'allow');
     deny = Xml.get(node: xml, tag: 'deny');
     capitalization = Xml.get(node: xml, tag: 'case');
-    border = Xml.get(node: xml, tag: 'border');
-    radius = Xml.get(node: xml, tag: 'radius');
-    borderColor = Xml.get(node: xml, tag: 'bordercolor');
-    borderWidth = Xml.get(node: xml, tag: 'borderwidth');
-    textcolor = Xml.get(node: xml, tag: 'textcolor');
     mask = Xml.get(node: xml, tag: 'mask');
     debounce = Xml.get(node: xml, tag: 'debounce');
   }
@@ -398,9 +373,4 @@ class InputModel extends DecoratedInputModel implements IFormField {
     var view = InputView(this);
     return isReactive ? ReactiveView(this, view) : view;
   }
-}
-
-class Suggestion {
-  final dynamic text;
-  Suggestion({this.text});
 }

@@ -278,6 +278,7 @@ class _InputViewState extends ViewableWidgetState<InputView>
 
   // triggers when data is typed
   void _debounce() {
+
     // this should only trigger with the oninputchange
     if (commitTimer?.isActive ?? false) commitTimer!.cancel();
 

@@ -45,6 +45,19 @@ class ButtonModel extends BoxModel {
   @override
   String get border => 'none';
 
+  /// The number of milliseconds used for allowing the next click
+  /// and firing the onclick event
+  IntegerObservable? _debounce;
+  set debounce(dynamic v) {
+    if (_debounce != null) {
+      _debounce!.set(v);
+    } else if (v != null) {
+      _debounce = IntegerObservable(Binding.toKey(id, 'debounce'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  int get debounce => _debounce?.get() ?? 300;
+
   /// [Event]s to execute when the button is clicked
   StringObservable? _onclick;
   set onclick(dynamic v) {
@@ -55,34 +68,7 @@ class ButtonModel extends BoxModel {
           scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
-
   String? get onclick => _onclick?.get();
-
-  // onenter
-  StringObservable? _onenter;
-  set onenter(dynamic v) {
-    if (_onenter != null) {
-      _onenter!.set(v);
-    } else if (v != null) {
-      _onenter = StringObservable(Binding.toKey(id, 'onenter'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
-    }
-  }
-
-  String? get onenter => _onenter?.get();
-
-  // onexit
-  StringObservable? _onexit;
-  set onexit(dynamic v) {
-    if (_onexit != null) {
-      _onexit!.set(v);
-    } else if (v != null) {
-      _onexit = StringObservable(Binding.toKey(id, 'onexit'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
-    }
-  }
-
-  String? get onexit => _onexit?.get();
 
   /// Text value for Button
   ///
@@ -110,21 +96,21 @@ class ButtonModel extends BoxModel {
   }
 
   @override
-  String get borderRadius => super.borderRadius ?? '5';
+  String get radius => super.radius ?? '5';
 
   /// Type of button
   ///
   /// Values: text, outlined, elevated
-  StringObservable? _buttontype;
-  set buttontype(dynamic v) {
-    if (_buttontype != null) {
-      _buttontype!.set(v);
+  StringObservable? _type;
+  set type(dynamic v) {
+    if (_type != null) {
+      _type!.set(v);
     } else if (v != null) {
-      _buttontype = StringObservable(Binding.toKey(id, 'type'), v,
+      _type = StringObservable(Binding.toKey(id, 'type'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-  String? get buttontype => _buttontype?.get();
+  String? get type => _type?.get();
 
   BooleanObservable? _expand;
   @override
@@ -141,36 +127,18 @@ class ButtonModel extends BoxModel {
   bool get expand => _expand?.get() ?? false;
 
   ButtonModel(super.parent, super.id,
-      {dynamic onclick,
-      dynamic onenter,
-      dynamic onexit,
+      {
+      dynamic type,
       dynamic label,
-      dynamic buttontype,
       dynamic color,
+      dynamic onclick,
       dynamic enabled,
-      dynamic width,
-      dynamic height,
-      dynamic minwidth,
-      dynamic maxwidth,
-      dynamic minheight,
-      dynamic maxheight,
-      dynamic layout,
       List<Model>? children}) {
-    // constraints
-    if (width != null) this.width = width;
-    if (height != null) this.height = height;
-    if (minwidth != null) minWidth = minwidth;
-    if (minheight != null) minHeight = minheight;
-    if (maxwidth != null) maxWidth = maxwidth;
-    if (maxheight != null) maxHeight = maxheight;
 
-    this.layout = layout;
-    this.onclick = onclick;
-    this.onenter = onenter;
-    this.onexit = onexit;
+    this.type = type;
     this.label = label;
     this.color = color;
-    this.buttontype = buttontype;
+    this.onclick = onclick;
     this.enabled = enabled;
     this.children = children;
   }
@@ -178,8 +146,7 @@ class ButtonModel extends BoxModel {
   static ButtonModel? fromXml(Model parent, XmlElement xml) {
     ButtonModel? model;
     try {
-      model = ButtonModel(parent, Xml.get(node: xml, tag: 'id'),
-          layout: Xml.get(node: xml, tag: 'layout'));
+      model = ButtonModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     } catch (e) {
       Log().exception(e, caller: 'button.Model');
@@ -195,47 +162,26 @@ class ButtonModel extends BoxModel {
     super.deserialize(xml);
 
     // properties
+    type = Xml.get(node: xml, tag: 'type');
     label = Xml.get(node: xml, tag: 'value') ??
         Xml.get(node: xml, tag: 'label') ??
         Xml.getText(xml);
+
+    debounce = Xml.get(node: xml, tag: 'debounce');
     onclick = Xml.get(node: xml, tag: 'onclick');
-    onenter = Xml.get(node: xml, tag: 'onenter');
-    onexit = Xml.get(node: xml, tag: 'onexit');
-    buttontype = Xml.get(node: xml, tag: 'type');
 
     // create text model bound to this label as default
     if (viewableChildren.isEmpty && label != null) {
-      var model = TextModel(this, null, value: "{$id.label}", weight: 500, color: buttontype == 'elevated' ? "{THEME.onprimary}" : null);
+      var model = TextModel(this, null, value: "{$id.label}", weight: 500, color: type == 'elevated' ? "{THEME.onprimary}" : null);
       (children ??= []).add(model);
     }
   }
 
-  bool preventClicking = false;
-  Timer? allowClicking;
-
-  onPress(BuildContext context) async {
-    if (preventClicking != true) {
-      if (allowClicking?.isActive ?? false) allowClicking!.cancel();
-      allowClicking = Timer(
-          const Duration(milliseconds: 300), () => preventClicking = false);
-      preventClicking = true;
-
-      Model.unfocus();
-
-      if (enabled != false) await onClick(context);
-    }
-  }
-
-  Future<bool> onClick(BuildContext context) async {
-    return await EventHandler(this).execute(_onclick);
-  }
-
-  Future<bool> onEnter(BuildContext context) async {
-    return await EventHandler(this).execute(_onenter);
-  }
-
-  Future<bool> onExit(BuildContext context) async {
-    return await EventHandler(this).execute(_onexit);
+  // onclick event handler
+  Future<bool> onClick() async {
+    bool ok = await EventHandler(this).execute(_onclick);
+    Model.unfocus();
+    return ok;
   }
 
   // returns the inner content model

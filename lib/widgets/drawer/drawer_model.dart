@@ -114,9 +114,10 @@ class DrawerModel extends ViewableModel {
       for (var element in elements) {
         XmlElement node = element.copy();
 
+
+        //Side cannot be null
         String? side =
-            Xml.attribute(node: node, tag: 'side')?.trim().toLowerCase();
-        if (side != null) {
+            Xml.attribute(node: node, tag: 'side')?.trim().toLowerCase() ?? 'bottom';
           // build the drawer elements
           XmlElement drawer = XmlElement(
               XmlName(side.toUpperCase())); // create a sidedrawer from template
@@ -173,10 +174,6 @@ class DrawerModel extends ViewableModel {
 
           drawer.children.addAll(nodes);
           xml.children.add(drawer);
-        } else {
-          Log().error('Unable to parse a drawer attributes',
-              caller: 'drawer.Model => Model.fromXmlList()');
-        }
       }
 
       // Create View Model

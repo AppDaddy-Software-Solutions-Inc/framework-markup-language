@@ -5,7 +5,6 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:fml/emoji.dart';
 import 'package:fml/helpers/color.dart';
-import 'package:fml/log/manager.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -160,27 +159,27 @@ DateTime? toDate(String? datetime, {String? format}) {
   try {
     DateFormat formattedDate = DateFormat(format);
     if (format is String) result = formattedDate.parse(datetime!);
-  } on FormatException catch (e) {
-    Log().debug(e.toString(),
-        caller: 'static DateTime? toDate(String? datetime, {String? format})');
   } catch (e) {
     result = null;
-    Log().debug(e.toString(),
-        caller:
-            'helper/string.dart => DateTime toDate(String date, String format) => DateFormat(format).parse(date)');
   }
 
   try {
     result ??= DateTime.parse(datetime!);
-  } on FormatException catch (e) {
-    Log().debug(e.toString(), caller: 'Invalid Format $e');
   } catch (e) {
     result = null;
-    Log().debug(e.toString(),
-        caller:
-            'helper/string.dart => DateTime toDate(String date, String format) => DateTime.tryParse(date)');
   }
   return result;
+}
+
+TimeOfDay? toTime(String? datetime, {String? format}) {
+  TimeOfDay? time;
+  try
+  {
+    time = TimeOfDay.fromDateTime(toDate(datetime, format: format)!);
+  } catch (e) {
+    time = null;
+  }
+  return time;
 }
 
 /// Helper function for an [eval._toDate()]
@@ -195,9 +194,6 @@ String? toChar(DateTime? datetime, {String? format}) {
     }
   } catch (e) {
     result = null;
-    Log().debug(e.toString(),
-        caller:
-            'helper/string.dart => String toChar(String date, String format)');
   }
   return result;
 }
@@ -301,7 +297,7 @@ bool isPercent(dynamic s) {
       return isNumeric(s);
     }
   } catch (e) {
-    Log().debug('$e');
+    return false;
   }
   return false;
 }

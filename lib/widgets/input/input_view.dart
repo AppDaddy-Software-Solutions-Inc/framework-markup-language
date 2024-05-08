@@ -293,7 +293,6 @@ class _InputViewState extends ViewableWidgetState<InputView>
     if (widget.onChangeCallback != null) {
       widget.onChangeCallback(widget.model, '');
     }
-
     widget.model.controller!.text = '';
     _commit();
   }
@@ -442,7 +441,7 @@ class _InputViewState extends ViewableWidgetState<InputView>
   }
 
   _getSuffixIcon(Color hintTextColor) {
-    if (widget.model.formatType == "password" && widget.model.clear == false) {
+    if (widget.model.formatType == "password" && !widget.model.clear) {
       return IconButton(
         icon: Icon(
             widget.model.obscure ? Icons.visibility : Icons.visibility_off,
@@ -467,16 +466,16 @@ class _InputViewState extends ViewableWidgetState<InputView>
 
   InputDecoration _getDecoration() {
     // set the border colors
-    Color? enabledBorderColor =
+    var enabledBorderColor =
         widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
-    Color? disabledBorderColor = Theme.of(context).disabledColor;
-    Color? focusBorderColor = Theme.of(context).focusColor;
-    Color? errorBorderColor = Theme.of(context).colorScheme.error;
+    var disabledBorderColor = Theme.of(context).disabledColor;
+    var focusBorderColor = Theme.of(context).focusColor;
+    var errorBorderColor = Theme.of(context).colorScheme.error;
 
-    String? hint = widget.model.hint;
-    Color? hintTextColor = widget.model.textColor?.withOpacity(0.7) ??
+    var hint = widget.model.hint;
+    var hintTextColor = widget.model.textColor?.withOpacity(0.7) ??
         Theme.of(context).colorScheme.onSurfaceVariant;
-    Color? errorTextColor = Theme.of(context).colorScheme.error;
+    var errorTextColor = Theme.of(context).colorScheme.error;
 
     double? fontsize = widget.model.textSize;
 

@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/modal/modal_manager_view.dart';
-import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
-import '../tooltip/v2/tooltip_model.dart';
 import 'modal_view.dart';
 
 class ModalModel extends BoxModel {
@@ -22,15 +20,6 @@ class ModalModel extends BoxModel {
 
   @override
   bool get needsVisibilityDetector => false;
-
-  @override
-  TooltipModel? get tipModel => null;
-
-  @override
-  bool get draggable => false;
-
-  @override
-  bool get droppable => false;
 
   ModalModel(Model super.parent, super.id,
       {this.child,
@@ -60,12 +49,6 @@ class ModalModel extends BoxModel {
 
   @override
   String get border => "all";
-
-  Color? defaultBorderColor;
-
-  @override
-  Color get borderColor =>
-      super.borderColor ?? defaultBorderColor ?? Colors.white;
 
   // returns thge modal border radius for the header
   double get headerRadius => super.radiusTopRight;
@@ -225,7 +208,7 @@ class ModalModel extends BoxModel {
           // modal
           if (arguments.length > 5) modal = toBool(arguments[5]) ?? true;
 
-          open(ModalView(this));
+          open(getView());
         }
         return true;
 
@@ -261,8 +244,5 @@ class ModalModel extends BoxModel {
   }
 
   @override
-  Widget getView({Key? key}) {
-    var view = ModalView(this);
-    return isReactive ? ReactiveView(this, view) : view;
-  }
+  ModalView getView({Key? key}) => ModalView(this);
 }

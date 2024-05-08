@@ -174,11 +174,15 @@ class ListModel extends BoxModel implements IForm, IScrollable {
     dirty = isDirty;
   }
 
+  @override
+  bool clear() => true;
+
   // Clean
   @override
-  set clean(bool b) {
+  bool clean() {
     dirty = false;
     items.forEach((index, item) => item.dirty = false);
+    return true;
   }
 
   // oncomplete
@@ -373,7 +377,8 @@ class ListModel extends BoxModel implements IForm, IScrollable {
     // save pointer to data source
     myDataSource = source;
 
-    clean = true;
+    // mark clean
+    clean();
 
     // clear items
     items.forEach((_, item) => item.dispose());

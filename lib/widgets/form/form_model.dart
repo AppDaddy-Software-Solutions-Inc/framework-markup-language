@@ -154,20 +154,6 @@ class FormModel extends BoxModel implements IForm {
     if (isDirty && autosave == true) _saveForm();
   }
 
-  @override
-  set clean(bool b) {
-    // clean all fields
-    for (var field in formFields) {
-      field.dirty = false;
-    }
-
-    // clean all sub-forms
-    for (var form in forms) {
-      form.clean = false;
-    }
-    dirty = false;
-  }
-
   // gps
   BooleanObservable? _geocode;
   set geocode(dynamic v) {
@@ -371,7 +357,7 @@ class FormModel extends BoxModel implements IForm {
     }
 
     // mark form clean
-    clean = true;
+    clean();
 
     // add dirty listener to each field
     for (var field in formFields) {
@@ -434,7 +420,27 @@ class FormModel extends BoxModel implements IForm {
     return ok;
   }
 
-  Future<bool> clear() async {
+  @override
+  bool clean() {
+
+    // clean all fields
+    for (var field in formFields) {
+      field.dirty = false;
+    }
+
+    // clean all sub-forms
+    for (var form in forms) {
+     form.clean();
+    }
+
+    // clear dirty flag
+    dirty = false;
+
+    return true;
+  }
+
+  @override
+  bool clear() {
     busy = true;
 
     bool ok = true;
@@ -445,7 +451,7 @@ class FormModel extends BoxModel implements IForm {
     }
 
     // Set Clean
-    if (ok == true) clean = true;
+    if (ok == true) clean();
 
     busy = false;
 
@@ -481,7 +487,7 @@ class FormModel extends BoxModel implements IForm {
     if (ok) ok = await _postForm(form);
 
     // Set Clean
-    if (ok == true) clean = true;
+    if (ok == true) clean();
 
     // fire on complete event
     if (ok) ok = await EventHandler(this).execute(_onComplete);
@@ -796,7 +802,7 @@ class FormModel extends BoxModel implements IForm {
     }
 
     // mark clean
-    clean = true;
+    clean();
 
     return form;
   }
@@ -859,6 +865,9 @@ class FormModel extends BoxModel implements IForm {
 
       case 'clear':
         return clear();
+
+      case 'clean':
+        return clean();
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }
@@ -873,7 +882,7 @@ class FormModel extends BoxModel implements IForm {
 
     // set form clean
     else {
-      clean = true;
+      clean();
     }
 
     return super.onDataSourceSuccess(source, list);

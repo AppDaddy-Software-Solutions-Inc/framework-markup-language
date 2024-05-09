@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/datepicker/datepicker_model.dart';
@@ -17,7 +16,7 @@ class DatepickerView extends StatefulWidget implements ViewableWidgetView {
 }
 
 class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
-  String? format;
+
   String? date;
   String? oldValue;
   TextEditingController? cont;
@@ -78,7 +77,7 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
         (widget.model.isPicking != true)) {
       widget.model.onChange(context);
     }
-    cont!.text = widget.model.value;
+    cont!.text = widget.model.value ?? "";
     super.onModelChange(model);
   }
 
@@ -130,96 +129,88 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
   }
 
   Future _showDateRangePicker(DatePickerEntryMode mode) async {
-    if (!mounted) return;
-
-    var format = widget.model.format;
-    var newest = widget.model.newest;
-    var oldest = widget.model.oldest;
-
-    DateTimeRange? result;
 
     if (mounted) {
-      result = await showDateRangePicker(
-        context: context,
-        initialEntryMode: mode,
-        firstDate: toDate(oldest, format: format) ??
-            DateTime(DateTime.now().year - 100),
-        currentDate: DateTime.now(),
-        lastDate: toDate(newest, format: format) ??
-            DateTime(DateTime.now().year + 10),
-      );
-    }
-    if (result == null) return;
 
-    // set value
-    widget.model.setValue(result.start, TimeOfDay.now(), format,
-        secondResult: result.end);
+      var dateOldest = toDate(widget.model.oldest, format: widget.model.format) ?? DateTime(DateTime.now().year - 100);
+      var dateNewest = toDate(widget.model.newest, format: widget.model.format) ?? DateTime(DateTime.now().year + 10);
+
+      var result = await showDateRangePicker(
+          context: context,
+          initialEntryMode: mode,
+          currentDate: DateTime.now(),
+          firstDate: dateOldest,
+          lastDate: dateNewest);
+
+      // set the value
+      if (result != null) {
+        widget.model.setValue(result.start, TimeOfDay.now(), secondResult: result.end);
+      }
+    }
   }
 
   Future _showTimePicker(TimePickerEntryMode mode) async {
-    if (!mounted) return;
 
-    TimeOfDay time = TimeOfDay.now();
-    var format = widget.model.format;
-    try {
-      time =
-          TimeOfDay.fromDateTime(toDate(widget.model.value, format: format)!);
-    } catch (e) {
-      Log().exception(e, caller: 'Datepicker');
-    }
-
-    TimeOfDay? result;
     if (mounted) {
-      result = await showTimePicker(
-          context: context, initialTime: time, initialEntryMode: mode);
-    }
-    if (result == null) return;
 
-    // set value
-    widget.model.setValue(DateTime.now(), result, format);
+      TimeOfDay? time = toTime(widget.model.value, format: widget.model.format) ?? TimeOfDay.now();
+
+      var result = await showTimePicker(
+          context: context,
+          initialTime: time,
+          initialEntryMode: mode);
+
+      // set the value
+      if (result != null) {
+        widget.model.setValue(DateTime.now(), result);
+      }
+    }
   }
 
-  Future _showDateTimePicker(
-      DatePickerEntryMode dmode, TimePickerEntryMode tmode) async {
-    if (!mounted) return;
+  Future<void> _showDateTimePicker(
+      DatePickerEntryMode dmode,
+      TimePickerEntryMode tmode) async {
 
-    var type = widget.model.type;
-    var newest = widget.model.newest;
-    var oldest = widget.model.oldest;
-    var value = widget.model.value;
-    var format = widget.model.format;
-
-    DateTime? date;
-    TimeOfDay? time;
+    DateTime?  date = toDate(widget.model.value, format: widget.model.format) ?? DateTime.now();
+    TimeOfDay? time = toTime(widget.model.value, format: widget.model.format) ?? TimeOfDay.now();
 
     // show date picker
     if (mounted) {
-      date = await showDatePicker(
+
+      // display date picker
+      var result = await showDatePicker(
           context: context,
-          initialDatePickerMode: type == "year" || type == "yeartime"
+          initialDatePickerMode: widget.model.type == "year" || widget.model.type == "yeartime"
               ? DatePickerMode.year
               : DatePickerMode.day,
           initialEntryMode: dmode,
-          firstDate: toDate(oldest, format: format) ??
-              DateTime(DateTime.now().year - 100),
-          initialDate: toDate(value, format: format) ?? DateTime.now(),
-          lastDate: toDate(newest, format: format) ??
-              DateTime(DateTime.now().year + 10));
+          initialDate: date,
+          firstDate: toDate(widget.model.oldest, format: widget.model.format) ?? DateTime(DateTime.now().year - 100),
+          lastDate:  toDate(widget.model.newest, format: widget.model.format) ?? DateTime(DateTime.now().year + 10));
 
-      // show time picker
-      var show =
-          (type == 'datetime' || type == 'yeartime' || type == 'rangetime');
-      if (show && mounted) {
-        time = await showTimePicker(
-            context: context,
-            initialTime: TimeOfDay.now(),
-            initialEntryMode: tmode);
+      // set date
+      if (result != null) {
+        date = result;
       }
     }
-    if (date == null) return;
+
+    // show time picker
+    if (mounted && (widget.model.type == 'datetime' || widget.model.type == 'yeartime' || widget.model.type == 'rangetime')) {
+
+        // display time picker
+        var result = time = await showTimePicker(
+            context: context,
+            initialTime: time,
+            initialEntryMode: tmode);
+
+        // set date
+        if (result != null) {
+          time = result;
+        }
+    }
 
     // set the value
-    widget.model.setValue(date, time, format);
+    widget.model.setValue(date, time);
   }
 
   Future<bool> show() async {
@@ -261,6 +252,7 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
     widget.model.setFormat();
 
     switch (widget.model.type) {
+
       case "range":
         await _showDateRangePicker(dmode);
         break;
@@ -275,6 +267,23 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
     return true;
   }
 
+  _getSuffixIcon(Color hintTextColor) {
+    if (widget.model.enabled &&
+        widget.model.editable &&
+        widget.model.clear) {
+      return IconButton(
+        padding: EdgeInsets.zero,
+        icon: Icon(Icons.clear_rounded, size: 17, color: hintTextColor),
+        onPressed: () {
+          onClear();
+        },
+      );
+    }
+    else {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
@@ -282,19 +291,22 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
 
     // set the border color arrays
     // set the border colors
-    Color? enabledBorderColor =
+    var enabledBorderColor =
         widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
-    Color? disabledBorderColor = Theme.of(context).disabledColor;
-    Color? focusBorderColor = Theme.of(context).focusColor;
-    Color? errorBorderColor = Theme.of(context).colorScheme.error;
+    var disabledBorderColor = Theme.of(context).disabledColor;
+    var focusBorderColor = Theme.of(context).focusColor;
+    var errorBorderColor = Theme.of(context).colorScheme.error;
 
     // set the text color arrays
-    Color? enabledTextColor = widget.model.textColor;
-    Color? disabledTextColor = Theme.of(context).disabledColor;
-    Color? errorTextColor = Theme.of(context).colorScheme.error;
+    var enabledTextColor = widget.model.textColor;
+    var disabledTextColor = Theme.of(context).disabledColor;
+    var errorTextColor = Theme.of(context).colorScheme.error;
 
     var fontsize = widget.model.textSize;
+
     var hint = widget.model.hint;
+    var hintTextColor = widget.model.textColor?.withOpacity(0.7) ??
+        Theme.of(context).colorScheme.onSurfaceVariant;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
@@ -375,7 +387,7 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
                           ? Icons.access_time
                           : Icons.calendar_today))),
               prefixIconConstraints: const BoxConstraints(maxHeight: 24),
-              suffixIcon: null,
+              suffixIcon: _getSuffixIcon(hintTextColor),
               suffixIconConstraints: null,
               border: _getBorder(enabledBorderColor, null),
               errorBorder: _getBorder(errorBorderColor, null),

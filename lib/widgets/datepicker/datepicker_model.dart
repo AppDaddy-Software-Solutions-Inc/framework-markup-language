@@ -38,7 +38,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
   }
   bool? get view => _view?.get();
 
-  /// Mode is the entrymode type of the datepicker. Can be gui, input, bothgui, bothinput.
+  /// type of the datepicker. Can be "datetime", "date", "time", "range"
   StringObservable? _type;
   set type(dynamic v) {
     if (_type != null) {
@@ -48,7 +48,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-  String get type => _type?.get() ?? "date";
+  String get type => _type?.get()?.trim().toLowerCase() ?? "date";
 
   /// Mode is the entrymode type of the datepicker. Can be gui, input, bothgui, bothinput.
   StringObservable? _mode;
@@ -112,9 +112,8 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   @override
-  dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
+  String? get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
   /// If the input shows the clear icon on its right.
   BooleanObservable? _clear;
@@ -126,7 +125,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-  bool get clear => _clear?.get() ?? false;
+  bool get clear => _clear?.get() ?? true;
 
   DatepickerModel(
     Model super.parent,
@@ -185,52 +184,53 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
-  void setValue(DateTime? result, TimeOfDay? timeResult, String? format,
-      {DateTime? secondResult}) {
-    DateTime now = DateTime.now();
-
-    //return result based on type and format
-
-    if (type == "date" || type == "year" || type == "range") {
-      try {
-        if (secondResult != null) {
-          value =
-              "${DateFormat(format).format(result!)} - ${DateFormat(format).format(secondResult)}";
-        } else {
-          value = DateFormat(format, 'en_US').format(result!);
+  void setValue(DateTime? result, TimeOfDay? timeResult, {DateTime? secondResult})
+  {
+    switch (type) {
+      case "date":
+      case "year":
+      case "range":
+        try {
+          value = (secondResult != null) ?
+                "${DateFormat(format).format(result!)} - ${DateFormat(format).format(secondResult)}" :
+                DateFormat(format, 'en_US').format(result!);
+        } catch (e) {
+          value = '';
         }
-      } on FormatException catch (e) {
-        Log().debug('${e}FORMATTING ERROR!!!!!');
-      }
-    } else if (type == "time") {
-      //if (format == 'yMd') format= 'H:m';
-      try {
-        value = DateFormat(format).format(DateTime(
-            now.year, now.month, now.day, timeResult!.hour, timeResult.minute));
-      } on FormatException catch (e) {
-        Log().debug('${e}FORMATTING ERROR!!!!!');
-        value = '';
-      }
-    } else {
-      try {
-        value = DateFormat(format).format(DateTime(result!.year, result.month,
-            result.day, timeResult!.hour, timeResult.minute));
-      } on FormatException catch (e) {
-        Log().debug('${e}FORMATTING ERROR!!!!!');
-        value = '';
-      }
+      break;
+
+      case "time":
+        try {
+          DateTime now = DateTime.now();
+          value = DateFormat(format).format(DateTime(
+              now.year, now.month, now.day, timeResult!.hour, timeResult.minute));
+        } catch (e) {
+          value = '';
+        }
+        break;
+
+      case "datetime":
+      default:
+        try {
+          value = DateFormat(format).format(DateTime(result!.year, result.month,
+              result.day, timeResult!.hour, timeResult.minute));
+        } catch (e) {
+          value = '';
+        }
     }
+
     onChange(context);
   }
 
   void setFormat() {
     if (format != null) return;
+
+    // set date format according to type
+    format = 'y/M/d HH:mm';
     if (type == "date" || type == "year" || type == "range") {
       format = 'y/M/d';
     } else if (type == "time") {
-      format = 'H:m';
-    } else {
-      format = 'y/M/d H:mm';
+      format = 'HH:mm';
     }
   }
 

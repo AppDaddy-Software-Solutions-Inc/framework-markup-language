@@ -59,7 +59,8 @@ class ColorHelper {
   }
 
   static Color darken(Color color, [double amount = .1]) {
-    assert(amount >= 0 && amount <= 1);
+    if (amount < 0) amount = 0;
+    if (amount > 1) amount = 1;
 
     final hsl = HSLColor.fromColor(color);
     final hslDark = hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
@@ -68,7 +69,8 @@ class ColorHelper {
   }
 
   static Color lighten(Color color, [double amount = .1]) {
-    assert(amount >= 0 && amount <= 1);
+    if (amount < 0) amount = 0;
+    if (amount > 1) amount = 1;
 
     final hsl = HSLColor.fromColor(color);
     final hslLight =
@@ -78,9 +80,10 @@ class ColorHelper {
   }
 
   static Color highlight(Color color, [double amount = .1]) {
-    assert(amount >= 0 && amount <= 1);
+    if (amount < 0) amount = 0;
+    if (amount > 1) amount = 1;
     double brightness = color.computeLuminance(); // expensive
-    return brightness < 0.5 ? darken(color, amount) : lighten(color, amount);
+    return brightness < 0.5 ? lighten(color, amount) : darken(color, amount);
   }
 
   static Map<String, Color> colors = {

@@ -309,11 +309,15 @@ class TableModel extends BoxModel implements IForm {
     dirty = isDirty;
   }
 
+  @override
+  bool clear() => true;
+
   // Clean
   @override
-  set clean(bool b) {
+  bool clean() {
     dirty = false;
     rows.forEach((index, row) => row.dirty = false);
+    return true;
   }
 
   // page size - used for paging
@@ -495,7 +499,8 @@ class TableModel extends BoxModel implements IForm {
 
       await _buildDynamic(data);
 
-      clean = true;
+      // mark all fields clean
+      clean();
 
       // clear rows
       rows.forEach((_, row) => row.dispose());

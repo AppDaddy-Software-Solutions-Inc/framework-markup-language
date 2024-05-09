@@ -18,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/header/header_model.dart';
 import 'package:fml/widgets/footer/footer_model.dart';
-import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
@@ -430,13 +429,6 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
       if (children!.contains(footer)) children!.remove(footer);
     }
     removeChildrenOfExactType(FooterModel);
-
-    // build drawers
-    List<XmlElement>? nodes;
-    nodes = Xml.getChildElements(node: xml, tag: "DRAWER");
-    if (nodes != null && nodes.isNotEmpty) {
-      drawer = DrawerModel.fromXmlList(this, nodes);
-    }
 
     // create shortcuts
     var shortcuts =

@@ -1,7 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/helpers/string.dart';
+import 'package:fml/system.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
-import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/datepicker/datepicker_model.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -19,89 +20,55 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
 
   String? date;
   String? oldValue;
-  TextEditingController? cont;
-  FocusNode? focusNode;
+  TextEditingController controller = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
+  // input padding
+  double pad = 4;
 
-    // register camera
-    widget.model.datepicker = this;
-
-    focusNode = FocusNode();
-
-    // Create a TextEditingController
-    cont = TextEditingController();
-
-    // Add Controller Listener
-    if (cont != null) {
-      cont!.addListener(onTextEditingController);
-
-      // Set initial value to the controller
-      if (cont!.text != widget.model.value) {
-        cont!.text = toStr(widget.model.value) ?? "";
+  String get controllerText {
+    var text = '';
+    if (!isNullOrEmpty(widget.model.value)) {
+      text = widget.model.value!;
+      if (!isNullOrEmpty(widget.model.value2)) {
+        text = "$text to ${widget.model.value2}";
       }
     }
+    return text;
   }
 
   @override
-  void didUpdateWidget(DatepickerView oldWidget) {
-    super.didUpdateWidget(oldWidget);
+  void initState() {
 
-    /* Add Controller Listener */
-    if (cont != null) cont!.addListener(onTextEditingController);
+    super.initState();
+
+    // register date picker with model
+    widget.model.datepicker = this;
+
+    // add controller Listener
+    controller.addListener(onTextEditingController);
+
+    // set initial controller text
+    if (controller.text != controllerText) {
+      controller.text = controllerText;
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
 
-    // Remove Controller Listener
-    cont?.removeListener(onTextEditingController);
-    cont?.dispose();
-    focusNode?.dispose();
+    // dispose of text controller and focus node
+    controller.removeListener(onTextEditingController);
+    controller.dispose();
   }
 
   // Flex: We need to listen to the controller of the picker because it uses internal setstates
   // and our model does not know of that state so we modify the model directly from listener
   onTextEditingController() {
-    oldValue = widget.model.value;
-    widget.model.value = cont!.value.text;
+    oldValue = controllerText;
   }
 
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  @override
-  onModelChange(Model model, {String? property, dynamic value}) {
-    if ((cont!.text != widget.model.value) &&
-        (widget.model.isPicking != true)) {
-      widget.model.onChange(context);
-    }
-    cont!.text = widget.model.value ?? "";
-    super.onModelChange(model);
-  }
-
-  void onChange(String d) async {
-    cont!.value = TextEditingValue(
-        text: widget.model.value.toString(),
-        selection: TextSelection(
-            baseOffset: 0, extentOffset: widget.model.value.toString().length));
-
-    if (oldValue != widget.model.value) {
-      // set answer
-      bool ok = await widget.model.answer(widget.model.value);
-
-      // fire on change event
-      if (ok == true && mounted) await widget.model.onChange(context);
-    }
-
-    return;
-  }
-
-  void onClear() {
-    cont!.text = '';
-    widget.model.value = '';
-  }
+  void onClear() => widget.model.setAnswer();
 
   _getBorder(Color mainColor, Color? secondaryColor) {
     secondaryColor ??= mainColor;
@@ -135,16 +102,35 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
       var dateOldest = toDate(widget.model.oldest, format: widget.model.format) ?? DateTime(DateTime.now().year - 100);
       var dateNewest = toDate(widget.model.newest, format: widget.model.format) ?? DateTime(DateTime.now().year + 10);
 
+      var width  = 400.0;
+      var height = System().screenheight - (System().screenheight * .05);
+
+      var date1 = toDate(widget.model.value,  format: widget.model.format);
+      var date2 = toDate(widget.model.value2, format: widget.model.format);
+      var range = date1 is DateTime  && date2 is DateTime ? DateTimeRange(start: date1, end: date2) : null;
+
       var result = await showDateRangePicker(
           context: context,
           initialEntryMode: mode,
           currentDate: DateTime.now(),
+          initialDateRange: range,
           firstDate: dateOldest,
-          lastDate: dateNewest);
+          lastDate: dateNewest,
+          builder: (context, child) {
+            return Column(
+              children: [
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: width,
+                    maxHeight: height,
+                  ),
+                  child: child,
+                )
+              ]);});
 
       // set the value
       if (result != null) {
-        widget.model.setValue(result.start, TimeOfDay.now(), secondResult: result.end);
+        widget.model.setAnswer(date: result.start, date2: result.end);
       }
     }
   }
@@ -153,6 +139,7 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
 
     if (mounted) {
 
+      // get time value
       TimeOfDay? time = toTime(widget.model.value, format: widget.model.format) ?? TimeOfDay.now();
 
       var result = await showTimePicker(
@@ -162,7 +149,7 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
 
       // set the value
       if (result != null) {
-        widget.model.setValue(DateTime.now(), result);
+        widget.model.setAnswer(time: result);
       }
     }
   }
@@ -180,7 +167,7 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
       // display date picker
       var result = await showDatePicker(
           context: context,
-          initialDatePickerMode: widget.model.type == "year" || widget.model.type == "yeartime"
+          initialDatePickerMode: widget.model.mode == "year"
               ? DatePickerMode.year
               : DatePickerMode.day,
           initialEntryMode: dmode,
@@ -195,10 +182,10 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
     }
 
     // show time picker
-    if (mounted && (widget.model.type == 'datetime' || widget.model.type == 'yeartime' || widget.model.type == 'rangetime')) {
+    if (mounted && widget.model.type == "datetime") {
 
         // display time picker
-        var result = time = await showTimePicker(
+        var result = await showTimePicker(
             context: context,
             initialTime: time,
             initialEntryMode: tmode);
@@ -210,59 +197,58 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
     }
 
     // set the value
-    widget.model.setValue(date, time);
+    widget.model.setAnswer(date: date, time: time);
+  }
+
+  DatePickerEntryMode _getDatePickerMode() {
+
+    // return date picker mode
+    switch (widget.model.mode) {
+      case "calendar":
+        return DatePickerEntryMode.calendar;
+      case "calendaronly":
+        return DatePickerEntryMode.calendarOnly;
+      case "input":
+        return DatePickerEntryMode.input;
+      case "inputonly":
+        return DatePickerEntryMode.inputOnly;
+      case "year":
+      default:
+        return DatePickerEntryMode.calendar;
+    }
+  }
+
+  TimePickerEntryMode _getTimePickerMode() {
+
+    // return date picker mode
+    switch (widget.model.tmode) {
+      case "dial":
+        return TimePickerEntryMode.dial;
+      case "dialonly":
+        return TimePickerEntryMode.dialOnly;
+      case "input":
+        return TimePickerEntryMode.input;
+      case "inputonly":
+        return TimePickerEntryMode.inputOnly;
+      default:
+        return TimePickerEntryMode.input;
+    }
   }
 
   Future<bool> show() async {
-    TimePickerEntryMode tmode = TimePickerEntryMode.dial;
-    DatePickerEntryMode dmode = DatePickerEntryMode.calendar;
-    switch (widget.model.mode) {
-      case "gui":
-        {
-          tmode = TimePickerEntryMode.dial;
-          dmode = DatePickerEntryMode.calendarOnly;
-        }
-        break;
-      case "input":
-        {
-          tmode = TimePickerEntryMode.input;
-          dmode = DatePickerEntryMode.inputOnly;
-        }
-        break;
-      case "bothinput":
-        {
-          tmode = TimePickerEntryMode.input;
-          dmode = DatePickerEntryMode.input;
-        }
-        break;
-      case "bothgui":
-        {
-          tmode = TimePickerEntryMode.dial;
-          dmode = DatePickerEntryMode.calendar;
-        }
-        break;
-      default:
-        {
-          tmode = TimePickerEntryMode.dial;
-          dmode = DatePickerEntryMode.calendar;
-        }
-        break;
-    }
-
-    widget.model.setFormat();
 
     switch (widget.model.type) {
 
       case "range":
-        await _showDateRangePicker(dmode);
+        await _showDateRangePicker(_getDatePickerMode());
         break;
 
       case "time":
-        await _showTimePicker(tmode);
+        await _showTimePicker(_getTimePickerMode());
         break;
 
       default:
-        await _showDateTimePicker(dmode, tmode);
+        await _showDateTimePicker(_getDatePickerMode(), _getTimePickerMode());
     }
     return true;
   }
@@ -271,13 +257,17 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
     if (widget.model.enabled &&
         widget.model.editable &&
         widget.model.clear) {
-      return IconButton(
+      Widget button = IconButton(
         padding: EdgeInsets.zero,
         icon: Icon(Icons.clear_rounded, size: 17, color: hintTextColor),
         onPressed: () {
           onClear();
         },
       );
+
+      button = MouseRegion(cursor: SystemMouseCursors.grab, child: button);
+
+      return button;
     }
     else {
       return null;
@@ -286,6 +276,8 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
 
   @override
   Widget build(BuildContext context) {
+
+
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
@@ -311,95 +303,100 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
-    String? value = widget.model.value;
-    cont = TextEditingController(text: value);
-    double pad = 4;
-    // View
+    // set the value
+    controller = TextEditingController(text: controllerText);
+
+    // view
     Widget view;
+
+    // input field
+    view = Container(
+      color: Colors.transparent,
+      child: IgnorePointer(
+        child: TextField(
+          keyboardType: TextInputType.none,
+          showCursor: false,
+          controller: controller,
+          autofocus: false,
+          enabled: widget.model.enabled,
+          style: TextStyle(
+              color: widget.model.enabled
+                  ? enabledTextColor ??
+                  Theme.of(context).colorScheme.onBackground
+                  : disabledTextColor,
+              fontSize: fontsize),
+          textAlignVertical: TextAlignVertical.center,
+          decoration: InputDecoration(
+            isDense: false,
+            errorMaxLines: 8,
+            hintMaxLines: 8,
+            fillColor: widget.model.getFieldColor(context),
+            filled: true,
+            contentPadding: EdgeInsets.only(
+                left: pad + 10,
+                top: pad + 15,
+                right: pad + 10,
+                bottom: pad + 15),
+            alignLabelWithHint: true,
+            labelStyle: TextStyle(
+              fontSize: fontsize - 2,
+              color: widget.model.getErrorHintColor(context),
+            ),
+            counterText: "",
+            errorText: widget.model.alarm,
+            errorStyle: TextStyle(
+              fontSize: fontsize,
+              fontWeight: FontWeight.w300,
+              color: errorTextColor,
+            ),
+            hintText: hint,
+            hintStyle: TextStyle(
+              fontSize: fontsize,
+              fontWeight: FontWeight.w300,
+              color: widget.model.getErrorHintColor(context),
+            ),
+            prefixIcon: Padding(
+                padding:
+                const EdgeInsets.only(right: 10, left: 10, bottom: 0),
+                child: Icon(widget.model.icon ??
+                    (widget.model.type == "time"
+                        ? Icons.access_time
+                        : Icons.calendar_today))),
+            prefixIconConstraints: const BoxConstraints(maxHeight: 24),
+            border: _getBorder(enabledBorderColor, null),
+            errorBorder: _getBorder(errorBorderColor, null),
+            focusedErrorBorder: _getBorder(focusBorderColor, null),
+            focusedBorder: _getBorder(focusBorderColor, null),
+            enabledBorder: _getBorder(enabledBorderColor, null),
+            disabledBorder:
+            _getBorder(disabledBorderColor, enabledBorderColor),
+          ),
+        ),
+      ),
+    );
+
+    // add a clear button?
+    if (widget.model.clear && widget.model.editable && widget.model.enabled) {
+      view = Stack(children: [view,Positioned(right: 0, top:0, bottom: 0, child: _getSuffixIcon(hintTextColor))]);
+    }
+
     view = GestureDetector(
+
       //a wee bit janky way of copying and highlighting entire selection without datepicker opening.
       onLongPress: () {
-        focusNode!.requestFocus();
-        cont!.selection =
-            TextSelection(baseOffset: 0, extentOffset: cont!.value.text.length);
-        Clipboard.setData(ClipboardData(text: cont!.text));
+        controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.value.text.length);
+        Clipboard.setData(ClipboardData(text: controller.text));
       },
+
       onTap: () async {
-        focusNode!.requestFocus();
         if (widget.model.editable) {
           widget.model.isPicking = true;
           await show();
           widget.model.isPicking = false;
         }
       },
-      child: view = Container(
-        color: Colors.transparent,
-        child: IgnorePointer(
-          child: TextField(
-            keyboardType: TextInputType.none,
-            showCursor: false,
-            focusNode: focusNode,
-            onChanged: (val) => onChange(val),
-            controller: cont,
-            autofocus: false,
-            enabled: widget.model.enabled,
-            style: TextStyle(
-                color: widget.model.enabled
-                    ? enabledTextColor ??
-                        Theme.of(context).colorScheme.onBackground
-                    : disabledTextColor,
-                fontSize: fontsize),
-            textAlignVertical: TextAlignVertical.center,
-            decoration: InputDecoration(
-              isDense: false,
-              errorMaxLines: 8,
-              hintMaxLines: 8,
-              fillColor: widget.model.getFieldColor(context),
-              filled: true,
-              contentPadding: EdgeInsets.only(
-                  left: pad + 10,
-                  top: pad + 15,
-                  right: pad + 10,
-                  bottom: pad + 15),
-              alignLabelWithHint: true,
-              labelStyle: TextStyle(
-                fontSize: fontsize - 2,
-                color: widget.model.getErrorHintColor(context),
-              ),
-              counterText: "",
-              errorText: widget.model.alarm,
-              errorStyle: TextStyle(
-                fontSize: fontsize,
-                fontWeight: FontWeight.w300,
-                color: errorTextColor,
-              ),
-              hintText: hint,
-              hintStyle: TextStyle(
-                fontSize: fontsize,
-                fontWeight: FontWeight.w300,
-                color: widget.model.getErrorHintColor(context),
-              ),
-              prefixIcon: Padding(
-                  padding:
-                      const EdgeInsets.only(right: 10, left: 10, bottom: 0),
-                  child: Icon(widget.model.icon ??
-                      (widget.model.type.toLowerCase() == "time"
-                          ? Icons.access_time
-                          : Icons.calendar_today))),
-              prefixIconConstraints: const BoxConstraints(maxHeight: 24),
-              suffixIcon: _getSuffixIcon(hintTextColor),
-              suffixIconConstraints: null,
-              border: _getBorder(enabledBorderColor, null),
-              errorBorder: _getBorder(errorBorderColor, null),
-              focusedErrorBorder: _getBorder(focusBorderColor, null),
-              focusedBorder: _getBorder(focusBorderColor, null),
-              enabledBorder: _getBorder(enabledBorderColor, null),
-              disabledBorder:
-                  _getBorder(disabledBorderColor, enabledBorderColor),
-            ),
-          ),
-        ),
-      ),
+
+      child: view,
     );
 
     if (widget.model.dense) {

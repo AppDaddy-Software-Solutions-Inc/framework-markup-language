@@ -8,11 +8,8 @@ import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/datepicker/datepicker_view.dart';
-import 'package:intl/intl.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
-
-enum METHODS { launch }
 
 class DatepickerModel extends DecoratedInputModel implements IFormField {
   DatepickerViewState? datepicker;
@@ -38,7 +35,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
   }
   bool? get view => _view?.get();
 
-  /// type of the datepicker. Can be "datetime", "date", "time", "range"
+  /// type of the date picker. Can be "datetime", "date", "time", "range" or "year"
   StringObservable? _type;
   set type(dynamic v) {
     if (_type != null) {
@@ -50,19 +47,30 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
   }
   String get type => _type?.get()?.trim().toLowerCase() ?? "date";
 
-  /// Mode is the entrymode type of the datepicker. Can be gui, input, bothgui, bothinput.
+  /// Mode is the entry mode type of the date picker dialog. Can be input, inputOnly, year, calendar or calendarOnly
   StringObservable? _mode;
-
-  set mode(dynamic v) {
+  set mode(dynamic tmode) {
     if (_mode != null) {
-      _mode!.set(v);
-    } else if (v != null) {
-      _mode = StringObservable(Binding.toKey(id, 'mode'), v,
+      _mode!.set(tmode);
+    } else if (tmode != null) {
+      _mode = StringObservable(Binding.toKey(id, 'cmode'), tmode,
           scope: scope, listener: onPropertyChange);
     }
   }
-  String get mode => _mode?.get() ?? "bothgui";
+  String get mode => _mode?.get()?.toLowerCase().trim() ?? "calendar";
 
+  /// Mode is the entry mode type of the time picker dialog. Can be input, inputOnly, dial or dialOnly
+  StringObservable? _tmode;
+  set tmode(dynamic tmode) {
+    if (_tmode != null) {
+      _tmode!.set(tmode);
+    } else if (tmode != null) {
+      _tmode = StringObservable(Binding.toKey(id, 'tmode'), tmode,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String get tmode => _tmode?.get()?.toLowerCase().trim() ?? "input";
+  
   /// Format string expected from the input and output. See https://api.flutter.dev/flutter/intl/DateFormat-class.html.
   StringObservable? _format;
   set format(dynamic v) {
@@ -73,7 +81,27 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-  String? get format => _format?.get();
+  String get format {
+
+    var format = _format?.get();
+    if (!isNullOrEmpty(format)) {
+
+      // validate the format
+      var ok = toDateString(DateTime.now(), format: format) != null;
+
+      // if the format is valid, return it
+      if (ok) return format!;
+    }
+
+    // set date format according to type
+    format = 'y/M/d HH:mm';
+    if (type == "date" || type == "year" || type == "range") {
+      format = 'y/M/d';
+    } else if (type == "time") {
+      format = 'HH:mm';
+    }
+    return format;
+  }
 
   /// Newest date available for selection. DATE___ only.
   StringObservable? _newest;
@@ -99,21 +127,43 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
   }
   String? get oldest => _oldest?.get();
 
-  // Value
+  /// the date value
   StringObservable? _value;
-
   @override
   set value(dynamic v) {
     if (_value != null) {
       _value!.set(v);
-    } else if (v != null ||
-        Model.isBound(this, Binding.toKey(id, 'value'))) {
-      _value = StringObservable(Binding.toKey(id, 'value'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null) {
+      _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
     }
   }
   @override
   String? get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
+
+  /// the date value
+  StringObservable? _value2;
+  set value2(dynamic v) {
+    if (_value2 != null) {
+      _value2!.set(v);
+    }
+    else if (v != null) {
+      _value2 = StringObservable(Binding.toKey(id, 'value2'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get value2 => _value2?.get();
+
+  // values
+  @override
+  List<String>? get values {
+    List<String> list = [];
+    if (!isNullOrEmpty(value))
+    {
+      list.add(value!);
+      if (!isNullOrEmpty(value2)) list.add(value2!);
+    }
+    return list.isEmpty ? null : list;
+  }
 
   /// If the input shows the clear icon on its right.
   BooleanObservable? _clear;
@@ -160,15 +210,20 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
     // deserialize
     super.deserialize(xml);
 
+    type   = Xml.get(node: xml, tag: 'type');
+    format = Xml.get(node: xml, tag: 'format');
+
     // set properties
-    value = Xml.get(node: xml, tag: 'value') ?? defaultValue ?? "";
-    type = Xml.get(node: xml, tag: 'type') ?? type;
-    view = Xml.get(node: xml, tag: 'view');
+    value  = Xml.get(node: xml, tag: 'value') ?? defaultValue;
+    value2 = Xml.get(node: xml, tag: 'value2');
+
+    view   = Xml.get(node: xml, tag: 'view');
     oldest = Xml.get(node: xml, tag: 'oldest');
     newest = Xml.get(node: xml, tag: 'newest');
-    format = Xml.get(node: xml, tag: 'format');
-    mode = Xml.get(node: xml, tag: 'mode');
-    clear = Xml.get(node: xml, tag: 'clear');
+    clear  = Xml.get(node: xml, tag: 'clear');
+
+    mode   = Xml.get(node: xml, tag: 'mode');
+    tmode  = Xml.get(node: xml, tag: 'tmode');
   }
 
   @override
@@ -184,54 +239,57 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
-  void setValue(DateTime? result, TimeOfDay? timeResult, {DateTime? secondResult})
+  void setAnswer({DateTime? date, TimeOfDay? time, DateTime? date2})
   {
     switch (type) {
-      case "date":
-      case "year":
-      case "range":
-        try {
-          value = (secondResult != null) ?
-                "${DateFormat(format).format(result!)} - ${DateFormat(format).format(secondResult)}" :
-                DateFormat(format, 'en_US').format(result!);
-        } catch (e) {
-          value = '';
-        }
-      break;
 
-      case "time":
-        try {
-          DateTime now = DateTime.now();
-          value = DateFormat(format).format(DateTime(
-              now.year, now.month, now.day, timeResult!.hour, timeResult.minute));
-        } catch (e) {
-          value = '';
-        }
+      // date range
+      case "range":
+
+        var v1 = toDateString(date,  format: format);
+        var v2 = toDateString(date2, format: format);
+        if (v1 == null) v2 = null;
+        if (v2 == null) v1 = null;
+
+        answer(v1);
+        value2 = v2;
+
         break;
 
+      // time
+      case "time":
+
+        var value = toDateString(time, format: format);
+        answer(value);
+        value2 = null;
+
+        break;
+
+      // date and time
       case "datetime":
-      default:
-        try {
-          value = DateFormat(format).format(DateTime(result!.year, result.month,
-              result.day, timeResult!.hour, timeResult.minute));
-        } catch (e) {
-          value = '';
+
+        // combine date and time
+        if (date != null && time != null) {
+          date = DateTime(date.year, date.month, date.day, time.hour, time.minute);
         }
+
+        var value = toDateString(date, format: format);
+        answer(value);
+        value2 = null;
+
+        break;
+
+      default:
+
+        var value = toDateString(date, format: format);
+        answer(value);
+        value2 = null;
+
+        break;
     }
 
+    // fire the on change event
     onChange(context);
-  }
-
-  void setFormat() {
-    if (format != null) return;
-
-    // set date format according to type
-    format = 'y/M/d HH:mm';
-    if (type == "date" || type == "year" || type == "range") {
-      format = 'y/M/d';
-    } else if (type == "time") {
-      format = 'HH:mm';
-    }
   }
 
   @override

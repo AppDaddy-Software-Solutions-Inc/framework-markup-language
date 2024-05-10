@@ -111,34 +111,6 @@
             </intent-filter>
         </activity-alias>
 
-        <!-- lloyds bank -->
-        <activity-alias
-            android:name=".lloyds"
-            android:enabled="false"
-            android:icon="@mipmap/lloyds"
-            android:label="Lloyds Bank"
-            android:exported="true"
-            android:targetActivity=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-
-        <!-- halifax bank -->
-        <activity-alias
-            android:name=".halifax"
-            android:enabled="false"
-            android:icon="@mipmap/halifax"
-            android:label="Halifax Bank"
-            android:exported="true"
-            android:targetActivity=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />

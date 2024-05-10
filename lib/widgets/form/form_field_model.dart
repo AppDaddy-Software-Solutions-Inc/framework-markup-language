@@ -276,9 +276,8 @@ class FormFieldModel extends ViewableModel {
   // question was answered
   bool get answered => !isNullOrEmpty(value);
 
-  // on change
-  Future<bool> onChange(BuildContext? context) async =>
-      await EventHandler(this).execute(_onchange);
+  // on change handle
+  Future<bool> onChange(BuildContext? context) async => await EventHandler(this).execute(_onchange);
 
   // set answer default implementation
   Future<bool> answer(dynamic v) async {
@@ -288,11 +287,11 @@ class FormFieldModel extends ViewableModel {
 
     if (value != v) {
       // remember old value
-      var oldValue = value;
+      //var oldValue = value;
       value = v;
 
       // remember old geoCode
-      var oldGeocode = geocode;
+      //var oldGeocode = geocode;
 
       // set geocode
       geocode = Payload(
@@ -307,16 +306,16 @@ class FormFieldModel extends ViewableModel {
       //ok = await save();
 
       // save failed?
-      if (ok == false) {
-        value = oldValue;
-        geocode = oldGeocode;
-        dirty = false;
-      }
+      // if (!ok) {
+      //   value = oldValue;
+      //   geocode = oldGeocode;
+      //   dirty = false;
+      // }
 
       // save succeeded. set dirty
-      else {
+      //else {
         dirty = true;
-      }
+      //}
     }
     return ok;
   }

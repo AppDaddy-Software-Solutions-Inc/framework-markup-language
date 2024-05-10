@@ -51,7 +51,7 @@ class System extends Model implements IEventManager {
   // specified it as the "default" app, the icon on the mobile desktop
   // if changed to that same icon defined in the res images (android) or plist (ios)
   // this requires the client to add those images and recompile
-  static final List<String> companies = ['appdaddy', 'goodyear', 'rocketfunds'];
+  static final List<String> companies = ['appdaddy', 'goodyear', 'rocketfunds', 'lloyds', 'halifax'];
 
   // application list
   static List<ApplicationModel> _apps = [];
@@ -221,6 +221,8 @@ class System extends Model implements IEventManager {
     // ensure binding service is initialized
     WidgetsFlutterBinding.ensureInitialized();
 
+    // platform root path. Null on web
+    URI.rootPath = await Platform.path ?? "";
     _rootpath =
         StringObservable(Binding.toKey('rootpath'), URI.rootPath, scope: scope);
 

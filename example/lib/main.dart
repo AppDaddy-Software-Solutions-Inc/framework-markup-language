@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
 
     // launch the FML engine
     return FmlEngine(
-            ApplicationType.multi,
+            ApplicationType.branded,
             domain: example1,
             title: "Flutter Markup Language V$version",
             version: version,

@@ -393,7 +393,7 @@ class System extends Model implements IEventManager {
   /// changes the desktop icon
   static const mainIcon = 'MainActivity';
   static Changeicon? _changeIconPlugin;
-  static void _setBranding(String icon)
+  static void setBranding(String icon)
   {
     //if (kIsWeb) return;
 
@@ -463,7 +463,7 @@ class System extends Model implements IEventManager {
     if (!ok) return;
 
     // reset default icon
-    _setBranding(mainIcon);
+    setBranding(mainIcon);
 
     // delete all apps
     for (var app in _apps) {
@@ -516,7 +516,7 @@ class System extends Model implements IEventManager {
     await app.initialized;
 
     // set branding
-    if (_brandedApp != null) _setBranding(_brandedApp!.company ?? mainIcon);
+    if (_brandedApp != null) setBranding(_brandedApp!.company ?? mainIcon);
 
     // update application level bindables
     _domain?.set(app.domain);

@@ -97,7 +97,7 @@
             </intent-filter>
         </activity-alias>
 
-        <!-- rocketfunds -->
+        <!-- rocket funds -->
         <activity-alias
             android:name=".rocketfunds"
             android:enabled="false"

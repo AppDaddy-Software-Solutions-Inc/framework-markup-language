@@ -29,6 +29,7 @@ class Platform {
   static bool get isMobile => false;
   static bool get isDesktop => false;
 
+  // operating system
   static String get operatingSystem {
 
     final s = window.navigator.userAgent.toLowerCase();
@@ -56,6 +57,7 @@ class Platform {
     return "?";
   }
 
+  // operating system version
   static String get operatingSystemVersion {
 
     final s = window.navigator.userAgent;
@@ -112,6 +114,9 @@ class Platform {
 
     return "?";
   }
+
+  // application root path
+  static Future<String?> get path async => null;
 
   static final dynamic iframe = window.document.getElementById('invisible');
 

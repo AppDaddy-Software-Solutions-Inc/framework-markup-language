@@ -162,10 +162,9 @@ class EventHandler extends Eval {
       functions[fromEnum(EventTypes.execute)] = _handleEventExecute;
       functions[fromEnum(EventTypes.focusnode)] = _handleEventFocusNode;
       functions[fromEnum(EventTypes.keypress)] = _handleEventKeyPress;
-      functions[fromEnum(EventTypes.signInWithJwt)] = _handleEventSignInWithJwt;
+      functions[fromEnum(EventTypes.logon)] = _handleEventLogon;
       functions[fromEnum(EventTypes.logoff)] = _handleEventLogoff;
-      functions[fromEnum(EventTypes.signInWithFirebase)] =
-          _handleEventSignInWithFirebase;
+      functions[fromEnum(EventTypes.fblogon)] = _handleEventFirebaseLogon;
       functions[fromEnum(EventTypes.open)] = _handleEventOpen;
       functions[fromEnum(EventTypes.openjstemplate)] =
           _handleEventOpenJsTemplate;
@@ -423,26 +422,30 @@ class EventHandler extends Eval {
     return true;
   }
 
-  /// Login attempt
-  ///
-  /// Sets the user credentials on the client side to generate a secure token and attempts a login to the server side via databroker
-  Future<bool> _handleEventSignInWithFirebase(
+  /// Login using Firebase
+  Future<bool> _handleEventFirebaseLogon(
       [dynamic provider, dynamic refresh]) async {
+
+    if (provider is! String) return false;
+
     String? token;
     if (!isNullOrEmpty(provider)) {
       var user = await _firebaseLogon(provider, <String>['email', 'profile']);
       if (user != null) token = await user.getIdToken();
     }
+
     if (token == null) return false;
-    return await _logon(token, false, false, toBool(refresh));
+    return await _logon(token, false, false, toBool(refresh) ?? true);
   }
 
-  Future<bool> _handleEventSignInWithJwt(
+  /// Login using Jason Web Token
+  Future<bool> _handleEventLogon(
       [dynamic token,
       dynamic validateSignature,
       dynamic validateAge,
       dynamic refresh]) async {
-    return _logon(token, validateSignature, validateAge, refresh);
+
+    return _logon(toStr(token) ?? '', toBool(validateSignature) ?? false, toBool(validateAge) ?? false, toBool(refresh) ?? true);
   }
 
   Future<bool> _logon(String token, bool? validateAge, bool? validateSignature,

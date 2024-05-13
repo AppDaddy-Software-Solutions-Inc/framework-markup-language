@@ -450,12 +450,6 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
   @override
   // framework level dispose can happen asynchronously
   void dispose() async {
-    if (disposed) {
-      Log().debug(
-          'Framework model has already been disposed => <FML name="$templateName" url="$url"/>');
-    }
-    Log().debug(
-        'Dispose called on framework model => <FML name="$templateName" url="$url"/>');
 
     disposed = true;
 

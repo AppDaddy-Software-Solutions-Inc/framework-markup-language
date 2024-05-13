@@ -393,9 +393,9 @@ class System extends Model implements IEventManager {
   /// changes the desktop icon
   static const mainIcon = 'MainActivity';
   static Changeicon? _changeIconPlugin;
-  static void setBranding(String icon)
+  static void setBranding(String? icon)
   {
-    //if (kIsWeb) return;
+    if (kIsWeb) return;
 
     bool canSet = false;
     try
@@ -418,12 +418,12 @@ class System extends Model implements IEventManager {
     }
 
     // trim icon
-    icon = icon.toLowerCase().trim();
+    icon = icon?.toLowerCase().trim();
 
     // change the icon
-    if (companies.contains(icon))
+    if (!isNullOrEmpty(icon) && companies.contains(icon))
     {
-      _changeIconPlugin?.switchIconTo(classNames: [icon]);
+      _changeIconPlugin?.switchIconTo(classNames: [icon!]);
     }
     else
     {

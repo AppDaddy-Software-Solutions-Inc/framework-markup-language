@@ -375,6 +375,11 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
       ),
     );
 
+    // show hand cursor
+    if (widget.model.editable && widget.model.enabled) {
+      view = MouseRegion(cursor: SystemMouseCursors.click, child: view);
+    }
+
     // add a clear button?
     if (widget.model.clear && widget.model.editable && widget.model.enabled) {
       view = Stack(children: [view,Positioned(right: 0, top:0, bottom: 0, child: _getSuffixIcon(hintTextColor))]);

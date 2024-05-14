@@ -150,7 +150,8 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     return null;
   }
 
-  static _getBoxDecoration(BoxModel model, BorderRadius? radius) {
+  static BoxDecoration _getBoxDecoration(BoxModel model, BorderRadius? borderRadius) {
+
     // shadow
     BoxShadow? boxShadow = _getShadow(model);
 
@@ -162,7 +163,7 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
 
     // gradient
     LinearGradient? gradient;
-    if ((color != null) && (color2 != null)) {
+    if (color != null && color2 != null) {
       gradient = LinearGradient(
           begin: _toGradientAlignment(model.gradientStart)!,
           end: _toGradientAlignment(model.gradientEnd)!,
@@ -172,7 +173,7 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
       color = null;
     }
     return BoxDecoration(
-        borderRadius: radius,
+        borderRadius: borderRadius,
         boxShadow: boxShadow != null ? [boxShadow] : null,
         color: color,
         gradient: gradient);
@@ -186,35 +187,34 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     return Opacity(opacity: opacity, child: view);
   }
 
-  static Widget _getFrostedView(BoxModel model, Widget child, BorderRadius? radius) {
-    Widget view = BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8), child: child);
-    if (radius != null) {
-      view = ClipRRect(borderRadius: radius, child: view);
-    } else {
-      view = ClipRect(child: view);
-    }
-    return view;
+  static BorderRadius? _getBorderRadius(BoxModel model)
+  {
+    bool hasBorderRadius = model.radiusTopRight > 0 || model.radiusBottomRight > 0 || model.radiusBottomLeft > 0 || model.radiusTopLeft > 0;
+    if (!hasBorderRadius) return null;
+
+    return BorderRadius.only(
+        topRight: Radius.circular(model.radiusTopRight),
+        bottomRight: Radius.circular(model.radiusBottomRight),
+        bottomLeft: Radius.circular(model.radiusBottomLeft),
+        topLeft: Radius.circular(model.radiusTopLeft));
   }
 
-  static Widget _getBlurredView(BoxModel model, Widget child, Decoration? decoration) {
-    return Stack(
-        fit: StackFit.expand,
-        clipBehavior: Clip.none,
-        children: <Widget>[
-          child,
-          ClipRect(
-            clipBehavior: Clip.antiAlias,
-            // <-- clips to the [Container] below
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: Container(
-                decoration: decoration,
-                color: Colors.transparent,
-              ),
-            ),
-          ),
-        ]);
+  static Widget _getBlurredView(BoxModel model, Widget view, double blur, BorderRadius? borderRadius) {
+
+    // blur filter
+    Widget filter = BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur), child: Container());
+
+    // box decoration with border and corner radius
+    var decoration = BoxDecoration(borderRadius: borderRadius);
+    
+    // inner content clipper
+    var clipper = DecorationClipper(decoration: decoration);
+
+    // clip the filter
+    filter = ClipPath(clipper: clipper, clipBehavior: Clip.hardEdge, child: filter);
+
+    return Stack(children: <Widget>[view,filter]);
   }
 
   // applies padding around the of the box
@@ -230,8 +230,14 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     return view;
   }
 
-  static Widget _buildInnerBox(BoxModel model, BuildContext context, Widget child, BoxConstraints constraints,
-      BoxDecoration? decoration, Alignment? alignment, Clip clip) {
+  static Widget _buildInnerBox(
+      BoxModel model,
+      BuildContext context,
+      Widget child,
+      BoxConstraints constraints,
+      BorderRadius? borderRadius,
+      Alignment? alignment) {
+
     Widget? view = child;
 
     // set expand
@@ -260,17 +266,19 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
           child: view);
     }
 
-    if (decoration != null) {
-      if (clip != Clip.none) {
-        view = ClipPath(
-            clipper: DecorationClipper(
-                textDirection: Directionality.maybeOf(context),
-                decoration: decoration),
-            clipBehavior: clip,
-            child: view);
-      }
-      view = DecoratedBox(decoration: decoration, child: view);
-    }
+    // box decoration
+    var decoration = _getBoxDecoration(model, null);
+
+    // apply decoration to box
+    view = DecoratedBox(position: DecorationPosition.background, decoration: decoration, child: view);
+
+    // box clipper
+    var clipper = DecorationClipper(
+        textDirection: Directionality.maybeOf(context),
+        decoration: decoration);
+
+    // clip the box
+    view = ClipPath(clipper: clipper, clipBehavior: Clip.hardEdge, child: view);
 
     // wrapped drawer view?
     if (model.drawer != null) {
@@ -281,23 +289,39 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
   }
 
   static Widget _buildOuterBox(BoxModel model, BuildContext context,
-      Widget view, BorderRadius radius) {
+      Widget view, BorderRadius? borderRadius) {
+
+    // get border
     Border? border = _getBorder(model, context);
     if (border == null) return view;
 
-    var hasLabel = model.borderLabel != null;
-    if (hasLabel) {
-      var lbl = TextModel(null, null,
+    // box decoration with border and corner radius
+    var decoration = BoxDecoration(border: border, borderRadius: borderRadius);
+
+    // inner content clipper
+    var clipper = DecorationClipper(
+        textDirection: Directionality.maybeOf(context),
+        decoration: decoration);
+
+    // labelled container?
+    if (model.borderLabel != null) {
+
+      var label = TextModel(null, null,
           value: model.borderLabel, overflow: "ellipsis")
           .getView();
-      var box = Container(child: view);
-      return LabelledBorderContainer(box, lbl,
-          decoration: BoxDecoration(border: border, borderRadius: radius));
+
+      view = Container(child: view);
+      view = ClipPath(clipper: clipper, clipBehavior: Clip.hardEdge, child: view);
+      view = LabelledBorderContainer(Container(child: view), label, decoration: decoration);
     }
 
-    return Container(
-        decoration: BoxDecoration(border: border, borderRadius: radius),
-        child: view);
+    // regular box
+    else {
+      view = ClipPath(clipper: clipper, clipBehavior: Clip.hardEdge, child: view);
+      view = DecoratedBox(position: DecorationPosition.foreground, decoration: decoration, child: view);
+    }
+
+    return view;
   }
 
   static Widget _buildInnerContent(BoxModel model, WidgetAlignment alignment, List<Widget> children) {
@@ -414,32 +438,19 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     view = _addPadding(model, view);
 
     // get the border radius
-    BorderRadius? radius = BorderRadius.only(
-        topRight: Radius.circular(model.radiusTopRight),
-        bottomRight: Radius.circular(model.radiusBottomRight),
-        bottomLeft: Radius.circular(model.radiusBottomLeft),
-        topLeft: Radius.circular(model.radiusTopLeft));
-
-    // build the box decoration
-    BoxDecoration? decoration = _getBoxDecoration(model, radius);
-
-    // blur the view
-    if (model.blur) view = _getBlurredView(model, view, decoration);
+    var borderRadius = _getBorderRadius(model);
 
     // build the inner content box
-    view = _buildInnerBox(model, context,
-        view, constraints, decoration, alignment.aligned, Clip.antiAlias);
+    view = _buildInnerBox(model, context, view, constraints, borderRadius, alignment.aligned);
 
     // build the outer border box
-    view = _buildOuterBox(model, context, view, radius);
+    view = _buildOuterBox(model, context, view, borderRadius);
+
+    // blur the view
+    if (model.blur > 0) view = _getBlurredView(model, view, model.blur, borderRadius);
 
     // set the view opacity
     if (model.opacity != null) view = _getFadedView(model, view);
-
-    // blur the view - white10 = Blur (This creates mirrored/frosted effect overtop of something else)
-    if (model.color == Colors.white10) {
-      view = _getFrostedView(model, view, radius);
-    }
 
     return view;
   }

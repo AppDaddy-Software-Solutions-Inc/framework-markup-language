@@ -3,6 +3,8 @@ import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/colorpicker/colorpicker_model.dart';
 import 'package:fml/helpers/string.dart';
+import 'package:fml/widgets/text/text_model.dart';
+import 'package:fml/widgets/text/text_view.dart';
 
 class ColorPickerView {
 
@@ -24,10 +26,8 @@ class ColorPickerView {
         borderRadius: model.radius,
         borderColor: model.borderColor,
         actionButtons: buttons,
-        heading: Text('Select color',
-            style: Theme.of(context).textTheme.headlineSmall),
-        subheading: Text('Select color shade',
-            style: Theme.of(context).textTheme.titleSmall));
+        heading: TextView(TextModel(null, null, value: model.heading, size: 20)),
+        subheading: TextView(TextModel(null, null, value: model.subheading, size: 20)));
 
     // wait for the dialog to be dismissed
     await view.showPickerDialog(context);

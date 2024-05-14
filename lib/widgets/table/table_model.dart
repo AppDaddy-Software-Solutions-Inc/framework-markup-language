@@ -539,6 +539,7 @@ class TableModel extends BoxModel implements IForm {
             Platform.fileSaveAs(bytes, "$name.csv");
             break;
 
+          case "xls":
           case "csv":
             var file = await view.exportToCSV();
             var bytes = utf8.encode(file ?? "");

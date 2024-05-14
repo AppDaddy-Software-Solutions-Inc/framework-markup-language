@@ -85,16 +85,16 @@ class BoxModel extends ViewableModel {
   bool get wrap => _wrap?.get() ?? false;
 
   // box blur
-  BooleanObservable? _blur;
+  DoubleObservable? _blur;
   set blur(dynamic v) {
     if (_blur != null) {
       _blur!.set(v);
     } else if (v != null) {
-      _blur = BooleanObservable(Binding.toKey(id, 'blur'), v,
+      _blur = DoubleObservable(Binding.toKey(id, 'blur'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-  bool get blur => _blur?.get() ?? false;
+  double get blur => _blur?.get() ?? 0.0;
 
   /// The start of the gradient in location, this will be the first `color` position if two colors are given
   StringObservable? _gradientStart;
@@ -428,7 +428,11 @@ class BoxModel extends ViewableModel {
         Xml.get(node: xml, tag: 'start');
     gradientEnd = Xml.get(node: xml, tag: 'gradientend') ??
         Xml.get(node: xml, tag: 'end');
-    blur = Xml.get(node: xml, tag: 'blur');
+
+    // blur - if blur is true, set to 5 (legacy)
+    var blur = Xml.get(node: xml, tag: 'blur');
+    if (blur?.trim().toLowerCase() == "true") blur="5";
+    this.blur = blur;
 
     // build drawers
     List<XmlElement>? nodes;

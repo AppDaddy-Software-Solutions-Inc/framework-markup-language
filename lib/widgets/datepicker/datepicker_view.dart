@@ -76,7 +76,7 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
     if (widget.model.border == "none") {
       return OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(widget.model.radius)),
-        borderSide: const BorderSide(color: Colors.transparent, width: 2),
+        borderSide: const BorderSide(color: Colors.transparent, width: 1),
       );
     } else if (widget.model.border == "bottom" ||
         widget.model.border == "underline") {
@@ -102,9 +102,6 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
       var dateOldest = toDate(widget.model.oldest, format: widget.model.format) ?? DateTime(DateTime.now().year - 100);
       var dateNewest = toDate(widget.model.newest, format: widget.model.format) ?? DateTime(DateTime.now().year + 10);
 
-      var width  = 400.0;
-      var height = System().screenheight - (System().screenheight * .05);
-
       var date1 = toDate(widget.model.value,  format: widget.model.format);
       var date2 = toDate(widget.model.value2, format: widget.model.format);
       var range = date1 is DateTime  && date2 is DateTime ? DateTimeRange(start: date1, end: date2) : null;
@@ -116,23 +113,32 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
           initialDateRange: range,
           firstDate: dateOldest,
           lastDate: dateNewest,
-          builder: (context, child) {
-            return Column(
-              children: [
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: width,
-                    maxHeight: height,
-                  ),
-                  child: child,
-                )
-              ]);});
+          builder: rangeBuilder);
 
       // set the value
       if (result != null) {
         widget.model.setAnswer(date: result.start, date2: result.end);
       }
     }
+  }
+
+  Widget rangeBuilder (context, child) {
+
+    var width  = 400.0;
+    var height = System().screenheight - (System().screenheight * .05);
+
+    Widget view = Column(
+        children: [
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: width,
+              maxHeight: height,
+            ),
+            child: child,
+          )
+        ]);
+
+    return view;
   }
 
   Future _showTimePicker(TimePickerEntryMode mode) async {
@@ -276,7 +282,6 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
 
   @override
   Widget build(BuildContext context) {
-
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();

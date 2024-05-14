@@ -67,7 +67,7 @@ class TableFooterModel extends BoxModel {
     // deserialize
     super.deserialize(xml);
 
-    // get header cells
+    // get footer cells
     cells.addAll(
         findDescendantsOfExactType(TableFooterCellModel, breakOn: TableModel)
             .cast<TableFooterCellModel>());

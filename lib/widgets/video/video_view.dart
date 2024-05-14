@@ -14,6 +14,11 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_player_win/video_player_win_plugin.dart';
 
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 class VideoView extends StatefulWidget implements ViewableWidgetView {
   @override
   final VideoModel model;
@@ -49,7 +54,9 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
     super.initState();
 
     // If running on windows ensure to register the Windows Media Player
-    if (System().useragent == 'windows') WindowsVideoPlayer.registerWith();
+    if (isDesktop && Platform.operatingSystem == 'windows') {
+      WindowsVideoPlayer.registerWith();
+    }
 
     // set player
     widget.model.player = this;
@@ -113,48 +120,6 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
     return Positioned(top: 5, right: 5, child: popup);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return const Offstage();
-
-    // create the view
-    Widget view = Container();
-    if (_controller != null && _controller!.value.isInitialized) {
-      var videoPlayer = VideoPlayer(_controller!);
-      var subTitles = ClosedCaption(text: _controller!.value.caption.text);
-      var progressBar = widget.model.controls
-          ? VideoProgressIndicator(_controller!, allowScrubbing: true)
-          : const Offstage();
-      var playButton =
-          widget.model.controls ? getPlayButton() : const Offstage();
-      var speedButton =
-          widget.model.controls ? getSpeedButton() : const Offstage();
-      var stack = Stack(alignment: Alignment.bottomCenter, children: <Widget>[
-        videoPlayer,
-        subTitles,
-        speedButton,
-        playButton,
-        progressBar
-      ]);
-      view = AspectRatio(
-          aspectRatio: _controller!.value.aspectRatio, child: stack);
-      view = GestureDetector(onTap: startstop, child: view);
-    }
-
-    // add margins
-    view = addMargins(view);
-
-    // apply visual transforms
-    view = applyTransforms(view);
-
-    // apply user defined constraints
-    view = applyConstraints(view, widget.model.tightestOrDefault);
-
-    // final view
-    return view;
-  }
-
   void onVideoController() {
     if (_controller == null) return;
     if (!_controller!.value.isPlaying) {
@@ -179,23 +144,31 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
 
   @override
   Future<bool> play(String? url) async {
-    if (_controller != null) _controller!.dispose();
+
+    // dispose of existing controller
+    _controller?.dispose();
+
+    // build new controller
     Uri? uri = Uri.tryParse(url ?? "");
     if (uri != null) {
-      // initialize the controller
-      _controller = VideoPlayerController.networkUrl(uri)
-        ..initialize().then((_) {
-          // fire onInitialized() event
-          if (!isNullOrEmpty(widget.model.onInitialized)) {
-            WidgetsBinding.instance.addPostFrameCallback(
-                (_) => widget.model.onInitializedHandler());
-          }
 
-          // ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-          if (mounted) setState(() {});
-        });
-      _controller!.addListener(onVideoController);
+      _controller = VideoPlayerController.networkUrl(uri);
+
+      // wait for the controller to initialize
+      await _controller?.initialize();
+
+      // fire onInitialized() event
+      if (!isNullOrEmpty(widget.model.onInitialized)) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => widget.model.onInitializedHandler());
+      }
+
+      // ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+      if (mounted) setState(() {});
+
+
+      _controller?.addListener(onVideoController);
     }
+
     return true;
   }
 
@@ -239,5 +212,48 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
       await _controller!.seekTo(Duration(seconds: seconds));
     }
     return true;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return const Offstage();
+
+    // create the view
+    Widget view = Container();
+    if (_controller != null && _controller!.value.isInitialized) {
+      var videoPlayer = VideoPlayer(_controller!);
+      var subTitles = ClosedCaption(text: _controller!.value.caption.text);
+      var progressBar = widget.model.controls
+          ? VideoProgressIndicator(_controller!, allowScrubbing: true)
+          : const Offstage();
+      var playButton =
+      widget.model.controls ? getPlayButton() : const Offstage();
+      var speedButton =
+      widget.model.controls ? getSpeedButton() : const Offstage();
+      var stack = Stack(alignment: Alignment.bottomCenter, children: <Widget>[
+        videoPlayer,
+        subTitles,
+        speedButton,
+        playButton,
+        progressBar
+      ]);
+      view = AspectRatio(
+          aspectRatio: _controller!.value.aspectRatio, child: stack);
+      view = GestureDetector(onTap: startstop, child: view);
+    }
+
+    // add margins
+    view = addMargins(view);
+
+    // apply visual transforms
+    view = applyTransforms(view);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.tightestOrDefault);
+
+    // final view
+    return view;
   }
 }

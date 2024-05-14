@@ -1,6 +1,6 @@
 <FML linkable="true" onstart="theme({STASH.brightness} ?? {THEME.brightness}, {STASH.colorscheme} ?? {THEME.colorscheme}); noe('{example}') ? p2.set({STASH.example}) : p2.set('{example}');" title="FmlPad">
 
-    <CONST id="splash" value="templates/examples/splash.xml"/>
+    <CONST id="splash" value="templates/examples/about.xml"/>
 
     <!-- root url of fmlpad -->
     <VAR id="root" value="https://pad.fml.dev/" />
@@ -14,9 +14,9 @@
 
     <GET id="dbWidgets"  root="WIDGETS.WIDGET" ttl="1h" url="=join({root},'templates/widgets.xml?refresh={SYSTEM.uuid}')" />
     <GET id="dbStyles"   root="STYLES.STYLE" ttl="1d" url="=join({root},'templates/styles.xml?refresh={SYSTEM.uuid}')" />
-    <GET id="dbExamples" root="EXAMPLES.EXAMPLE" url="=join({root},'templates/examples.xml?refresh={SYSTEM.uuid}')"/>
+    <GET id="dbExamples" root="EXAMPLES.EXAMPLE" url="=join({root},'api/examples')"/>
 
-    <VAR id="p2" onchange="p1.set(nvl({this},'templates/examples/splash.xml'))"/>
+    <VAR id="p2" onchange="p1.set(nvl({this},'templates/examples/about.xml'))"/>
     <VAR id="p1" onchange="noe({this}) ? null : dbExample.url.set(join({root},{p1},'?refresh={SYSTEM.uuid}'))" />
 
     <GET id="dbExample" onsuccess="editor.set({this.response})" url="=noe({p1}) ? '' : {p1}?refresh={SYSTEM.uuid}" />
@@ -129,16 +129,6 @@
 
     <FOOTER height="75" color="{THEME.oninversesurface}" layout="row" valign="center" padding="10">
 
-        <ROW expand="false" radius="5" borderlabel="Show" bordercolor="{THEME.primary}" padding="10">
-            <RADIO id="viewtype" value="code" layout="row" onchange="flipbox.animate()">
-                <OPTION value="code" label="Code"/>
-                <OPTION value="examples" label="Examples"/>
-            </RADIO>
-        </ROW>
-
-        <PAD left="20"/>
-
-
         <ROW expand="false" radius="5" borderlabel="Editor Theme" bordercolor="{THEME.primary}">
             <TYPEAHEAD id="theme" bordercolor="transparent" icon="theme" width="180" height="75" data="dbStyles"
                 onchange="stash('editortheme',{this.value})" value="=nvl('{STASH.editortheme}','solarized-dark')">
@@ -161,56 +151,14 @@
 
     </FOOTER>
 
-    <SPLITVIEW dividercolor="" dividerhandlecolor="{THEME.primary}" dividerwidth="6.0" ratio=".50">
+    <SPLITVIEW dividercolor="" dividerhandlecolor="{THEME.primary}" ratio=".50" direction="horizontal" dividerwidth="={SYSTEM.mouse} ? 6 : 20">
 
         <VIEW>
             <STACK expand="true">
-                <BOX color="{THEME.background}" height="100%" id="flipbox" layout="stack" width="100%">
 
-                    <FLIP id="boxflip" duration="600" />
-
-                    <GRID data="dbExamples" direction="vertical">
-                        <ITEM height="90" width="200">
-                            <STACK>
-
-                                <PAD all="6">
-
-                                    <LINK onclick="p1.set({data.url})">
-                                        <BOX center="true" color="=endswith({dbExample.url},{data.url}) ? {THEME.inverseprimary} : {THEME.oninversesurface}" elevation="0.1" id="flipcard"
-                                            layout="stack"
-                                            opacity="0.8" pad="10" radius="3">
-                                            <FLIP duration="600" id="cardflip" />
-                                            <BOX center="true">
-                                                <SCROLLER>
-                                                    <TEXT size="12" value="{data.description}" />
-                                                </SCROLLER>
-                                            </BOX>
-                                            <BOX center="true">
-                                                <COL expand="false" halign="center">
-                                                    <ICON color="{data.color}" icon="{data.icon}" />
-                                                    <TEXT size="12" value="{data.title}" />
-                                                </COL>
-                                            </BOX>
-
-                                        </BOX>
-                                    </LINK>
-
-                                </PAD>
-                                <POS right="8" top="8">
-                                    <LINK onclick="flipcard.animate()">
-                                        <ICON color="#47C4FB" icon="info_outline" size="20" />
-                                    </LINK>
-                                </POS>
-                            </STACK>
-                        </ITEM>
-                    </GRID>
-
-                    <SCROLLER>
-                        <EDITOR id="editor" language="xml" theme="={theme} ?? solarized-light" value=""/>
-                    </SCROLLER>
-
-
-                </BOX>
+                <SCROLLER color="{THEME.background}" height="100%" id="flipbox" layout="stack" width="100%">
+                    <EDITOR id="editor" language="xml" theme="={theme} ?? solarized-light" value=""/>
+                </SCROLLER>
 
                 <POSITIONED right="15" top="5">
                     <COL expand="false">
@@ -227,7 +175,5 @@
         </VIEW>
 
         <VIEW id="fmlpad" scope="rightpane"/>
-
-
     </SPLITVIEW>
 </FML>

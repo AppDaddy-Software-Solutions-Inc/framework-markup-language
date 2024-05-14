@@ -218,10 +218,10 @@ dependencies:
   validators: ^3.0.0
   # MIT
 
-  video_player: ^2.8.5
+  video_player: ^2.8.6
   # BSD-3-Clause
 
-  video_player_win: ^2.3.5
+  video_player_win: ^2.3.6
   # BSD-3-Clause
 
   visibility_detector: ^0.4.0+2

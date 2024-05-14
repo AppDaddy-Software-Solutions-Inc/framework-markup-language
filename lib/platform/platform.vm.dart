@@ -16,7 +16,7 @@ import 'dart:io' as io;
 
 bool get isWeb => Platform.isWeb;
 bool get isMobile => Platform.isMobile;
-bool get isDesktop => !isMobile;
+bool get isDesktop => Platform.isDesktop;
 
 class Platform {
 

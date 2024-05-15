@@ -117,13 +117,11 @@ class ThemeNotifier with ChangeNotifier {
       var scheme = ColorScheme(
         brightness:
             theme.brightness == 'dark' ? Brightness.dark : Brightness.light,
-        background: theme.background ?? base.background,
-        onBackground: theme.onBackground ?? base.onBackground,
         shadow: theme.shadow ?? base.shadow,
         outline: theme.outline ?? base.outline,
         surface: theme.surface ?? base.surface,
         onSurface: theme.onSurface ?? base.onSurface,
-        surfaceVariant: theme.surfaceVariant ?? base.surfaceVariant,
+        surfaceContainerHighest: theme.surfaceVariant ?? base.surfaceContainerHighest,
         onSurfaceVariant: theme.onSurfaceVariant ?? base.onSurfaceVariant,
         inverseSurface: theme.inverseSurface ?? base.inverseSurface,
         onInverseSurface: theme.onInverseSurface ?? base.onInverseSurface,
@@ -161,14 +159,14 @@ class ThemeNotifier with ChangeNotifier {
     System.theme.colorScheme = color;
     System.theme.font = font;
 
-    System.theme.background = _themeData.colorScheme.background;
-    System.theme.onBackground = _themeData.colorScheme.onBackground;
+    System.theme.background = _themeData.colorScheme.surface;
+    System.theme.onBackground = _themeData.colorScheme.onSurface;
     System.theme.shadow = _themeData.colorScheme.shadow;
     System.theme.outline = _themeData.colorScheme.outline;
 
     System.theme.surface = _themeData.colorScheme.surface;
     System.theme.onSurface = _themeData.colorScheme.onSurface;
-    System.theme.surfaceVariant = _themeData.colorScheme.surfaceVariant;
+    System.theme.surfaceVariant = _themeData.colorScheme.surfaceContainerHighest;
     System.theme.onSurfaceVariant = _themeData.colorScheme.onSurfaceVariant;
     System.theme.inverseSurface = _themeData.colorScheme.inverseSurface;
     System.theme.onInverseSurface = _themeData.colorScheme.onInverseSurface;

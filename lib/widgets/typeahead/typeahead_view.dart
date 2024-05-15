@@ -55,7 +55,7 @@ class TypeaheadViewState extends ViewableWidgetState<TypeaheadView> {
 
     var style = TextStyle(
         color: widget.model.enabled
-            ? enabledTextColor ?? Theme.of(context).colorScheme.onBackground
+            ? enabledTextColor ?? Theme.of(context).colorScheme.onSurface
             : disabledTextColor,
         fontSize: fontsize);
 

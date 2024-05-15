@@ -236,7 +236,7 @@ class DecoratedInputModel extends FormFieldModel {
     if (color != null) return color!;
 
     if (enabled && border != 'all') {
-      return color ?? Theme.of(context).colorScheme.surfaceVariant;
+      return color ?? Theme.of(context).colorScheme.surfaceContainerHighest;
     }
 
     if (border == 'all') {

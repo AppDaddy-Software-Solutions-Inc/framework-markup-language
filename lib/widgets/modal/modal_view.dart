@@ -357,7 +357,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
 
   Widget _buildHeader(ColorScheme t) {
 
-    Color c1 = widget.model.borderColor ?? t.surfaceVariant;
+    Color c1 = widget.model.borderColor ?? t.surfaceContainerHighest;
     Color c2 = ColorHelper.highlight(c1, .5);
     Color c3 = ColorHelper.highlight(c1, 1);
 

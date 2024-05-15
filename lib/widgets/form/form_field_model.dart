@@ -329,7 +329,7 @@ class FormFieldModel extends ViewableModel {
   Color getBorderColor(BuildContext context, Color? borderColor) {
     if (!enabled) return Theme.of(context).disabledColor;
     if (alarming) return Theme.of(context).colorScheme.error;
-    return borderColor ?? Theme.of(context).colorScheme.surfaceVariant;
+    return borderColor ?? Theme.of(context).colorScheme.surfaceContainerHighest;
   }
 
   Future<bool> onFocusLost(BuildContext context) async =>

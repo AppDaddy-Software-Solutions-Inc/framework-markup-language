@@ -152,7 +152,7 @@ class ListLayoutViewState extends ViewableWidgetState<ListLayoutView> {
             title = Text(
               descendants[i].value,
               style:
-                  TextStyle(color: Theme.of(context).colorScheme.onBackground),
+                  TextStyle(color: Theme.of(context).colorScheme.onSurface),
             );
           }
         } else if (isNullOrEmpty(itemModel.title)) {

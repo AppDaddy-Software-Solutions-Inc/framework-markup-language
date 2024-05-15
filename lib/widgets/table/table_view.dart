@@ -881,10 +881,10 @@ class TableViewState extends ViewableWidgetState<TableView> {
     var evenRowColor = widget.model.color2;
     var checkedColor = widget.model.color3 != null
         ? widget.model.color3!
-        : theme.colorScheme.surfaceVariant;
+        : theme.colorScheme.surfaceContainerHighest;
     var activeColor = widget.model.color3 != null
         ? widget.model.color3!
-        : theme.colorScheme.surfaceVariant;
+        : theme.colorScheme.surfaceContainerHighest;
     var activeBorderColor = widget.model.color4 != null
         ? widget.model.color4!
         : theme.colorScheme.primary;
@@ -911,7 +911,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
         rowColor: rowColor,
         oddRowColor: oddRowColor,
         evenRowColor: evenRowColor,
-        checkedColor: checkedColor,
+        rowCheckedColor: checkedColor,
         activatedColor: activeColor,
         columnContextIcon: Icons.more_vert_rounded,
         activatedBorderColor: activeBorderColor)
@@ -931,7 +931,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
         rowColor: rowColor,
         oddRowColor: oddRowColor,
         evenRowColor: evenRowColor,
-        checkedColor: checkedColor,
+        rowCheckedColor: checkedColor,
         activatedColor: activeColor,
         columnContextIcon: Icons.more_vert_rounded,
         activatedBorderColor: activeBorderColor);

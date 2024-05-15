@@ -123,7 +123,7 @@ class _ChartViewState extends ViewableWidgetState<ChartView> {
                   ? 0
                   : widget.model.yaxis.labelsize,
               color: charts_flutter.ColorUtil.fromDartColor(
-                  Theme.of(context).colorScheme.onBackground)),
+                  Theme.of(context).colorScheme.onSurface)),
         ),
       );
 
@@ -139,13 +139,13 @@ class _ChartViewState extends ViewableWidgetState<ChartView> {
         renderSpec: charts_flutter.SmallTickRendererSpec(
           axisLineStyle: charts_flutter.LineStyleSpec(
               color: charts_flutter.ColorUtil.fromDartColor(
-                  Theme.of(context).colorScheme.onBackground)),
+                  Theme.of(context).colorScheme.onSurface)),
           labelStyle: charts_flutter.TextStyleSpec(
               fontSize: widget.model.xaxis.labelvisible == false
                   ? 0
                   : widget.model.xaxis.labelsize,
               color: charts_flutter.ColorUtil.fromDartColor(
-                  Theme.of(context).colorScheme.onBackground)),
+                  Theme.of(context).colorScheme.onSurface)),
           labelRotation: widget.model.xaxis.labelrotation.abs() * -1,
           labelOffsetFromAxisPx:
               (sin(widget.model.xaxis.labelrotation.abs() * (pi / 180)) * 80)
@@ -161,13 +161,13 @@ class _ChartViewState extends ViewableWidgetState<ChartView> {
         renderSpec: charts_flutter.SmallTickRendererSpec(
           axisLineStyle: charts_flutter.LineStyleSpec(
               color: charts_flutter.ColorUtil.fromDartColor(
-                  Theme.of(context).colorScheme.onBackground)),
+                  Theme.of(context).colorScheme.onSurface)),
           labelStyle: charts_flutter.TextStyleSpec(
               fontSize: widget.model.xaxis.labelvisible == false
                   ? 0
                   : widget.model.xaxis.labelsize,
               color: charts_flutter.ColorUtil.fromDartColor(
-                  Theme.of(context).colorScheme.onBackground)),
+                  Theme.of(context).colorScheme.onSurface)),
           labelRotation: widget.model.xaxis.labelrotation.abs() * -1,
           labelOffsetFromAxisPx:
               (sin(widget.model.xaxis.labelrotation.abs() * (pi / 180)) * 80)
@@ -185,14 +185,14 @@ class _ChartViewState extends ViewableWidgetState<ChartView> {
       renderSpec: charts_flutter.SmallTickRendererSpec(
         axisLineStyle: charts_flutter.LineStyleSpec(
             color: charts_flutter.ColorUtil.fromDartColor(
-                Theme.of(context).colorScheme.onBackground)),
+                Theme.of(context).colorScheme.onSurface)),
         labelAnchor: charts_flutter.TickLabelAnchor.after,
         labelStyle: charts_flutter.TextStyleSpec(
             fontSize: widget.model.xaxis.labelvisible == false
                 ? 0
                 : widget.model.xaxis.labelsize,
             color: charts_flutter.ColorUtil.fromDartColor(
-                Theme.of(context).colorScheme.onBackground)),
+                Theme.of(context).colorScheme.onSurface)),
         labelRotation: widget.model.xaxis.labelrotation.abs() * -1,
         labelOffsetFromAxisPx:
             (sin(widget.model.xaxis.labelrotation.abs() * (pi / 180)) * 80)
@@ -704,11 +704,11 @@ class _ChartViewState extends ViewableWidgetState<ChartView> {
                   charts_flutter.ColorUtil.fromDartColor(
                       (plot.color ?? series.color)?.withOpacity(0.1) ??
                           Colors.black12),
-              colorFn: (dynamic plot, _) =>
+              colorFn: (dynamic plot, int? a) =>
                   charts_flutter.ColorUtil.fromDartColor(plot.color ??
                       series.color ??
-                      (ColorHelper.niceColors.length > _!
-                          ? ColorHelper.niceColors[_]!
+                      (ColorHelper.niceColors.length > a!
+                          ? ColorHelper.niceColors[a]!
                           : Colors.black)),
               domainFn: (dynamic plot, _) => plot.x,
               measureFn: (dynamic plot, _) => plot.y,
@@ -728,11 +728,11 @@ class _ChartViewState extends ViewableWidgetState<ChartView> {
                   charts_flutter.ColorUtil.fromDartColor(
                       (plot.color ?? series.color)?.withOpacity(0.1) ??
                           Colors.black12),
-              colorFn: (dynamic plot, _) =>
+              colorFn: (dynamic plot, int? a) =>
                   charts_flutter.ColorUtil.fromDartColor(plot.color ??
                       series.color ??
-                      (ColorHelper.niceColors.length > _!
-                          ? ColorHelper.niceColors[_]!
+                      (ColorHelper.niceColors.length > a!
+                          ? ColorHelper.niceColors[a]!
                           : Colors.black)),
               domainFn: (dynamic plot, _) => plot.x,
               measureFn: (dynamic plot, _) => plot.y,
@@ -752,11 +752,11 @@ class _ChartViewState extends ViewableWidgetState<ChartView> {
                   charts_flutter.ColorUtil.fromDartColor(
                       (plot.color ?? series.color)?.withOpacity(0.1) ??
                           Colors.black12),
-              colorFn: (dynamic plot, _) =>
+              colorFn: (dynamic plot, int? a) =>
                   charts_flutter.ColorUtil.fromDartColor(plot.color ??
                       series.color ??
-                      (ColorHelper.niceColors.length > _!
-                          ? ColorHelper.niceColors[_]!
+                      (ColorHelper.niceColors.length > a!
+                          ? ColorHelper.niceColors[a]!
                           : Colors.black)),
               domainFn: (dynamic plot, _) => plot.x,
               measureFn: (dynamic plot, _) => plot.y,
@@ -1327,7 +1327,7 @@ class _ChartViewState extends ViewableWidgetState<ChartView> {
             fontSize: widget.model.legendsize,
             color: charts_flutter.Color.fromHex(
                 code:
-                    '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}')),
+                    '#${Theme.of(context).colorScheme.onSurface.value.toRadixString(16).toString().substring(2)}')),
       ));
     }
 
@@ -1337,7 +1337,7 @@ class _ChartViewState extends ViewableWidgetState<ChartView> {
         entryTextStyle: charts_flutter.TextStyleSpec(
           color: charts_flutter.Color.fromHex(
               code:
-                  '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
+                  '#${Theme.of(context).colorScheme.onSurface.value.toRadixString(16).toString().substring(2)}'),
         ),
         outsideJustification:
             charts_flutter.OutsideJustification.middleDrawArea,
@@ -1352,7 +1352,7 @@ class _ChartViewState extends ViewableWidgetState<ChartView> {
           titleStyleSpec: charts_flutter.TextStyleSpec(
             color: charts_flutter.Color.fromHex(
                 code:
-                    '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
+                    '#${Theme.of(context).colorScheme.onSurface.value.toRadixString(16).toString().substring(2)}'),
           ),
           behaviorPosition: widget.model.horizontal
               ? charts_flutter.BehaviorPosition.start
@@ -1366,7 +1366,7 @@ class _ChartViewState extends ViewableWidgetState<ChartView> {
           titleStyleSpec: charts_flutter.TextStyleSpec(
             color: charts_flutter.Color.fromHex(
                 code:
-                    '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
+                    '#${Theme.of(context).colorScheme.onSurface.value.toRadixString(16).toString().substring(2)}'),
           ),
           behaviorPosition: widget.model.horizontal
               ? charts_flutter.BehaviorPosition.bottom

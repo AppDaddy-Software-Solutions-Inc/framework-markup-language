@@ -46,11 +46,11 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
     var borderWidth = widget.model.borderWidth ?? 1;
 
     var borderSideStyle = model.type == 'outlined'
-        ? MaterialStateProperty.resolveWith((states) {
-            if (states.contains(MaterialState.disabled)) {
+        ? WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
               return BorderSide(
                   style: BorderStyle.solid,
-                  color: Theme.of(context).colorScheme.surfaceVariant,
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   width: borderWidth);
             }
             return BorderSide(
@@ -61,10 +61,10 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
         : null;
 
     var elevationStyle = model.type == 'elevated'
-        ? MaterialStateProperty.resolveWith((states) {
-            if (states.contains(MaterialState.hovered)) return 8.0;
-            if (states.contains(MaterialState.focused) ||
-                states.contains(MaterialState.pressed)) return 3.0;
+        ? WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.hovered)) return 8.0;
+            if (states.contains(WidgetState.focused) ||
+                states.contains(WidgetState.pressed)) return 3.0;
             return 5.0;
           })
         : null;
@@ -72,10 +72,10 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
     // Button Type Styling
     var foregroundColorStyle =
         (!isNullOrEmpty(model.color) && model.type != 'elevated')
-            ? MaterialStateProperty.resolveWith<Color?>(
-                (Set<MaterialState> states) {
-                if (states.contains(MaterialState.disabled)) {
-                  return Theme.of(context).colorScheme.surfaceVariant;
+            ? WidgetStateProperty.resolveWith<Color?>(
+                (Set<WidgetState> states) {
+                if (states.contains(WidgetState.disabled)) {
+                  return Theme.of(context).colorScheme.surfaceContainerHighest;
                 }
                 return model
                     .color; // not sure if this is the correct color scheme for text.
@@ -84,16 +84,16 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
 
     var backgroundColorStyle =
         (!isNullOrEmpty(model.color) && model.type == 'elevated')
-            ? MaterialStateProperty.resolveWith<Color?>(
-                (Set<MaterialState> states) {
-                if (states.contains(MaterialState.hovered)) {
+            ? WidgetStateProperty.resolveWith<Color?>(
+                (Set<WidgetState> states) {
+                if (states.contains(WidgetState.hovered)) {
                   return model.color!.withOpacity(0.85);
                 }
-                if (states.contains(MaterialState.focused) ||
-                    states.contains(MaterialState.pressed)) {
+                if (states.contains(WidgetState.focused) ||
+                    states.contains(WidgetState.pressed)) {
                   return model.color!.withOpacity(0.2);
                 }
-                if (states.contains(MaterialState.disabled)) {
+                if (states.contains(WidgetState.disabled)) {
                   return Theme.of(context).colorScheme.shadow;
                 }
                 return model.color;
@@ -101,10 +101,10 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
             : null; // Defer to the widget
 
     var buttonShape =
-        MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: radius));
+        WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: radius));
 
     return ButtonStyle(
-      minimumSize: MaterialStateProperty.all(Size(
+      minimumSize: WidgetStateProperty.all(Size(
           model.constraints.minWidth ?? 64,
           (model.constraints.minHeight ?? 0) +
               40)), //add 40 to the constraint as the width is offset by 40

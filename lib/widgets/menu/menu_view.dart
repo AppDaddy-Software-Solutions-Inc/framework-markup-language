@@ -207,7 +207,7 @@ class MenuViewState extends ViewableWidgetState<MenuView>  {
     }
 
     return Container(
-        color: widget.model.color ?? Theme.of(context).colorScheme.background,
+        color: widget.model.color ?? Theme.of(context).colorScheme.surface,
         child: Center(child: view));
   }
 }

@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/widgets/text/text_model.dart';

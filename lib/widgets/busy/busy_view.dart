@@ -53,7 +53,7 @@ class _BusyViewState extends ViewableWidgetState<BusyView> {
               opacity: .50,
               child: ModalBarrier(
                   dismissible: false,
-                  color: Theme.of(context).colorScheme.background)));
+                  color: Theme.of(context).colorScheme.surface)));
     }
     if (curtain != null) children.add(curtain);
 

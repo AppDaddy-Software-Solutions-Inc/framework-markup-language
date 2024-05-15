@@ -43,7 +43,7 @@ class _BreadcrumbViewState extends ViewableWidgetState<BreadcrumbView> {
         PageConfiguration conf = (page.arguments as PageConfiguration);
         Widget view = _TextCrumb(
             conf.breadcrumb,
-            widget.model.color ?? Theme.of(context).colorScheme.onBackground,
+            widget.model.color ?? Theme.of(context).colorScheme.onSurface,
             height,
             '/',
             index == 0);

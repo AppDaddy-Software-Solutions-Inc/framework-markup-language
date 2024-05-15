@@ -166,7 +166,7 @@ class StoreAppState extends State<StoreApp> {
             borderRadius: BorderRadius.circular(10.0),
             borderSide: const BorderSide()));
 
-    var style = TextStyle(color: Theme.of(context).colorScheme.onBackground);
+    var style = TextStyle(color: Theme.of(context).colorScheme.onSurface);
 
     var name = TextFormField(
         validator: _validateTitle, decoration: nameDecoration, style: style);

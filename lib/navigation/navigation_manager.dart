@@ -514,7 +514,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
     var style = TextStyle(color: Theme.of(context).colorScheme.primary);
     var title = Text('${phrase.close} ${phrase.application}?', style: style);
 
-    style = TextStyle(color: Theme.of(context).colorScheme.onBackground);
+    style = TextStyle(color: Theme.of(context).colorScheme.onSurface);
     var msg = Padding(
         padding: const EdgeInsets.only(top: 0, bottom: 10),
         child: Text(phrase.confirmExit, style: style));

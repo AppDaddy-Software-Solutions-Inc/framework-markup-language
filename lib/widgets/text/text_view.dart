@@ -371,12 +371,12 @@ class _TextViewState extends ViewableWidgetState<TextView> {
               break;
             case "code":
               codeBlockBG =
-                  Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.7);
+                  Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.7);
               codeBlockFont = 'Inconsolata';
               weight = FontWeight.w400;
               break;
             default:
-              codeBlockBG = Theme.of(context).colorScheme.surfaceVariant;
+              codeBlockBG = Theme.of(context).colorScheme.surfaceContainerHighest;
               codeBlockFont = null;
               weight = getTextWeight();
               style = FontStyle.normal;

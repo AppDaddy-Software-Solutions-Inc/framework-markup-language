@@ -92,5 +92,5 @@ class FlSpotExtended extends FlSpot implements IExtendedSeriesInterface {
   @override
   final dynamic data;
 
-  FlSpotExtended(this.series, this.data, double x, double y) : super(x, y);
+  const FlSpotExtended(this.series, this.data, double x, double y) : super(x, y);
 }

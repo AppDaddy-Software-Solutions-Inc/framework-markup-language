@@ -35,7 +35,7 @@ class _SwitchViewState extends ViewableWidgetState<SwitchView>
       activeTrackColor:
           widget.model.color?.withOpacity(0.65) ?? th.inversePrimary,
       inactiveThumbColor: th.onInverseSurface,
-      inactiveTrackColor: th.surfaceVariant,
+      inactiveTrackColor: th.surfaceContainerHighest,
     );
 
     // disabled?

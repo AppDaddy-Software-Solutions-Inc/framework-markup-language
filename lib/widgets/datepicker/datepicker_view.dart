@@ -327,7 +327,7 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
           style: TextStyle(
               color: widget.model.enabled
                   ? enabledTextColor ??
-                  Theme.of(context).colorScheme.onBackground
+                  Theme.of(context).colorScheme.onSurface
                   : disabledTextColor,
               fontSize: fontsize),
           textAlignVertical: TextAlignVertical.center,

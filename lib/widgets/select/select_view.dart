@@ -118,8 +118,8 @@ class _SelectViewState extends ViewableWidgetState<SelectView> {
     var style = TextStyle(
         color: widget.model.enabled
             ? widget.model.textColor ??
-                Theme.of(context).colorScheme.onBackground
-            : Theme.of(context).colorScheme.surfaceVariant,
+                Theme.of(context).colorScheme.onSurface
+            : Theme.of(context).colorScheme.surfaceContainerHighest,
         fontSize: widget.model.textSize);
 
     var decoration = InputDecoration(
@@ -181,7 +181,7 @@ class _SelectViewState extends ViewableWidgetState<SelectView> {
         borderRadius: borderRadius,
         underline: Container(),
         focusColor:
-            Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.15));
+            Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.15));
 
     // defeat focus colors
     //var theme = Theme.of(context).copyWith(hoverColor: Colors.transparent);

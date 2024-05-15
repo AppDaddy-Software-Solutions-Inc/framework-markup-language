@@ -588,7 +588,7 @@ class _InputViewState extends ViewableWidgetState<InputView>
 
     var style = TextStyle(
         color: widget.model.enabled
-            ? enabledTextColor ?? Theme.of(context).colorScheme.onBackground
+            ? enabledTextColor ?? Theme.of(context).colorScheme.onSurface
             : disabledTextColor,
         fontSize: fontsize);
 

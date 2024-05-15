@@ -299,7 +299,7 @@ class _ScribbleViewState extends ViewableWidgetState<ScribbleView> {
   Widget buildClearButton() {
     return TextButton(
       style: ButtonStyle(
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
         RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
           topLeft: const Radius.circular(10.0),
@@ -318,7 +318,7 @@ class _ScribbleViewState extends ViewableWidgetState<ScribbleView> {
   Widget buildSaveButton() {
     return TextButton(
       style: ButtonStyle(
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
         const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
           topRight: Radius.circular(10.0),
@@ -343,16 +343,16 @@ class _ScribbleViewState extends ViewableWidgetState<ScribbleView> {
         Icon(Icons.gesture,
             size: 64,
             color:
-                Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5)),
+                Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5)),
         Icon(Icons.mode_edit_outlined,
             size: 64,
             color:
-                Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5))
+                Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5))
       ],
     );
 
     BorderSide borderSide = BorderSide(
-        width: 2, color: Theme.of(context).colorScheme.surfaceVariant);
+        width: 2, color: Theme.of(context).colorScheme.surfaceContainerHighest);
 
     // view width & height are set by
     // the box layout

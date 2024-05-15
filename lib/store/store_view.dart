@@ -222,7 +222,7 @@ class _ViewState extends State<StoreView>
     Widget? appIcon = _getIcon(app);
 
     style = TextStyle(
-        color: Theme.of(context).colorScheme.onBackground, fontSize: 10);
+        color: Theme.of(context).colorScheme.onSurface, fontSize: 10);
     var appUrl = Padding(
         padding: const EdgeInsets.only(bottom: 20),
         child: Text(app.url, style: style));

@@ -45,13 +45,13 @@ class _TooltipViewState extends ViewableWidgetState<TooltipView> {
         message: widget.model.label ?? '',
         decoration: BoxDecoration(
             color: widget.model.backgroundcolor ??
-                Theme.of(context).colorScheme.surfaceVariant,
+                Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(22)),
         textStyle: TextStyle(
             fontSize:
                 Theme.of(context).primaryTextTheme.bodySmall?.fontSize ?? 14,
             color: widget.model.color ??
-                Theme.of(context).colorScheme.onBackground),
+                Theme.of(context).colorScheme.onSurface),
         child: activator);
 
     // tooltip = WidgetTooltip(widgetOverlay: Icon(Icons.import_contacts_sharp, color: Colors.pinkAccent), message: widget.model.label ?? '', textStyle: Theme.of(context).accentTextTheme.overline, child: activator);

@@ -1,13 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:ui';
 import 'package:fml/log/manager.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart' as mlkit;
 import 'text_detector.dart';
 
 class LineRow {
-  List<TextElement> words = [];
+  List<mlkit.TextElement> words = [];
 
-  LineRow(List<TextElement> e) {
+  LineRow(List<mlkit.TextElement> e) {
     words = e;
   }
 }
@@ -30,7 +30,7 @@ class TextDetector implements ITextDetector {
     try {
       Payload? result;
 
-      if (detectable?.image is InputImage) {
+      if (detectable?.image is mlkit.InputImage) {
         var image = detectable.image;
 
         // process the image
@@ -47,7 +47,7 @@ class TextDetector implements ITextDetector {
     }
   }
 
-  Payload payload(RecognizedText vtext) {
+  Payload payload(mlkit.RecognizedText vtext) {
     List<Line> lines = [];
     // BASIC LINE DETECTION
     // for (TextBlock block in vtext.blocks)
@@ -68,11 +68,11 @@ class TextDetector implements ITextDetector {
     List<LineRow> ocrLines = [];
 
     // Go through all the blocks
-    for (TextBlock block in vtext.blocks) {
+    for (mlkit.TextBlock block in vtext.blocks) {
       // Go through all lines
-      for (TextLine line in block.lines) {
+      for (mlkit.TextLine line in block.lines) {
         // Go through all elements(words)
-        for (TextElement element in line.elements) {
+        for (mlkit.TextElement element in line.elements) {
           // String text = element.text;
           Rect box = element.boundingBox;
           // Offset topLeft = box.topLeft;

@@ -22,8 +22,8 @@ import 'package:fml/platform/platform.vm.dart'
 if (dart.library.io) 'package:fml/platform/platform.vm.dart'
 if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
-import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
-    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+import 'package:fml/datasources/detectors/image/detectable_image.web.dart'
+    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.vm.dart'
     if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 class CameraView extends StatefulWidget implements ViewableWidgetView {
@@ -621,10 +621,10 @@ class CameraViewState extends ViewableWidgetState<CameraView> {
     return Stack(children: children);
   }
 
-  void onStream(CameraImage image, CameraDescription camera) {
+  void onStream(CameraImage image, CameraDescription camera) async {
     // detect in stream
     if (widget.model.detectors != null) {
-      DetectableImage detectable = DetectableImage.fromCamera(image, camera);
+      DetectableImage detectable = await DetectableImage.fromCamera(image, camera);
       widget.model.detectInStream(detectable);
     }
   }
@@ -634,6 +634,7 @@ class CameraViewState extends ViewableWidgetState<CameraView> {
 
     // detect in image
     if (widget.model.detectors != null) {
+
       DetectableImage? detectable;
 
       // blob image - created in web
@@ -641,20 +642,19 @@ class CameraViewState extends ViewableWidgetState<CameraView> {
         var bytes = await image.readAsBytes();
         var codec = await instantiateImageCodec(bytes);
         var frame = await codec.getNextFrame();
-        var data =
-            await frame.image.toByteData(format: ImageByteFormat.rawRgba);
+        var data  =  await frame.image.toByteData(format: ImageByteFormat.rawRgba);
         if (data != null) {
-          detectable = DetectableImage.fromRgba(
+          detectable = await DetectableImage.fromRgba(
               data.buffer.asUint8List(), frame.image.width, frame.image.height);
         }
       }
 
       // blob image - created in mobile
       else {
-        detectable = DetectableImage.fromFilePath(image.path);
+        detectable = await DetectableImage.fromFile(image);
       }
 
-      //detect
+      // detect
       if (detectable != null) widget.model.detectInImage(detectable);
     }
 

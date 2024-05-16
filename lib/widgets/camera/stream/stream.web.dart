@@ -15,8 +15,8 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/camera/stream/stream.dart';
 import 'package:fml/helpers/helpers.dart';
 
-import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
-    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+import 'package:fml/datasources/detectors/image/detectable_image.web.dart'
+    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.vm.dart'
     if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 // platform
@@ -376,11 +376,10 @@ class ViewState extends ViewableWidgetState<View> {
     start();
   }
 
-  void onStream(List<int> bytes, int width, int height) {
+  void onStream(List<int> bytes, int width, int height) async {
     // detect in stream
     if (widget.model.detectors != null) {
-      DetectableImage? detectable =
-          DetectableImage.fromRgba(bytes, width, height);
+      var detectable = await DetectableImage.fromRgba(bytes, width, height);
       widget.model.detectInStream(detectable);
     }
   }
@@ -389,8 +388,7 @@ class ViewState extends ViewableWidgetState<View> {
       List<int> bytes, int width, int height, UriData uri) async {
     // detect in stream
     if (widget.model.detectors != null) {
-      DetectableImage? detectable =
-          DetectableImage.fromRgba(bytes, width, height);
+      var detectable = await DetectableImage.fromRgba(bytes, width, height);
       widget.model.detectInImage(detectable);
     }
 

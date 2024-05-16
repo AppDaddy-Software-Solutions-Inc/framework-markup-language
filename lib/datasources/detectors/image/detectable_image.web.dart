@@ -1,6 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:ui';
+
 import 'package:camera/camera.dart' show CameraImage;
 import 'package:camera/camera.dart' show CameraDescription;
+import 'package:cross_file/cross_file.dart';
 import 'package:zxing_lib/common.dart' show HybridBinarizer;
 import 'package:zxing_lib/zxing.dart' show RGBLuminanceSource;
 import 'package:zxing_lib/zxing.dart' show BinaryBitmap;
@@ -11,23 +14,24 @@ class DetectableImage {
 
   DetectableImage(this.image);
 
-  factory DetectableImage.fromCamera(
-      CameraImage image, CameraDescription camera) {
-    // not implemented
+  static Future<DetectableImage> fromCamera(
+      CameraImage image, CameraDescription camera) async {
     return DetectableImage(null);
   }
 
-  factory DetectableImage.fromFilePath(String path) {
-    // not implemented
-    return DetectableImage(null);
+  static Future<DetectableImage> fromFile(XFile file) async {
+    var bytes = await file.readAsBytes();
+    var codec = await instantiateImageCodec(bytes);
+    var frame = await codec.getNextFrame();
+    var data  = await frame.image.toByteData(format: ImageByteFormat.rawRgba);
+    if (data == null) return DetectableImage(null);
+    return await fromRgba(data.buffer.asUint8List(), frame.image.width, frame.image.height);
   }
 
-  factory DetectableImage.fromRgba(List<int> bytes, int width, int height) {
+  static Future<DetectableImage> fromRgba(List<int> bytes, int width, int height) async {
+
     // decode pixels
     List<int> pixels = ImageHelper.toPixelsFromRgba(bytes);
-
-    // convert to greyscale
-    //List<int> bw = List<int>.generate(rgba.length ~/ 4, (index) => _toBlackAndWhite(rgba[index * 4], rgba[(index * 4) + 1], rgba[(index * 4) + 2], 0.25));
 
     // get luminance
     var source = RGBLuminanceSource(width, height, pixels);

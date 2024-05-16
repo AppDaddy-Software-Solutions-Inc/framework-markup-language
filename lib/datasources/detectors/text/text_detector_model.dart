@@ -8,8 +8,8 @@ import 'package:xml/xml.dart';
 import 'package:fml/datasources/detectors/text/text_detector.dart';
 import 'package:fml/helpers/helpers.dart';
 
-import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
-    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+import 'package:fml/datasources/detectors/image/detectable_image.web.dart'
+    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.vm.dart'
     if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 class TextDetectorModel extends DetectorModel implements IDetectable {

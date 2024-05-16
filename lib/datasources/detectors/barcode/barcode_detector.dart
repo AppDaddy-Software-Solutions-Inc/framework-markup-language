@@ -1,12 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-
-import 'barcode_detector.mobile.dart'
-    if (dart.library.io) 'barcode_detector.mobile.dart'
-    if (dart.library.html) 'barcode_detector.web.dart';
-
-import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
-    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+import 'package:fml/datasources/detectors/image/detectable_image.web.dart'
+    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.vm.dart'
     if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 enum BarcodeFormats {
@@ -77,7 +72,6 @@ class Payload {
 }
 
 abstract class IBarcodeDetector {
-  factory IBarcodeDetector() => getDetector();
   Future<Payload?> detect(DetectableImage image, List<BarcodeFormats>? formats,
       bool? tryharder, bool? invert);
 }

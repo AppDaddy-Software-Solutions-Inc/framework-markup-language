@@ -8,8 +8,8 @@ import 'package:path/path.dart';
 import 'filepicker_view.dart';
 import 'package:fml/datasources/file/file.dart';
 
-import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
-    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+import 'package:fml/datasources/detectors/image/detectable_image.web.dart'
+    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.vm.dart'
     if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 FilePickerView create({String? accept}) => FilePickerView(accept: accept);
@@ -43,7 +43,10 @@ class FilePickerView implements FilePicker {
                   ? file_picker.FileType.any
                   : file_picker.FileType.custom,
               allowedExtensions: accept);
+
+      // file selected?
       if (result != null) {
+
         // set file
         XFile file = XFile(result.files.single.path!);
         String url = "file:${file.path}";
@@ -52,10 +55,10 @@ class FilePickerView implements FilePicker {
         int size = await file.length();
 
         // detect in image
-        if ((detectors != null) && (type.startsWith("image"))) {
+        if (detectors != null && type.startsWith("image")) {
+
           // create detectable image
-          DetectableImage detectable =
-              DetectableImage.fromFilePath(result.files.single.path!);
+          var detectable = await DetectableImage.fromFile(file);
 
           // detect
           for (var detector in detectors) {

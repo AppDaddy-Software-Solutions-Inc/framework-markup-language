@@ -18,8 +18,8 @@ import 'package:fml/datasources/file/file.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
-    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+import 'package:fml/datasources/detectors/image/detectable_image.web.dart'
+    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.vm.dart'
     if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 class CameraModel extends CameraImageModel with ViewableMixin {

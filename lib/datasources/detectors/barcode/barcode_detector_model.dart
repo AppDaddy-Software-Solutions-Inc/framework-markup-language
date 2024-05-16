@@ -10,8 +10,12 @@ import 'package:xml/xml.dart';
 import 'barcode_detector.dart';
 import 'package:fml/helpers/helpers.dart';
 
-import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
-    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+import 'package:fml/datasources/detectors/barcode/barcode_detector.web.dart'
+if (dart.library.io) 'package:fml/datasources/detectors/barcode/barcode_detector.vm.dart'
+if (dart.library.html) 'package:fml/datasources/detectors/barcode/barcode_detector.web.dart';
+
+import 'package:fml/datasources/detectors/image/detectable_image.web.dart'
+    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.vm.dart'
     if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 class BarcodeDetectorModel extends DetectorModel implements IDetectable {
@@ -86,8 +90,13 @@ class BarcodeDetectorModel extends DetectorModel implements IDetectable {
       busy = true;
 
       count++;
-      Payload? payload = await IBarcodeDetector()
-          .detect(image, barcodeFormats, tryharder, invert);
+
+      // get the detector
+      var detector = await BarcodeDetector().getDetector();
+
+      // detect in image
+      var payload = await detector.detect(image, barcodeFormats, tryharder, invert);
+
       if (payload != null) {
         Data data = Payload.toData(payload);
         await onDetected(data);

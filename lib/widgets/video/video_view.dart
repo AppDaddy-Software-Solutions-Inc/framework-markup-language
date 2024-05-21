@@ -77,7 +77,7 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
 
   @override
   void dispose() {
-    _controller?.removeListener(onVideoController);
+    _controller?.removeListener(_onVideoControllerChange);
     _controller?.dispose();
     _controller = null;
     super.dispose();
@@ -99,11 +99,7 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
           _controller?.setPlaybackSpeed(widget.model.speed);
           break;
 
-        // visible/hidden
-        case 'visible':
         default:
-          // stop the camera
-          stop();
           setState(() {});
           break;
       }
@@ -130,18 +126,22 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
 
   Widget getSpeedButton() {
     speedLabel ??= TextView(speedLabelModel);
-    speedLabelModel.value = '${_controller?.value.playbackSpeed}x';
+    speedLabelModel.value = '${widget.model.speed}x';
 
     var label = Stack(alignment: Alignment.center, children: [
       const Icon(Icons.circle, color: Colors.white38, size: 40),
       speedLabel!
     ]);
 
-    var popup = PopupMenuButton<double>(
-        initialValue: _controller?.value.playbackSpeed,
+    List<PopupMenuItem<double>> speeds = [];
+    for (final double speed in _playbackRates) {
+      speeds.add(PopupMenuItem<double>(value: speed, child: Text('${speed}x')));
+    }
+
+    PopupMenuButton popup = PopupMenuButton<double>(
         tooltip: 'Playback speed',
         onSelected: (double speed) {
-          _controller?.setPlaybackSpeed(speed);
+          widget.model.speed = speed;
           speedLabelModel.value = '${speed}x';
         },
         itemBuilder: (BuildContext context) {
@@ -155,21 +155,10 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
     return Positioned(top: 5, right: 5, child: popup);
   }
 
-  void onVideoController() {
-    if (_controller == null) return;
-    if (!_controller!.value.isPlaying) {
-      playButtonModel.icon = Icons.pause;
-      playButtonModel.size = 65;
-      if (_controller!.value.position == _controller!.value.duration) {
-        seek(0);
-      }
-    } else {
-      playButtonModel.icon = Icons.play_arrow;
-      playButtonModel.size = 65;
-    }
-    _controller!.setLooping(widget.model.loop);
-    _controller!.setVolume(widget.model.volume);
-    _controller!.setPlaybackSpeed(widget.model.speed);
+  void _onVideoControllerChange() {
+    playButtonModel.size = 65;
+    playButtonModel.icon = _controller?.value.isPlaying ?? false ? Icons.play_arrow : Icons.pause;
+    widget.model.playing = _controller?.value.isPlaying;
   }
 
   Future<bool> startstop() async {
@@ -209,7 +198,14 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
         WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
       }
 
-      _controller!.addListener(onVideoController);
+      _controller!.setLooping(widget.model.loop);
+      _controller!.setVolume(widget.model.volume);
+      _controller!.setPlaybackSpeed(widget.model.speed);
+
+      if (widget.model.autoplay) start();
+
+      // add listener to modify controls
+      _controller!.addListener(_onVideoControllerChange);
     }
 
     return true;

@@ -31,25 +31,26 @@ class ColorHelper {
 
       // # hex color w/out alpha
       if (color.startsWith('#') && color.length == 7) {
-        return Color(int.parse(color.substring(1, 7), radix: 16) + 0xFF000000);
+        var clr = color.substring(1);
+        return Color(int.parse(clr, radix: 16) + 0xFF000000);
       }
 
       // # hex color w/ alpha
       if (color.startsWith('#') && color.length == 9) {
-        return Color(int.parse(
-                '${color.substring(7, 9)}${color.substring(1, 7)}',
-                radix: 16) +
-            0x00000000);
+        var clr = '${color.substring(7, 9)}${color.substring(1, 7)}';
+        return Color(int.parse(clr, radix: 16) + 0x00000000);
       }
 
       // 0x hex color w/out alpha
       if (color.startsWith('0x') && color.length == 8) {
-        return Color(int.parse(color.substring(2, 8), radix: 16) + 0xFF000000);
+        var clr = color.substring(2);
+        return Color(int.parse(clr, radix: 16) + 0xFF000000);
       }
 
       // 0x hex color w/ alpha
       if (color.startsWith('0x') && color.length == 10) {
-        return Color(int.parse(color.substring(2, 10), radix: 16) + 0x00000000);
+        var clr = '${color.substring(8, 10)}${color.substring(2, 8)}';
+        return Color(int.parse(clr, radix: 16) + 0x00000000);
       }
     }
 

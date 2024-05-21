@@ -3,6 +3,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/scribble/scribble_view.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:xml/xml.dart';
@@ -147,7 +148,10 @@ class ScribbleModel extends FormFieldModel implements IFormField {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(ScribbleView(this));
+  Widget getView({Key? key}) {
+    var view = ScribbleView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }
 
 class SignatureModel extends ViewableModel {

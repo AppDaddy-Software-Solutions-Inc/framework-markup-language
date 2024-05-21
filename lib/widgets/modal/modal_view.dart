@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
+import 'package:fml/helpers/color.dart';
 import 'package:fml/widgets/measure/measure_view.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/widgets/box/box_view.dart';
@@ -355,9 +356,10 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
   }
 
   Widget _buildHeader(ColorScheme t) {
-    Color c1 = t.onSurfaceVariant;
-    Color c2 = t.primary;
-    Color c3 = widget.model.borderColor;
+
+    Color c1 = widget.model.borderColor ?? t.surfaceContainerHighest;
+    Color c2 = ColorHelper.highlight(c1, .5);
+    Color c3 = ColorHelper.highlight(c1, 1);
 
     var divider = SizedBox(width: headerIconDividerSize, height: 1);
 
@@ -379,7 +381,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
                         width: headerIconSize,
                         child: Icon(Icons.close,
                             size: headerIconSize - 4,
-                            color: !closeHovered ? c1 : c2)))));
+                            color: !closeHovered ? c2 : c3)))));
 
     Widget minimize =
         (!widget.model.closeable || widget.model.modal)
@@ -396,7 +398,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
                             width: headerIconSize,
                             child: Icon(Icons.horizontal_rule,
                                 size: headerIconSize - 4,
-                                color: !minimizeHovered ? c1 : c2)))));
+                                color: !minimizeHovered ? c2 : c3)))));
 
     Widget maximize = (!widget.model.closeable || widget.model.modal)
         ? Container()
@@ -415,7 +417,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
                                 ? Icons.crop_7_5_sharp
                                 : Icons.crop_square_sharp,
                             size: headerIconSize - 4,
-                            color: !maximizedHovered ? c1 : c2)))));
+                            color: !maximizedHovered ? c2 : c3)))));
 
     // build header top radius
     // the body radius tops are overridden ion the model
@@ -425,13 +427,21 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
     BorderRadius? containerRadius = BorderRadius.only(
         topRight: Radius.circular(radius), topLeft: Radius.circular(radius));
 
-    var toolbar = Row(
+    Widget toolbar = Row(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
         children: [minimize, divider, maximize, divider, close, divider]);
 
+    // title
+    if (!isNullOrEmpty(widget.model.title)) {
+      Widget title = DefaultTextStyle(style: TextStyle(color: c2, fontSize: headerSize * .45, fontWeight: FontWeight.bold), child: Text(widget.model.title!, overflow: TextOverflow.ellipsis));
+      title = Center(child: title);
+      toolbar = Stack(children: [title,toolbar]);
+    }
+
     return Container(
-        decoration: BoxDecoration(borderRadius: containerRadius, color: c3),
+        decoration: BoxDecoration(borderRadius: containerRadius, color: c1),
         width: width!,
         height: headerSize,
         child: toolbar);
@@ -449,10 +459,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
               MeasureView(Material(child: BoxView(widget.model, (_,__) => widget.model.inflate())), onMeasured));
     }
 
-    ColorScheme t = Theme.of(context).colorScheme;
-
-    // set the models default border color
-    widget.model.defaultBorderColor = t.surfaceVariant;
+    ColorScheme theme = Theme.of(context).colorScheme;
 
     // Overlay Manager
     ModalManagerView? manager =
@@ -574,7 +581,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
               child: SizedBox(height: height, width: width, child: body)));
 
       double headerHeight = 30;
-      var header = _buildHeader(t);
+      var header = _buildHeader(theme);
 
       // View
       Widget content = UnconstrainedBox(
@@ -622,11 +629,11 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
       Widget scaled = Card(
           margin: const EdgeInsets.all(1),
           elevation: 5,
-          color: t.secondary.withOpacity(0.5),
+          color: theme.secondary.withOpacity(0.5),
           borderOnForeground: false,
           shape: RoundedRectangleBorder(
               borderRadius: const BorderRadius.all(Radius.circular(4.0)),
-              side: BorderSide(width: 2, color: t.primary)),
+              side: BorderSide(width: 2, color: theme.primary)),
           child: SizedBox(
               width: 100,
               height: 50,

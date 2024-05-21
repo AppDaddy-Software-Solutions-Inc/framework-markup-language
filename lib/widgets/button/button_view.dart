@@ -29,7 +29,7 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
         bottomLeft: Radius.circular(widget.model.radiusBottomLeft),
         topLeft: Radius.circular(widget.model.radiusTopLeft));
 
-    if (model.buttontype == 'elevated') {
+    if (model.type == 'elevated') {
       return ElevatedButton.styleFrom(
           minimumSize: Size(
               model.constraints.minWidth ?? 64,
@@ -43,37 +43,39 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
           elevation: 3);
     }
 
-    var borderSideStyle = model.buttontype == 'outlined'
-        ? MaterialStateProperty.resolveWith((states) {
-            if (states.contains(MaterialState.disabled)) {
+    var borderWidth = widget.model.borderWidth ?? 1;
+
+    var borderSideStyle = model.type == 'outlined'
+        ? WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
               return BorderSide(
                   style: BorderStyle.solid,
-                  color: Theme.of(context).colorScheme.surfaceVariant,
-                  width: 2);
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  width: borderWidth);
             }
             return BorderSide(
                 style: BorderStyle.solid,
                 color: model.color ?? Theme.of(context).colorScheme.primary,
-                width: 2);
+                width: borderWidth);
           })
         : null;
 
-    var elevationStyle = model.buttontype == 'elevated'
-        ? MaterialStateProperty.resolveWith((states) {
-            if (states.contains(MaterialState.hovered)) return 8.0;
-            if (states.contains(MaterialState.focused) ||
-                states.contains(MaterialState.pressed)) return 3.0;
+    var elevationStyle = model.type == 'elevated'
+        ? WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.hovered)) return 8.0;
+            if (states.contains(WidgetState.focused) ||
+                states.contains(WidgetState.pressed)) return 3.0;
             return 5.0;
           })
         : null;
 
     // Button Type Styling
     var foregroundColorStyle =
-        (!isNullOrEmpty(model.color) && model.buttontype != 'elevated')
-            ? MaterialStateProperty.resolveWith<Color?>(
-                (Set<MaterialState> states) {
-                if (states.contains(MaterialState.disabled)) {
-                  return Theme.of(context).colorScheme.surfaceVariant;
+        (!isNullOrEmpty(model.color) && model.type != 'elevated')
+            ? WidgetStateProperty.resolveWith<Color?>(
+                (Set<WidgetState> states) {
+                if (states.contains(WidgetState.disabled)) {
+                  return Theme.of(context).colorScheme.surfaceContainerHighest;
                 }
                 return model
                     .color; // not sure if this is the correct color scheme for text.
@@ -81,17 +83,17 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
             : null;
 
     var backgroundColorStyle =
-        (!isNullOrEmpty(model.color) && model.buttontype == 'elevated')
-            ? MaterialStateProperty.resolveWith<Color?>(
-                (Set<MaterialState> states) {
-                if (states.contains(MaterialState.hovered)) {
+        (!isNullOrEmpty(model.color) && model.type == 'elevated')
+            ? WidgetStateProperty.resolveWith<Color?>(
+                (Set<WidgetState> states) {
+                if (states.contains(WidgetState.hovered)) {
                   return model.color!.withOpacity(0.85);
                 }
-                if (states.contains(MaterialState.focused) ||
-                    states.contains(MaterialState.pressed)) {
+                if (states.contains(WidgetState.focused) ||
+                    states.contains(WidgetState.pressed)) {
                   return model.color!.withOpacity(0.2);
                 }
-                if (states.contains(MaterialState.disabled)) {
+                if (states.contains(WidgetState.disabled)) {
                   return Theme.of(context).colorScheme.shadow;
                 }
                 return model.color;
@@ -99,10 +101,10 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
             : null; // Defer to the widget
 
     var buttonShape =
-        MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: radius));
+        WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: radius));
 
     return ButtonStyle(
-      minimumSize: MaterialStateProperty.all(Size(
+      minimumSize: WidgetStateProperty.all(Size(
           model.constraints.minWidth ?? 64,
           (model.constraints.minHeight ?? 0) +
               40)), //add 40 to the constraint as the width is offset by 40
@@ -115,22 +117,46 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
     );
   }
 
+  var lastOnClick = 0;
+
+  void onClickHandler() {
+    // if 0 or less fire set last clicked to 0
+    // this will force an onclick event
+    if (widget.model.debounce <= 0) lastOnClick = 0;
+
+    // get elapsed time in milliseconds
+    var elapsed = DateTime.now().millisecondsSinceEpoch - lastOnClick;
+
+    // elapsed time is greater than debounce time?
+    // fire the onclick event
+    if (elapsed > widget.model.debounce) {
+      // record last clicked time
+      lastOnClick = DateTime.now().millisecondsSinceEpoch;
+
+      // fire onclick event
+      widget.model.onClick();
+    }
+  }
+
   Widget _buildButton(Widget body) {
+
+    // get style
     var style = _getStyle();
-    var onPressed = (widget.model.onclick != null && widget.model.enabled)
-        ? () => widget.model.onPress(context)
-        : null;
+
+    // on click
+    var onClick = (widget.model.onclick != null && widget.model.enabled) ?
+        () => onClickHandler() : null;
 
     Widget view;
-    switch (widget.model.buttontype) {
+    switch (widget.model.type) {
       case 'outlined':
-        view = OutlinedButton(style: style, onPressed: onPressed, child: body);
+        view = OutlinedButton(style: style, onPressed: onClick, child: body);
         break;
       case 'elevated':
-        view = ElevatedButton(style: style, onPressed: onPressed, child: body);
+        view = ElevatedButton(style: style, onPressed: onClick, child: body);
         break;
       default:
-        view = TextButton(style: style, onPressed: onPressed, child: body);
+        view = TextButton(style: style, onPressed: onClick, child: body);
         break;
     }
 

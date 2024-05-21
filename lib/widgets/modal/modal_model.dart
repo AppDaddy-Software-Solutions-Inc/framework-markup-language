@@ -18,6 +18,9 @@ class ModalModel extends BoxModel {
   @override
   bool get expand => true;
 
+  @override
+  bool get needsVisibilityDetector => false;
+
   ModalModel(Model super.parent, super.id,
       {this.child,
       dynamic title,
@@ -46,12 +49,6 @@ class ModalModel extends BoxModel {
 
   @override
   String get border => "all";
-
-  Color? defaultBorderColor;
-
-  @override
-  Color get borderColor =>
-      super.borderColor ?? defaultBorderColor ?? Colors.white;
 
   // returns thge modal border radius for the header
   double get headerRadius => super.radiusTopRight;
@@ -211,7 +208,7 @@ class ModalModel extends BoxModel {
           // modal
           if (arguments.length > 5) modal = toBool(arguments[5]) ?? true;
 
-          open(ModalView(this));
+          open(getView());
         }
         return true;
 
@@ -246,19 +243,6 @@ class ModalModel extends BoxModel {
     if (view != null) view!.onDismiss();
   }
 
-  /// Returns the [MODAL] View
   @override
-  Widget getView({Key? key}) => getReactiveView(ModalView(this));
-
-  @override
-  Widget getReactiveView(Widget view) {
-    // wrap animations.
-    if (animations != null) {
-      var animations = this.animations!.reversed;
-      for (var model in animations) {
-        view = model.getAnimatedView(view);
-      }
-    }
-    return view;
-  }
+  ModalView getView({Key? key}) => ModalView(this);
 }

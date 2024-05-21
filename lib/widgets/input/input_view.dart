@@ -278,6 +278,7 @@ class _InputViewState extends ViewableWidgetState<InputView>
 
   // triggers when data is typed
   void _debounce() {
+
     // this should only trigger with the oninputchange
     if (commitTimer?.isActive ?? false) commitTimer!.cancel();
 
@@ -292,7 +293,6 @@ class _InputViewState extends ViewableWidgetState<InputView>
     if (widget.onChangeCallback != null) {
       widget.onChangeCallback(widget.model, '');
     }
-
     widget.model.controller!.text = '';
     _commit();
   }
@@ -441,7 +441,7 @@ class _InputViewState extends ViewableWidgetState<InputView>
   }
 
   _getSuffixIcon(Color hintTextColor) {
-    if (widget.model.formatType == "password" && widget.model.clear == false) {
+    if (widget.model.formatType == "password" && !widget.model.clear) {
       return IconButton(
         icon: Icon(
             widget.model.obscure ? Icons.visibility : Icons.visibility_off,
@@ -466,18 +466,18 @@ class _InputViewState extends ViewableWidgetState<InputView>
 
   InputDecoration _getDecoration() {
     // set the border colors
-    Color? enabledBorderColor =
+    var enabledBorderColor =
         widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
-    Color? disabledBorderColor = Theme.of(context).disabledColor;
-    Color? focusBorderColor = Theme.of(context).focusColor;
-    Color? errorBorderColor = Theme.of(context).colorScheme.error;
+    var disabledBorderColor = Theme.of(context).disabledColor;
+    var focusBorderColor = Theme.of(context).focusColor;
+    var errorBorderColor = Theme.of(context).colorScheme.error;
 
-    String? hint = widget.model.hint;
-    Color? hintTextColor = widget.model.textcolor?.withOpacity(0.7) ??
+    var hint = widget.model.hint;
+    var hintTextColor = widget.model.textColor?.withOpacity(0.7) ??
         Theme.of(context).colorScheme.onSurfaceVariant;
-    Color? errorTextColor = Theme.of(context).colorScheme.error;
+    var errorTextColor = Theme.of(context).colorScheme.error;
 
-    double? fontsize = widget.model.size;
+    double? fontsize = widget.model.textSize;
 
     // set padding
     double paddingTop = 15;
@@ -502,7 +502,7 @@ class _InputViewState extends ViewableWidgetState<InputView>
       alignLabelWithHint: true,
       labelText: widget.model.dense ? null : hint,
       labelStyle: TextStyle(
-        fontSize: fontsize != null ? fontsize - 2 : 14,
+        fontSize: fontsize,
         color: widget.model.getErrorHintColor(context, color: hintTextColor),
         shadows: <Shadow>[
           Shadow(
@@ -520,14 +520,14 @@ class _InputViewState extends ViewableWidgetState<InputView>
         ],
       ),
       errorStyle: TextStyle(
-        fontSize: fontsize ?? 14,
+        fontSize: fontsize - 2,
         fontWeight: FontWeight.w300,
         color: errorTextColor,
       ),
       errorText: widget.model.alarm,
       hintText: widget.model.dense ? hint : null,
       hintStyle: TextStyle(
-        fontSize: fontsize ?? 14,
+        fontSize: fontsize,
         fontWeight: FontWeight.w300,
         color: widget.model.getErrorHintColor(context, color: hintTextColor),
       ),
@@ -566,10 +566,10 @@ class _InputViewState extends ViewableWidgetState<InputView>
     if (!widget.model.visible) return const Offstage();
 
     // set the text color arrays
-    Color? enabledTextColor = widget.model.textcolor;
+    Color? enabledTextColor = widget.model.textColor;
     Color? disabledTextColor = Theme.of(context).disabledColor;
 
-    double? fontsize = widget.model.size;
+    double? fontsize = widget.model.textSize;
     int? length = widget.model.length;
     int? lines = widget.model.lines;
 
@@ -588,7 +588,7 @@ class _InputViewState extends ViewableWidgetState<InputView>
 
     var style = TextStyle(
         color: widget.model.enabled
-            ? enabledTextColor ?? Theme.of(context).colorScheme.onBackground
+            ? enabledTextColor ?? Theme.of(context).colorScheme.onSurface
             : disabledTextColor,
         fontSize: fontsize);
 

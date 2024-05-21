@@ -6,6 +6,7 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
@@ -295,5 +296,8 @@ class MenuModel extends ViewableModel implements IScrollable {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(MenuView(this));
+  Widget getView({Key? key}) {
+    var view = MenuView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

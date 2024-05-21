@@ -75,6 +75,7 @@
             android:enabled="false"
             android:icon="@mipmap/appdaddy"
             android:label="AppDaddy Software"
+            android:exported="true"
             android:targetActivity=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -88,6 +89,7 @@
             android:enabled="false"
             android:icon="@mipmap/goodyear"
             android:label="Goodyear Inc."
+            android:exported="true"
             android:targetActivity=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -95,12 +97,13 @@
             </intent-filter>
         </activity-alias>
 
-        <!-- rocketfunds -->
+        <!-- rocket funds -->
         <activity-alias
             android:name=".rocketfunds"
             android:enabled="false"
             android:icon="@mipmap/rocketfunds"
             android:label="Rocket Funds"
+            android:exported="true"
             android:targetActivity=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

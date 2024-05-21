@@ -10,6 +10,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/form/form_interface.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/hive/form.dart' as hive;
@@ -151,20 +152,6 @@ class FormModel extends BoxModel implements IForm {
 
     // auto save?
     if (isDirty && autosave == true) _saveForm();
-  }
-
-  @override
-  set clean(bool b) {
-    // clean all fields
-    for (var field in formFields) {
-      field.dirty = false;
-    }
-
-    // clean all sub-forms
-    for (var form in forms) {
-      form.clean = false;
-    }
-    dirty = false;
   }
 
   // gps
@@ -370,7 +357,7 @@ class FormModel extends BoxModel implements IForm {
     }
 
     // mark form clean
-    clean = true;
+    clean();
 
     // add dirty listener to each field
     for (var field in formFields) {
@@ -433,7 +420,27 @@ class FormModel extends BoxModel implements IForm {
     return ok;
   }
 
-  Future<bool> clear() async {
+  @override
+  bool clean() {
+
+    // clean all fields
+    for (var field in formFields) {
+      field.dirty = false;
+    }
+
+    // clean all sub-forms
+    for (var form in forms) {
+     form.clean();
+    }
+
+    // clear dirty flag
+    dirty = false;
+
+    return true;
+  }
+
+  @override
+  bool clear() {
     busy = true;
 
     bool ok = true;
@@ -444,7 +451,7 @@ class FormModel extends BoxModel implements IForm {
     }
 
     // Set Clean
-    if (ok == true) clean = true;
+    if (ok == true) clean();
 
     busy = false;
 
@@ -480,7 +487,7 @@ class FormModel extends BoxModel implements IForm {
     if (ok) ok = await _postForm(form);
 
     // Set Clean
-    if (ok == true) clean = true;
+    if (ok == true) clean();
 
     // fire on complete event
     if (ok) ok = await EventHandler(this).execute(_onComplete);
@@ -795,7 +802,7 @@ class FormModel extends BoxModel implements IForm {
     }
 
     // mark clean
-    clean = true;
+    clean();
 
     return form;
   }
@@ -858,6 +865,9 @@ class FormModel extends BoxModel implements IForm {
 
       case 'clear':
         return clear();
+
+      case 'clean':
+        return clean();
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }
@@ -872,12 +882,15 @@ class FormModel extends BoxModel implements IForm {
 
     // set form clean
     else {
-      clean = true;
+      clean();
     }
 
     return super.onDataSourceSuccess(source, list);
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(FormView(this));
+  Widget getView({Key? key}) {
+    var view = FormView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/widgets/goback/goback.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/widgets/box/box_view.dart';
@@ -1253,8 +1252,6 @@ class DrawerViewState extends ViewableWidgetState<DrawerView> implements IDragLi
 
     // apply visual transforms
     view = applyTransforms(view);
-
-    view = GoBack(canGoBack: () async => preventPop(), child: view);
 
     return view;
   }

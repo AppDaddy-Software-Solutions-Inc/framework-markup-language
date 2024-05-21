@@ -16,7 +16,7 @@ import 'dart:io' as io;
 
 bool get isWeb => Platform.isWeb;
 bool get isMobile => Platform.isMobile;
-bool get isDesktop => !isMobile;
+bool get isDesktop => Platform.isDesktop;
 
 class Platform {
 
@@ -27,6 +27,7 @@ class Platform {
   // platform
   static String get platform => isMobile ? "mobile" : "desktop";
 
+  // operating system
   static String get operatingSystem {
     if (io.Platform.isIOS) return "ios";
     if (io.Platform.isAndroid) return "android";
@@ -37,7 +38,16 @@ class Platform {
     return "unknown";
   }
 
+  // operating system version
   static String get operatingSystemVersion => io.Platform.operatingSystemVersion;
+
+  // application root path
+  static Future<String?> get path async {
+    if (isMobile || (isDesktop && operatingSystem == "macos")) {
+      return (await getApplicationDocumentsDirectory()).path;
+    }
+    return dirname(io.Platform.resolvedExecutable);
+  }
 
   static initialize() async
   {

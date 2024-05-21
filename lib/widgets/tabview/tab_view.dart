@@ -318,7 +318,7 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
                 topLeft: Radius.circular(14.0),
                 topRight: Radius.circular(14.0)),
             color: Theme.of(context).colorScheme.surface),
-        labelColor: Theme.of(context).colorScheme.onBackground,
+        labelColor: Theme.of(context).colorScheme.onSurface,
         unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
         tabs: tabs);
 
@@ -326,7 +326,7 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     var view = Container(
         height: height,
         decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceVariant,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(14.0),
                 topRight: Radius.circular(14.0))),

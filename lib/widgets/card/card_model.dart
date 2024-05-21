@@ -2,6 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -16,7 +17,7 @@ class CardModel extends BoxModel {
   double get elevation => super.elevation ?? 1;
 
   @override
-  String get borderRadius => super.borderRadius ?? "4";
+  String get radius => super.radius ?? "4";
 
   double get padding => super.paddingTop ?? 5;
 
@@ -63,5 +64,8 @@ class CardModel extends BoxModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(BoxView(this, (_,__) => inflate()));
+  Widget getView({Key? key}) {
+    var view = BoxView(this, (_,__) => inflate());
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

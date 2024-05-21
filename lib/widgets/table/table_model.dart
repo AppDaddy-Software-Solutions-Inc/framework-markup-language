@@ -9,6 +9,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/table/table_footer_model.dart';
 import 'package:fml/widgets/table/nodata_model.dart';
 import 'package:fml/widgets/widget/model.dart';
@@ -80,7 +81,7 @@ class TableModel extends BoxModel implements IForm {
   double? get paddingLeft => super.paddingLeft ?? defaultPadding;
 
   @override
-  String get borderRadius => super.borderRadius ?? "10";
+  String get radius => super.radius ?? "10";
 
   @override
   String get halign => super.halign ?? "center";
@@ -308,11 +309,15 @@ class TableModel extends BoxModel implements IForm {
     dirty = isDirty;
   }
 
+  @override
+  bool clear() => true;
+
   // Clean
   @override
-  set clean(bool b) {
+  bool clean() {
     dirty = false;
     rows.forEach((index, row) => row.dirty = false);
+    return true;
   }
 
   // page size - used for paging
@@ -494,7 +499,8 @@ class TableModel extends BoxModel implements IForm {
 
       await _buildDynamic(data);
 
-      clean = true;
+      // mark all fields clean
+      clean();
 
       // clear rows
       rows.forEach((_, row) => row.dispose());
@@ -533,6 +539,7 @@ class TableModel extends BoxModel implements IForm {
             Platform.fileSaveAs(bytes, "$name.csv");
             break;
 
+          case "xls":
           case "csv":
             var file = await view.exportToCSV();
             var bytes = utf8.encode(file ?? "");
@@ -1063,5 +1070,8 @@ class TableModel extends BoxModel implements IForm {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(TableView(this));
+  Widget getView({Key? key}) {
+    var view = TableView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

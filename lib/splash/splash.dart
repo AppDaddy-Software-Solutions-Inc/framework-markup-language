@@ -69,7 +69,7 @@ class _SplashState extends State<Splash> {
   Widget waitScreen()
   {
     // spinner color
-    var color = Platform.backgroundColor ?? Theme.of(context).colorScheme.background;
+    var color = Platform.backgroundColor ?? Theme.of(context).colorScheme.surface;
     color = color.computeLuminance() > .5 ? Colors.black.withOpacity(.5) : Colors.white.withOpacity(.5);
 
     // spinner
@@ -87,7 +87,7 @@ class _SplashState extends State<Splash> {
         builder: (BuildContext context, double opacity, Widget? child) => Opacity(opacity: opacity, child: child ??= spinner));
 
     // background color
-    color = Platform.backgroundColor ?? Theme.of(context).colorScheme.background;
+    color = Platform.backgroundColor ?? Theme.of(context).colorScheme.surface;
 
     // page
     return Container(color: color, child: view);
@@ -166,7 +166,7 @@ class _SplashState extends State<Splash> {
     }
 
     // background color
-    var color = toColor(System.currentApp?.splashBackground) ?? Platform.backgroundColor ?? Theme.of(context).colorScheme.background;
+    var color = toColor(System.currentApp?.splashBackground) ?? Platform.backgroundColor ?? Theme.of(context).colorScheme.surface;
 
     // page
     return Container(color: color, child: view);

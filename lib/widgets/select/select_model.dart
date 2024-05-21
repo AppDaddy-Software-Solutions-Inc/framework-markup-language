@@ -5,6 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/model.dart';
@@ -282,5 +283,8 @@ class SelectModel extends DecoratedInputModel implements IFormField {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(SelectView(this));
+  Widget getView({Key? key}) {
+    var view = SelectView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

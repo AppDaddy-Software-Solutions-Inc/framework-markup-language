@@ -102,7 +102,7 @@ class _TreeNodeViewState extends ViewableWidgetState<TreeNodeView> {
                   : FontWeight.normal,
               color: widget.model.selected!
                   ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.onBackground)));
+                  : Theme.of(context).colorScheme.onSurface)));
     }
 
     ////////////////////

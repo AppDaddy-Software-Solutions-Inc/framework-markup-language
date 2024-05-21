@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/color.dart';
+import 'package:fml/observable/observables/string.dart';
 import 'package:fml/widgets/colorpicker/colorpicker_view.dart';
 import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
@@ -33,6 +34,42 @@ class ColorpickerModel extends DecoratedInputModel implements IFormField {
   @override
   Color? get value => _value?.get();
 
+  /// type of the date picker. Can be "datetime", "date", "time", "range" or "year"
+  StringObservable? _type;
+  set type(dynamic v) {
+    if (_type != null) {
+      _type!.set(v);
+    } else if (v != null) {
+      _type = StringObservable(Binding.toKey(id, 'type'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String get type => _type?.get()?.trim().toLowerCase() ?? "date";
+
+  /// heading of the date picker
+  StringObservable? _heading;
+  set heading(dynamic v) {
+    if (_heading != null) {
+      _heading!.set(v);
+    } else if (v != null) {
+      _heading = StringObservable(Binding.toKey(id, 'heading'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String get heading => _heading?.get() ?? "Color";
+
+  /// shade label of the date picker
+  StringObservable? _subheading;
+  set subheading(dynamic v) {
+    if (_subheading != null) {
+      _subheading!.set(v);
+    } else if (v != null) {
+      _subheading = StringObservable(Binding.toKey(id, 'subheading'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String get subheading => _subheading?.get() ?? "Shade";
+  
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
@@ -54,11 +91,15 @@ class ColorpickerModel extends DecoratedInputModel implements IFormField {
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
+    
     // deserialize
     super.deserialize(xml);
 
+    
     // set properties
-    value = Xml.get(node: xml, tag: fromEnum('value'));
+    value  = Xml.get(node: xml, tag: fromEnum('value'));
+    heading  = Xml.get(node: xml, tag: fromEnum('heading'));
+    subheading = Xml.get(node: xml, tag: fromEnum('subheading'));
   }
 
   Future<bool> setSelectedColor(dynamic color) async {

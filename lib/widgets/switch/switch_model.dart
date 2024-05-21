@@ -4,6 +4,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/switch/switch_view.dart';
@@ -113,7 +114,10 @@ class SwitchModel extends FormFieldModel implements IFormField {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(SwitchView(this));
+  Widget getView({Key? key}) {
+    var view = SwitchView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }
 
 class Suggestion {

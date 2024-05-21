@@ -260,7 +260,7 @@ class TooltipViewState extends ViewableWidgetState<TooltipView>
           padding: widget.model.padding,
           radius: toolTipElementsDisplay.radius,
           color: widget.model.color ??
-              Theme.of(context).colorScheme.surfaceVariant,
+              Theme.of(context).colorScheme.surfaceContainerHighest,
           child: widget.content,
         ));
     children.add(bubble);
@@ -272,7 +272,7 @@ class TooltipViewState extends ViewableWidgetState<TooltipView>
             left: toolTipElementsDisplay.arrow.x,
             child: Arrow(
                 color: widget.model.color ??
-                    Theme.of(context).colorScheme.surfaceVariant,
+                    Theme.of(context).colorScheme.surfaceContainerHighest,
                 position: toolTipElementsDisplay.position,
                 width: _arrowBox.w,
                 height: _arrowBox.h))

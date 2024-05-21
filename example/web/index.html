@@ -36,7 +36,7 @@
 
     <script>
         // The value below is injected by flutter build, do not touch.
-        var serviceWorkerVersion = null;
+        var serviceWorkerVersion = {{flutter_service_worker_version}};
     </script>
 
     <script type="text/javascript">
@@ -135,6 +135,7 @@
         // html      - always use the HTML renderer. Uses a combination of HTML elements, CSS, Canvas elements, and SVG elements. This renderer has a smaller download size.
         // canvaskit - always use the CanvasKit renderer. This renderer is fully consistent with Flutter mobile and desktop, has faster performance with higher widget density, but adds about 2MB in download size.
         let renderer = "auto";
+        const userConfig = {'renderer': renderer};
         console.log("Rendering with " + renderer);
 
         // load main.dart.js
@@ -143,20 +144,27 @@
             var loadingImage = document.querySelector('#loadingImage');
             var loadingText  = document.querySelector('#loadingText');
 
+            {{flutter_build_config}}
+
+            // display loading text (uncomment if desired)
             // if (loadingText != null) loadingText.textContent = "Loading, please wait ...";
-            _flutter.loader.loadEntrypoint(
+
+            _flutter.loader.load(
             {
-                entrypointUrl: `main.dart.js?v=${serviceWorkerVersion}`,
+                config: userConfig,
                 serviceWorker: {serviceWorkerVersion: serviceWorkerVersion},
                 onEntrypointLoaded: async function(engineInitializer)
                 {
+                    // display loading text (uncomment if desired)
                     // if (loadingText != null) loadingText.textContent = "Initializing engine...";
+
                     let config = { renderer: renderer, useColorEmoji: true, canvasKitBaseUrl: "/canvaskit/"}
                     let appRunner = await engineInitializer.initializeEngine(config)
 
                     // remove loading image and text
                     if (loadingImage != null) loadingImage.remove();
                     if (loadingText  != null) loadingText.remove();
+
                     // run the app
                     await appRunner.runApp();
                 }

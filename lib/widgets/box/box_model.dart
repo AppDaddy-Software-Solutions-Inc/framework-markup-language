@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_view.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/widgets/widget/model.dart';
@@ -84,16 +85,16 @@ class BoxModel extends ViewableModel {
   bool get wrap => _wrap?.get() ?? false;
 
   // box blur
-  BooleanObservable? _blur;
+  DoubleObservable? _blur;
   set blur(dynamic v) {
     if (_blur != null) {
       _blur!.set(v);
     } else if (v != null) {
-      _blur = BooleanObservable(Binding.toKey(id, 'blur'), v,
+      _blur = DoubleObservable(Binding.toKey(id, 'blur'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-  bool get blur => _blur?.get() ?? false;
+  double get blur => _blur?.get() ?? 0.0;
 
   /// The start of the gradient in location, this will be the first `color` position if two colors are given
   StringObservable? _gradientStart;
@@ -119,63 +120,17 @@ class BoxModel extends ViewableModel {
   }
   String get gradientEnd => _gradientEnd?.get()?.toLowerCase() ?? 'bottom';
 
-  // box radius
-  StringObservable? _borderRadius;
-  set borderRadius(dynamic v) {
-    if (_borderRadius != null) {
-      _borderRadius!.set(v);
+  /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
+  StringObservable? _border;
+  set border(dynamic v) {
+    if (_border != null) {
+      _border!.set(v);
     } else if (v != null) {
-      _borderRadius = StringObservable(Binding.toKey(id, 'borderradius'), v,
+      _border = StringObservable(Binding.toKey(id, 'border'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-  String? get borderRadius => _borderRadius?.get()?.toLowerCase();
-
-  double get radiusTopRight {
-    if (borderRadius == null) return 0;
-    var radii = borderRadius!.split(',');
-    if (radii.isEmpty) return 0;
-    return toDouble(radii[0]) ?? 0;
-  }
-
-  double get radiusBottomRight {
-    if (borderRadius == null) return 0;
-    var radii = borderRadius!.split(',');
-    if (radii.isEmpty) return 0;
-    if (radii.length == 1) {
-      return toDouble(radii[0]) ?? 0;
-    }
-    if (radii.length > 1) {
-      return toDouble(radii[1]) ?? 0;
-    }
-    return 0;
-  }
-
-  double get radiusBottomLeft {
-    if (borderRadius == null) return 0;
-    var radii = borderRadius!.split(',');
-    if (radii.isEmpty) return 0;
-    if (radii.length == 1) {
-      return toDouble(radii[0]) ?? 0;
-    }
-    if (radii.length > 2) {
-      return toDouble(radii[2]) ?? 0;
-    }
-    return 0;
-  }
-
-  double get radiusTopLeft {
-    if (borderRadius == null) return 0;
-    var radii = borderRadius!.split(',');
-    if (radii.isEmpty) return 0;
-    if (radii.length == 1) {
-      return toDouble(radii[0]) ?? 0;
-    }
-    if (radii.length > 3) {
-      return toDouble(radii[3]) ?? 0;
-    }
-    return 0;
-  }
+  String get border => _border?.get()?.toLowerCase() ?? 'none';
 
   /// The color of the border for box, defaults to black54
   ColorObservable? _borderColor;
@@ -199,7 +154,7 @@ class BoxModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-  double get borderWidth => _borderWidth?.get() ?? 1;
+  double? get borderWidth => _borderWidth?.get();
 
   /// The border label
   StringObservable? _borderLabel;
@@ -213,17 +168,63 @@ class BoxModel extends ViewableModel {
   }
   String? get borderLabel => _borderLabel?.get();
 
-  /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
-  StringObservable? _border;
-  set border(dynamic v) {
-    if (_border != null) {
-      _border!.set(v);
+  // the boxes border radius
+  StringObservable? _radius;
+  set radius(dynamic v) {
+    if (_radius != null) {
+      _radius!.set(v);
     } else if (v != null) {
-      _border = StringObservable(Binding.toKey(id, 'border'), v,
+      _radius = StringObservable(Binding.toKey(id, 'radius'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-  String get border => _border?.get()?.toLowerCase() ?? 'none';
+  String? get radius => _radius?.get()?.toLowerCase();
+
+  double get radiusTopRight {
+    if (radius == null) return 0;
+    var radii = radius!.split(',');
+    if (radii.isEmpty) return 0;
+    return toDouble(radii[0]) ?? 0;
+  }
+
+  double get radiusBottomRight {
+    if (radius == null) return 0;
+    var radii = radius!.split(',');
+    if (radii.isEmpty) return 0;
+    if (radii.length == 1) {
+      return toDouble(radii[0]) ?? 0;
+    }
+    if (radii.length > 1) {
+      return toDouble(radii[1]) ?? 0;
+    }
+    return 0;
+  }
+
+  double get radiusBottomLeft {
+    if (radius == null) return 0;
+    var radii = radius!.split(',');
+    if (radii.isEmpty) return 0;
+    if (radii.length == 1) {
+      return toDouble(radii[0]) ?? 0;
+    }
+    if (radii.length > 2) {
+      return toDouble(radii[2]) ?? 0;
+    }
+    return 0;
+  }
+
+  double get radiusTopLeft {
+    if (radius == null) return 0;
+    var radii = radius!.split(',');
+    if (radii.isEmpty) return 0;
+    if (radii.length == 1) {
+      return toDouble(radii[0]) ?? 0;
+    }
+    if (radii.length > 3) {
+      return toDouble(radii[3]) ?? 0;
+    }
+    return 0;
+  }
 
   /// shadow attributes
   ///
@@ -390,14 +391,14 @@ class BoxModel extends ViewableModel {
     super.deserialize(xml);
 
     /// border attributes
-    border       = Xml.get(node: xml, tag: 'border');
-    borderRadius = Xml.get(node: xml, tag: 'borderradius') ?? Xml.get(node: xml, tag: 'radius');
+    border = Xml.get(node: xml, tag: 'border');
+    radius = Xml.get(node: xml, tag: 'radius');
     borderColor  = Xml.get(node: xml, tag: 'bordercolor');
     borderWidth  = Xml.get(node: xml, tag: 'borderwidth');
     borderLabel  = Xml.get(node: xml, tag: 'borderlabel');
     // set default border on any border property specified
     if (_border == null &&
-        (_borderRadius != null ||
+        (_radius != null ||
          _borderColor != null ||
          _borderWidth != null ||
          _borderLabel != null)) {
@@ -427,7 +428,11 @@ class BoxModel extends ViewableModel {
         Xml.get(node: xml, tag: 'start');
     gradientEnd = Xml.get(node: xml, tag: 'gradientend') ??
         Xml.get(node: xml, tag: 'end');
-    blur = Xml.get(node: xml, tag: 'blur');
+
+    // blur - if blur is true, set to 5 (legacy)
+    var blur = Xml.get(node: xml, tag: 'blur');
+    if (blur?.trim().toLowerCase() == "true") blur="5";
+    this.blur = blur;
 
     // build drawers
     List<XmlElement>? nodes;
@@ -466,5 +471,8 @@ class BoxModel extends ViewableModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(BoxView(this, (_,__) => inflate()));
+  Widget getView({Key? key}) {
+    var view = BoxView(this, (_,__) => inflate());
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

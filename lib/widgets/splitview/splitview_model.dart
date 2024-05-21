@@ -2,9 +2,10 @@
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
-import 'package:fml/widgets/splitview/split_view_view.dart';
+import 'package:fml/widgets/splitview/splitview_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -114,5 +115,8 @@ class SplitViewModel extends BoxModel {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(SplitViewView(this));
+  Widget getView({Key? key}) {
+    var view = SplitView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

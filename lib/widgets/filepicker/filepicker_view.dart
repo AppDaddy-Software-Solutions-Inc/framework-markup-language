@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/datasources/detectors/detector_interface.dart';
 
-import 'filepicker_mobile_view.dart'
-    if (dart.library.io) 'filepicker_mobile_view.dart'
-    if (dart.library.html) 'filepicker_web_view.dart';
+import 'filepicker_view.vm.dart'
+    if (dart.library.io) 'filepicker_view.vm.dart'
+    if (dart.library.html) 'filepicker_view.web.dart';
 
 import 'package:fml/datasources/file/file.dart';
 

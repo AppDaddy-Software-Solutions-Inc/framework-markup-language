@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/datasources/beacon/beacon_model.dart';
 import 'package:fml/datasources/detectors/biometrics/biometrics_detector_model.dart';
+import 'package:fml/datasources/http/patch/model.dart';
 import 'package:fml/datasources/sse/model.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/stash/stash_model.dart';
@@ -90,7 +91,7 @@ import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/select/select_model.dart';
 import 'package:fml/widgets/shortcut/shortcut_model.dart';
 import 'package:fml/widgets/slider/slider_model.dart';
-import 'package:fml/widgets/splitview/split_view_model.dart';
+import 'package:fml/widgets/splitview/splitview_model.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
 import 'package:fml/widgets/switch/switch_model.dart';
 import 'package:fml/widgets/table/table_footer_cell_model.dart';
@@ -910,6 +911,10 @@ Model? fromXmlNode(
 
     case "PAGER":
       model = PagerModel.fromXml(parent, node);
+      break;
+
+    case "PATCH":
+      model = HttpPatchModel.fromXml(parent, node);
       break;
 
     case "PIVOT":

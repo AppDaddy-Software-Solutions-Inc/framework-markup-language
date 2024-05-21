@@ -49,13 +49,13 @@ class TypeaheadViewState extends ViewableWidgetState<TypeaheadView> {
   Widget fieldBuilder(BuildContext context, TextEditingController controller,
       FocusNode focusNode) {
     // set the text color arrays
-    Color? enabledTextColor = widget.model.textcolor;
+    Color? enabledTextColor = widget.model.textColor;
     Color? disabledTextColor = Theme.of(context).disabledColor;
-    double? fontsize = widget.model.size;
+    double? fontsize = widget.model.textSize;
 
     var style = TextStyle(
         color: widget.model.enabled
-            ? enabledTextColor ?? Theme.of(context).colorScheme.onBackground
+            ? enabledTextColor ?? Theme.of(context).colorScheme.onSurface
             : disabledTextColor,
         fontSize: fontsize);
 
@@ -121,7 +121,7 @@ class TypeaheadViewState extends ViewableWidgetState<TypeaheadView> {
     }
 
     // border radius
-    var radius = BorderRadius.circular(widget.model.radius.toDouble());
+    var radius = BorderRadius.circular(widget.model.radius);
 
     // border color
     var color =
@@ -156,7 +156,7 @@ class TypeaheadViewState extends ViewableWidgetState<TypeaheadView> {
 
   TextStyle _getLabelStyle({required Color color}) {
     var style = TextStyle(
-      fontSize: widget.model.size != null ? widget.model.size! - 2 : 14,
+      fontSize: widget.model.textSize - 2,
       color: widget.model.getErrorHintColor(context, color: color),
       shadows: <Shadow>[
         Shadow(
@@ -207,7 +207,7 @@ class TypeaheadViewState extends ViewableWidgetState<TypeaheadView> {
 
   InputDecoration _getTextDecoration() {
     // set colors
-    Color? color = widget.model.textcolor?.withOpacity(0.7) ??
+    Color? color = widget.model.textColor?.withOpacity(0.7) ??
         Theme.of(context).colorScheme.onSurfaceVariant;
     Color? borderColor =
         widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
@@ -226,14 +226,14 @@ class TypeaheadViewState extends ViewableWidgetState<TypeaheadView> {
 
       errorText: widget.model.alarm,
       errorStyle: TextStyle(
-        fontSize: widget.model.size ?? 14,
+        fontSize: widget.model.textSize,
         fontWeight: FontWeight.w300,
         color: Theme.of(context).colorScheme.error,
       ),
 
       hintText: widget.model.dense ? widget.model.hint : null,
       hintStyle: TextStyle(
-        fontSize: widget.model.size ?? 14,
+        fontSize: widget.model.textSize,
         fontWeight: FontWeight.w300,
         color: widget.model.getErrorHintColor(context, color: color),
       ),

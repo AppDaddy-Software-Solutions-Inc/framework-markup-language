@@ -115,7 +115,7 @@ class PagerViewState extends ViewableWidgetState<PagerView> {
           controller: _controller!,
           itemCount: _pages.length,
           color:
-          widget.model.color ?? Theme.of(context).colorScheme.onBackground,
+          widget.model.color ?? Theme.of(context).colorScheme.onSurface,
           onPageSelected: (int page) =>
               pageTo(page + 1, widget.model.transition));
 

@@ -9,6 +9,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart';
@@ -173,11 +174,15 @@ class ListModel extends BoxModel implements IForm, IScrollable {
     dirty = isDirty;
   }
 
+  @override
+  bool clear() => true;
+
   // Clean
   @override
-  set clean(bool b) {
+  bool clean() {
     dirty = false;
     items.forEach((index, item) => item.dirty = false);
+    return true;
   }
 
   // oncomplete
@@ -372,7 +377,8 @@ class ListModel extends BoxModel implements IForm, IScrollable {
     // save pointer to data source
     myDataSource = source;
 
-    clean = true;
+    // mark clean
+    clean();
 
     // clear items
     items.forEach((_, item) => item.dispose());
@@ -721,5 +727,8 @@ class ListModel extends BoxModel implements IForm, IScrollable {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(ListLayoutView(this));
+  Widget getView({Key? key}) {
+    var view = ListLayoutView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

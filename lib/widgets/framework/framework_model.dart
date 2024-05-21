@@ -18,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/header/header_model.dart';
 import 'package:fml/widgets/footer/footer_model.dart';
-import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
@@ -431,13 +430,6 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
     }
     removeChildrenOfExactType(FooterModel);
 
-    // build drawers
-    List<XmlElement>? nodes;
-    nodes = Xml.getChildElements(node: xml, tag: "DRAWER");
-    if (nodes != null && nodes.isNotEmpty) {
-      drawer = DrawerModel.fromXmlList(this, nodes);
-    }
-
     // create shortcuts
     var shortcuts =
         findChildrenOfExactType(ShortcutModel).cast<ShortcutModel>();
@@ -458,12 +450,6 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
   @override
   // framework level dispose can happen asynchronously
   void dispose() async {
-    if (disposed) {
-      Log().debug(
-          'Framework model has already been disposed => <FML name="$templateName" url="$url"/>');
-    }
-    Log().debug(
-        'Dispose called on framework model => <FML name="$templateName" url="$url"/>');
 
     disposed = true;
 

@@ -59,7 +59,7 @@ class _MenuItemViewState extends ViewableWidgetState<MenuItemView> {
           height: isMobile ? 160 : 250,
           color: widget.model.backgroundimage == null
               ? Colors.transparent
-              : theme.background,
+              : theme.surface,
           hoverColor: widget.model.backgroundimage == null
               ? ColorHelper.lighten(
                       widget.model.backgroundcolor ?? Colors.white, 0.1)
@@ -135,7 +135,7 @@ class _MenuItemViewState extends ViewableWidgetState<MenuItemView> {
                     : 12,
                 color: backgroundImage != null
                     ? (widget.model.fontcolor ?? Colors.black)
-                    : widget.model.fontcolor ?? theme.onBackground));
+                    : widget.model.fontcolor ?? theme.onSurface));
       }
 
       List<Widget> btn = [];

@@ -154,7 +154,7 @@ class EventHandler extends Eval {
       functions[fromEnum(EventTypes.animate)] = _handleEventAnimate;
       functions[fromEnum(EventTypes.back)] = _handleEventBack;
       functions[fromEnum(EventTypes.build)] = _handleEventBuild;
-      functions[fromEnum(EventTypes.cleardefaultapp)] = _handleEventClearDefaultApp;
+      functions[fromEnum(EventTypes.clearbranding)] = _handleEventClearBranding;
       functions[fromEnum(EventTypes.close)] = _handleEventClose;
       functions[fromEnum(EventTypes.cont)] = _handleEventContinue;
       functions['continue'] = _handleEventContinue;
@@ -162,10 +162,9 @@ class EventHandler extends Eval {
       functions[fromEnum(EventTypes.execute)] = _handleEventExecute;
       functions[fromEnum(EventTypes.focusnode)] = _handleEventFocusNode;
       functions[fromEnum(EventTypes.keypress)] = _handleEventKeyPress;
-      functions[fromEnum(EventTypes.signInWithJwt)] = _handleEventSignInWithJwt;
+      functions[fromEnum(EventTypes.logon)] = _handleEventLogon;
       functions[fromEnum(EventTypes.logoff)] = _handleEventLogoff;
-      functions[fromEnum(EventTypes.signInWithFirebase)] =
-          _handleEventSignInWithFirebase;
+      functions[fromEnum(EventTypes.fblogon)] = _handleEventFirebaseLogon;
       functions[fromEnum(EventTypes.open)] = _handleEventOpen;
       functions[fromEnum(EventTypes.openjstemplate)] =
           _handleEventOpenJsTemplate;
@@ -176,6 +175,7 @@ class EventHandler extends Eval {
       functions[fromEnum(EventTypes.reset)] = _handleEventReset;
       functions[fromEnum(EventTypes.saveas)] = _handleEventSaveAs;
       functions[fromEnum(EventTypes.set)] = _handleEventSet;
+      functions[fromEnum(EventTypes.setbranding)] = _handleEventSetBranding;
       functions[fromEnum(EventTypes.showdebug)] = _handleEventShowDebug;
       functions[fromEnum(EventTypes.showlog)] = _handleEventShowLog;
       functions[fromEnum(EventTypes.showtemplate)] = _handleEventShowTemplate;
@@ -422,32 +422,30 @@ class EventHandler extends Eval {
     return true;
   }
 
-  // clears the default app setting
-  Future<bool> _handleEventClearDefaultApp() async {
-    System.clearBranding();
-    return true;
-  }
-
-  /// Login attempt
-  ///
-  /// Sets the user credentials on the client side to generate a secure token and attempts a login to the server side via databroker
-  Future<bool> _handleEventSignInWithFirebase(
+  /// Login using Firebase
+  Future<bool> _handleEventFirebaseLogon(
       [dynamic provider, dynamic refresh]) async {
+
+    if (provider is! String) return false;
+
     String? token;
     if (!isNullOrEmpty(provider)) {
       var user = await _firebaseLogon(provider, <String>['email', 'profile']);
       if (user != null) token = await user.getIdToken();
     }
+
     if (token == null) return false;
-    return await _logon(token, false, false, toBool(refresh));
+    return await _logon(token, false, false, toBool(refresh) ?? true);
   }
 
-  Future<bool> _handleEventSignInWithJwt(
+  /// Login using Jason Web Token
+  Future<bool> _handleEventLogon(
       [dynamic token,
       dynamic validateSignature,
       dynamic validateAge,
       dynamic refresh]) async {
-    return _logon(token, validateSignature, validateAge, refresh);
+
+    return _logon(toStr(token) ?? '', toBool(validateSignature) ?? false, toBool(validateAge) ?? false, toBool(refresh) ?? true);
   }
 
   Future<bool> _logon(String token, bool? validateAge, bool? validateSignature,
@@ -799,6 +797,22 @@ class EventHandler extends Eval {
   Future<bool> _handleEventShowTemplate() async {
     EventManager.of(model)?.broadcastEvent(
         model, Event(EventTypes.showtemplate, parameters: null));
+    return true;
+  }
+
+  // sets app branding
+  Future<bool> _handleEventSetBranding(dynamic icon) async {
+    try {
+      System.setBranding(icon);
+    } catch (e) {
+      Log().error("Error in setBranding(). Error is $e");
+    }
+    return true;
+  }
+
+  // clears app branding
+  Future<bool> _handleEventClearBranding() async {
+    System.clearBranding();
     return true;
   }
 

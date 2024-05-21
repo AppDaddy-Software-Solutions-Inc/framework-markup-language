@@ -247,7 +247,7 @@ class Http {
   }
 
   static void decodeHeaders(Response response) {
-    if ((!response.headers.containsKey(HttpHeaders.authorizationHeader)) ||
+    if ((!response .headers.containsKey(HttpHeaders.authorizationHeader)) ||
         (isNullOrEmpty(response.headers[HttpHeaders.authorizationHeader]))) {
       return;
     }

@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
 import 'package:fml/widgets/widget/model.dart';
@@ -239,5 +240,8 @@ class ScrollerModel extends BoxModel implements IScrollable {
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(ScrollerView(this));
+  Widget getView({Key? key}) {
+    var view = ScrollerView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

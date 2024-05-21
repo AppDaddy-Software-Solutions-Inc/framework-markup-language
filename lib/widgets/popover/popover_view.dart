@@ -57,7 +57,7 @@ class _PopoverViewState extends ViewableWidgetState<PopoverView> {
               ? Text(widget.model.label!,
                   style: TextStyle(
                     color: widget.model.color ??
-                        Theme.of(context).colorScheme.onBackground,
+                        Theme.of(context).colorScheme.onSurface,
                     fontSize: 10,
                     fontWeight: FontWeight.w400,
                     fontStyle: FontStyle.normal,
@@ -67,7 +67,7 @@ class _PopoverViewState extends ViewableWidgetState<PopoverView> {
 
     Widget view = PopupMenuButton(
         enabled: widget.model.enabled,
-        color: Theme.of(context).colorScheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         icon: icon,
         padding: const EdgeInsets.all(5),
         onSelected: (dynamic item) => (item as PopoverItemModel).onTap(),

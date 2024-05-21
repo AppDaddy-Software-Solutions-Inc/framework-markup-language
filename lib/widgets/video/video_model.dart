@@ -92,7 +92,6 @@ class VideoModel extends ViewableModel {
 
     // properties
     url = Xml.get(node: xml, tag: 'url');
-    enabled = Xml.get(node: xml, tag: 'enabled');
     controls = Xml.get(node: xml, tag: 'controls');
     loop = Xml.get(node: xml, tag: 'loop');
     onInitialized = Xml.get(node: xml, tag: 'oninitialized');

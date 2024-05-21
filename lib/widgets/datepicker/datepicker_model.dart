@@ -4,14 +4,12 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/datepicker/datepicker_view.dart';
-import 'package:intl/intl.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
-
-enum METHODS { launch }
 
 class DatepickerModel extends DecoratedInputModel implements IFormField {
   DatepickerViewState? datepicker;
@@ -35,15 +33,10 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
+  bool? get view => _view?.get();
 
-  bool? get view {
-    if (_view == null) return true;
-    return _view?.get();
-  }
-
-  /// Mode is the entrymode type of the datepicker. Can be gui, input, bothgui, bothinput.
+  /// type of the date picker. Can be "datetime", "date", "time", "range" or "year"
   StringObservable? _type;
-
   set type(dynamic v) {
     if (_type != null) {
       _type!.set(v);
@@ -52,22 +45,63 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
+  String get type => _type?.get()?.trim().toLowerCase() ?? "date";
 
-  String get type => _type?.get() ?? "date";
-
-  /// Mode is the entrymode type of the datepicker. Can be gui, input, bothgui, bothinput.
+  /// Mode is the entry mode type of the date picker dialog. Can be input, inputOnly, year, calendar or calendarOnly
   StringObservable? _mode;
-
-  set mode(dynamic v) {
+  set mode(dynamic tmode) {
     if (_mode != null) {
-      _mode!.set(v);
-    } else if (v != null) {
-      _mode = StringObservable(Binding.toKey(id, 'mode'), v,
+      _mode!.set(tmode);
+    } else if (tmode != null) {
+      _mode = StringObservable(Binding.toKey(id, 'cmode'), tmode,
           scope: scope, listener: onPropertyChange);
     }
   }
+  String get mode => _mode?.get()?.toLowerCase().trim() ?? "calendar";
 
-  String get mode => _mode?.get() ?? "bothgui";
+  /// Mode is the entry mode type of the time picker dialog. Can be input, inputOnly, dial or dialOnly
+  StringObservable? _tmode;
+  set tmode(dynamic tmode) {
+    if (_tmode != null) {
+      _tmode!.set(tmode);
+    } else if (tmode != null) {
+      _tmode = StringObservable(Binding.toKey(id, 'tmode'), tmode,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String get tmode => _tmode?.get()?.toLowerCase().trim() ?? "input";
+  
+  /// Format string expected from the input and output. See https://api.flutter.dev/flutter/intl/DateFormat-class.html.
+  StringObservable? _format;
+  set format(dynamic v) {
+    if (_format != null) {
+      _format!.set(v);
+    } else if (v != null) {
+      _format = StringObservable(Binding.toKey(id, 'format'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String get format {
+
+    var format = _format?.get();
+    if (!isNullOrEmpty(format)) {
+
+      // validate the format
+      var ok = toDateString(DateTime.now(), format: format) != null;
+
+      // if the format is valid, return it
+      if (ok) return format!;
+    }
+
+    // set date format according to type
+    format = 'y/M/d HH:mm';
+    if (type == "date" || type == "year" || type == "range") {
+      format = 'y/M/d';
+    } else if (type == "time") {
+      format = 'HH:mm';
+    }
+    return format;
+  }
 
   /// Newest date available for selection. DATE___ only.
   StringObservable? _newest;
@@ -79,12 +113,10 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get newest => _newest?.get();
 
   // Oldest date available on selection. DATE___ only.
   StringObservable? _oldest;
-
   set oldest(dynamic v) {
     if (_oldest != null) {
       _oldest!.set(v);
@@ -93,39 +125,45 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get oldest => _oldest?.get();
 
-  /// Format string expected from the input and output. See https://api.flutter.dev/flutter/intl/DateFormat-class.html.
-  StringObservable? _format;
-
-  set format(dynamic v) {
-    if (_format != null) {
-      _format!.set(v);
-    } else if (v != null) {
-      _format = StringObservable(Binding.toKey(id, 'format'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get format => _format?.get();
-
-  // Value
+  /// the date value
   StringObservable? _value;
-
   @override
   set value(dynamic v) {
     if (_value != null) {
       _value!.set(v);
-    } else if (v != null ||
-        Model.isBound(this, Binding.toKey(id, 'value'))) {
-      _value = StringObservable(Binding.toKey(id, 'value'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null) {
+      _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
   @override
-  dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
+  String? get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
+
+  /// the date value
+  StringObservable? _value2;
+  set value2(dynamic v) {
+    if (_value2 != null) {
+      _value2!.set(v);
+    }
+    else if (v != null) {
+      _value2 = StringObservable(Binding.toKey(id, 'value2'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get value2 => _value2?.get();
+
+  // values
+  @override
+  List<String>? get values {
+    List<String> list = [];
+    if (!isNullOrEmpty(value))
+    {
+      list.add(value!);
+      if (!isNullOrEmpty(value2)) list.add(value2!);
+    }
+    return list.isEmpty ? null : list;
+  }
 
   /// If the input shows the clear icon on its right.
   BooleanObservable? _clear;
@@ -137,8 +175,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  bool get clear => _clear?.get() ?? false;
+  bool get clear => _clear?.get() ?? true;
 
   DatepickerModel(
     Model super.parent,
@@ -169,28 +206,24 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
+
     // deserialize
     super.deserialize(xml);
 
+    type   = Xml.get(node: xml, tag: 'type');
+    format = Xml.get(node: xml, tag: 'format');
+
     // set properties
-    value = Xml.get(node: xml, tag: 'value') ?? defaultValue ?? "";
-    type = Xml.get(node: xml, tag: 'type') ?? type;
-    hint = Xml.get(node: xml, tag: 'hint');
-    view = Xml.get(node: xml, tag: 'view');
+    value  = Xml.get(node: xml, tag: 'value') ?? defaultValue;
+    value2 = Xml.get(node: xml, tag: 'value2');
+
+    view   = Xml.get(node: xml, tag: 'view');
     oldest = Xml.get(node: xml, tag: 'oldest');
     newest = Xml.get(node: xml, tag: 'newest');
-    format = Xml.get(node: xml, tag: 'format');
-    mode = Xml.get(node: xml, tag: 'mode');
-    borderColor = Xml.get(node: xml, tag: 'bordercolor');
-    borderWidth = Xml.get(node: xml, tag: 'borderwidth');
-    radius = Xml.get(node: xml, tag: 'radius');
-    border = Xml.get(node: xml, tag: 'border');
-    textcolor = Xml.get(node: xml, tag: 'textcolor');
-    weight = Xml.get(node: xml, tag: 'weight');
-    style = Xml.get(node: xml, tag: 'style');
-    clear = Xml.get(node: xml, tag: 'clear');
-    size = Xml.get(node: xml, tag: 'size');
-    icon = Xml.get(node: xml, tag: 'icon');
+    clear  = Xml.get(node: xml, tag: 'clear');
+
+    mode   = Xml.get(node: xml, tag: 'mode');
+    tmode  = Xml.get(node: xml, tag: 'tmode');
   }
 
   @override
@@ -206,55 +239,62 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
-  void setValue(DateTime? result, TimeOfDay? timeResult, String? format,
-      {DateTime? secondResult}) {
-    DateTime now = DateTime.now();
+  void setAnswer({DateTime? date, TimeOfDay? time, DateTime? date2})
+  {
+    switch (type) {
 
-    //return result based on type and format
+      // date range
+      case "range":
 
-    if (type == "date" || type == "year" || type == "range") {
-      try {
-        if (secondResult != null) {
-          value =
-              "${DateFormat(format).format(result!)} - ${DateFormat(format).format(secondResult)}";
-        } else {
-          value = DateFormat(format, 'en_US').format(result!);
+        var v1 = toDateString(date,  format: format);
+        var v2 = toDateString(date2, format: format);
+        if (v1 == null) v2 = null;
+        if (v2 == null) v1 = null;
+
+        answer(v1);
+        value2 = v2;
+
+        break;
+
+      // time
+      case "time":
+
+        var value = toDateString(time, format: format);
+        answer(value);
+        value2 = null;
+
+        break;
+
+      // date and time
+      case "datetime":
+
+        // combine date and time
+        if (date != null && time != null) {
+          date = DateTime(date.year, date.month, date.day, time.hour, time.minute);
         }
-      } on FormatException catch (e) {
-        Log().debug('${e}FORMATTING ERROR!!!!!');
-      }
-    } else if (type == "time") {
-      //if (format == 'yMd') format= 'H:m';
-      try {
-        value = DateFormat(format).format(DateTime(
-            now.year, now.month, now.day, timeResult!.hour, timeResult.minute));
-      } on FormatException catch (e) {
-        Log().debug('${e}FORMATTING ERROR!!!!!');
-        value = '';
-      }
-    } else {
-      try {
-        value = DateFormat(format).format(DateTime(result!.year, result.month,
-            result.day, timeResult!.hour, timeResult.minute));
-      } on FormatException catch (e) {
-        Log().debug('${e}FORMATTING ERROR!!!!!');
-        value = '';
-      }
+
+        var value = toDateString(date, format: format);
+        answer(value);
+        value2 = null;
+
+        break;
+
+      default:
+
+        var value = toDateString(date, format: format);
+        answer(value);
+        value2 = null;
+
+        break;
     }
+
+    // fire the on change event
     onChange(context);
   }
 
-  void setFormat() {
-    if (format != null) return;
-    if (type == "date" || type == "year" || type == "range") {
-      format = 'y/M/d';
-    } else if (type == "time") {
-      format = 'H:m';
-    } else {
-      format = 'y/M/d H:mm';
-    }
-  }
-
   @override
-  Widget getView({Key? key}) => getReactiveView(DatepickerView(this));
+  Widget getView({Key? key}) {
+    var view = DatepickerView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

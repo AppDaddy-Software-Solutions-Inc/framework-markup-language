@@ -7,8 +7,8 @@ import 'package:fml/log/manager.dart';
 import 'filepicker_view.dart';
 import 'package:fml/datasources/file/file.dart';
 
-import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
-    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+import 'package:fml/datasources/detectors/image/detectable_image.web.dart'
+    if (dart.library.io) 'package:fml/datasources/detectors/image/detectable_image.vm.dart'
     if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 FilePickerView create({String? accept}) => FilePickerView(accept: accept);
@@ -74,11 +74,12 @@ class FilePickerView implements FilePicker {
             if (file.bytes != null) {
               var codec = await instantiateImageCodec(file.bytes!);
               var frame = await codec.getNextFrame();
-              var data =
-                  await frame.image.toByteData(format: ImageByteFormat.rawRgba);
+
+              var data  = await frame.image.toByteData(format: ImageByteFormat.rawRgba);
               if (data != null) {
+
                 // create detectable image
-                DetectableImage detectable = DetectableImage.fromRgba(
+                DetectableImage detectable = await DetectableImage.fromRgba(
                     data.buffer.asUint8List(),
                     frame.image.width,
                     frame.image.height);

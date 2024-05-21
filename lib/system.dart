@@ -221,6 +221,8 @@ class System extends Model implements IEventManager {
     // ensure binding service is initialized
     WidgetsFlutterBinding.ensureInitialized();
 
+    // platform root path. Null on web
+    URI.rootPath = await Platform.path ?? "";
     _rootpath =
         StringObservable(Binding.toKey('rootpath'), URI.rootPath, scope: scope);
 
@@ -391,9 +393,9 @@ class System extends Model implements IEventManager {
   /// changes the desktop icon
   static const mainIcon = 'MainActivity';
   static Changeicon? _changeIconPlugin;
-  static void _setBranding(String icon)
+  static void setBranding(String? icon)
   {
-    //if (kIsWeb) return;
+    if (kIsWeb) return;
 
     bool canSet = false;
     try
@@ -416,12 +418,12 @@ class System extends Model implements IEventManager {
     }
 
     // trim icon
-    icon = icon.toLowerCase().trim();
+    icon = icon?.toLowerCase().trim();
 
     // change the icon
-    if (companies.contains(icon))
+    if (!isNullOrEmpty(icon) && companies.contains(icon))
     {
-      _changeIconPlugin?.switchIconTo(classNames: [icon]);
+      _changeIconPlugin?.switchIconTo(classNames: [icon!]);
     }
     else
     {
@@ -461,7 +463,7 @@ class System extends Model implements IEventManager {
     if (!ok) return;
 
     // reset default icon
-    _setBranding(mainIcon);
+    setBranding(mainIcon);
 
     // delete all apps
     for (var app in _apps) {
@@ -514,7 +516,7 @@ class System extends Model implements IEventManager {
     await app.initialized;
 
     // set branding
-    if (_brandedApp != null) _setBranding(_brandedApp!.company ?? mainIcon);
+    if (_brandedApp != null) setBranding(_brandedApp!.company ?? mainIcon);
 
     // update application level bindables
     _domain?.set(app.domain);

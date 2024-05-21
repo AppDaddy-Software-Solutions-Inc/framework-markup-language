@@ -5,7 +5,6 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:fml/emoji.dart';
 import 'package:fml/helpers/color.dart';
-import 'package:fml/log/manager.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -153,34 +152,53 @@ double? toDouble(dynamic s) {
 /// Converts a String to a formattable DateTime object
 ///
 /// More info on supported formats can be found in [DateFormat] and [DateTime]
-DateTime? toDate(String? datetime, {String? format}) {
-  if (isNullOrEmpty(datetime) || datetime == 'null') return null;
+DateTime? toDate(dynamic value, {String? format}) {
 
-  DateTime? result;
-  try {
-    DateFormat formattedDate = DateFormat(format);
-    if (format is String) result = formattedDate.parse(datetime!);
-  } on FormatException catch (e) {
-    Log().debug(e.toString(),
-        caller: 'static DateTime? toDate(String? datetime, {String? format})');
-  } catch (e) {
-    result = null;
-    Log().debug(e.toString(),
-        caller:
-            'helper/string.dart => DateTime toDate(String date, String format) => DateFormat(format).parse(date)');
+  // missing or empty value
+  if (isNullOrEmpty(value)) return null;
+
+  // already a date
+  if (value is DateTime) return value;
+
+  // value is time of day
+  if (value is TimeOfDay) {
+    DateTime now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, value.hour, value.minute);
   }
 
+  // not a string
+  if (value is! String) return null;
+
   try {
-    result ??= DateTime.parse(datetime!);
-  } on FormatException catch (e) {
-    Log().debug(e.toString(), caller: 'Invalid Format $e');
+    return format != null ? DateFormat(format).parse(value) : DateTime.parse(value);
   } catch (e) {
-    result = null;
-    Log().debug(e.toString(),
-        caller:
-            'helper/string.dart => DateTime toDate(String date, String format) => DateTime.tryParse(date)');
+    return null;
   }
-  return result;
+}
+
+String? toDateString(dynamic value, {String? format, String? formatIn}) {
+
+  var date = toDate(value, format: formatIn);
+  if (date == null) return null;
+
+  try {
+    return DateFormat(format).format(date);
+  } catch (e) {
+    return null;
+  }
+}
+
+TimeOfDay? toTime(dynamic value, {String? format}) {
+
+  TimeOfDay? time;
+  try
+  {
+    time = TimeOfDay.fromDateTime(toDate(value, format: format)!);
+  }
+  catch(e) {
+    return null;
+  }
+  return time;
 }
 
 /// Helper function for an [eval._toDate()]
@@ -195,9 +213,6 @@ String? toChar(DateTime? datetime, {String? format}) {
     }
   } catch (e) {
     result = null;
-    Log().debug(e.toString(),
-        caller:
-            'helper/string.dart => String toChar(String date, String format)');
   }
   return result;
 }
@@ -300,8 +315,9 @@ bool isPercent(dynamic s) {
       s = s.split("%")[0];
       return isNumeric(s);
     }
-  } catch (e) {
-    Log().debug('$e');
+  }
+  catch (e) {
+    return false;
   }
   return false;
 }

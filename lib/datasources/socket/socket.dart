@@ -38,7 +38,7 @@ class Socket {
       Log().info('SOCKET:: Attempting Reconnect ...');
 
       // set the uri
-      Uri? uri = Uri.tryParse(url!);
+      Uri? uri = URI.parse(url!);
 
       // valid url?
       if (uri != null) {

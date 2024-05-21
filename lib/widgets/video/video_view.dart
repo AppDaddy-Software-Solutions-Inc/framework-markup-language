@@ -130,7 +130,7 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
 
   Widget getSpeedButton() {
     speedLabel ??= TextView(speedLabelModel);
-    speedLabelModel.value = '${_controller?.value.playbackSpeed}x';
+    speedLabelModel.value = '${widget.model.speed}x';
 
     var label = Stack(alignment: Alignment.center, children: [
       const Icon(Icons.circle, color: Colors.white38, size: 40),
@@ -138,10 +138,10 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
     ]);
 
     var popup = PopupMenuButton<double>(
-        initialValue: _controller?.value.playbackSpeed,
+        initialValue: widget.model.speed,
         tooltip: 'Playback speed',
         onSelected: (double speed) {
-          _controller?.setPlaybackSpeed(speed);
+          widget.model.speed = speed;
           speedLabelModel.value = '${speed}x';
         },
         itemBuilder: (BuildContext context) {

@@ -173,13 +173,16 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
   @override
   Future<bool> play(String? url) async {
 
-    // dispose of existing controller
-    _controller?.dispose();
-
     // build new controller
     var uri = URI.parse(url);
+    if (uri?.url == _controller?.dataSource) return true;
+
     if (uri != null) {
 
+      // dispose of existing controller
+      _controller?.dispose();
+
+      // create new controller
       _controller = VideoPlayerController.networkUrl(uri);
 
       // wait for the controller to initialize
@@ -202,7 +205,9 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
       _controller!.setVolume(widget.model.volume);
       _controller!.setPlaybackSpeed(widget.model.speed);
 
-      if (widget.model.autoplay) start();
+      if (widget.model.autoplay) {
+        start();
+      }
 
       // add listener to modify controls
       _controller!.addListener(_onVideoControllerChange);
@@ -219,6 +224,7 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
     }
     await seek(0);
     await _controller!.play();
+    widget.model.playing = true;
     return true;
   }
 
@@ -228,6 +234,7 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
     if (_controller!.value.isInitialized) {
       await _controller!.pause();
       await seek(0);
+      widget.model.playing = false;
     }
     return true;
   }
@@ -237,6 +244,7 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
     if (_controller == null) return false;
     if (_controller!.value.isInitialized) {
       await _controller!.pause();
+      widget.model.playing = false;
     }
     return true;
   }
@@ -245,6 +253,7 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
     if (_controller == null) return false;
     if (!_controller!.value.isInitialized) await _controller!.initialize();
     _controller!.play();
+    widget.model.playing = true;
     return true;
   }
 

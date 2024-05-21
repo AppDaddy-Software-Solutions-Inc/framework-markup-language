@@ -53,6 +53,32 @@ class VideoModel extends ViewableModel {
 
   bool get loop => _loop?.get() ?? true;
 
+  // volume
+  DoubleObservable? _volume;
+  set volume(dynamic v) {
+    if (_volume != null) {
+      _volume!.set(v);
+    } else if (v != null) {
+      _volume = DoubleObservable(Binding.toKey(id, 'volume'), v,
+          scope: scope, listener: onPropertyChange);
+      _volume!.set(v, notify: false);
+    }
+  }
+  double get volume => _volume?.get() ?? 1.0;
+
+  // speed
+  DoubleObservable? _speed;
+  set speed(dynamic v) {
+    if (_speed != null) {
+      _speed!.set(v);
+    } else if (v != null) {
+      _speed = DoubleObservable(Binding.toKey(id, 'speed'), v,
+          scope: scope, listener: onPropertyChange);
+      _speed!.set(v, notify: false);
+    }
+  }
+  double get speed => _speed?.get() ?? 1.0;
+  
   // on initialized event
   StringObservable? _onInitialized;
   set onInitialized(dynamic v) {
@@ -94,6 +120,8 @@ class VideoModel extends ViewableModel {
     url = Xml.get(node: xml, tag: 'url');
     controls = Xml.get(node: xml, tag: 'controls');
     loop = Xml.get(node: xml, tag: 'loop');
+    speed = Xml.get(node: xml, tag: 'speed');
+    volume = Xml.get(node: xml, tag: 'volume');
     onInitialized = Xml.get(node: xml, tag: 'oninitialized');
   }
 

@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/helpers/helpers.dart';
+import 'package:fml/observable/binding.dart';
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
@@ -84,7 +85,32 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
 
   @override
   onModelChange(Model model, {String? property, dynamic value}) {
-    if (mounted) setState(() {});
+    if (mounted) {
+      var b = Binding.fromString(property);
+      switch (b?.property) {
+
+        // change volume
+        case 'volume':
+          _controller?.setVolume(widget.model.volume);
+          break;
+
+        // change playback speed
+        case 'speed':
+          _controller?.setPlaybackSpeed(widget.model.speed);
+          break;
+
+        // visible/hidden
+        case 'visible':
+        default:
+          // stop the camera
+          stop();
+          setState(() {});
+          break;
+      }
+    }
+    else {
+      WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    }
   }
 
   Widget getPlayButton() {
@@ -142,7 +168,8 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
       playButtonModel.size = 65;
     }
     _controller!.setLooping(widget.model.loop);
-    _controller!.setVolume(0);
+    _controller!.setVolume(widget.model.volume);
+    _controller!.setPlaybackSpeed(widget.model.speed);
   }
 
   Future<bool> startstop() async {

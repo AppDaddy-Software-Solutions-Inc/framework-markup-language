@@ -24,7 +24,6 @@ class VideoModel extends ViewableModel {
       _url!.registerListener(onUrlChange);
     }
   }
-
   String? get url => _url?.get();
 
   // show controls
@@ -37,7 +36,6 @@ class VideoModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get controls => _controls?.get() ?? true;
 
   // loop video
@@ -50,9 +48,20 @@ class VideoModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get loop => _loop?.get() ?? true;
 
+  // autoplay video
+  BooleanObservable? _autoplay;
+  set autoplay(dynamic v) {
+    if (_autoplay != null) {
+      _autoplay!.set(v);
+    } else if (v != null) {
+      _autoplay = BooleanObservable(Binding.toKey(id, 'autoplay'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get autoplay => _autoplay?.get() ?? false;
+  
   // volume
   DoubleObservable? _volume;
   set volume(dynamic v) {
@@ -78,6 +87,17 @@ class VideoModel extends ViewableModel {
     }
   }
   double get speed => _speed?.get() ?? 1.0;
+
+  // playing
+  BooleanObservable? _playing;
+  set playing(dynamic v) {
+    if (_playing != null) {
+      _playing!.set(v);
+    } else if (v != null) {
+      _playing = BooleanObservable(Binding.toKey(id, 'playing'), v, scope: scope);
+    }
+  }
+  bool? get playing => _playing?.get();
   
   // on initialized event
   StringObservable? _onInitialized;
@@ -122,7 +142,9 @@ class VideoModel extends ViewableModel {
     loop = Xml.get(node: xml, tag: 'loop');
     speed = Xml.get(node: xml, tag: 'speed');
     volume = Xml.get(node: xml, tag: 'volume');
+    autoplay = Xml.get(node: xml, tag: 'autoplay');
     onInitialized = Xml.get(node: xml, tag: 'oninitialized');
+    playing = false;
   }
 
   Future<bool> start(
@@ -163,7 +185,9 @@ class VideoModel extends ViewableModel {
   }
 
   onUrlChange(Observable observable) {
-    if (player != null && url != null) player!.play(url!);
+    if (player != null && url != null) {
+      player!.play(url!);
+    }
   }
 
   @override

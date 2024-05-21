@@ -147,12 +147,6 @@ class VideoModel extends ViewableModel {
     playing = false;
   }
 
-  Future<bool> start(
-      {bool force = false, bool refresh = false, String? key}) async {
-    //if (camera != null) camera!.start();
-    return true;
-  }
-
   @override
   Future<bool?> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {

@@ -33,7 +33,7 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
   VideoPlayerController? _controller;
   IconView? playButton;
   IconModel playButtonModel =
-      IconModel(null, null, icon: Icons.pause, size: 65, color: Colors.white);
+      IconModel(null, null, icon: Icons.play_arrow, size: 65, color: Colors.white);
 
   TextView? speedLabel;
   TextModel speedLabelModel = TextModel(null, null);
@@ -157,7 +157,7 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
 
   void _onVideoControllerChange() {
     playButtonModel.size = 65;
-    playButtonModel.icon = _controller?.value.isPlaying ?? false ? Icons.play_arrow : Icons.pause;
+    playButtonModel.icon = _controller?.value.isPlaying ?? false ? Icons.pause : Icons.play_arrow;
     widget.model.playing = _controller?.value.isPlaying;
   }
 

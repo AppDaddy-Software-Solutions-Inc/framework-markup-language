@@ -108,9 +108,9 @@ class _DraggableViewState extends ViewableWidgetState<DraggableView> {
   }
 
   void onPointerMove(PointerMoveEvent event, IScrollable scroller) {
+
     autoscroll?.cancel();
 
-    print('pointer move');
     if (!dragging) {
       return;
     }
@@ -121,10 +121,6 @@ class _DraggableViewState extends ViewableWidgetState<DraggableView> {
 
       const detectedRange = 100.0;
       const pixels = 3.0;
-
-      print("direction: ${scroller.directionOf()}");
-
-      var direction = scroller.directionOf();
 
       // vertical scroller
       if (scroller.directionOf() == Axis.vertical) {
@@ -150,8 +146,6 @@ class _DraggableViewState extends ViewableWidgetState<DraggableView> {
 
         double left = position.dx;
         double right = left + size.width;
-
-        print("lr: $left: $right");
 
         if (event.position.dx < left + detectedRange) {
           scroller.scroll(-1 * pixels);

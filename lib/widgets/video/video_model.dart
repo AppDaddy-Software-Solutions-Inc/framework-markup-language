@@ -24,7 +24,6 @@ class VideoModel extends ViewableModel {
       _url!.registerListener(onUrlChange);
     }
   }
-
   String? get url => _url?.get();
 
   // show controls
@@ -37,7 +36,6 @@ class VideoModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get controls => _controls?.get() ?? true;
 
   // loop video
@@ -50,9 +48,57 @@ class VideoModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get loop => _loop?.get() ?? true;
 
+  // autoplay video
+  BooleanObservable? _autoplay;
+  set autoplay(dynamic v) {
+    if (_autoplay != null) {
+      _autoplay!.set(v);
+    } else if (v != null) {
+      _autoplay = BooleanObservable(Binding.toKey(id, 'autoplay'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get autoplay => _autoplay?.get() ?? false;
+  
+  // volume
+  DoubleObservable? _volume;
+  set volume(dynamic v) {
+    if (_volume != null) {
+      _volume!.set(v);
+    } else if (v != null) {
+      _volume = DoubleObservable(Binding.toKey(id, 'volume'), v,
+          scope: scope, listener: onPropertyChange);
+      _volume!.set(v, notify: false);
+    }
+  }
+  double get volume => _volume?.get() ?? 1.0;
+
+  // speed
+  DoubleObservable? _speed;
+  set speed(dynamic v) {
+    if (_speed != null) {
+      _speed!.set(v);
+    } else if (v != null) {
+      _speed = DoubleObservable(Binding.toKey(id, 'speed'), v,
+          scope: scope, listener: onPropertyChange);
+      _speed!.set(v, notify: false);
+    }
+  }
+  double get speed => _speed?.get() ?? 1.0;
+
+  // playing
+  BooleanObservable? _playing;
+  set playing(dynamic v) {
+    if (_playing != null) {
+      _playing!.set(v);
+    } else if (v != null) {
+      _playing = BooleanObservable(Binding.toKey(id, 'playing'), v, scope: scope);
+    }
+  }
+  bool? get playing => _playing?.get();
+  
   // on initialized event
   StringObservable? _onInitialized;
   set onInitialized(dynamic v) {
@@ -94,13 +140,11 @@ class VideoModel extends ViewableModel {
     url = Xml.get(node: xml, tag: 'url');
     controls = Xml.get(node: xml, tag: 'controls');
     loop = Xml.get(node: xml, tag: 'loop');
+    speed = Xml.get(node: xml, tag: 'speed');
+    volume = Xml.get(node: xml, tag: 'volume');
+    autoplay = Xml.get(node: xml, tag: 'autoplay');
     onInitialized = Xml.get(node: xml, tag: 'oninitialized');
-  }
-
-  Future<bool> start(
-      {bool force = false, bool refresh = false, String? key}) async {
-    //if (camera != null) camera!.start();
-    return true;
+    playing = false;
   }
 
   @override
@@ -135,7 +179,9 @@ class VideoModel extends ViewableModel {
   }
 
   onUrlChange(Observable observable) {
-    if (player != null && url != null) player!.play(url!);
+    if (player != null && url != null) {
+      player!.play(url!);
+    }
   }
 
   @override

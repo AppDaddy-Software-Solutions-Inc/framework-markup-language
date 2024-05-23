@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/helpers/helpers.dart';
+import 'package:fml/observable/binding.dart';
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
@@ -51,6 +52,16 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
   @override
   void initState() {
     super.initState();
+    _initializePlayer();
+  }
+
+  @override
+  void didUpdateWidget(dynamic oldWidget){
+    super.didUpdateWidget(oldWidget);
+    _initializePlayer();
+  }
+
+  void _initializePlayer() {
 
     // If running on windows ensure to register the Windows Media Player
     if (isDesktop && Platform.operatingSystem == 'windows') {
@@ -66,7 +77,7 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
 
   @override
   void dispose() {
-    _controller?.removeListener(onVideoController);
+    _controller?.removeListener(_onVideoControllerChange);
     _controller?.dispose();
     _controller = null;
     super.dispose();
@@ -74,7 +85,28 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
 
   @override
   onModelChange(Model model, {String? property, dynamic value}) {
-    if (mounted) setState(() {});
+    if (mounted) {
+      var b = Binding.fromString(property);
+      switch (b?.property) {
+
+        // change volume
+        case 'volume':
+          _controller?.setVolume(widget.model.volume);
+          break;
+
+        // change playback speed
+        case 'speed':
+          _controller?.setPlaybackSpeed(widget.model.speed);
+          break;
+
+        default:
+          setState(() {});
+          break;
+      }
+    }
+    else {
+      WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    }
   }
 
   Widget getPlayButton() {
@@ -94,18 +126,22 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
 
   Widget getSpeedButton() {
     speedLabel ??= TextView(speedLabelModel);
-    speedLabelModel.value = '${_controller?.value.playbackSpeed}x';
+    speedLabelModel.value = '${widget.model.speed}x';
 
     var label = Stack(alignment: Alignment.center, children: [
       const Icon(Icons.circle, color: Colors.white38, size: 40),
       speedLabel!
     ]);
 
-    var popup = PopupMenuButton<double>(
-        initialValue: _controller?.value.playbackSpeed,
+    List<PopupMenuItem<double>> speeds = [];
+    for (final double speed in _playbackRates) {
+      speeds.add(PopupMenuItem<double>(value: speed, child: Text('${speed}x')));
+    }
+
+    PopupMenuButton popup = PopupMenuButton<double>(
         tooltip: 'Playback speed',
         onSelected: (double speed) {
-          _controller?.setPlaybackSpeed(speed);
+          widget.model.speed = speed;
           speedLabelModel.value = '${speed}x';
         },
         itemBuilder: (BuildContext context) {
@@ -119,17 +155,10 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
     return Positioned(top: 5, right: 5, child: popup);
   }
 
-  void onVideoController() {
-    if (_controller == null) return;
-    if (!_controller!.value.isPlaying) {
-      playButtonModel.icon = Icons.pause;
-      playButtonModel.size = 65;
-      if (_controller!.value.position == _controller!.value.duration) seek(0);
-    } else {
-      playButtonModel.icon = Icons.play_arrow;
-      playButtonModel.size = 65;
-    }
-    _controller!.setLooping(widget.model.loop);
+  void _onVideoControllerChange() {
+    playButtonModel.size = 65;
+    playButtonModel.icon = _controller?.value.isPlaying ?? false ? Icons.play_arrow : Icons.pause;
+    widget.model.playing = _controller?.value.isPlaying;
   }
 
   Future<bool> startstop() async {
@@ -144,13 +173,16 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
   @override
   Future<bool> play(String? url) async {
 
-    // dispose of existing controller
-    _controller?.dispose();
-
     // build new controller
-    Uri? uri = Uri.tryParse(url ?? "");
+    var uri = URI.parse(url);
+    if (uri?.url == _controller?.dataSource) return true;
+
     if (uri != null) {
 
+      // dispose of existing controller
+      _controller?.dispose();
+
+      // create new controller
       _controller = VideoPlayerController.networkUrl(uri);
 
       // wait for the controller to initialize
@@ -162,10 +194,23 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
       }
 
       // ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-      if (mounted) setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
+      else {
+        WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+      }
 
+      _controller!.setLooping(widget.model.loop);
+      _controller!.setVolume(widget.model.volume);
+      _controller!.setPlaybackSpeed(widget.model.speed);
 
-      _controller?.addListener(onVideoController);
+      if (widget.model.autoplay) {
+        start();
+      }
+
+      // add listener to modify controls
+      _controller!.addListener(_onVideoControllerChange);
     }
 
     return true;
@@ -174,9 +219,12 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
   @override
   Future<bool> start() async {
     if (_controller == null) return false;
-    if (!_controller!.value.isInitialized) await _controller!.initialize();
+    if (!_controller!.value.isInitialized) {
+      await _controller!.initialize();
+    }
     await seek(0);
-    _controller!.play();
+    await _controller!.play();
+    widget.model.playing = true;
     return true;
   }
 
@@ -186,6 +234,7 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
     if (_controller!.value.isInitialized) {
       await _controller!.pause();
       await seek(0);
+      widget.model.playing = false;
     }
     return true;
   }
@@ -193,7 +242,10 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
   @override
   Future<bool> pause() async {
     if (_controller == null) return false;
-    if (_controller!.value.isInitialized) await _controller!.pause();
+    if (_controller!.value.isInitialized) {
+      await _controller!.pause();
+      widget.model.playing = false;
+    }
     return true;
   }
 
@@ -201,6 +253,7 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
     if (_controller == null) return false;
     if (!_controller!.value.isInitialized) await _controller!.initialize();
     _controller!.play();
+    widget.model.playing = true;
     return true;
   }
 
@@ -221,25 +274,45 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
 
     // create the view
     Widget view = Container();
+
     if (_controller != null && _controller!.value.isInitialized) {
-      var videoPlayer = VideoPlayer(_controller!);
+
+      Widget videoPlayer = VideoPlayer(_controller!);
+
+      // size to cover parent container
+      videoPlayer = SizedBox.expand(
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(
+              width: _controller!.value.size.width,
+              height: _controller!.value.size.height,
+              child: VideoPlayer(_controller!),
+            ),
+          ));
+
       var subTitles = ClosedCaption(text: _controller!.value.caption.text);
+
       var progressBar = widget.model.controls
           ? VideoProgressIndicator(_controller!, allowScrubbing: true)
           : const Offstage();
+
       var playButton =
       widget.model.controls ? getPlayButton() : const Offstage();
+
       var speedButton =
       widget.model.controls ? getSpeedButton() : const Offstage();
-      var stack = Stack(alignment: Alignment.bottomCenter, children: <Widget>[
+
+      view = Stack(alignment: Alignment.bottomCenter, children: <Widget>[
         videoPlayer,
         subTitles,
         speedButton,
         playButton,
         progressBar
       ]);
-      view = AspectRatio(
-          aspectRatio: _controller!.value.aspectRatio, child: stack);
+
+      //view = AspectRatio(
+      //    aspectRatio: _controller!.value.aspectRatio, child: view);
+
       view = GestureDetector(onTap: startstop, child: view);
     }
 

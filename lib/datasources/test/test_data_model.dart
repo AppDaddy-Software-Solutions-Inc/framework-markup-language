@@ -8,6 +8,9 @@ import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class TestDataModel extends DataSourceModel implements IDataSource {
+
+  int rows = 100;
+
   @override
   bool get autoexecute => super.autoexecute ?? true;
 
@@ -20,18 +23,18 @@ class TestDataModel extends DataSourceModel implements IDataSource {
       model = TestDataModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
 
-      var rows  = toInt(Xml.get(node: xml, tag: 'rows'))  ?? 100;
+      model.rows = toInt(Xml.get(node: xml, tag: 'rows'))  ?? 100;
       var delay = toInt(Xml.get(node: xml, tag: 'delay')) ?? 0;
 
       if (delay <= 0) {
-        model.data = Data.testData(rows);
+        model.data = Data.testData(model.rows);
         return model;
       }
 
       model.busy = true;
       Future.delayed(Duration(seconds: delay), () {
-        var data = Data.testData(rows);
-        model!.onData(data);
+        var data = Data.testData(model!.rows);
+        model.onData(data);
         model.busy = false;
       });
     }
@@ -40,5 +43,20 @@ class TestDataModel extends DataSourceModel implements IDataSource {
       model = null;
     }
     return model;
+  }
+
+  @override
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+    switch (function) {
+      case "start":
+      case "load":
+        data = Data.testData(toInt(elementAt(arguments, 0)) ?? rows);
+        onSuccess(data!, code: 200, message: "Ok");
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 }

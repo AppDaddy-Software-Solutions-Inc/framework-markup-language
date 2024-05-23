@@ -74,8 +74,8 @@ dependencies:
   # MIT
 
   # Microsoft Logon - Newer versions of these packages require web < 0.5.0
-  firebase_auth: ^4.19.5
-  firebase_core: ^2.31.0
+  firebase_auth: ^4.19.6
+  firebase_core: ^2.31.1
   # firebase_core_platform_interface: ^4.8.0
   # BSD-3-Clause
 
@@ -142,7 +142,7 @@ dependencies:
   # BSD-3-Clause
 
   # Our library "flutter_image_transform" is blocking this update
-  image: ^4.0.17
+  image: ^4.2.0
   # MIT
 
   intl: ^0.19.0

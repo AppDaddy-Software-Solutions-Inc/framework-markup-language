@@ -1,5 +1,4 @@
-import 'dart:ui';
-
+import 'package:flutter/material.dart';
 abstract class IScrollable {
 
   void scrollTo(String? id, String? value, {bool animate = true});
@@ -7,6 +6,7 @@ abstract class IScrollable {
 
   Offset? positionOf();
   Size? sizeOf();
+  Axis directionOf();
 
   bool moreUp = false;
   bool moreDown = false;

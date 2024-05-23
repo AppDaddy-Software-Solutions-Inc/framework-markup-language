@@ -194,8 +194,7 @@ class ListLayoutViewState extends ViewableWidgetState<ListLayoutView> {
         .getView();
 
     // Direction
-    var direction = Axis.vertical;
-    if (widget.model.direction == 'horizontal') direction = Axis.horizontal;
+    var direction = widget.model.directionOf();
 
     List<Widget> children = [];
 
@@ -218,14 +217,19 @@ class ListLayoutViewState extends ViewableWidgetState<ListLayoutView> {
 
       // regular list
       case false:
+
+        int? items = widget.model.datasource == null ? widget.model.items.length : widget.model.data?.length;
+
         view = ListView.builder(
             reverse: widget.model.reverse,
+            itemCount: items,
             physics: widget.model.onpulldown != null
                 ? const AlwaysScrollableScrollPhysics()
                 : null,
             scrollDirection: direction,
             controller: controller,
             itemBuilder: itemBuilder);
+
         break;
     }
 

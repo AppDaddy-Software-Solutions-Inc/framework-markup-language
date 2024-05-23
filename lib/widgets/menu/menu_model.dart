@@ -240,6 +240,9 @@ class MenuModel extends ViewableModel implements IScrollable {
     return view?.sizeOf();
   }
 
+  @override
+  Axis directionOf() => Axis.vertical;
+
   void onDragDrop(IDragDrop droppable, IDragDrop draggable,
       {Offset? dropSpot}) async {
     if (droppable is MenuItemModel && draggable is MenuItemModel) {

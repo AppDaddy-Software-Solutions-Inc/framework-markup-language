@@ -169,6 +169,9 @@ class ScrollerModel extends BoxModel implements IScrollable {
     return view?.sizeOf();
   }
 
+  @override
+  Axis directionOf() =>layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical;
+
   /// scroll +/- pixels or to an item
   @override
   void scroll(double? pixels, {bool animate = false}) {

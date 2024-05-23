@@ -188,9 +188,7 @@ class ScrollerViewState extends ViewableWidgetState<ScrollerView> {
     Widget view;
 
     // build body
-    Axis direction = widget.model.layoutType == LayoutType.row
-        ? Axis.horizontal
-        : Axis.vertical;
+    Axis direction = widget.model.directionOf();
 
     // add pull down
     if (widget.model.onpulldown != null) {

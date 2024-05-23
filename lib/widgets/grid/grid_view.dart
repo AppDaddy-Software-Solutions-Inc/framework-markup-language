@@ -35,7 +35,6 @@ class GridViewState extends ViewableWidgetState<GridView> {
   late double prototypeWidth;
   late double prototypeHeight;
   late int count;
-  dynamic direction = Axis.vertical;
 
   @override
   void initState() {
@@ -85,6 +84,8 @@ class GridViewState extends ViewableWidgetState<GridView> {
         children.add(Expanded(child: Container()));
       }
     }
+
+    var direction = widget.model.directionOf();
 
     if (direction == Axis.vertical) {
       return Row(mainAxisSize: MainAxisSize.min, children: children);
@@ -254,9 +255,7 @@ class GridViewState extends ViewableWidgetState<GridView> {
           (sqrt(widget.model.items.length) + 1);
     }
 
-    widget.model.direction == 'horizontal'
-        ? direction = Axis.horizontal
-        : direction = Axis.vertical;
+    var direction = widget.model.directionOf();
 
     // Protect against infinity calculations when screen is smaller than the grid item in the none expanding direction
     if (direction == Axis.vertical && gridWidth < prototypeWidth) {

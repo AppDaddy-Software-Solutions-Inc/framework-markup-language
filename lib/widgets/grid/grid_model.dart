@@ -27,18 +27,26 @@ import 'package:fml/platform/platform.vm.dart'
     if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class GridModel extends BoxModel implements IScrollable {
-  // full list of data
-  // pointing to data broker data
-  Data? _dataset;
+
+  // data map from the list item that is currently selected
+  ListObservable? _selected;
+  set selected(dynamic v) {
+    if (_selected != null) {
+      _selected!.set(v);
+    } else if (v != null) {
+      // we don't want this to update the table view so don't add listener: onPropertyChange
+      _selected =
+          ListObservable(Binding.toKey(id, 'selected'), null, scope: scope);
+      _selected!.set(v);
+    }
+  }
+  dynamic get selected => _selected?.get();
 
   // data sourced prototype
   XmlElement? prototype;
 
   // IDataSource
   IDataSource? myDataSource;
-
-  // returns the number of records in the dataset
-  int? get records => _dataset?.length;
 
   // items
   HashMap<int, GridItemModel> items = HashMap<int, GridItemModel>();
@@ -295,7 +303,8 @@ class GridModel extends BoxModel implements IScrollable {
 
       // Populate grid items from datasource
       for (var row in list) {
-        var model = GridItemModel.fromXml(parent!, prototype, data: row);
+
+        var model = GridItemModel.fromXml(this, prototype, data: row);
 
         if (model != null) {
           // set the index
@@ -313,7 +322,7 @@ class GridModel extends BoxModel implements IScrollable {
         }
       }
 
-      _dataset = list;
+      data = list;
       notifyListeners('list', items);
     }
 
@@ -324,12 +333,13 @@ class GridModel extends BoxModel implements IScrollable {
   Future<bool> onTap(GridItemModel? model) async {
     items.forEach((key, item) {
       if (item == model) {
+
         // toggle selected
-        bool isSelected = (item.selected ?? false) ? false : true;
+        bool isSelected = item.selected ? false : true;
 
         // set values
         item.selected = isSelected;
-        data = isSelected ? item.data : Data();
+        selected = isSelected ? item.data : Data();
       } else {
         item.selected = false;
       }
@@ -339,11 +349,13 @@ class GridModel extends BoxModel implements IScrollable {
 
   // sort the list
   Future<bool> _sort(String? field, String type, bool ascending) async {
-    if (_dataset == null || _dataset!.isEmpty || field == null) return true;
+
+    if (data == null || data.isEmpty || field == null) return true;
+
     busy = true;
     sort_transform.Sort sort = sort_transform.Sort(null,
         field: field, type: type, ascending: ascending);
-    await sort.apply(_dataset);
+    await sort.apply(data);
     busy = false;
     return true;
   }
@@ -398,7 +410,6 @@ class GridModel extends BoxModel implements IScrollable {
 
   // export to excel
   Future<bool> export() async {
-    var data = Data.from(_dataset);
 
     // convert to data
     String csv = await Data.toCsv(data);
@@ -436,6 +447,9 @@ class GridModel extends BoxModel implements IScrollable {
     GridViewState? view = findListenerOfExactType(GridViewState);
     return view?.sizeOf();
   }
+
+  @override
+  Axis directionOf() => direction == 'horizontal' ? Axis.horizontal : Axis.vertical;
 
   void onDragDrop(IDragDrop droppable, IDragDrop draggable,
       {Offset? dropSpot}) async {
@@ -486,7 +500,7 @@ class GridModel extends BoxModel implements IScrollable {
         int index = toInt(elementAt(arguments, 0)) ?? -1;
         if (index >= 0 && index < items.length) {
           var model = items[index];
-          if (model != null && model.selected == false) onTap(model);
+          if (model != null && !model.selected) onTap(model);
         }
         return true;
 
@@ -511,7 +525,7 @@ class GridModel extends BoxModel implements IScrollable {
     // de-selects the item by index
       case "deselect":
         int index = toInt(elementAt(arguments, 0)) ?? -1;
-        if (index >= 0 && _dataset != null && index < _dataset!.length) {
+        if (index >= 0 && data != null && index < data.length) {
           var model = items[index];
           if (model != null && model.selected == true) onTap(model);
         }

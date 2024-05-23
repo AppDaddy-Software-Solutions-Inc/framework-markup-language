@@ -117,21 +117,46 @@ class _DraggableViewState extends ViewableWidgetState<DraggableView> {
     var position = scroller.positionOf();
     var size = scroller.sizeOf();
     if (size != null && position != null) {
-      double topY = position.dy;
-      double bottomY = topY + size.height;
 
       const detectedRange = 100.0;
       const pixels = 3.0;
-      if (event.position.dy < topY + detectedRange) {
-        scroller.scroll(-1 * pixels);
-        autoscroll = Timer.periodic(const Duration(milliseconds: 100),
-            (_) => scroller.scroll(-1 * detectedRange));
-      }
 
-      if (event.position.dy > bottomY - detectedRange) {
-        scroller.scroll(pixels);
-        autoscroll = Timer.periodic(const Duration(milliseconds: 100),
-            (_) => scroller.scroll(detectedRange));
+      // vertical scroller
+      if (scroller.directionOf() == Axis.vertical) {
+
+        double top = position.dy;
+        double bottom = top + size.height;
+
+        if (event.position.dy < top + detectedRange) {
+          scroller.scroll(-1 * pixels);
+          autoscroll = Timer.periodic(const Duration(milliseconds: 100),
+                  (_) => scroller.scroll(-1 * detectedRange));
+        }
+
+        if (event.position.dy > bottom - detectedRange) {
+          scroller.scroll(pixels);
+          autoscroll = Timer.periodic(const Duration(milliseconds: 100),
+                  (_) => scroller.scroll(detectedRange));
+        }
+
+        // horizontal scroller
+        else if (scroller.directionOf() == Axis.horizontal) {
+
+          double left = position.dx;
+          double right = left + size.width;
+
+          if (event.position.dx < left + detectedRange) {
+            scroller.scroll(-1 * pixels);
+            autoscroll = Timer.periodic(const Duration(milliseconds: 100),
+                    (_) => scroller.scroll(-1 * detectedRange));
+          }
+
+          if (event.position.dx > right - detectedRange) {
+            scroller.scroll(pixels);
+            autoscroll = Timer.periodic(const Duration(milliseconds: 100),
+                    (_) => scroller.scroll(detectedRange));
+          }
+        }
       }
     }
   }

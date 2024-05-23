@@ -240,7 +240,6 @@ class TableModel extends BoxModel implements IForm {
       _selected!.set(v);
     }
   }
-
   dynamic get selected => _selected?.get();
 
   // onChange - only used for simple data grid

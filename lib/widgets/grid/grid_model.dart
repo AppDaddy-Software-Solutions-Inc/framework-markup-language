@@ -437,6 +437,9 @@ class GridModel extends BoxModel implements IScrollable {
     return view?.sizeOf();
   }
 
+  @override
+  Axis directionOf() => direction == 'horizontal' ? Axis.horizontal : Axis.vertical;
+
   void onDragDrop(IDragDrop droppable, IDragDrop draggable,
       {Offset? dropSpot}) async {
     if (droppable is GridItemModel && draggable is GridItemModel) {

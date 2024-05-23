@@ -44,6 +44,20 @@ class ListModel extends BoxModel implements IForm, IScrollable {
   // maintains list of items
   final HashMap<int, ListItemModel> items = HashMap<int, ListItemModel>();
 
+  // data map from the list item that is currently selected
+  ListObservable? _selected;
+  set selected(dynamic v) {
+    if (_selected != null) {
+      _selected!.set(v);
+    } else if (v != null) {
+      // we don't want this to update the table view so don't add listener: onPropertyChange
+      _selected =
+          ListObservable(Binding.toKey(id, 'selected'), null, scope: scope);
+      _selected!.set(v);
+    }
+  }
+  dynamic get selected => _selected?.get();
+
   // item extent
   double get itemExtent {
    if (items.isEmpty) return 0;
@@ -334,7 +348,7 @@ class ListModel extends BoxModel implements IForm, IScrollable {
     // item model exists?
     if (data == null) return null;
 
-    if (data.length < (index + 1)) return null;
+    if (data.length < index + 1) return null;
     if (items.containsKey(index)) return items[index];
     if (index.isNegative || data.length < index) return null;
 
@@ -347,7 +361,7 @@ class ListModel extends BoxModel implements IForm, IScrollable {
       // set the selected data
       if (model.selected == true) {
         // this must be done after the build
-        WidgetsBinding.instance.addPostFrameCallback((_) => data = model.data);
+        WidgetsBinding.instance.addPostFrameCallback((_) => selected = model.data);
       }
 
       // register listener to dirty field
@@ -376,7 +390,7 @@ class ListModel extends BoxModel implements IForm, IScrollable {
     items.forEach((_, item) => item.dispose());
     items.clear();
 
-    // assign data
+    // set data
     data = list ?? Data();
 
     // notify listeners
@@ -430,7 +444,7 @@ class ListModel extends BoxModel implements IForm, IScrollable {
 
         // set values
         item.selected = isSelected;
-        data = isSelected ? item.data : Data();
+        selected = isSelected ? item.data : Data();
       } else {
         item.selected = false;
       }
@@ -540,6 +554,9 @@ class ListModel extends BoxModel implements IForm, IScrollable {
     ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
     return view?.positionOf();
   }
+
+  @override
+  Axis directionOf() => direction == 'horizontal' ? Axis.horizontal : Axis.vertical;
 
   @override
   Size? sizeOf() {

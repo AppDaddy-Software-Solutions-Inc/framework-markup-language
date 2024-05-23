@@ -218,14 +218,19 @@ class ListLayoutViewState extends ViewableWidgetState<ListLayoutView> {
 
       // regular list
       case false:
+
+        int items = widget.model.datasource == null ? widget.model.items.length : widget.model.data?.length;
+
         view = ListView.builder(
             reverse: widget.model.reverse,
+            itemCount: items,
             physics: widget.model.onpulldown != null
                 ? const AlwaysScrollableScrollPhysics()
                 : null,
             scrollDirection: direction,
             controller: controller,
             itemBuilder: itemBuilder);
+
         break;
     }
 

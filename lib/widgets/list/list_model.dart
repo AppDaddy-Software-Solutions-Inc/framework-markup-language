@@ -44,10 +44,6 @@ class ListModel extends BoxModel implements IForm, IScrollable {
   // maintains list of items
   final HashMap<int, ListItemModel> items = HashMap<int, ListItemModel>();
 
-  // full list of data
-  // pointing to data broker data
-  Data? _dataset;
-
   // item extent
   double get itemExtent {
    if (items.isEmpty) return 0;
@@ -62,15 +58,12 @@ class ListModel extends BoxModel implements IForm, IScrollable {
 
   // max extent - items * item extent
   double get maxExtent {
-    int i = isNullOrEmpty(datasource) ? items.length : _dataset?.length ?? 0;
+    int i = isNullOrEmpty(datasource) ? items.length : data?.length ?? 0;
     return itemExtent * i;
   }
 
   // the list item prototype
   XmlElement? prototype;
-
-  // returns the number of records in the dataset
-  int? get records => _dataset?.length;
 
   // IDataSource
   IDataSource? myDataSource;
@@ -339,15 +332,14 @@ class ListModel extends BoxModel implements IForm, IScrollable {
     }
 
     // item model exists?
-    if (_dataset == null) return null;
+    if (data == null) return null;
 
-    var list = _dataset!;
-    if (list.length < (index + 1)) return null;
+    if (data.length < (index + 1)) return null;
     if (items.containsKey(index)) return items[index];
-    if (index.isNegative || list.length < index) return null;
+    if (index.isNegative || data.length < index) return null;
 
     // build item model
-    var model = ListItemModel.fromXml(this, prototype, data: list[index]);
+    var model = ListItemModel.fromXml(this, prototype, data: data[index]);
     if (model != null) {
       // set the index
       model.index = index;
@@ -384,11 +376,8 @@ class ListModel extends BoxModel implements IForm, IScrollable {
     items.forEach((_, item) => item.dispose());
     items.clear();
 
-    if (list != null) {
-      _dataset = list;
-    } else {
-      _dataset = Data();
-    }
+    // assign data
+    data = list ?? Data();
 
     // notify listeners
     notifyListeners('list', items);
@@ -520,8 +509,8 @@ class ListModel extends BoxModel implements IForm, IScrollable {
 
     // build out the items
     // this may lag the system if the list is large
-    if (items.length != _dataset?.length) {
-      for (int i = 0; i < _dataset!.length; i++) {
+    if (data != null && items.length != data.length) {
+      for (int i = 0; i < data.length; i++) {
         if (!items.containsKey(i)) {
           var item = getItemModel(i);
           if (item != null) {
@@ -685,7 +674,7 @@ class ListModel extends BoxModel implements IForm, IScrollable {
     // de-selects the item by index
       case "deselect":
         int index = toInt(elementAt(arguments, 0)) ?? -1;
-        if (index >= 0 && _dataset != null && index < _dataset!.length) {
+        if (index >= 0 && data != null && index < data.length) {
           var model = items[index];
           if (model != null && model.selected == true) onTap(model);
         }

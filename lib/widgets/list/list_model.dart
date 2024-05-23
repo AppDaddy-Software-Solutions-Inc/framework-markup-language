@@ -440,7 +440,7 @@ class ListModel extends BoxModel implements IForm, IScrollable {
     items.forEach((key, item) {
       if (item == model) {
         // toggle selected
-        bool isSelected = (item.selected ?? false) ? false : true;
+        bool isSelected = item.selected ? false : true;
 
         // set values
         item.selected = isSelected;
@@ -505,13 +505,13 @@ class ListModel extends BoxModel implements IForm, IScrollable {
     ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
 
     // scroll to top
-    if (id.trim().toLowerCase() == 'top' && isNullOrEmpty(value)) {
+    if ((id.trim().toLowerCase() == 'top' || id.trim().toLowerCase() == 'start') && isNullOrEmpty(value)) {
       view?.scrollTo(0, animate: false);
       return;
     }
 
     // scroll to bottom
-    if (id.trim().toLowerCase() == 'bottom' && isNullOrEmpty(value)) {
+    if ((id.trim().toLowerCase() == 'bottom' || id.trim().toLowerCase() == 'end') && isNullOrEmpty(value)) {
       view?.scrollTo(double.maxFinite, animate: false);
       return;
     }

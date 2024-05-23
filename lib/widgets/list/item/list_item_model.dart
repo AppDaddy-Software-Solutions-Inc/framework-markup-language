@@ -14,13 +14,8 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class ListItemModel extends BoxModel {
-  Map? map;
 
-  String? type;
   List<IFormField>? fields;
-
-  // table
-  ListModel? get list => parent is ListModel ? parent as ListModel : null;
 
   // posting source source
   List<String>? _postbrokers;
@@ -45,8 +40,7 @@ class ListItemModel extends BoxModel {
           BooleanObservable(Binding.toKey(id, 'selected'), v, scope: scope);
     }
   }
-
-  bool? get selected => _selected?.get();
+  bool get selected => _selected?.get() ?? false;
 
   // indicates that this item can be selected
   // by clicking it
@@ -59,21 +53,7 @@ class ListItemModel extends BoxModel {
           BooleanObservable(Binding.toKey(id, 'selectable'), v, scope: scope);
     }
   }
-
   bool get selectable => _selectable?.get() ?? true;
-
-  /// [Event]s to execute when the item is clicked
-  StringObservable? _onclick;
-  set onclick(dynamic v) {
-    if (_onclick != null) {
-      _onclick!.set(v);
-    } else if (v != null) {
-      _onclick = StringObservable(Binding.toKey(id, 'onclick'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
-    }
-  }
-
-  String? get onclick => _onclick?.get();
 
   // dataset  index
   // This property indicates your position on the dataset, 0 being the top
@@ -86,15 +66,10 @@ class ListItemModel extends BoxModel {
       _index = IntegerObservable(Binding.toKey(id, 'index'), v, scope: scope);
     }
   }
+  int get index => _index?.get() ?? -1;
 
-  int? get index {
-    if (_index == null) return -1;
-    return _index?.get();
-  }
 
-  ///////////
-  /* dirty */
-  ///////////
+  // dirty
   BooleanObservable? get dirtyObservable => _dirty;
   BooleanObservable? _dirty;
   set dirty(dynamic v) {
@@ -104,7 +79,6 @@ class ListItemModel extends BoxModel {
       _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
     }
   }
-
   bool get dirty => _dirty?.get() ?? false;
 
   void onDirtyListener(Observable property) {
@@ -120,39 +94,7 @@ class ListItemModel extends BoxModel {
     dirty = isDirty;
   }
 
-  //////////////////////
-  /* background color */
-  //////////////////////
-  ColorObservable? _backgroundcolor;
-  set backgroundcolor(dynamic v) {
-    if (_backgroundcolor != null) {
-      _backgroundcolor!.set(v);
-    } else if (v != null) {
-      _backgroundcolor = ColorObservable(
-          Binding.toKey(id, 'backgroundcolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  Color? get backgroundcolor => _backgroundcolor?.get();
-
-  ////////////
-  /* margin */
-  ////////////
-  DoubleObservable? _margin;
-  set margin(dynamic v) {
-    if (_margin != null) {
-      _margin!.set(v);
-    } else if (v != null) {
-      _margin = DoubleObservable(Binding.toKey(id, 'margin'), v, scope: scope);
-    }
-  }
-
-  double get margin => _margin?.get() ?? 10;
-
-  ///////////
-  /* title */
-  ///////////
+  // title
   StringObservable? _title;
   set title(dynamic v) {
     if (_title != null) {
@@ -162,8 +104,19 @@ class ListItemModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get title => _title?.get();
+
+  /// [Event]s to execute when the item is clicked
+  StringObservable? _onClick;
+  set onClick(dynamic v) {
+    if (_onClick != null) {
+      _onClick!.set(v);
+    } else if (v != null) {
+      _onClick = StringObservable(Binding.toKey(id, 'onclick'), v,
+          scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  String? get onClick => _onClick?.get();
 
   // onInsert
   StringObservable? _onInsert;
@@ -175,7 +128,6 @@ class ListItemModel extends BoxModel {
           scope: scope, lazyEval: true);
     }
   }
-
   String? get onInsert => _onInsert?.get();
 
   // onDelete
@@ -188,24 +140,16 @@ class ListItemModel extends BoxModel {
           scope: scope, lazyEval: true);
     }
   }
-
   String? get onDelete => _onDelete?.get();
 
   ListItemModel(Model super.parent, super.id,
       {super.data,
       dynamic selected,
-      dynamic onclick,
-      this.type,
-      dynamic title,
-      dynamic backgroundcolor,
-      dynamic margin})
+      dynamic title})
       : super(scope: Scope(parent: parent.scope)) {
-    this.backgroundcolor = backgroundcolor;
     dirty = false;
-    this.margin = margin;
     title = title;
     this.selected = selected;
-    this.onclick = onclick;
   }
 
   static ListItemModel? fromXml(Model parent, XmlElement? xml,
@@ -231,15 +175,12 @@ class ListItemModel extends BoxModel {
     super.deserialize(xml);
 
     // properties
-    type = Xml.get(node: xml, tag: 'type');
-    backgroundcolor = Xml.get(node: xml, tag: 'backgroundcolor');
-    margin = Xml.get(node: xml, tag: 'margin');
     title = Xml.get(node: xml, tag: 'title');
     selected = Xml.get(node: xml, tag: 'selected');
     selectable = Xml.get(node: xml, tag: 'selectable');
-    onclick = Xml.get(node: xml, tag: 'onclick');
-    onInsert = Xml.get(node: xml, tag: 'onInsert');
-    onDelete = Xml.get(node: xml, tag: 'onDelete');
+    onClick = Xml.get(node: xml, tag: 'onclick');
+    onInsert = Xml.get(node: xml, tag: 'oninsert');
+    onDelete = Xml.get(node: xml, tag: 'ondelete');
     postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
 
     // find all descendants
@@ -280,8 +221,10 @@ class ListItemModel extends BoxModel {
   Future<bool> _post() async {
     if (dirty == false) return true;
 
+    var list = findAncestorOfExactType(ListModel);
+
     bool ok = true;
-    if ((scope != null) && (postbrokers != null)) {
+    if (list != null && scope != null && postbrokers != null) {
       for (String id in postbrokers!) {
         IDataSource? source = scope!.getDataSource(id);
         if (source != null && ok && list != null) {
@@ -300,11 +243,12 @@ class ListItemModel extends BoxModel {
   }
 
   Future<bool> onTap() async {
-    if (parent is ListModel) {
-      (parent as ListModel).onTap(this);
+    if (!selectable) return true;
+    var list = findAncestorOfExactType(ListModel);
+    if (list is ListModel) {
+      list.onTap(this);
     }
-    await EventHandler(this).execute(_onclick);
-    return true;
+    return await EventHandler(this).execute(_onClick);
   }
 
   @override

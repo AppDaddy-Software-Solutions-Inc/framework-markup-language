@@ -110,6 +110,7 @@ class _DraggableViewState extends ViewableWidgetState<DraggableView> {
   void onPointerMove(PointerMoveEvent event, IScrollable scroller) {
     autoscroll?.cancel();
 
+    print('pointer move');
     if (!dragging) {
       return;
     }
@@ -120,6 +121,10 @@ class _DraggableViewState extends ViewableWidgetState<DraggableView> {
 
       const detectedRange = 100.0;
       const pixels = 3.0;
+
+      print("direction: ${scroller.directionOf()}");
+
+      var direction = scroller.directionOf();
 
       // vertical scroller
       if (scroller.directionOf() == Axis.vertical) {
@@ -138,24 +143,26 @@ class _DraggableViewState extends ViewableWidgetState<DraggableView> {
           autoscroll = Timer.periodic(const Duration(milliseconds: 100),
                   (_) => scroller.scroll(detectedRange));
         }
+      }
 
-        // horizontal scroller
-        else if (scroller.directionOf() == Axis.horizontal) {
+      // horizontal scroller
+      else if (scroller.directionOf() == Axis.horizontal) {
 
-          double left = position.dx;
-          double right = left + size.width;
+        double left = position.dx;
+        double right = left + size.width;
 
-          if (event.position.dx < left + detectedRange) {
-            scroller.scroll(-1 * pixels);
-            autoscroll = Timer.periodic(const Duration(milliseconds: 100),
-                    (_) => scroller.scroll(-1 * detectedRange));
-          }
+        print("lr: $left: $right");
 
-          if (event.position.dx > right - detectedRange) {
-            scroller.scroll(pixels);
-            autoscroll = Timer.periodic(const Duration(milliseconds: 100),
-                    (_) => scroller.scroll(detectedRange));
-          }
+        if (event.position.dx < left + detectedRange) {
+          scroller.scroll(-1 * pixels);
+          autoscroll = Timer.periodic(const Duration(milliseconds: 100),
+                  (_) => scroller.scroll(-1 * detectedRange));
+        }
+
+        if (event.position.dx > right - detectedRange) {
+          scroller.scroll(pixels);
+          autoscroll = Timer.periodic(const Duration(milliseconds: 100),
+                  (_) => scroller.scroll(detectedRange));
         }
       }
     }

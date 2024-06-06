@@ -33,6 +33,13 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
   BarChart? chart;
 
   @override
+  void initState() {
+    widget.model.xaxis.registerListener(this);
+    widget.model.yaxis.registerListener(this);
+    super.initState();
+  }
+
+  @override
   didChangeDependencies() {
     super.didChangeDependencies();
     hideTooltip();

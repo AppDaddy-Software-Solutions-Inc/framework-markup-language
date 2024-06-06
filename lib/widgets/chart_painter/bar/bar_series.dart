@@ -188,6 +188,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
   }
 
   void pointFromBarData() {
+    if (y == null) return;
     BarChartGroupDataExtended point =
         BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0, barRods: [
       BarChartRodDataExtended(this, data,
@@ -200,6 +201,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
   }
 
   void pointFromWaterfallBarData() {
+    if (y == null) return;
     BarChartGroupDataExtended point =
         BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0, barRods: [
       BarChartRodDataExtended(this, data,
@@ -214,6 +216,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
   }
 
   void pointFromGroupedBarData() {
+    if (y == null) return;
     BarChartRodDataExtended point = BarChartRodDataExtended(this, data,
         fromY: toDouble(y0) ?? 0,
         toY: toDouble(y) ?? 0,

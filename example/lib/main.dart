@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     //String example1 = 'http://10.69.4.245:81/';
     //String example1 = 'https://pad.fml.dev';
     //String example1 = 'http://lawapsweb.law.goodyear.com:8081';
-    String example1 = 'https://test.appdaddy.co';
+    String example1 = 'https://pad.fml.dev';
     //String example1 = "http://10.69.4.149:8081/";
 
     //String example1 = 'http://ludapsweb.ec.goodyear.com:81/';

@@ -10,6 +10,7 @@ import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
+import '../../widget/model.dart';
 import 'line_chart_model.dart';
 
 /// Chart View
@@ -32,6 +33,13 @@ class _LineChartViewState extends ViewableWidgetState<LineChartView> {
   OverlayEntry? tooltip;
 
   @override
+  void initState() {
+    widget.model.xaxis.registerListener(this);
+    widget.model.yaxis.registerListener(this);
+    super.initState();
+  }
+
+  @override
   didChangeDependencies() {
     super.didChangeDependencies();
     hideTooltip();
@@ -44,8 +52,15 @@ class _LineChartViewState extends ViewableWidgetState<LineChartView> {
   }
 
   @override
+  onModelChange(Model model, {String? property, value}) {
+    super.onModelChange(model);
+  }
+
+  @override
   dispose() {
     hideTooltip();
+    widget.model.xaxis.removeListener(this);
+    widget.model.xaxis.removeListener(this);
     super.dispose();
   }
 

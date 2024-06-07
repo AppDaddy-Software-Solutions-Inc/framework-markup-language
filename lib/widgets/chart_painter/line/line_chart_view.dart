@@ -217,7 +217,9 @@ class _LineChartViewState extends ViewableWidgetState<LineChartView> {
   }
 
   List<LineTooltipItem> getTooltipItems(List<LineBarSpot> touchedSpots) {
+
     List<LineTooltipItem> tooltips = [];
+    if(widget.model.showtips == false) return tooltips;
     var showTips = false;
     for (var spot in touchedSpots) {
       var mySpot = spot.bar.spots[spot.spotIndex];

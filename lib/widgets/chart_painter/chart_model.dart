@@ -42,10 +42,23 @@ class ChartPainterModel extends BoxModel {
 
   String? get title => _title?.get();
 
+  BooleanObservable? _showtips;
+  set showtips(dynamic v) {
+    if (_showtips != null) {
+      _showtips!.set(v);
+    } else if (v != null) {
+      _showtips = BooleanObservable(Binding.toKey(id, 'showtips'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  bool get showtips => _showtips?.get() ?? true;
+
   ChartPainterModel(
     Model super.parent,
     super.id, {
     dynamic type,
+    dynamic showtips,
     dynamic showlegend,
     dynamic title,
     dynamic horizontal,
@@ -58,6 +71,7 @@ class ChartPainterModel extends BoxModel {
     this.animated = animated;
     this.horizontal = horizontal;
     this.showlegend = showlegend;
+    this.showtips = showtips;
     this.legendsize = legendsize;
     this.type = type?.trim()?.toLowerCase();
 
@@ -106,6 +120,7 @@ class ChartPainterModel extends BoxModel {
     showlegend = Xml.get(node: xml, tag: 'showlegend');
     legendsize = Xml.get(node: xml, tag: 'legendsize');
     type = Xml.get(node: xml, tag: 'type');
+    showtips = Xml.get(node: xml, tag: 'showtips');
     title = Xml.get(node: xml, tag: 'title');
   }
 

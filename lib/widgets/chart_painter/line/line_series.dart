@@ -177,9 +177,11 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
   }
 
   void plot(dynamic series, dynamic data) {
-    labels.add(label ?? "");
-    FlSpotExtended point =
-        FlSpotExtended(series, data, toDouble(x) ?? 0, toDouble(y) ?? 0);
-    lineDataPoint.add(point);
+   if (x != null && y != null) {
+     labels.add(label ?? "");
+      FlSpotExtended point =
+      FlSpotExtended(series, data, toDouble(x) ?? 0, toDouble(y) ?? 0);
+      lineDataPoint.add(point);
+    }
   }
 }

@@ -77,17 +77,19 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
         : PageConfiguration(uri: Uri.tryParse("/"), title: "Dummy");
   }
 
-  FrameworkView? frameworkOf() {
-    if (pages.isNotEmpty) {
-      var page = pages.last;
-      if (page is CustomMaterialPage && page.child is ModalManagerView) {
-        var manager = page.child as ModalManagerView;
-        if (manager.model.child is FrameworkView) {
-          return manager.model.child as FrameworkView;
-        }
-      }
-    }
-    return null;
+  FrameworkView? frameworkOf({Page? page}) {
+
+    if (_pages.isEmpty) return null;
+    page ??= _pages.last;
+    if (_pages.last is! CustomMaterialPage) return null;
+
+    if (page is! CustomMaterialPage) return null;
+    if (page.child is! ModalManagerView) return null;
+
+    var manager = page.child as ModalManagerView;
+    if (manager.model.child is! FrameworkView)  return null;
+
+    return manager.model.child as FrameworkView;
   }
 
   @override
@@ -119,10 +121,10 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
       }
 
       // open the page
-      return navigateTo(startPage);
+      return goto(startPage, initiator: setNewRoutePath);
     }
 
-    // get url
+
     String? url = configuration.uri?.toString();
 
     // deeplink specified
@@ -130,79 +132,94 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
       url = await _buildDeeplinkUrl(url);
     }
 
+
     // open the url
-    return navigateTo(url, transition: configuration.transition);
+    return goto(url, transition: configuration.transition, initiator: setNewRoutePath);
   }
 
-  Future<void> navigateTo(String? url, {String? transition}) async {
+  Future<void> goto(String? url, {String? transition, required dynamic initiator}) async {
 
     // page in navigation history?
+    var list = _pages.reversed.toList();
+
+    // find the page
     Page? page;
     if (url == "/" && _pages.isNotEmpty) {
       page = _pages.first;
     } else {
-      page = _pages.reversed.firstWhereOrNull((page) => (page.name == url));
+      page = list.firstWhereOrNull((page) => (page.name == url));
     }
 
-    // navigate back to the page if found in the navigation history
-    if (page != null) {
-      bool notify = false;
+    // open the page if not found in the navigation history
+    if (page == null) return _open(url, transition: transition);
 
-      // remove pages until target page encountered
-      while (_pages.isNotEmpty && _pages.last != page) {
-        bool canPop = await _canPop(_pages.last);
-        if (!canPop) break;
+    var i = list.indexOf(page);
 
-        // remove the last page from the list
-        notify = true;
-        _pages.removeLast();
-      }
-
-      // notify listeners
-      if (notify) notifyListeners();
-    }
-
-    // open a new page
-    else {
-      _open(url, transition: transition);
-    }
+    // go back
+    _goBack(i, initiator: initiator);
   }
 
   @override
-  Widget build(BuildContext context) => Navigator(
-    key: navigatorKey,
-    pages: List.of(_pages),
-    onPopPage: _onPopPage,
-    observers: [NavigationObserver()],
-  );
+  Future<bool> popRoute() async => _goBack(1, initiator: popRoute);
 
-  Future<bool> _canPop(Page page) async {
-    bool canPop = true;
 
-    // check if page can be popped
-    if (_pages.last.arguments is PageConfiguration &&
-        navigatorKey.currentState?.mounted == true) {
-      var configuration = _pages.last.arguments as PageConfiguration;
-      if (configuration.route != null) {
-        var route = configuration.route!;
-        if (route.popDisposition == RoutePopDisposition.doNotPop) {
-          canPop = false;
-        }
-        if (!canPop) route.onPopInvoked(canPop);
+  // this value is used in part to control web navigation
+  static bool _isNavigatingWebHistory = false;
+
+  Future<bool> _goBack(int pages, {required dynamic initiator}) async {
+
+    // no navigation
+    if (pages == 0) return false;
+
+    // set absolute
+    pages = pages.abs();
+
+    // anything more than the stack size, set to stack size - 1
+    if (_pages.length - pages < 1) pages = _pages.length - 1;
+
+    // cannot go past the end of the nav stack
+    if (pages == 0) return false;
+
+    // remove pages
+    int pagesToRemove = 0;
+    for (int i = 0; i < pages; i++) {
+      var page = _pages.elementAt(_pages.length - i - 1);
+      var pop  = _isNavigatingWebHistory ? true : await canPop(page);
+      if (!pop) break;
+      pagesToRemove = pagesToRemove + 1;
+    }
+
+    // no pages to remove
+    if (pagesToRemove == 0) return false;
+
+    // close the app?
+    if (pagesToRemove >= _pages.length) {
+      bool ok = await _showQuitDialog();
+      if (!ok) return false;
+    }
+
+    // on web, we simply manipulate the history stack
+    // in order to navigate back. On VM (mobile and desktop),
+    // we remove pages from the _pages list and notify listeners.
+    // We do this since the browser's history needs to be synced
+    // with the _pages stack
+    if (Platform.isWeb) {
+      _isNavigatingWebHistory = false;
+      if (initiator != setNewRoutePath) {
+        _isNavigatingWebHistory = await Platform.navigateBackInHistory(pagesToRemove);
+        if (_isNavigatingWebHistory) return true;
       }
     }
 
-    return canPop;
-  }
-
-  @override
-  Future<bool> popRoute() async {
-    // this only fires on mobile
-    if (_pages.length > 1) {
-      return _goback(1);
-    } else {
-      return showQuitDialog();
+    // remove pages from the stack
+    for (int i=0; i<pagesToRemove; i++) {
+      _pages.removeLast();
     }
+
+    // notify listeners of pages change
+    notifyListeners();
+
+    return true;
   }
 
   Future<String?> _buildDeeplinkUrl(String? url) async {
@@ -269,33 +286,19 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
     notifyListeners();
   }
 
-  Future<bool> _goback(int pages, {bool force = false}) async {
-    // set absolute
-    pages = pages.abs();
+  // determines if the page can pop
+  Future<bool> canPop(Page page) async {
 
-    // anything more than the stack size, set to stack size - 1
-    if (_pages.length - pages < 1) pages = _pages.length - 1;
+    // get list of page navigation observers
+    var listeners = NavigationObserver().listenersOfPage(page);
+    if (listeners.isEmpty) return true;
 
-    // cannot go past the end of the nav stack
-    if (pages == 0) return false;
+    // traverse listeners list
+    for (var listener in listeners) {
+        var canPop = await listener.canPop();
+        if (!canPop) return false;
+      }
 
-    // on web, goBackPages returns true. on VM (mobiler and desktop) its important
-    // that this returns false indicating we need to do a page naviagtion manually
-    // by removing page(s) from _pages
-    bool ok = await Platform.goBackPages(pages);
-    if (ok) return true;
-
-    // remove the page
-    bool notify = false;
-    for (int i = 0; i < pages; i++) {
-      bool canPop = force ? true : await _canPop(_pages.last);
-      if (!canPop) break;
-
-      notify = true;
-      _pages.removeLast();
-    }
-
-    if (notify) notifyListeners();
     return true;
   }
 
@@ -304,7 +307,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
     try {
       Page? page;
 
-      var route = ModalRoute.of(context);
+      var route = NavigationObserver.routeOf(context);
       if ((route?.settings != null) && (route!.settings is Page)) {
         page = (route.settings as Page);
       }
@@ -322,21 +325,12 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
   // top position in stack = 0
   bool isVisible(BuildContext context) => (positionInStack(context) == 0);
 
-  Page? getPage(BuildContext context) {
-    Page? page;
-    try {
-      var route = ModalRoute.of(context);
-      if ((route?.settings != null) && (route!.settings is Page)) {
-        page = (route.settings as Page);
-      }
-    } catch (e) {
-      Log().debug('$e');
-    }
-    return page;
-  }
+  Future<bool> open(
+        Map<String, String?>? parameters,
+      { bool? refresh = false,
+        Model? model,
+        String? dependency}) async {
 
-  Future<bool> open(Map<String, String?>? parameters,
-      {bool? refresh = false, Model? model, String? dependency}) async {
     bool ok = true;
     parameters ??= <String, String>{};
 
@@ -450,11 +444,10 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
     return ok;
   }
 
-  Future<bool> back(dynamic until, {bool force = false}) async {
-    bool ok = true;
+  Future<bool> back(dynamic until) async {
 
     // determine number of pages to go back
-    int? pages;
+    int pages = 0;
     if (until is int) pages = until;
     if (until is String) {
       // match by index
@@ -478,11 +471,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
     }
 
     // go back
-    if (pages != null) {
-      ok = await _goback(pages, force: force);
-    }
-
-    return ok;
+    return await _goBack(pages, initiator: back);
   }
 
   Future<bool> refresh() async {
@@ -510,7 +499,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
     return ok;
   }
 
-  Widget quitAppDialog(BuildContext context) {
+  static Widget _quitAppDialog(BuildContext context) {
     var style = TextStyle(color: Theme.of(context).colorScheme.primary);
     var title = Text('${phrase.close} ${phrase.application}?', style: style);
 
@@ -547,14 +536,14 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
         insetPadding: EdgeInsets.zero);
   }
 
-  Future<bool> showQuitDialog() async {
+  Future<bool> _showQuitDialog() async {
     if (navigatorKey.currentContext == null) return true;
 
     bool? result = await showDialog<bool>(
         context: navigatorKey.currentContext!,
         barrierDismissible: true,
         useRootNavigator: false,
-        builder: (context) => quitAppDialog(context));
+        builder: (context) => _quitAppDialog(context));
 
     return result ?? false;
   }
@@ -576,11 +565,19 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
   }
 
   void setPageTitle(BuildContext context, String? title) {
-    if (!isNullOrEmpty(title)) {
-      Page? page = getPage(context);
-      if ((page is CustomMaterialPage) && (page.arguments is PageConfiguration)) {
-        (page.arguments as PageConfiguration).title = title;
-      }
+
+    if (isNullOrEmpty(title)) return;
+    Page? page = NavigationObserver.pageOf(context);
+    if (page is CustomMaterialPage && page.arguments is PageConfiguration) {
+      (page.arguments as PageConfiguration).title = title;
     }
   }
+
+  @override
+  Widget build(BuildContext context) => Navigator(
+    key: navigatorKey,
+    pages: List.of(_pages),
+    onPopPage: _onPopPage,
+    observers: [NavigationObserver()],
+  );
 }

@@ -2,10 +2,10 @@
 import 'dart:async';
 import 'package:fml/dialog/manager.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
-import 'package:fml/widgets/goback/goback.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/widget/model.dart';
@@ -26,7 +26,7 @@ class FormView extends StatefulWidget implements ViewableWidgetView {
   FormViewState createState() => FormViewState();
 }
 
-class FormViewState extends ViewableWidgetState<FormView> implements IGpsListener {
+class FormViewState extends ViewableWidgetState<FormView> implements IGpsListener, INavigatorObserver {
   Widget? busy;
 
   @override
@@ -39,8 +39,11 @@ class FormViewState extends ViewableWidgetState<FormView> implements IGpsListene
   void initState() {
     super.initState();
 
-    // Listen to GPS
+    // start listening to the GPS
     if (widget.model.geocode == true) System().gps.registerListener(this);
+
+    // listen for pop events
+    NavigationObserver().registerListener(this);
 
     // do form initialization
     widget.model.initialize();
@@ -48,11 +51,31 @@ class FormViewState extends ViewableWidgetState<FormView> implements IGpsListene
 
   @override
   void dispose() {
-    // Stop Listening to GPS
+
+    // stop listening to the GPS
     System().gps.removeListener(this);
+
+    // stop listening to route changes
+    NavigationObserver().removeListener(this);
 
     super.dispose();
   }
+
+  // Nav Changes used to hide overlay
+  @override
+  BuildContext getNavigatorContext() => context;
+
+  @override
+  Map<String, String>? onNavigatorPop() => null;
+
+  @override
+  void onNavigatorPush({Map<String?, String>? parameters}) {}
+
+  @override
+  onNavigatorChange() => {};
+
+  @override
+  Future<bool> canPop() async => await quit();
 
   Future<bool> quit() async {
     Model.unfocus();
@@ -64,10 +87,10 @@ class FormViewState extends ViewableWidgetState<FormView> implements IGpsListene
       var color = Colors.black87;
       var no = Text(phrase.no,
           style: TextStyle(
-              fontSize: 14, color: color, fontWeight: FontWeight.w500));
+              fontSize: 18, color: color, fontWeight: FontWeight.w600));
       var yes = Text(phrase.yes,
           style: TextStyle(
-              fontSize: 14, color: color, fontWeight: FontWeight.w500));
+              fontSize: 18, color: color, fontWeight: FontWeight.w600));
       int? response = await widget.model.framework?.show(
           type: DialogType.info,
           title: phrase.continueQuitting,
@@ -134,15 +157,12 @@ class FormViewState extends ViewableWidgetState<FormView> implements IGpsListene
     /// Busy / Loading Indicator
     busy ??= BusyModel(widget.model,
             visible: widget.model.busy, observable: widget.model.busyObservable)
-        .getView();
+            .getView();
 
     // stack gets the same size as the view when busy is positioned rather than center
-    view = GoBack(
-        canGoBack: quit,
-        child: Stack(children: [
+    view = Stack(children: [
           view,
-          Positioned(left: 0, right: 0, top: 0, bottom: 0, child: busy!)
-        ]));
+          Positioned(left: 0, right: 0, top: 0, bottom: 0, child: busy!)]);
 
     // apply user defined constraints
     return view;

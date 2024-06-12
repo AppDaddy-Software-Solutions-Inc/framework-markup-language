@@ -438,10 +438,10 @@ class System extends Model implements IEventManager {
     {
       var no = Text(phrase.no,
           style:
-          const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w500));
+          const TextStyle(fontSize: 18, color: Colors.black87, fontWeight: FontWeight.w500));
       var yes = Text(phrase.yes,
           style:
-          const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w500));
+          const TextStyle(fontSize: 18, color: Colors.black87, fontWeight: FontWeight.w500));
 
       var response = await DialogManager.show(context,
           type: DialogType.warning,
@@ -527,9 +527,7 @@ class System extends Model implements IEventManager {
     await app.setActive();
 
     // navigate to page?
-    if (navigate) {
-      NavigationManager().navigateTo(app.homePage);
-    }
+    if (navigate) NavigationManager().goto(app.homePage, initiator: launchApplication);
   }
 
   static Future<bool> addApplication(ApplicationModel app) async {

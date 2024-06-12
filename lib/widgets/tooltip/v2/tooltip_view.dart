@@ -154,12 +154,18 @@ class TooltipViewState extends ViewableWidgetState<TooltipView>
   // Nav Changes used to hide overlay
   @override
   BuildContext getNavigatorContext() => context;
+
   @override
   Map<String, String>? onNavigatorPop() => null;
+
   @override
   void onNavigatorPush({Map<String?, String>? parameters}) {}
+
   @override
   onNavigatorChange() => hideOverlay();
+
+  @override
+  Future<bool> canPop() async => true;
 
   ElementBox get _screenSize => _getScreenSize();
 

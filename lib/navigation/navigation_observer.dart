@@ -5,8 +5,9 @@ import 'package:fml/navigation/page.dart';
 abstract class INavigatorObserver {
   onNavigatorPush({Map<String?, String>? parameters});
   Map<String?, String>? onNavigatorPop();
-  onNavigatorChange();
+  void onNavigatorChange();
   BuildContext getNavigatorContext();
+  Future<bool> canPop();
 }
 
 class NavigationObserver extends NavigatorObserver {
@@ -132,27 +133,40 @@ class NavigationObserver extends NavigatorObserver {
 
   List<INavigatorObserver> listenersOf(Route? route) {
 
-    List<INavigatorObserver>  observers = [];
-    if (route == null) return observers;
+    if (route == null) return [];
+
+    List<INavigatorObserver> listeners = [];
 
     // traverse listeners
     for (INavigatorObserver listener in _listeners) {
-      BuildContext context = listener.getNavigatorContext();
-      Route? listenerRoute = ModalRoute.of(context);
-      if (route == listenerRoute) observers.add(listener);
+      if (route == routeOf(listener.getNavigatorContext())) listeners.add(listener);
     }
-    return observers;
+
+    return listeners;
   }
 
-  INavigatorObserver? listenerOfExactType(Route route, Type T) {
+  List<INavigatorObserver> listenersOfPage(Page? page) {
+
+    if (page == null) return [];
+
+    List<INavigatorObserver>  listeners = [];
+
+    // traverse listeners
     for (INavigatorObserver listener in _listeners) {
-      BuildContext context = listener.getNavigatorContext();
-
-      Route? listenerRoute = ModalRoute.of(context);
-      if ((route == listenerRoute) && (listener.runtimeType == T)) {
-        return listener;
-      }
+      if (pageOf(listener.getNavigatorContext()) == page) listeners.add(listener);
     }
-    return null;
+
+    return listeners;
   }
+
+  static Page? pageOf(BuildContext context) {
+    Page? page;
+    var route = routeOf(context);
+    if (route?.settings != null && route?.settings is Page) {
+      page = (route!.settings as Page);
+    }
+    return page;
+  }
+
+  static Route? routeOf(BuildContext context) => ModalRoute.of(context);
 }

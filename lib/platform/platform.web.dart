@@ -191,7 +191,10 @@ class Platform {
       true;
   static Future<bool> deleteFile(String filename) async => true;
 
-  static Future<bool> goBackPages(int pages) async {
+  // keep the browser history in sync with the application history
+  // isNavigatingBackInHistory is used by the setNewRoutePath() routine
+  // to avoid double navigation back() calls
+  static Future<bool> navigateBackInHistory(int pages) async {
     try {
       String id = "fmlGo2";
       if (document.getElementById(id) == null) {
@@ -201,10 +204,10 @@ class Platform {
         document.head!.append(script);
       }
       context.callMethod(id, [-1 * pages]);
-      return true;
     } catch (e) {
       return false;
     }
+    return true;
   }
 
   static int getNavigationType() {

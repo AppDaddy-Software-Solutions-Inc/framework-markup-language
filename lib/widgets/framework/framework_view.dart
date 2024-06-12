@@ -191,6 +191,9 @@ class FrameworkViewState extends State<FrameworkView>
     }
   }
 
+  @override
+  Future<bool> canPop() async => true;
+
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
   onModelChange(Model model, {String? property, dynamic value}) {

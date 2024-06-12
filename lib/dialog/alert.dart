@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/goback/goback.dart';
 
 enum Types { error, success, info, warning, none }
 
@@ -100,7 +99,6 @@ class Alert {
   final List<Widget>? buttons;
   final Function? closeFunction;
   final Icon? closeIcon;
-  final bool onWillPopActive;
   final AlertAnimation? alertAnimation;
 
   /// Alert constructor
@@ -118,7 +116,6 @@ class Alert {
     this.buttons,
     this.closeFunction,
     this.closeIcon,
-    this.onWillPopActive = false,
     this.alertAnimation,
   });
 
@@ -215,9 +212,7 @@ class Alert {
                 width: double.infinity, height: double.infinity),
         child: Align(alignment: style.alertAlignment, child: dialog));
 
-    return onWillPopActive
-        ? GoBack(canGoBack: () async => false, child: myChild)
-        : myChild;
+    return myChild;
   }
 
 // Returns the close button on the top right

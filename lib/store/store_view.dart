@@ -102,6 +102,9 @@ class _ViewState extends State<StoreView>
     });
   }
 
+  @override
+  Future<bool> canPop() async => true;
+
   /// Callback to fire the [_ViewState.build] when the [StoreModel] changes
   @override
   onModelChange(Model model, {String? property, dynamic value}) {

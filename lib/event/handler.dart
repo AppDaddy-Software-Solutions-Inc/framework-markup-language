@@ -370,10 +370,10 @@ class EventHandler extends Eval {
     //if (context != null) color = Theme.of(context).buttonTheme.colorScheme?.inversePrimary ?? Theme.of(context).colorScheme.inversePrimary;
     var no = Text(toStr(phrase1) ?? phrase.no,
         style:
-            TextStyle(fontSize: 14, color: color, fontWeight: FontWeight.w500));
+            TextStyle(fontSize: 18, color: color, fontWeight: FontWeight.w600));
     var yes = Text(toStr(phrase2) ?? phrase.yes,
         style:
-            TextStyle(fontSize: 14, color: color, fontWeight: FontWeight.w500));
+            TextStyle(fontSize: 18, color: color, fontWeight: FontWeight.w600));
 
     int? response = await model.framework?.show(
         type: toEnum(toStr(type), DialogType.values),

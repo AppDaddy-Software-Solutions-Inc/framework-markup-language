@@ -260,7 +260,10 @@ class Platform {
     }
   }
 
-  static Future<bool> goBackPages(int pages) async => false;
+  // this method is not implemented for the vm platform
+  // it is used on web to manage the back button and keep the
+  // browser history in sync with the application history
+  static Future<bool> navigateBackInHistory(int pages) async => false;
 
   static int getNavigationType() => 0;
 

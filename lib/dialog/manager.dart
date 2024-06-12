@@ -14,14 +14,14 @@ class DialogManager {
   static void _showDialog(BuildContext context,
       Completer<AlertResponse> completer, DialogRequest request) {
     // build buttons
-    List<OutlinedButton> buttons = [];
+    List<TextButton> buttons = [];
 
     int i = 0;
 
     if (request.buttons != null) {
       for (final button in request.buttons!) {
         final idx = i;
-        var b = OutlinedButton(
+        var b = TextButton(
             child: button,
             onPressed: () {
               completer.complete(AlertResponse(pressed: idx));

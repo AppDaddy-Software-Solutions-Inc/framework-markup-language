@@ -88,10 +88,9 @@ class CheckboxModel extends FormFieldModel implements IFormField {
 
   // set answer
   @override
-  Future<bool> answer(dynamic v, {bool? delete}) async {
+  Future<bool> answer(dynamic v, {bool delete = false}) async {
     touched = true;
-    bool ok =
-        (delete == true) ? await _removeAnswer(v) : await _insertAnswer(v);
+    bool ok = delete ? await _removeAnswer(v) : await _insertAnswer(v);
     return ok;
   }
 
@@ -315,6 +314,7 @@ class CheckboxModel extends FormFieldModel implements IFormField {
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
+
     // deserialize
     super.deserialize(xml);
 
@@ -368,7 +368,11 @@ class CheckboxModel extends FormFieldModel implements IFormField {
   }
 
   void _setSelectedOptions(dynamic value) {
+
+    // clear all options
     selectedOptions.clear();
+
+    // insert new option
     for (var option in options) {
       bool contains = false;
       if (value is String && option.value == value) contains = true;
@@ -385,16 +389,22 @@ class CheckboxModel extends FormFieldModel implements IFormField {
   }
 
   Future<bool> setSelectedOption(OptionModel? option) async {
+
     if (option == null) return true;
 
+    // add/remove option on toggle
+    var checked = !selectedOptions.contains(option);
+
     // set answer
-    bool ok =
-        await answer(option.value, delete: selectedOptions.contains(option));
+    bool ok = await answer(option.value, delete: !checked);
+
     if (ok) {
-      // check/uncheck
-      selectedOptions.contains(option)
-          ? selectedOptions.remove(option)
-          : selectedOptions.add(option);
+
+      // remove option
+      if (!checked && selectedOptions.contains(option)) selectedOptions.remove(option);
+
+      // insert option
+      if ( checked && !selectedOptions.contains(option)) selectedOptions.add(option);
 
       // set data
       List<dynamic> data = [];
@@ -406,6 +416,8 @@ class CheckboxModel extends FormFieldModel implements IFormField {
       // fire onchange
       await onChange(context);
     }
+
+
     return ok;
   }
 

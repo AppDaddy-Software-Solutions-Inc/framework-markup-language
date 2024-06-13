@@ -38,7 +38,7 @@ class CheckboxModel extends FormFieldModel implements IFormField {
     } else {
       if (v != null) {
         _value = ListObservable(Binding.toKey(id, 'value'), v,
-            scope: scope, listener: onPropertyChange);
+            scope: scope, listener: onValueChange);
       }
     }
   }
@@ -93,6 +93,11 @@ class CheckboxModel extends FormFieldModel implements IFormField {
     bool ok =
         (delete == true) ? await _removeAnswer(v) : await _insertAnswer(v);
     return ok;
+  }
+
+  void onValueChange(Observable observable) {
+    _setSelectedOptions(observable.get());
+    return super.onPropertyChange(observable);
   }
 
   Future<bool> _insertAnswer(dynamic v) async {
@@ -333,7 +338,7 @@ class CheckboxModel extends FormFieldModel implements IFormField {
     _buildOptions();
 
     // set the default selected options
-    if (datasource == null) _setSelectedOptions();
+    if (datasource == null) _setSelectedOptions(value);
   }
 
   void _buildOptions() {
@@ -362,7 +367,7 @@ class CheckboxModel extends FormFieldModel implements IFormField {
     selectedOptions.clear();
   }
 
-  void _setSelectedOptions() {
+  void _setSelectedOptions(dynamic value) {
     selectedOptions.clear();
     for (var option in options) {
       bool contains = false;
@@ -419,7 +424,7 @@ class CheckboxModel extends FormFieldModel implements IFormField {
       });
 
       // set selected option
-      _setSelectedOptions();
+      _setSelectedOptions(value);
     } catch (e) {
       Log().error('Error building list. Error is $e', caller: 'CHECKBOX');
     }

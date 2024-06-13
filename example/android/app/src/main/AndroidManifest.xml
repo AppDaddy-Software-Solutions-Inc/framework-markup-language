@@ -24,7 +24,7 @@
 
     <application
         android:name="${applicationName}"
-        android:label="Flutter Markup Language"
+        android:label="Framework Markup Language"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
         <activity

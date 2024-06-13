@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
     return FmlEngine(
             ApplicationType.multi,
             domain: example1,
-            title: "Flutter Markup Language V$version",
+            title: "Framework Markup Language V$version",
             version: version,
             color: Colors.lightBlue,
             brightness: Brightness.light,

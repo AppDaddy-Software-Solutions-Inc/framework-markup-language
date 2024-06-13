@@ -2,7 +2,7 @@
     <CONFIG>
 
         <!-- Settings -->
-        <APPLICATION_NAME value="Flutter Markup Language" />
+        <APPLICATION_NAME value="Framework Markup Language" />
         <VERSION value="3.0.0"/>
         <APP_ICON value="assets/images/logo.png" />
 

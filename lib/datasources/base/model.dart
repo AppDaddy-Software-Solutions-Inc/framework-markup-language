@@ -476,13 +476,16 @@ class DataSourceModel extends Model implements IDataSource {
     }
 
     // single non-textual element
-    if (xml.childElements.length == 1) {
-      return xml.childElements.first.toXmlString();
-    }
+    //if (xml.childElements.length == 1) {
+    //  return xml.childElements.first.toXmlString();
+    //}
 
     // find cdata node
     var cdata = xml.children.firstWhereOrNull((child) => child is XmlCDATA);
-    return cdata?.value?.trim();
+    if (data != null) return cdata!.value?.trim();
+
+    // no body
+    return null;
   }
 
   void onIndexChange(Observable index) {

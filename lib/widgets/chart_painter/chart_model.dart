@@ -70,7 +70,7 @@ class ChartPainterModel extends BoxModel {
 
   dynamic get selected => _selected?.get();
 
-  ChartPainterModel(WidgetModel super.parent, super.id,
+  ChartPainterModel(Model super.parent, super.id,
       {dynamic type,
       dynamic showlegend,
       dynamic title,
@@ -92,8 +92,7 @@ class ChartPainterModel extends BoxModel {
     busy = false;
   }
 
-  static ChartPainterModel? fromTemplate(
-      WidgetModel parent, Template template) {
+  static ChartPainterModel? fromTemplate( Model parent, Template template) {
     ChartPainterModel? model;
     try {
       XmlElement? xml =

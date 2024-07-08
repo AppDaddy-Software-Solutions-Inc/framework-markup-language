@@ -11,7 +11,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-   String example1 = 'https://test.appdaddy.co';
+  String example1 = 'https://test.appdaddy.co';
+
 
     var version = "3.0.0";
 
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
     return FmlEngine(
             ApplicationType.multi,
             domain: example1,
-            title: "Flutter Markup Language V$version",
+            title: "Framework Markup Language V$version",
             version: version,
             color: Colors.lightBlue,
             brightness: Brightness.light,

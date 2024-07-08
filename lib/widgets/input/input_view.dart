@@ -14,7 +14,6 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helpers/helpers.dart';
 
 class InputView extends StatefulWidget implements ViewableWidgetView {
   @override
@@ -78,13 +77,11 @@ class _InputViewState extends ViewableWidgetState<InputView>
     // On Loss of Focus
     focus.addListener(onFocusChange);
 
+    // register listener to the model
     widget.model.registerListener(this);
 
     // If the model contains any databrokers we fire them before building so we can bind to the data
     widget.model.initialize();
-
-    // debounce listener
-    widget.model.controller!.addListener(_debounce);
   }
 
   @override
@@ -207,34 +204,14 @@ class _InputViewState extends ViewableWidgetState<InputView>
   }
 
   void _handleOnChange(String value) {
-    if (!widget.model.editable) {
-      widget.model.controller?.value =
-          TextEditingValue(text: widget.model.value);
-      return;
-    }
-  }
 
-  void _handleSubmit(String _) {
-    try {
-      if (isNullOrEmpty(widget.model.keyboardInput) ||
-          widget.model.keyboardInput!.toLowerCase() == 'done' ||
-          widget.model.keyboardInput!.toLowerCase() == 'go' ||
-          widget.model.keyboardInput!.toLowerCase() == 'search' ||
-          widget.model.keyboardInput!.toLowerCase() == 'send') {
-        focus.unfocus();
-        return;
-      } else if (widget.model.keyboardInput!.toLowerCase() == 'next') {
-        try {
-          FocusScope.of(context).nextFocus();
-        } catch (e) {
-          focus.unfocus();
-        }
-        return;
-      } else {
-        return;
-      }
-    } catch (e) {
-      return;
+    // this should only trigger when the input changes
+    if (commitTimer?.isActive ?? false) commitTimer!.cancel();
+
+    // reset the timer
+    var milliseconds = widget.model.debounce;
+    if (milliseconds > 0) {
+      commitTimer = Timer(Duration(milliseconds: milliseconds), () async => _commit());
     }
   }
 
@@ -247,6 +224,7 @@ class _InputViewState extends ViewableWidgetState<InputView>
 
     // commit changes on loss of focus
     if (!focus.hasFocus) {
+
       // cancel the debounce timer
       if (commitTimer?.isActive ?? false) commitTimer!.cancel();
 
@@ -262,7 +240,10 @@ class _InputViewState extends ViewableWidgetState<InputView>
   }
 
   Future<bool> _commit() async {
-    String? value = widget.model.controller?.text;
+
+    //if (!widget.model.editable) return true;
+
+    var value = widget.model.controller?.text;
 
     // value changed?
     if (widget.model.value != value) {
@@ -276,24 +257,11 @@ class _InputViewState extends ViewableWidgetState<InputView>
     return true;
   }
 
-  // triggers when data is typed
-  void _debounce() {
-
-    // this should only trigger with the oninputchange
-    if (commitTimer?.isActive ?? false) commitTimer!.cancel();
-
-    // reset the timer
-    var milliseconds = widget.model.debounce;
-    if (milliseconds > 0) {
-      commitTimer = Timer(Duration(milliseconds: milliseconds), () async => _commit());
-    }
-  }
-
   void onClear() {
     if (widget.onChangeCallback != null) {
       widget.onChangeCallback(widget.model, '');
     }
-    widget.model.controller!.text = '';
+    widget.model.controller?.text = '';
     _commit();
   }
 
@@ -600,7 +568,11 @@ class _InputViewState extends ViewableWidgetState<InputView>
             : widget.model.maxlines ??
                 (widget.model.wrap == true ? null : lines ?? 1);
 
+    bool readOnly = !(widget.model.enabled && widget.model.editable);
+
     Widget view = TextField(
+        readOnly: readOnly,
+        enabled: widget.model.enabled,
         controller: widget.model.controller,
         focusNode: focus,
         autofocus: false,
@@ -610,7 +582,6 @@ class _InputViewState extends ViewableWidgetState<InputView>
         keyboardType: keyboard,
         textInputAction: action,
         inputFormatters: formatters,
-        enabled: widget.model.enabled,
         style: style,
         textAlignVertical: widget.model.expand
             ? TextAlignVertical.top
@@ -622,8 +593,7 @@ class _InputViewState extends ViewableWidgetState<InputView>
             ? MaxLengthEnforcement.enforced
             : MaxLengthEnforcement.none,
         decoration: _getDecoration(),
-        onChanged: _handleOnChange,
-        onSubmitted: _handleSubmit);
+        onChanged: _handleOnChange);
 
     // dense
     if (widget.model.dense) {

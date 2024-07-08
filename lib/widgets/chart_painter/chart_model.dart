@@ -54,18 +54,33 @@ class ChartPainterModel extends BoxModel {
 
   bool get showtips => _showtips?.get() ?? true;
 
-  ChartPainterModel(
-    Model super.parent,
-    super.id, {
-    dynamic type,
-    dynamic showtips,
-    dynamic showlegend,
-    dynamic title,
-    dynamic horizontal,
-    dynamic animated,
-    dynamic selected,
-    dynamic legendsize,
-  }) : super(scope: Scope(parent: parent.scope)) {
+  /// Contains the data map from the row (point) that is selected
+  // data map from the row that is currently selected
+  ListObservable? _selected;
+  set selected(dynamic v) {
+    if (_selected != null) {
+      _selected!.set(v);
+    } else if (v != null) {
+      // we don't want this to update the table view so don't add listener: onPropertyChange
+      _selected = ListObservable(Binding.toKey(id, 'selected'), null,
+          scope: scope, listener: onPropertyChange);
+      _selected!.set(v);
+    }
+  }
+
+  dynamic get selected => _selected?.get();
+
+  ChartPainterModel(WidgetModel super.parent, super.id,
+      {dynamic type,
+      dynamic showlegend,
+      dynamic title,
+      dynamic horizontal,
+      dynamic showtips,
+      dynamic animated,
+      dynamic selected,
+      dynamic legendsize,
+      dynamic onclick})
+      : super(scope: parent.scope) {
     this.selected = selected;
     this.title = title;
     this.animated = animated;
@@ -74,12 +89,11 @@ class ChartPainterModel extends BoxModel {
     this.showtips = showtips;
     this.legendsize = legendsize;
     this.type = type?.trim()?.toLowerCase();
-
     busy = false;
   }
 
   static ChartPainterModel? fromTemplate(
-      Model parent, Template template) {
+      WidgetModel parent, Template template) {
     ChartPainterModel? model;
     try {
       XmlElement? xml =
@@ -122,29 +136,6 @@ class ChartPainterModel extends BoxModel {
     type = Xml.get(node: xml, tag: 'type');
     showtips = Xml.get(node: xml, tag: 'showtips');
     title = Xml.get(node: xml, tag: 'title');
-  }
-
-  /// Contains the data map from the row (point) that is selected
-  ListObservable? _selected;
-  set selected(dynamic v) {
-    if (_selected != null) {
-      _selected!.set(v);
-    } else if (v != null) {
-      _selected = ListObservable(Binding.toKey(id, 'selected'), null,
-          scope: scope, listener: onPropertyChange);
-      _selected!.set(v);
-    }
-  }
-
-  get selected => _selected?.get();
-
-  setSelected(dynamic v) {
-    if (_selected == null) {
-      _selected =
-          ListObservable(Binding.toKey(id, 'selected'), null, scope: scope);
-      _selected!.registerListener(onPropertyChange);
-    }
-    _selected?.set(v, notify: false);
   }
 
   /// If the chart should animate it's series
@@ -246,6 +237,7 @@ class ChartPainterModel extends BoxModel {
     return views;
   }
 
+  // must be implemented, so we return offstage as all charts are inherited from this class member
   @override
   Widget getView({Key? key}) => const Offstage();
 }

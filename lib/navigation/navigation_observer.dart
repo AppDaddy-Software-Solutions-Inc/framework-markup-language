@@ -23,21 +23,19 @@ class NavigationObserver extends NavigatorObserver {
   void didPush(Route route, Route? previousRoute) {
     super.didPush(route, previousRoute);
 
-    // remember the route
+    // is a framework route?
     if (route.settings.arguments is PageConfiguration) {
-      var configuration = route.settings.arguments as PageConfiguration;
-      configuration.route = route;
-    }
 
-    // notify pushed route
-    var pushed = listenersOf(route);
-    for (var listener in pushed) {
-      listener.onNavigatorPush();
-    }
+      // notify pushed route
+      var pushed = listenersOf(route);
+      for (var listener in pushed) {
+        listener.onNavigatorPush();
+      }
 
-    // signal change
-    for (INavigatorObserver listener in _listeners) {
-      listener.onNavigatorChange();
+      // signal change
+      for (INavigatorObserver listener in _listeners) {
+        listener.onNavigatorChange();
+      }
     }
   }
 
@@ -47,27 +45,32 @@ class NavigationObserver extends NavigatorObserver {
   /// route, is `previousRoute`.
   @override
   void didPop(Route route, Route? previousRoute) {
+
     super.didPop(route, previousRoute);
 
-    // get pushed & popped route listeners
-    var popped = listenersOf(route);
-    var pushed = listenersOf(previousRoute);
+    // is a framework route?
+    if (route.settings.arguments is PageConfiguration) {
 
-    // notify popped route(s)
-    Map<String?, String>? parameters;
-    for (var listener in popped) {
-      var result = listener.onNavigatorPop();
-      parameters ??= result;
-    }
+      // get pushed & popped route listeners
+      var popped = listenersOf(route);
+      var pushed = listenersOf(previousRoute);
 
-    // notify pushed route(s)
-    for (var listener in pushed) {
-      listener.onNavigatorPush(parameters: parameters);
-    }
+      // notify popped route(s)
+      Map<String?, String>? parameters;
+      for (var listener in popped) {
+        var result = listener.onNavigatorPop();
+        parameters ??= result;
+      }
 
-    // signal change
-    for (INavigatorObserver listener in _listeners) {
-      listener.onNavigatorChange();
+      // notify pushed route(s)
+      for (var listener in pushed) {
+        listener.onNavigatorPush(parameters: parameters);
+      }
+
+      // signal change
+      for (INavigatorObserver listener in _listeners) {
+        listener.onNavigatorChange();
+      }
     }
   }
 
@@ -75,25 +78,29 @@ class NavigationObserver extends NavigatorObserver {
   void didRemove(Route route, Route? previousRoute) {
     super.didRemove(route, previousRoute);
 
-    // get pushed & popped route listeners
-    var popped = listenersOf(route);
-    var pushed = listenersOf(previousRoute);
+    // is a framework route?
+    if (route.settings.arguments is PageConfiguration) {
 
-    // notify popped route(s)
-    Map<String?, String>? parameters;
-    for (var listener in popped) {
-      var result = listener.onNavigatorPop();
-      parameters ??= result;
-    }
+      // get pushed & popped route listeners
+      var popped = listenersOf(route);
+      var pushed = listenersOf(previousRoute);
 
-    // notify pushed route(s)
-    for (var listener in pushed) {
-      listener.onNavigatorPush(parameters: parameters);
-    }
+      // notify popped route(s)
+      Map<String?, String>? parameters;
+      for (var listener in popped) {
+        var result = listener.onNavigatorPop();
+        parameters ??= result;
+      }
 
-    // signal change
-    for (INavigatorObserver listener in _listeners) {
-      listener.onNavigatorChange();
+      // notify pushed route(s)
+      for (var listener in pushed) {
+        listener.onNavigatorPush(parameters: parameters);
+      }
+
+      // signal change
+      for (INavigatorObserver listener in _listeners) {
+        listener.onNavigatorChange();
+      }
     }
   }
 
@@ -101,25 +108,29 @@ class NavigationObserver extends NavigatorObserver {
   void didReplace({Route? newRoute, Route? oldRoute}) {
     super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
 
-    // get pushed & popped route listeners
-    var popped = listenersOf(oldRoute);
-    var pushed = listenersOf(newRoute);
+    // is a framework route?
+    if (newRoute?.settings.arguments is PageConfiguration) {
 
-    // notify popped route(s)
-    Map<String?, String>? parameters;
-    for (var listener in popped) {
-      var result = listener.onNavigatorPop();
-      parameters ??= result;
-    }
+      // get pushed & popped route listeners
+      var popped = listenersOf(oldRoute);
+      var pushed = listenersOf(newRoute);
 
-    // notify pushed route(s)
-    for (var listener in pushed) {
-      listener.onNavigatorPush(parameters: parameters);
-    }
+      // notify popped route(s)
+      Map<String?, String>? parameters;
+      for (var listener in popped) {
+        var result = listener.onNavigatorPop();
+        parameters ??= result;
+      }
 
-    /* Signal Change */
-    for (INavigatorObserver listener in _listeners) {
-      listener.onNavigatorChange();
+      // notify pushed route(s)
+      for (var listener in pushed) {
+        listener.onNavigatorPush(parameters: parameters);
+      }
+
+      /* Signal Change */
+      for (INavigatorObserver listener in _listeners) {
+        listener.onNavigatorChange();
+      }
     }
   }
 

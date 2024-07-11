@@ -35,6 +35,18 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
   }
   bool? get view => _view?.get();
 
+  // readonly
+  BooleanObservable? _showIcon;
+  set showIcon(dynamic v) {
+    if (_showIcon != null) {
+      _showIcon!.set(v);
+    } else if (v != null) {
+      _showIcon = BooleanObservable(Binding.toKey(id, 'showIcon'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  bool get showIcon => _showIcon?.get() ?? true;
   /// type of the date picker. Can be "datetime", "date", "time", "range" or "year"
   StringObservable? _type;
   set type(dynamic v) {
@@ -183,10 +195,12 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
     String? type,
     dynamic format,
     dynamic clear,
+    dynamic showIcon,
   }) {
     if (type != null) this.type = type;
     if (format != null) this.format = format;
     if (clear != null) this.clear = clear;
+    if (showIcon != null) this.showIcon = showIcon;
   }
 
   static DatepickerModel? fromXml(Model parent, XmlElement xml,
@@ -224,6 +238,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
 
     mode   = Xml.get(node: xml, tag: 'mode');
     tmode  = Xml.get(node: xml, tag: 'tmode');
+    showIcon  = Xml.get(node: xml, tag: 'showIcon');
   }
 
   @override

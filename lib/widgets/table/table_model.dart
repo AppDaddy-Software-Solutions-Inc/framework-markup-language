@@ -520,6 +520,7 @@ class TableModel extends BoxModel implements IForm {
   @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async {
     await _build(source, list);
+    onDeSelect();
     busy = false;
     return true;
   }

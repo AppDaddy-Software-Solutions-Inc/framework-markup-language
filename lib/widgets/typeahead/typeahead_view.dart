@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
@@ -293,7 +294,7 @@ class TypeaheadViewState extends ViewableWidgetState<TypeaheadView> {
     // hack to force entire list to show
     // note the SuggestionsControllerOverride override
     // on the open method below
-    if (controller.text == widget.model.selectedOption?.label) {
+    if (controller.text == widget.model.selectedOption?.label && !isNullOrEmpty(pattern)) {
       pattern = lastPattern;
     }
     else {

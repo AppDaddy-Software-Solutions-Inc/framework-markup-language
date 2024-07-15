@@ -242,7 +242,7 @@ class TableRowModel extends BoxModel {
     bool ok = true;
 
     // Post the Row
-    if (ok) ok = await _post();
+    if (ok && dirty) ok = await _post();
 
     // mark row clean
     if (ok) {
@@ -277,8 +277,6 @@ class TableRowModel extends BoxModel {
   }
 
   Future<bool> _post() async {
-    if (dirty == false) return true;
-
     bool ok = true;
     if (scope != null && postbrokers != null) {
       for (String id in postbrokers!) {

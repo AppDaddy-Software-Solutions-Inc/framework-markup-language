@@ -177,7 +177,11 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
   }
 
   void plot(dynamic series, dynamic data) {
-   if (x != null && y != null) {
+    //Ensure the databinding is not null, empty, or the string null
+   if (x == null || x == "" || x?.toLowerCase() == "null" || y == null || y == "" || y?.toLowerCase() == "null"){
+     return;
+   }
+   else {
      labels.add(label ?? "");
       FlSpotExtended point =
       FlSpotExtended(series, data, toDouble(x) ?? 0, toDouble(y) ?? 0);

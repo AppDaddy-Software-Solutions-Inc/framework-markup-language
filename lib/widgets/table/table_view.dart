@@ -42,7 +42,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
 
   /// [PlutoGridStateManager] has many methods and properties to dynamically manipulate the grid.
   /// You can manipulate the grid dynamically at runtime by passing this through the [onLoadedHandler] callback.
-  PlutoGridStateManager? stateManager;
+
 
   // pluto grid
   PlutoGrid? grid;
@@ -190,7 +190,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
   }
 
   onTap(PlutoCell cell, int rowIdx) async {
-    stateManager?.setCurrentCell(cell, rowIdx);
+    widget.model.stateManager?.setCurrentCell(cell, rowIdx);
   }
 
   Widget cellBuilder(
@@ -235,9 +235,9 @@ class TableViewState extends ViewableWidgetState<TableView> {
   }
 
   List<PlutoRow> applyFilters(List<PlutoRow> list) {
-    if (stateManager != null) {
-      final filterRows = stateManager!.filterRows;
-      final filterCols = stateManager!.refColumns;
+    if (widget.model.stateManager != null) {
+      final filterRows = widget.model.stateManager!.filterRows;
+      final filterCols = widget.model.stateManager!.refColumns;
       final filter = FilterHelper.convertRowsToFilter(filterRows, filterCols);
       if (filter != null) return list.where(filter).toList();
     }
@@ -245,8 +245,8 @@ class TableViewState extends ViewableWidgetState<TableView> {
   }
 
   List<PlutoRow> applySort(List<PlutoRow> list) {
-    if (stateManager != null) {
-      PlutoColumn? column = stateManager?.getSortedColumn;
+    if (widget.model.stateManager != null) {
+      PlutoColumn? column = widget.model.stateManager?.getSortedColumn;
       if (column != null) {
         list = [...list];
         list.sort((a, b) {
@@ -398,16 +398,16 @@ class TableViewState extends ViewableWidgetState<TableView> {
 
   // called when grid is loaded
   void onLoadedHandler(PlutoGridOnLoadedEvent event) {
-    stateManager = event.stateManager;
+    widget.model.stateManager = event.stateManager;
 
     // autosize columns
-    stateManager?.activateColumnsAutoSize();
+    widget.model.stateManager?.activateColumnsAutoSize();
 
     // show filter bar
-    stateManager?.setShowColumnFilter(widget.model.filter);
+    widget.model.stateManager?.setShowColumnFilter(widget.model.filter);
 
-    stateManager?.removeListener(onSelectedHandler);
-    stateManager?.addListener(onSelectedHandler);
+    widget.model.stateManager?.removeListener(onSelectedHandler);
+    widget.model.stateManager?.addListener(onSelectedHandler);
 
     // fit last column to fill table
     var fit = widget.model.header?.fit?.trim().toLowerCase();
@@ -419,17 +419,17 @@ class TableViewState extends ViewableWidgetState<TableView> {
     var fit = widget.model.header?.fit?.trim().toLowerCase();
     if (fit != "fill") return;
 
-    if (stateManager != null && stateManager!.maxWidth != null) {
+    if (widget.model.stateManager != null && widget.model.stateManager!.maxWidth != null) {
       // get last pluto column
-      var lastColumn = stateManager!.refColumns.isNotEmpty
-          ? stateManager!.refColumns.last
+      var lastColumn = widget.model.stateManager!.refColumns.isNotEmpty
+          ? widget.model.stateManager!.refColumns.last
           : null;
       if (lastColumn == null) return;
 
       // compute unused space
-      var availableWidth = stateManager!.maxWidth!;
+      var availableWidth = widget.model.stateManager!.maxWidth!;
       var usedWidth = 0.0;
-      for (final column in stateManager!.refColumns) {
+      for (final column in widget.model.stateManager!.refColumns) {
         if (column != lastColumn) usedWidth += column.width;
       }
       var unusedSpace = availableWidth - usedWidth;
@@ -437,7 +437,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
 
       // set the last column width
       lastColumn.width = unusedSpace;
-      stateManager!.notifyListeners();
+      widget.model.stateManager!.notifyListeners();
     }
   }
 
@@ -476,15 +476,15 @@ class TableViewState extends ViewableWidgetState<TableView> {
 
   void onDeselectHandler(PlutoGridOnRowDoubleTapEvent event) {
     // de-select all rows
-    for (var row in stateManager!.checkedRows) {
-      stateManager!.setRowChecked(row, false);
+    for (var row in widget.model.stateManager!.checkedRows) {
+      widget.model.stateManager!.setRowChecked(row, false);
     }
 
     // clear model selection
     widget.model.onDeSelect();
 
     // clear grid cell
-    stateManager!.clearCurrentCell();
+    widget.model.stateManager!.clearCurrentCell();
 
     // clear last cell selected
     _lastSelectedCell = null;
@@ -502,11 +502,11 @@ class TableViewState extends ViewableWidgetState<TableView> {
 
   void onSelectedHandler({bool force = false}) {
 
-    if (stateManager?.currentRow == null ||
-        stateManager?.currentColumn == null ||
-        stateManager?.currentCell == null) return;
+    if (widget.model.stateManager?.currentRow == null ||
+        widget.model.stateManager?.currentColumn == null ||
+        widget.model.stateManager?.currentCell == null) return;
 
-    var mgr  = stateManager!;
+    var mgr  = widget.model.stateManager!;
     var row  = mgr.currentRow!;
     var col  = mgr.currentColumn!;
     var cell = mgr.currentCell!;
@@ -569,7 +569,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
   // forces the lazy/page loaders to refire
   void refresh() {
     // force a page reload
-    stateManager?.eventManager
+    widget.model.stateManager?.eventManager
         ?.addEvent(PlutoGridSetColumnFilterEvent(filterRows: []));
   }
 
@@ -604,26 +604,26 @@ class TableViewState extends ViewableWidgetState<TableView> {
 
     switch (mode) {
       case "scale":
-        stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(
+        widget.model.stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(
             autoSizeMode: PlutoAutoSizeMode.scale,
             resizeMode: _getResizeMode()));
         break;
 
       case "equal":
-        stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(
+        widget.model.stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(
             autoSizeMode: PlutoAutoSizeMode.equal,
             resizeMode: _getResizeMode()));
         break;
 
       case "fit":
         for (PlutoColumn column in columns) {
-          stateManager?.autoFitColumn(context, column);
+          widget.model.stateManager?.autoFitColumn(context, column);
         }
         break;
 
       case "none":
       default:
-        stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(
+      widget.model.stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(
             autoSizeMode: PlutoAutoSizeMode.none,
             resizeMode: _getResizeMode()));
         break;
@@ -631,8 +631,8 @@ class TableViewState extends ViewableWidgetState<TableView> {
   }
 
   // return the current row
-  int? get currentRowIndex => stateManager?.currentRow != null
-      ? rows.indexOf(stateManager!.currentRow!)
+  int? get currentRowIndex => widget.model.stateManager?.currentRow != null
+      ? rows.indexOf(widget.model.stateManager!.currentRow!)
       : null;
 
   // delete the row from the grid
@@ -646,14 +646,14 @@ class TableViewState extends ViewableWidgetState<TableView> {
     if (row != null) {
       plutoRow = row > 0 && row < grid!.rows.length ? grid!.rows[row] : null;
     } else {
-      plutoRow = stateManager?.currentRow;
+      plutoRow = widget.model.stateManager?.currentRow;
     }
 
     // delete the row
     if (plutoRow != null) {
       plutoRowIndex = rows.indexOf(plutoRow);
 
-      stateManager?.removeRows([plutoRow]);
+      widget.model.stateManager?.removeRows([plutoRow]);
       if (rows.contains(plutoRow)) {
         rows.remove(plutoRow);
       }
@@ -669,7 +669,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
   int? insertRow(int rowIndex) {
     var row = buildPlutoRow(rowIndex);
     if (row != null) {
-      stateManager?.insertRows(rowIndex, [row]);
+      widget.model.stateManager?.insertRows(rowIndex, [row]);
     }
     return row != null ? rowIndex : null;
   }
@@ -677,7 +677,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
   // sets the page size
   void setFilterBar(bool? on) {
     // toggle filter bar
-    stateManager?.setShowColumnFilter(on == true);
+    widget.model.stateManager?.setShowColumnFilter(on == true);
   }
 
   // sets the page size
@@ -693,13 +693,13 @@ class TableViewState extends ViewableWidgetState<TableView> {
 
     // change the page size
     if (paged) {
-      stateManager?.setPageSize(size);
+      widget.model.stateManager?.setPageSize(size);
       refresh();
     }
   }
 
   Future<Uint8List?> exportToPDF() async {
-    if (stateManager == null) return null;
+    if (widget.model.stateManager == null) return null;
 
     // This ensures we have built out all rows
     buildAllRows();
@@ -713,7 +713,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
     // serialize the list
     List<List<String?>> serialized = [];
     for (var row in list) {
-      serialized.add(getSerializedRow(stateManager!, row));
+      serialized.add(getSerializedRow(widget.model.stateManager!, row));
     }
 
     // get the fonts
@@ -734,7 +734,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
       title: title,
       creator: creator,
       format: format,
-      columns: getColumnTitles(stateManager!),
+      columns: getColumnTitles(widget.model.stateManager!),
       rows: serialized,
       themeData: themeData,
     ).generatePdf();
@@ -743,7 +743,7 @@ class TableViewState extends ViewableWidgetState<TableView> {
   }
 
   Future<String?> exportToCSV() async {
-    if (stateManager == null) return null;
+    if (widget.model.stateManager == null) return null;
 
     // This ensures we have built out all rows
     buildAllRows();
@@ -757,12 +757,12 @@ class TableViewState extends ViewableWidgetState<TableView> {
     // serialize the list
     List<List<String?>> serialized = [];
     for (var row in list) {
-      serialized.add(getSerializedRow(stateManager!, row));
+      serialized.add(getSerializedRow(widget.model.stateManager!, row));
     }
 
     // generate the report
     var csv = const pluto_grid_export.PlutoGridDefaultCsvExport()
-        .export(stateManager!);
+        .export(widget.model.stateManager!);
     return csv;
   }
 

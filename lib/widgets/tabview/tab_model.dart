@@ -1,41 +1,22 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:collection';
-import 'package:fml/event/event.dart';
-import 'package:fml/event/manager.dart';
-import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/framework/framework_view.dart';
-import 'package:fml/widgets/reactive/reactive_view.dart';
-import 'package:xml/xml.dart';
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/widget/model.dart';
-import 'package:fml/widgets/tabview/tab_view.dart';
-import 'package:fml/widgets/framework/framework_model.dart';
+import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class TabModel extends BoxModel {
-  LinkedHashMap<String, FrameworkView> views =
-      LinkedHashMap<String, FrameworkView>();
 
   @override
-  LayoutType get layoutType => LayoutType.column;
+  LayoutType layoutType = LayoutType.column;
 
-  // index
-  IntegerObservable? _index;
-  set index(dynamic v) {
-    int? i = toInt(v);
-    if (i != null && (i >= views.length || i < 0)) v = null;
-    if (_index != null) {
-      _index!.set(v);
-    } else {
-      _index = IntegerObservable(Binding.toKey(id, 'index'), v, scope: scope);
-    }
-    onIndexChange(_index!);
-  }
+  @override
+  bool get expand => true;
 
-  int? get index => _index?.get();
-
+  // url
   StringObservable? _url;
   set url(dynamic v) {
     if (_url != null) {
@@ -45,112 +26,47 @@ class TabModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get url => _url?.get();
 
-  BooleanObservable? _tabbar;
-  set tabbar(dynamic v) {
-    if (_tabbar != null) {
-      _tabbar!.set(v);
+  /// The title of the tab
+  StringObservable? _title;
+  set title(dynamic v) {
+    if (_title != null) {
+      _title!.set(v);
     } else if (v != null) {
-      _tabbar = BooleanObservable(Binding.toKey(id, 'tabbar'), v, scope: scope);
+      _title = StringObservable(Binding.toKey(id, 'title'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+  String? get title => _title?.get();
 
-  bool get tabbar => _tabbar?.get() ?? true;
-
-  BooleanObservable? _tabbutton;
-  set tabbutton(dynamic v) {
-    if (_tabbutton != null) {
-      _tabbutton!.set(v);
+  // closeable
+  BooleanObservable? _closeable;
+  set closeable(dynamic v) {
+    if (_closeable != null) {
+      _closeable!.set(v);
     } else if (v != null) {
-      _tabbutton =
-          BooleanObservable(Binding.toKey(id, 'tabbutton'), v, scope: scope);
+      _closeable = BooleanObservable(Binding.toKey(id, 'closeable'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+  bool get closeable => _closeable?.get() ?? true;
 
-  bool get tabbutton => _tabbutton?.get() ?? true;
-
-  TabModel(
-    Model super.parent,
-    super.id, {
-    String? type,
-    String? title,
-    dynamic visible,
-    dynamic mandatory,
-    dynamic gps,
-    dynamic oncomplete,
-    dynamic tabbar,
-    dynamic tabbutton,
-  }) {
-    this.tabbar = tabbar;
-    this.tabbutton = tabbutton;
+  TabModel(super.parent, super.id, {dynamic data, dynamic url})
+      : super(scope: Scope(parent: parent?.scope)) {
+    this.data = data;
+    this.url = url;
   }
 
-  void onIndexChange(Observable observable) {
-    try {
-      // lookup key and url
-      String? key;
-      String? url;
-      if (index != null) {
-        key = views.values.toList()[index!].model.dependency;
-        url = views.keys.toList()[index!];
-      }
-
-      // broadcast the event
-      EventManager.of(this)?.broadcastEvent(this,
-          Event(EventTypes.focusnode, parameters: {'key': key, 'url': url}));
-
-      // call property change on index
-      onPropertyChange(observable);
-    } catch (e) {
-      Log().exception('Index out of range. Exception is $e');
-    }
-  }
-
-  @override
-  dispose() {
-    // cleanup framework models
-    var views = this.views.values.toList();
-    for (var view in views) {
-      deleteView(view);
-    }
-    super.dispose();
-  }
-
-  deleteView(Widget view) {
-    // remove view
-    views.removeWhere((key, value) => value == view);
-
-    // cleanup framework models
-    if (view is FrameworkView) {
-      view.model.dispose();
-    }
-  }
-
-  deleteAllIndexesExcept(int index) {
-    LinkedHashMap<String, FrameworkView> except =
-        LinkedHashMap<String, FrameworkView>();
-    List viewKeys = views.keys.toList();
-    List viewList = views.values.toList();
-    for (int i = 0; i < viewList.length; i++) {
-      if (i == index) {
-        except[viewKeys[i]] = viewList[i];
-      } else {
-        views[viewKeys[i]]?.model.dispose();
-      }
-    }
-    views = except;
-  }
-
-  static TabModel? fromXml(Model parent, XmlElement xml) {
+  static TabModel? fromXml(Model? parent, XmlElement? xml,
+      {dynamic data, dynamic onTap, dynamic onLongPress}) {
     TabModel? model;
-
     try {
-      model = TabModel(parent, Xml.get(node: xml, tag: 'id'));
+      // build model
+      model = TabModel(parent, Xml.get(node: xml, tag: 'id'), data: data);
       model.deserialize(xml);
     } catch (e) {
-      Log().exception(e, caller: 'tab.Model');
+      Log().exception(e, caller: 'TabModel');
       model = null;
     }
     return model;
@@ -159,34 +75,18 @@ class TabModel extends BoxModel {
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement? xml) {
+
     if (xml == null) return;
 
     // deserialize
     super.deserialize(xml);
 
     // properties
-    //page = Xml.get(node: xml, tag: 'page);
-    tabbar = Xml.get(node: xml, tag: 'tabbar');
-    tabbutton = Xml.get(node: xml, tag: 'tabbutton');
-
-    // create Tabs
-    int i = 0;
-    dynamic nodes = xml.findElements("TAB", namespace: "*");
-    if (nodes != null) {
-      for (XmlElement node in nodes) {
-        FrameworkModel? model = FrameworkModel.fromXml(this, node);
-        if (model != null) {
-          views[Xml.attribute(node: node, tag: "id") ?? i.toString()] =
-              model.getView() as FrameworkView;
-        }
-        i++;
-      }
-    }
+    url = Xml.get(node: xml, tag: 'url');
+    title = Xml.get(node: xml, tag: 'title');
+    closeable = Xml.get(node: xml, tag: 'closable');
   }
 
   @override
-  Widget getView({Key? key}) {
-    var view = TabView(this);
-    return isReactive ? ReactiveView(this, view) : view;
-  }
+  Widget getView({Key? key}) => BoxView(this, (_,__) => inflate());
 }

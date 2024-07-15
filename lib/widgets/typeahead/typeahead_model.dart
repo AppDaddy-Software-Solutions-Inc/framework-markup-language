@@ -6,7 +6,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/option/tag_model.dart';
 import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
@@ -29,7 +28,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
   final List<OptionModel> options = [];
 
   // special id for user defined input
-  final inputOptionId = Uuid().v4().toString();
+  final inputOptionId = const Uuid().v4().toString();
   
   // add an empty option if no data
   bool addempty = true;
@@ -333,7 +332,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
       if(match == null)
       {
         // avoid pattern accidentally being a binding string by first setting to ""
-        var option = new OptionModel(this, inputOptionId, label: "", value: "");
+        var option = OptionModel(this, inputOptionId, label: "", value: "");
         option.label = pattern;
         option.value = pattern;
 

@@ -9,13 +9,13 @@ import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/trigger/trigger_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
-import 'package:fml/widgets/tabview/tab_model.dart';
+import 'package:fml/widgets/tabview/tabview_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class TabView extends StatefulWidget implements ViewableWidgetView {
   @override
-  final TabModel model;
+  final TabViewModel model;
 
   TabView(this.model) : super(key: ObjectKey(model));
 
@@ -81,12 +81,13 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
       // get the url
       String url = widget.model.views.keys.toList()[widget.model.index!];
 
-      // display the page
-      _showPage(url, refresh: true);
+      // display the tab
+      _showTab(url, refresh: true);
     }
   }
 
   void onOpen(Event event) async {
+
     // url
     String? url;
     if (event.parameters != null && event.parameters!.containsKey('url')) {
@@ -98,9 +99,9 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     if ((event.parameters != null) && (event.parameters!.containsKey('modal'))) {
       modal = toBool(event.parameters!['modal']);
     }
+
     if ((modal != true) && (event.model != null)) {
-      modal =
-          (event.model!.findDescendantOfExactType(ModalModel, id: url) != null);
+      modal = (event.model!.findDescendantOfExactType(ModalModel, id: url) != null);
     }
 
     // allow framework to handle open if fully qualified
@@ -124,12 +125,12 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     }
 
     String? template = uri.url.toLowerCase();
-    if (template == 'previous') return _showPrevious();
-    if (template == 'next') return _showNext();
-    if (template == 'first') return _showFirst();
-    if (template == 'last') return _showLast();
+    if (template == 'previous') return _showPreviousTab();
+    if (template == 'next') return _showNextTab();
+    if (template == 'first') return _showFirstTab();
+    if (template == 'last') return _showLastTab();
 
-    return _showPage(uri.url, event: event);
+    return _showTab(uri.url, event: event);
   }
 
    // As it's not expected that there will be nested views, such as TabView, this function
@@ -144,17 +145,21 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     FrameworkModel model;
 
     if (widget.model.index == null) return;
-    model = widget.model.views.values.elementAt(widget.model.index!).model;
-    model.manager.broadcast(model, event);
-    model.findDescendantsOfExactType(TriggerModel).forEach((trigger) {
-      TriggerModel triggerModel = (trigger as TriggerModel);
-      if (event.parameters?['id'] == triggerModel.id) {
-        triggerModel.trigger();
-      }
-    });
+    var view = widget.model.views.values.elementAt(widget.model.index!);
+    if (view is FrameworkView) {
+      model = view.model;
+      model.manager.broadcast(model, event);
+      model.findDescendantsOfExactType(TriggerModel).forEach((trigger) {
+        TriggerModel triggerModel = (trigger as TriggerModel);
+        if (event.parameters?['id'] == triggerModel.id) {
+          triggerModel.trigger();
+        }
+      });
+
+    }
   }
 
-  void _showPrevious()
+  void _showPreviousTab()
   {
     if (widget.model.index == null) return;
 
@@ -163,30 +168,31 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     widget.model.index = i;
   }
 
-  void _showNext() {
+  void _showNextTab() {
     if (widget.model.index == null) return;
     int i = widget.model.index! + 1;
     if (i >= widget.model.views.length) i = 0;
     widget.model.index = i;
   }
 
-  void _showFirst() => widget.model.index = 0;
+  void _showFirstTab() => widget.model.index = 0;
 
-  void _showLast() {
+  void _showLastTab() {
     int i = widget.model.views.length - 1;
     if (i.isNegative) i = 0;
     widget.model.index = i;
   }
 
-  void _showPage(String url, {bool refresh = false, Event? event}) async {
+  void _showTab(String url, {bool refresh = false, Event? event}) async {
+
     FrameworkView view;
     FrameworkModel model;
 
     // New Tab
-    if ((!widget.model.views.containsKey(url)) || (refresh == true)) {
+    if (!widget.model.views.containsKey(url) || refresh == true) {
+
       // build the model
-      model = FrameworkModel.fromUrl(widget.model, url,
-          dependency: event?.model?.id);
+      model = FrameworkModel.fromUrl(widget.model, url, dependency: event?.model?.id);
 
       // build the view
       view = model.getView() as FrameworkView;
@@ -209,7 +215,7 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
   onButtonTap(dynamic v) {
     if (v == -1 && widget.model.index != null) {
       widget.model.deleteAllIndexesExcept(widget.model.index!);
-      _showFirst();
+      _showFirstTab();
     } else {
       widget.model.index = v;
       if (widget.model.views.containsValue(v)) {
@@ -241,7 +247,7 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
 
   _onDelete(Widget view) {
     widget.model.deleteView(view);
-    _showPrevious();
+    _showPreviousTab();
   }
 
   List<Tab> _buildTabs(double? height) {
@@ -350,6 +356,7 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
 
     int i = 0;
     widget.model.views.forEach((url, view) {
+
       Uri? uri = URI.parse(url);
       String title = uri?.queryParameters['title'] ?? url;
 
@@ -477,6 +484,8 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
   }
 
   Widget _buildTabView() {
+
+    // no tabs defined
     if (widget.model.views.isEmpty) return Container();
 
     // tab bar

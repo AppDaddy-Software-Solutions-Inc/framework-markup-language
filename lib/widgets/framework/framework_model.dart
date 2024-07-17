@@ -30,25 +30,26 @@ import 'package:fml/platform/platform.vm.dart'
     if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
+
   /// Event Manager Host
-  final EventManager manager = EventManager();
+  final EventManager eventManager = EventManager();
 
   @override
   registerEventListener(EventTypes type, OnEventCallback callback,
           {int? priority}) =>
-      manager.register(type, callback, priority: priority);
+      eventManager.register(type, callback, priority: priority);
 
   @override
   removeEventListener(EventTypes type, OnEventCallback callback) =>
-      manager.remove(type, callback);
+      eventManager.remove(type, callback);
 
   @override
   broadcastEvent(Model source, Event event) =>
-      manager.broadcast(this, event);
+      eventManager.broadcast(this, event);
 
   @override
   executeEvent(Model source, String event) =>
-      manager.execute(this, event);
+      eventManager.execute(this, event);
 
   HeaderModel? header;
   BoxModel? body;
@@ -463,7 +464,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
     drawer?.dispose();
 
     // clear event listeners
-    manager.listeners.clear();
+    eventManager.listeners.clear();
 
     // cleanup children
     super.dispose();

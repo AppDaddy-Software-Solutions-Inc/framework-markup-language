@@ -1,19 +1,15 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:fml/event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/log/manager.dart';
-import 'package:fml/phrase.dart';
-import 'package:fml/system.dart';
-import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/trigger/trigger_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/tabview/tabview_model.dart';
-import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class TabView extends StatefulWidget implements ViewableWidgetView {
+
   @override
   final TabViewModel model;
 
@@ -77,60 +73,43 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
   void onRefresh(Event event) async {
     // mark event as handled
     event.handled = true;
-    if (widget.model.index != null) {
+
+    if (widget.model.index != -1) {
+
       // get the url
-      String url = widget.model.views.keys.toList()[widget.model.index!];
+      var url = widget.model.currentTab?.url;
 
       // display the tab
-      _showTab(url, refresh: true);
+      if (url != null) widget.model.showTab(url, refresh: true);
     }
   }
 
   void onOpen(Event event) async {
 
-    // url
+    // open by url?
     String? url;
-    if (event.parameters != null && event.parameters!.containsKey('url')) {
-      url = event.parameters!['url'];
-    }
+    if (event.parameters?.containsKey('url') ?? false) {
 
-    // modal
-    bool? modal = false;
-    if ((event.parameters != null) && (event.parameters!.containsKey('modal'))) {
-      modal = toBool(event.parameters!['modal']);
-    }
+      // get the url
+      url = event.parameters?['url'];
 
-    if ((modal != true) && (event.model != null)) {
-      modal = (event.model!.findDescendantOfExactType(ModalModel, id: url) != null);
-    }
-
-    // allow framework to handle open if fully qualified
-    if (url != null) {
-      var uri = Uri.tryParse(url);
+      // allow framework to handle open if fully qualified
+      var uri = url != null ? Uri.tryParse(url) : null;
       if (uri != null && uri.isAbsolute) return;
     }
 
     // allow framework to handle open if Modal
-    if (modal == true) return;
+    bool modal = false;
+    if (event.parameters?.containsKey('modal') ?? false) {
+      modal = toBool(event.parameters!['modal']) ?? false;
+      if (modal) return;
+    }
+    if (event.model?.findDescendantOfExactType(ModalModel, id: url) != null) return;
 
     // mark event as handled
     event.handled = true;
 
-    // String template = uri.host;
-    var uri = URI.parse(url);
-    if (uri == null) {
-      Log().error('Missing template $url');
-      System.toast('${phrase.missingTemplate} $url');
-      return;
-    }
-
-    String? template = uri.url.toLowerCase();
-    if (template == 'previous') return _showPreviousTab();
-    if (template == 'next') return _showNextTab();
-    if (template == 'first') return _showFirstTab();
-    if (template == 'last') return _showLastTab();
-
-    return _showTab(uri.url, event: event);
+    return widget.model.showTab(url, dependency: event.model?.id);
   }
 
    // As it's not expected that there will be nested views, such as TabView, this function
@@ -140,101 +119,36 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
    // the trigger event is broadcast() to the nested model, but this will need
    // to be tested.
 
-  void onTrigger(Event event) async 
-  {
-    FrameworkModel model;
-
-    if (widget.model.index == null) return;
-    var view = widget.model.views.values.elementAt(widget.model.index!);
-    if (view is FrameworkView) {
-      model = view.model;
-      model.manager.broadcast(model, event);
-      model.findDescendantsOfExactType(TriggerModel).forEach((trigger) {
-        TriggerModel triggerModel = (trigger as TriggerModel);
-        if (event.parameters?['id'] == triggerModel.id) {
-          triggerModel.trigger();
-        }
-      });
-
-    }
-  }
-
-  void _showPreviousTab()
-  {
-    if (widget.model.index == null) return;
-
-    int i = widget.model.index! - 1;
-    if (i.isNegative) i = widget.model.views.length - 1;
-    widget.model.index = i;
-  }
-
-  void _showNextTab() {
-    if (widget.model.index == null) return;
-    int i = widget.model.index! + 1;
-    if (i >= widget.model.views.length) i = 0;
-    widget.model.index = i;
-  }
-
-  void _showFirstTab() => widget.model.index = 0;
-
-  void _showLastTab() {
-    int i = widget.model.views.length - 1;
-    if (i.isNegative) i = 0;
-    widget.model.index = i;
-  }
-
-  void _showTab(String url, {bool refresh = false, Event? event}) async {
-
-    FrameworkView view;
-    FrameworkModel model;
-
-    // New Tab
-    if (!widget.model.views.containsKey(url) || refresh == true) {
-
-      // build the model
-      model = FrameworkModel.fromUrl(widget.model, url, dependency: event?.model?.id);
-
-      // build the view
-      view = model.getView() as FrameworkView;
-
-      // save the view
-      widget.model.views[url] = view;
-    }
-
-    // Open Tab
-    else {
-      view = widget.model.views[url] as FrameworkView;
-    }
-
-    int i = widget.model.views.values.toList().indexOf(view);
-    widget.model.index = i;
-  }
+  void onTrigger(Event event) async => widget.model.fireTriggers(event);
 
   onTap() => widget.model.index = _tabController!.index;
 
   onButtonTap(dynamic v) {
-    if (v == -1 && widget.model.index != null) {
-      widget.model.deleteAllIndexesExcept(widget.model.index!);
-      _showFirstTab();
-    } else {
+
+    if (v == -1 && widget.model.index != -1) {
+
+      // remove specified tab
+      widget.model.deleteAllTabsExcept(widget.model.index);
+
+      // display first tab
+      widget.model.showFirstTab();
+    }
+    else
+    {
       widget.model.index = v;
-      if (widget.model.views.containsValue(v)) {
-        int i = widget.model.views.values.toList().indexOf(v);
-        widget.model.index = i;
-      }
     }
   }
 
   void onBack(Event event) {
     int until = int.parse(event.parameters?['until'] ?? '1');
-    if (widget.model.views.isNotEmpty && widget.model.index != null) {
+    if (widget.model.tabs.isNotEmpty && widget.model.index != -1) {
       while (until > 0) {
         until--;
-        var view = widget.model.views.values.toList()[widget.model.index!];
-        widget.model.deleteView(view);
+        var tab = widget.model.tabs[widget.model.index];
+        widget.model.deleteTab(tab);
 
-        int i = widget.model.index! - 1;
-        if (i.isNegative) i = widget.model.views.length - 1;
+        int i = widget.model.index - 1;
+        if (i.isNegative) i = widget.model.tabs.length - 1;
         widget.model.index = i;
       }
       event.handled = true;
@@ -245,58 +159,61 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     onBack(event);
   }
 
-  _onDelete(Widget view) {
-    widget.model.deleteView(view);
-    _showPreviousTab();
-  }
-
   List<Tab> _buildTabs(double? height) {
+
     List<Tab> tabs = [];
 
     // process each view
-    widget.model.views.forEach((url, view) {
-      Uri uri = URI.parse(url)!;
+    for (var tab in widget.model.tabs) {
 
-      // Has delete button?
-      bool closeable = toBool(uri.queryParameters['closeable']) ?? true;
-      Widget delete = (closeable == false)
-          ? Container()
-          : Padding(
-              padding: const EdgeInsets.only(right: 5),
-              child: SizedBox(
-                  width: 26,
-                  height: 26,
-                  child: IconButton(
-                      onPressed: () => _onDelete(view),
-                      padding: const EdgeInsets.all(1.5),
-                      icon: Icon(Icons.close,
-                          size: 22,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurfaceVariant))));
+      // build close button
+      Widget closeButton = Container();
+      if (tab.closeable) {
+        closeButton = Padding(
+            padding: const EdgeInsets.only(right: 5),
+            child: SizedBox(
+                width: 26,
+                height: 26,
+                child: IconButton(
+                    onPressed: () => widget.model.deleteTab(tab),
+                    padding: const EdgeInsets.all(1.5),
+                    icon: Icon(Icons.close,
+                        size: 22,
+                        color: Theme
+                            .of(context)
+                            .colorScheme
+                            .onSurfaceVariant))));
+      }
 
-      // tab bar
-      String title = uri.queryParameters['title'] ?? uri.page.toString();
-      Widget child = Row(children: [
+      // body
+      Widget view = Row(children: [
         Expanded(
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-              Flexible(child: Text(title, overflow: TextOverflow.clip))
-            ])),
+                  Flexible(child: Text(tab.title, overflow: TextOverflow.clip))
+                ])),
         Row(
             mainAxisAlignment: MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
-            children: [delete])
+            children: [closeButton])
       ]);
-      Tab tab = Tab(
-          child: Tooltip(
-              waitDuration: const Duration(milliseconds: 500),
-              message: url,
-              child: SizedBox(height: height, child: child)));
-      tabs.add(tab);
-    });
+
+      // size the bar
+      view = SizedBox(height: height, child: view);
+
+      // add tooltip
+      if (tab.url != null && tab.url != tab.title && tab.tooltip != null) {
+        view = Tooltip(
+            waitDuration: const Duration(milliseconds: 500),
+            message: tab.tooltip,
+            child: SizedBox(height: height, child: view));
+      }
+
+      // add tab
+      tabs.add(Tab(child: view));
+    }
     return tabs;
   }
 
@@ -308,7 +225,7 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     _tabController = TabController(
         length: tabs.length,
         vsync: this,
-        initialIndex: widget.model.index ?? 0,
+        initialIndex: widget.model.index,
         animationDuration: const Duration(milliseconds: 100));
 
     // Add Listener
@@ -342,23 +259,26 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
   }
 
   Widget _buildTabsButton({double? height}) {
-    // Build List of Tabs
+
+      // Build List of Tabs
     List<PopupMenuItem> popoverItems = [];
 
+    bool hasCloseableTabs = widget.model.tabs.firstWhereOrNull((t) => t.closeable) != null;
+
     // Build close all but open tab
-    PopupMenuItem closeOtherTabs = PopupMenuItem(
+    if (hasCloseableTabs) {
+
+      PopupMenuItem closeOtherTabs = PopupMenuItem(
         value: -1,
         child: Text('Close other tabs',
             style: TextStyle(
                 fontSize: 14,
                 color: Theme.of(context).colorScheme.onSurfaceVariant)));
-    popoverItems.add(closeOtherTabs);
+      if (widget.model.tabs.isNotEmpty) popoverItems.add(closeOtherTabs);
+    }
 
     int i = 0;
-    widget.model.views.forEach((url, view) {
-
-      Uri? uri = URI.parse(url);
-      String title = uri?.queryParameters['title'] ?? url;
+    for (var tab in widget.model.tabs) {
 
       // Style
       var style = widget.model.index == i
@@ -367,11 +287,11 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
 
       // Button
       PopupMenuItem button =
-          PopupMenuItem(value: i, child: Text(title, style: style));
+          PopupMenuItem(value: i, child: Text(tab.title, style: style));
 
       popoverItems.add(button);
       i++;
-    });
+    }
 
     var popover = PopupMenuButton(
       tooltip: 'Show tab list',
@@ -405,6 +325,12 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     // Build Button Bar
     var button = _buildTabsButton(height: barheight);
 
+    // get tab views
+    List<Widget> tabs = [];
+    for (var tab in widget.model.tabs) {
+      tabs.add(tab.getView());
+    }
+
     Widget view = Column(children: [
       Container(
           color: Theme.of(context).colorScheme.onInverseSurface,
@@ -426,7 +352,7 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
           height: height - barheight - barpadding,
           child: IndexedStack(
               index: widget.model.index,
-              children: widget.model.views.values.toList()))
+              children: tabs))
     ]);
 
     return view;
@@ -444,6 +370,12 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
 
     var con = widget.model.constraints;
 
+    // get tab views
+    List<Widget> tabs = [];
+    for (var tab in widget.model.tabs) {
+      tabs.add(tab.getView());
+    }
+
     Widget view = Column(children: [
       SizedBox(width: width, height: barheight, child: bar),
       SizedBox(
@@ -456,27 +388,43 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
                   maxWidth: con.maxWidth!),
               child: IndexedStack(
                   index: widget.model.index,
-                  children: widget.model.views.values.toList())))
+                  children: tabs)))
     ]);
 
     return view;
   }
 
   Widget _tabView() {
+
+    // get tab views
+    List<Widget> tabs = [];
+    for (var tab in widget.model.tabs) {
+      tabs.add(tab.getView());
+    }
+
     Widget view = IndexedStack(
         index: widget.model.index,
-        children: widget.model.views.values.toList());
+        children: tabs);
+
     return view;
   }
 
   Widget _tabViewWithTabButton() {
-    // Build Button Bar
+
+    // build button bar
     var button = _buildTabsButton(height: barheight);
 
+    // get tab views
+    List<Widget> tabs = [];
+    for (var tab in widget.model.tabs) {
+      tabs.add(tab.getView());
+    }
+
+    // build indexed stack
     Widget view = Stack(children: [
       IndexedStack(
           index: widget.model.index,
-          children: widget.model.views.values.toList()),
+          children: tabs),
       Positioned(top: 0, right: 0, child: button),
     ]);
 
@@ -486,7 +434,7 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
   Widget _buildTabView() {
 
     // no tabs defined
-    if (widget.model.views.isEmpty) return Container();
+    if (widget.model.tabs.isEmpty) return Container();
 
     // tab bar
     if (widget.model.tabbar) {

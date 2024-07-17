@@ -1,8 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/event/event.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
+import 'package:fml/widgets/framework/framework_model.dart';
+import 'package:fml/widgets/tabview/tabview_model.dart';
+import 'package:fml/widgets/trigger/trigger_model.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -15,6 +19,9 @@ class TabModel extends BoxModel {
 
   @override
   bool get expand => true;
+
+  // the defined view
+  Widget? _view;
 
   // url
   StringObservable? _url;
@@ -38,7 +45,7 @@ class TabModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-  String? get title => _title?.get();
+  String get title => _title?.get() ?? _url?.get() ?? id;
 
   // closeable
   BooleanObservable? _closeable;
@@ -52,10 +59,38 @@ class TabModel extends BoxModel {
   }
   bool get closeable => _closeable?.get() ?? true;
 
-  TabModel(super.parent, super.id, {dynamic data, dynamic url})
+  // show tooltips
+  StringObservable? _tooltip;
+  set tooltip(dynamic v) {
+    if (_tooltip != null) {
+      _tooltip!.set(v);
+    } else if (v != null) {
+      _tooltip = StringObservable(Binding.toKey(id, 'tooltip'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get tooltip => _tooltip?.get();
+
+  // icon
+  IconObservable? _icon;
+  set icon(dynamic v) {
+    if (_icon != null) {
+      _icon!.set(v);
+    } else if (v != null) {
+      _icon = IconObservable(Binding.toKey(id, 'icon'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  IconData? get icon => _icon?.get();
+
+  TabModel(super.parent, super.id, {dynamic data, dynamic url, dynamic icon, String? title, bool closeable = true, String? tooltip})
       : super(scope: Scope(parent: parent?.scope)) {
     this.data = data;
     this.url = url;
+    this.title = title;
+    this.closeable = closeable;
+    this.tooltip = tooltip;
+    this.icon = icon;
   }
 
   static TabModel? fromXml(Model? parent, XmlElement? xml,
@@ -84,9 +119,76 @@ class TabModel extends BoxModel {
     // properties
     url = Xml.get(node: xml, tag: 'url');
     title = Xml.get(node: xml, tag: 'title');
-    closeable = Xml.get(node: xml, tag: 'closable');
+    closeable = Xml.get(node: xml, tag: 'closeable');
+    tooltip = Xml.get(node: xml, tag: 'tooltip');
+    icon = Xml.get(node: xml, tag: 'icon');
+  }
+
+  // fires framework triggers
+  void fireTriggers(Event event) {
+
+    var model = children?.first;
+
+    // tab is a framework
+    if (model is FrameworkModel) {
+
+      // broadcast the event to the tab
+      model.eventManager.broadcast(model, event);
+
+      // fire the tab triggers
+      List<TriggerModel> triggers = model.findDescendantsOfExactType(TriggerModel).cast();
+      for (var trigger in triggers) {
+        if (event.parameters?['id'] == trigger.id) {
+          trigger.trigger();
+        }
+      }
+    }
   }
 
   @override
-  Widget getView({Key? key}) => BoxView(this, (_,__) => inflate());
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function) {
+
+      case "open":
+        // set the index
+        if (parent is TabViewModel)
+        {
+          // set the parent index
+          var index = (parent as TabViewModel).tabs.indexOf(this);
+          (parent as TabViewModel).index = index;
+        }
+        return true;
+
+    // close specified tab
+      case "close":
+      // set the index
+        if (parent is TabViewModel)
+        {
+          (parent as TabViewModel).deleteTab(this);
+        }
+        return true;
+    }
+
+    return super.execute(caller, propertyOrFunction, arguments);
+  }
+
+  @override
+  Widget getView({Key? key}) {
+
+    // cached view?
+    if (_view != null) return _view!;
+
+    // wrapped framework?
+    if (children?.first is FrameworkModel) _view = (children!.first as FrameworkModel).getView();
+
+    // box view
+    _view ??= BoxView(this, (_,__) => inflate());
+
+    return _view!;
+  }
 }

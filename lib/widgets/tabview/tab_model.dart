@@ -83,8 +83,8 @@ class TabModel extends BoxModel {
   }
   IconData? get icon => _icon?.get();
 
-  TabModel(super.parent, super.id, {dynamic data, dynamic url, dynamic icon, String? title, bool closeable = true, String? tooltip})
-      : super(scope: Scope(parent: parent?.scope)) {
+  TabModel(super.parent, super.id, {bool scoped = false, dynamic data, dynamic url, dynamic icon, String? title, bool? closeable, String? tooltip})
+      : super(scope: scoped ? Scope(parent: parent?.scope) : null) {
     this.data = data;
     this.url = url;
     this.title = title;
@@ -94,11 +94,11 @@ class TabModel extends BoxModel {
   }
 
   static TabModel? fromXml(Model? parent, XmlElement? xml,
-      {dynamic data, dynamic onTap, dynamic onLongPress}) {
+      {bool scoped = false, dynamic data, dynamic onTap, dynamic onLongPress}) {
     TabModel? model;
     try {
       // build model
-      model = TabModel(parent, Xml.get(node: xml, tag: 'id'), data: data);
+      model = TabModel(parent, Xml.get(node: xml, tag: 'id'), data: data, scoped: scoped);
       model.deserialize(xml);
     } catch (e) {
       Log().exception(e, caller: 'TabModel');
@@ -119,9 +119,22 @@ class TabModel extends BoxModel {
     // properties
     url = Xml.get(node: xml, tag: 'url');
     title = Xml.get(node: xml, tag: 'title');
+
+    // can window be closed?
     closeable = Xml.get(node: xml, tag: 'closeable');
+    if (_closeable == null && _url == null && viewableChildren.isNotEmpty) closeable = false;
+
     tooltip = Xml.get(node: xml, tag: 'tooltip');
     icon = Xml.get(node: xml, tag: 'icon');
+
+    // add framework child
+    if (viewableChildren.isEmpty && url != null) {
+      var uri = URI.parse(url);
+      if (uri != null) {
+        children ??= [];
+        children!.add(FrameworkModel.fromUrl(this, uri.url));
+      }
+    }
   }
 
   // fires framework triggers

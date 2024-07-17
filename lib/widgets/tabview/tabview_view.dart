@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:fml/event/event.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +25,7 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
   TabController? _tabController;
 
   double barheight = 38.0;
-  double barpadding = 6.0;
+  double barpadding = 0.0;
   double buttonWidth = 38.0;
 
   @override
@@ -140,17 +142,33 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
   }
 
   void onBack(Event event) {
+
+    // back isn't handled
+    if (widget.model.allowback) return;
+
+    // get list of deletable tabs
+    var list = widget.model.tabs.where((t) => t.closeable);
+    if (list.isEmpty) return;
+
     int until = int.parse(event.parameters?['until'] ?? '1');
     if (widget.model.tabs.isNotEmpty && widget.model.index != -1) {
       while (until > 0) {
-        until--;
-        var tab = widget.model.tabs[widget.model.index];
-        widget.model.deleteTab(tab);
 
-        int i = widget.model.index - 1;
-        if (i.isNegative) i = widget.model.tabs.length - 1;
-        widget.model.index = i;
+        var index = widget.model.index;
+        var tab = widget.model.tabs[index];
+
+        if (tab.closeable) {
+          widget.model.deleteTab(tab);
+          index = index - 1;
+          if (index.isNegative) index = widget.model.tabs.length - 1;
+          widget.model.index = index;
+          until--;
+        }
+
+        var list = widget.model.tabs.where((t) => t.closeable);
+        if (list.isEmpty) until = 0;
       }
+
       event.handled = true;
     }
   }
@@ -192,7 +210,8 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Flexible(child: Text(tab.title, overflow: TextOverflow.clip))
+                  tab.icon != null ? Icon(tab.icon) : Container(),
+                  Flexible(child: Text(tab.title, overflow: TextOverflow.ellipsis,softWrap: false))
                 ])),
         Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -204,7 +223,7 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
       view = SizedBox(height: height, child: view);
 
       // add tooltip
-      if (tab.url != null && tab.url != tab.title && tab.tooltip != null) {
+      if (tab.tooltip != null) {
         view = Tooltip(
             waitDuration: const Duration(milliseconds: 500),
             message: tab.tooltip,
@@ -232,7 +251,7 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     _tabController!.addListener(onTap);
 
     // Tab Bar
-    var bar = TabBar(
+    Widget view = TabBar(
         controller: _tabController,
         padding: EdgeInsets.zero,
         labelPadding: EdgeInsets.zero,
@@ -245,20 +264,20 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
         unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
         tabs: tabs);
 
-    // Formatted bar
-    var view = Container(
+    // clip bar
+    view = Container(
         height: height,
         decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(14.0),
                 topRight: Radius.circular(14.0))),
-        child: bar);
+        child: view);
 
     return view;
   }
 
-  Widget _buildTabsButton({double? height}) {
+  Widget _buildMenuButton({double? height}) {
 
       // Build List of Tabs
     List<PopupMenuItem> popoverItems = [];
@@ -294,17 +313,18 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     }
 
     var popover = PopupMenuButton(
-      tooltip: 'Show tab list',
+      tooltip: 'Tab List',
       color: Theme.of(context).colorScheme.surface,
       onSelected: (val) => onButtonTap(val),
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[...popoverItems],
       child: Container(
           decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onInverseSurface,
-              borderRadius: const BorderRadius.all(Radius.circular(100))),
+              color: Colors.transparent,//Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(14.0))),
           child: Padding(
               padding: const EdgeInsets.all(5),
-              child: Icon(Icons.clear_all,
+              child: Icon(Icons.menu,
                   size: 22,
                   color: Theme.of(context).colorScheme.inverseSurface))),
     );
@@ -312,18 +332,18 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     return popover;
   }
 
-  Widget _tabViewWithTabBarAndButton() {
+  Widget _tabViewWithTabBarAndButton(BoxConstraints constraints) {
     // max height
-    double? height = widget.model.myMaxHeightOrDefault;
+    double? height = min(constraints.maxHeight, widget.model.myMaxHeightOrDefault);
 
     // max width
-    double? width = widget.model.myMaxWidthOrDefault;
+    double? width = min(constraints.maxWidth, widget.model.myMaxWidthOrDefault);
 
     // Build Tab Bar
     var bar = _buildTabBar(height: barheight - barpadding);
 
     // Build Button Bar
-    var button = _buildTabsButton(height: barheight);
+    var button = _buildMenuButton(height: barheight);
 
     // get tab views
     List<Widget> tabs = [];
@@ -333,7 +353,7 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
 
     Widget view = Column(children: [
       Container(
-          color: Theme.of(context).colorScheme.onInverseSurface,
+          color: Colors.transparent,
           child: Padding(
               padding: EdgeInsets.only(top: barpadding),
               child: SizedBox(
@@ -358,17 +378,15 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     return view;
   }
 
-  Widget _tabViewWithTabBar() {
+  Widget _tabViewWithTabBar(BoxConstraints constraints) {
     // max height
-    double? height = widget.model.myMaxHeightOrDefault;
+    double? height = min(constraints.maxHeight, widget.model.myMaxHeightOrDefault);
 
     // max width
-    double? width = widget.model.myMaxWidthOrDefault;
+    double? width = min(constraints.maxWidth, widget.model.myMaxWidthOrDefault);
 
     // Build Tab Bar
     var bar = _buildTabBar(height: barheight - barpadding);
-
-    var con = widget.model.constraints;
 
     // get tab views
     List<Widget> tabs = [];
@@ -382,10 +400,10 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
           height: height - barheight - barpadding,
           child: ConstrainedBox(
               constraints: BoxConstraints(
-                  minHeight: con.minHeight!,
-                  maxHeight: con.maxHeight!,
-                  minWidth: con.minWidth!,
-                  maxWidth: con.maxWidth!),
+                  minHeight: constraints.minHeight,
+                  maxHeight: constraints.maxHeight,
+                  minWidth: constraints.minWidth,
+                  maxWidth: constraints.maxWidth),
               child: IndexedStack(
                   index: widget.model.index,
                   children: tabs)))
@@ -394,7 +412,7 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     return view;
   }
 
-  Widget _tabView() {
+  Widget _tabView(BoxConstraints constraints) {
 
     // get tab views
     List<Widget> tabs = [];
@@ -409,10 +427,10 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     return view;
   }
 
-  Widget _tabViewWithTabButton() {
+  Widget _tabViewWithTabButton(BoxConstraints constraints) {
 
     // build button bar
-    var button = _buildTabsButton(height: barheight);
+    var button = _buildMenuButton(height: barheight);
 
     // get tab views
     List<Widget> tabs = [];
@@ -431,7 +449,7 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     return view;
   }
 
-  Widget _buildTabView() {
+  Widget _buildTabView(BoxConstraints constraints) {
 
     // no tabs defined
     if (widget.model.tabs.isEmpty) return Container();
@@ -439,23 +457,27 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     // tab bar
     if (widget.model.tabbar) {
       return widget.model.tabbutton
-          ? _tabViewWithTabBarAndButton()
-          : _tabViewWithTabBar();
+          ? _tabViewWithTabBarAndButton(constraints)
+          : _tabViewWithTabBar(constraints);
     }
 
     // no tab bar
     else {
-      return widget.model.tabbutton ? _tabViewWithTabButton() : _tabView();
+      return widget.model.tabbutton ? _tabViewWithTabButton(constraints) : _tabView(constraints);
     }
   }
 
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => LayoutBuilder(builder: _build);
+
+  Widget _build(BuildContext context, BoxConstraints constraints) {
+
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
     // build the view
-    Widget view = _buildTabView();
+    Widget view = _buildTabView(constraints);
 
     // add margins
     view = addMargins(view);

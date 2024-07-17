@@ -1,12 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart';
+import 'package:fml/data/data.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/tabview/tab_model.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
@@ -23,6 +24,12 @@ class TabViewModel extends BoxModel {
 
   @override
   LayoutType get layoutType => LayoutType.column;
+
+  // the list item prototype
+  XmlElement? prototype;
+
+  // IDataSource
+  IDataSource? myDataSource;
 
   @override
   List<ViewableMixin> get viewableChildren {
@@ -46,6 +53,7 @@ class TabViewModel extends BoxModel {
     onIndexChange(_index!);
   }
   int get index {
+    if (tabs.isEmpty) return -1;
     var i = _index?.get() ?? 0;
     if (i >= tabs.length) i = tabs.length - 1;
     if (i < 0) i = 0;
@@ -73,51 +81,28 @@ class TabViewModel extends BoxModel {
   }
   bool get tabbutton => _tabbutton?.get() ?? true;
 
+  // handle the back button
+  BooleanObservable? _allowback;
+  set allowback(dynamic v) {
+    if (_allowback != null) {
+      _allowback!.set(v);
+    } else if (v != null) {
+      _allowback =
+          BooleanObservable(Binding.toKey(id, 'allowback'), v, scope: scope);
+    }
+  }
+  bool get allowback => _allowback?.get() ?? true;
+
   TabViewModel(
-    Model super.parent,
+    super.parent,
     super.id, {
     dynamic tabbar,
     dynamic tabbutton,
+    dynamic allowback
   }) {
     this.tabbar = tabbar;
     this.tabbutton = tabbutton;
-  }
-
-  void onIndexChange(Observable observable) {
-    try {
-
-      // lookup key and url
-      String? key;
-      String? url;
-      if (index >= 0) {
-        var view = tabs[index].getView();
-        if (view is FrameworkView) {
-          key = view.model.dependency;
-        }
-        url = tabs[index].url;
-      }
-
-      // broadcast the event
-      EventManager.of(this)?.broadcastEvent(this,
-          Event(EventTypes.focusnode, parameters: {'key': key, 'url': url}));
-
-      // call property change on index
-      onPropertyChange(observable);
-    } catch (e) {
-      Log().exception('Index out of range. Exception is $e');
-    }
-  }
-
-  // returns the current tab
-  TabModel? get currentTab => index == -1 ? null : tabs[index];
-
-  @override
-  dispose() {
-    // cleanup view models
-    for (var tab in tabs) {
-      tab.dispose();
-    }
-    super.dispose();
+    this.allowback = allowback;
   }
 
   static TabViewModel? fromXml(Model parent, XmlElement xml) {
@@ -146,15 +131,65 @@ class TabViewModel extends BoxModel {
     index = Xml.get(node: xml, tag: 'index');
     tabbar = Xml.get(node: xml, tag: 'tabbar');
     tabbutton = Xml.get(node: xml, tag: 'tabbutton');
+    allowback = Xml.get(node: xml, tag: 'allowback');
 
     // create Tabs
     var tabs = findChildrenOfExactType(TabModel).cast<TabModel>();
+
+    // set prototype
+    if (!isNullOrEmpty(datasource) && tabs.isNotEmpty) {
+
+      // set prototype
+      prototype = prototypeOf(tabs.first.element);
+      tabs.removeAt(0);
+    }
+
+    // add remaining children
     for (var tab in tabs) {
       this.tabs.add(tab);
     }
 
     // remove tabs
     removeChildrenOfExactType(TabModel);
+  }
+
+
+  void onIndexChange(Observable observable) {
+
+    try {
+      // lookup key and url
+      String? key;
+      String? url;
+      if (index >= 0) {
+        var tab = tabs[index];
+        if (tab is FrameworkModel) {
+          key = (tab as FrameworkModel).dependency;
+        }
+        url = tab.url;
+      }
+
+      // broadcast the event
+      EventManager.of(this)?.broadcastEvent(this, Event(EventTypes.focusnode, parameters: {'key': key, 'url': url}));
+
+      // call property change on index
+      onPropertyChange(observable);
+
+    } catch (e) {
+      Log().exception('OnIndexChange. Exception is $e');
+    }
+
+  }
+
+  // returns the current tab
+  TabModel? get currentTab => index == -1 ? null : tabs[index];
+
+  @override
+  dispose() {
+    // cleanup view models
+    for (var tab in tabs) {
+      tab.dispose();
+    }
+    super.dispose();
   }
 
   void showPreviousTab()
@@ -220,6 +255,7 @@ class TabViewModel extends BoxModel {
   void deleteTab(TabModel tab) {
     if (tabs.contains(tab)) {
       tab.dispose();
+      tabs.remove(tab);
       showPreviousTab();
     }
   }
@@ -241,6 +277,40 @@ class TabViewModel extends BoxModel {
     for (var tab in tabs) {
       tab.fireTriggers(event);
     }
+  }
+
+  @override
+  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async {
+    busy = true;
+
+    // save pointer to data source
+    myDataSource = source;
+
+    // clear items
+    for (var tab in tabs) {
+      tab.dispose();
+    }
+    tabs.clear();
+
+    // set data
+    data = list ?? Data();
+
+    // build tabs
+    for (var d in data) {
+
+      // scoped tab model
+      var model = TabModel.fromXml(this, prototype, scoped: true, data: d);
+
+      if (model != null) {
+        tabs.add(model);
+      }
+    }
+
+    // notify listeners
+    notifyListeners('tabs', tabs);
+
+    busy = false;
+    return true;
   }
 
   @override

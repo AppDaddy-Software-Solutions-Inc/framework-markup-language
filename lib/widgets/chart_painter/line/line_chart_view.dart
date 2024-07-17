@@ -118,7 +118,7 @@ class _LineChartViewState extends ViewableWidgetState<LineChartView> {
         lineTouchData: LineTouchData(
           distanceCalculator: calculateDistance,
           touchSpotThreshold: 10,
-          touchCallback: onLineTouch, touchTooltipData: LineTouchTooltipData(getTooltipItems: getTooltipItems)),
+          touchCallback: onLineTouch, touchTooltipData: LineTouchTooltipData(getTooltipColor: getColor , getTooltipItems: getTooltipItems)),
 
         //the series must determine the min and max y
         minY: toDouble(widget.model.yaxis.min),
@@ -239,7 +239,7 @@ class _LineChartViewState extends ViewableWidgetState<LineChartView> {
   List<LineTooltipItem> getTooltipItems(List<LineBarSpot> touchedSpots) {
 
     List<LineTooltipItem> tooltips = [];
-    if(widget.model.showtips == false) return tooltips;
+    if(widget.model.showtips == false) return [const LineTooltipItem("", TextStyle())];
     var showTips = false;
     for (var spot in touchedSpots) {
       var mySpot = spot.bar.spots[spot.spotIndex];
@@ -316,4 +316,5 @@ class _LineChartViewState extends ViewableWidgetState<LineChartView> {
 
     return view;
   }
+  Color getColor(lineBarSpot) => widget.model.showtips ?  Colors.blueGrey : Colors.transparent ;
 }

@@ -239,15 +239,17 @@ class _LineChartViewState extends ViewableWidgetState<LineChartView> {
   List<LineTooltipItem> getTooltipItems(List<LineBarSpot> touchedSpots) {
 
     List<LineTooltipItem> tooltips = [];
-    if(widget.model.showtips == false) return [const LineTooltipItem("", TextStyle())];
-    var showTips = false;
     for (var spot in touchedSpots) {
       var mySpot = spot.bar.spots[spot.spotIndex];
-      if (mySpot is FlSpotExtended && mySpot.series.tooltips) showTips = true;
 
-      tooltips.add(LineTooltipItem("${spot.y}", const TextStyle()));
+      //unsure of the reason for this check
+      //if (mySpot is FlSpotExtended && mySpot.series.tooltips) showTips = true;
+      
+      //not adding tooltips causes sizing issues potentially.
+      tooltips.add(LineTooltipItem( widget.model.showtips == true ? "${spot.y}" : "", const TextStyle()));
     }
-    if (!showTips) tooltips.clear();
+     // removing the tooltips causes sizing issues
+      //if (!showTips) tooltips.clear();
     return tooltips;
   }
 

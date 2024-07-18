@@ -15,6 +15,10 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class TableRowModel extends BoxModel {
+
+  // list of form fields
+  List<IFormField>? fields;
+
   @override
   String? get layout => super.layout ?? "row";
 
@@ -45,9 +49,6 @@ class TableRowModel extends BoxModel {
   // cell by index
   TableRowCellModel? cell(int index) =>
       index >= 0 && index < cells.length ? cells[index] : null;
-
-  // Editable Fields
-  List<IFormField>? fields;
 
   // column uses editable
   bool get maybeEditable => _editable != null;
@@ -213,12 +214,19 @@ class TableRowModel extends BoxModel {
     // get cells
     cells.addAll(findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>());
 
-    // Initialize Form Fields
-    List<IFormField> fields = findChildrenOfExactType(IFormField).cast<IFormField>();
-    for (var field in fields) {
-      if (this.fields == null) this.fields = [];
-      this.fields!.add(field);
-      field.registerDirtyListener(onDirtyListener);
+    // build form fields and register dirty listeners to each
+    for (var field in descendants ?? []) {
+
+      // is a form field?
+      if (field is IFormField) {
+
+        // add to fields collection
+        fields ??= [];
+        fields!.add(field);
+
+        // Register Listener to Dirty Field
+        field.registerDirtyListener(onDirtyListener);
+      }
     }
   }
 

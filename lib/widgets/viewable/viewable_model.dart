@@ -882,6 +882,18 @@ mixin ViewableMixin on Model implements IDragDrop {
 
   bool get enabled => _enabled?.get() ?? true;
 
+  // highlight text on focus?
+  BooleanObservable? _selectOnFocus;
+  set selectOnFocus(dynamic v) {
+    if (_selectOnFocus != null) {
+      _selectOnFocus!.set(v);
+    } else if (v != null) {
+      _selectOnFocus = BooleanObservable(Binding.toKey(id, 'selectonfocus'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get selectOnFocus => _selectOnFocus?.get() ?? true;
+
   // draggable
   BooleanObservable? _draggable;
   set draggable(dynamic v) {
@@ -892,7 +904,6 @@ mixin ViewableMixin on Model implements IDragDrop {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get draggable => _draggable?.get() ?? false;
 
   // ondrag
@@ -1105,6 +1116,7 @@ mixin ViewableMixin on Model implements IDragDrop {
     flexfit = Xml.get(node: xml, tag: 'flexfit');
     onscreen = Xml.get(node: xml, tag: 'onscreen');
     offscreen = Xml.get(node: xml, tag: 'offscreen');
+    selectOnFocus = Xml.get(node: xml, tag: 'selectonfocus');
 
     // _colors array - sets color1, color2, color3 and colo4
     _colors = Xml.get(node: xml, tag: 'color');

@@ -1,11 +1,11 @@
 {
-    "name": "Flutter Markup Language",
+    "name": "Framework Markup Language",
     "short_name": "fml",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "Flutter Markup Language",
+    "description": "Framework Markup Language",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

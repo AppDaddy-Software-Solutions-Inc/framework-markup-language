@@ -15,6 +15,7 @@ import 'package:fml/helpers/helpers.dart';
 
 class ListItemModel extends BoxModel {
 
+  // list of form fields
   List<IFormField>? fields;
 
   // posting source source
@@ -183,14 +184,15 @@ class ListItemModel extends BoxModel {
     onDelete = Xml.get(node: xml, tag: 'ondelete');
     postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
 
-    // find all descendants
-    List<dynamic>? fields = findDescendantsOfExactType(null);
-    for (var field in fields) {
-      // form field?
+    // build form fields and register dirty listeners to each
+    for (var field in descendants ?? []) {
+
+      // is a form field?
       if (field is IFormField) {
-        // Build Fields
-        if (this.fields == null) this.fields = [];
-        this.fields!.add(field);
+
+        // add to fields collection
+        fields ??= [];
+        fields!.add(field);
 
         // Register Listener to Dirty Field
         field.registerDirtyListener(onDirtyListener);

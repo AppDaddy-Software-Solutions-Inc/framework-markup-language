@@ -247,12 +247,10 @@ class TableRowModel extends BoxModel {
   Future<bool> complete() async {
     busy = true;
 
-    bool ok = true;
+    // post the row
+    bool ok = await _post();
 
-    // Post the Row
-    if (ok && dirty) ok = await _post();
-
-    // mark row clean
+    // mark row cells as clean
     if (ok) {
       dirty = false;
       for (var cell in cells) {
@@ -260,7 +258,7 @@ class TableRowModel extends BoxModel {
       }
     }
 
-    // mark custom form fields as clean
+    // mark fields as clean
     if (ok && fields != null) {
       for (var field in fields!) {
         field.dirty = false;
@@ -269,18 +267,6 @@ class TableRowModel extends BoxModel {
 
     busy = false;
 
-    return ok;
-  }
-
-  Future<bool> onComplete() async {
-    busy = true;
-
-    bool ok = true;
-
-    // Post the Form
-    if (ok && dirty) ok = await complete();
-
-    busy = false;
     return ok;
   }
 

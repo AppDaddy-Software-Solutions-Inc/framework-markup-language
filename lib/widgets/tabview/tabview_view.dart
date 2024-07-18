@@ -318,9 +318,9 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
       onSelected: (val) => onButtonTap(val),
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[...popoverItems],
       child: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               color: Colors.transparent,//Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: const BorderRadius.only(
+              borderRadius: BorderRadius.only(
                   topRight: Radius.circular(14.0))),
           child: Padding(
               padding: const EdgeInsets.all(5),

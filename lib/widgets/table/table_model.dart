@@ -303,7 +303,7 @@ class TableModel extends BoxModel implements IForm {
   void onDirtyListener(Observable property) {
     bool isDirty = false;
     for (var entry in rows.entries) {
-      if ((entry.value.dirty == true)) {
+      if (entry.value.dirty) {
         isDirty = true;
         break;
       }
@@ -594,11 +594,10 @@ class TableModel extends BoxModel implements IForm {
 
     bool ok = true;
 
-    // post the form
-    if (dirty) {
-      for (var model in rows.values) {
-        ok = await model.complete();
-      }
+    // post the dirty rows
+    var list = rows.values.where((row) => row.dirty == true).toList();
+    for (var model in list) {
+      ok = await model.complete();
     }
 
     busy = false;

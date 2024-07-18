@@ -203,13 +203,11 @@ class ListItemModel extends BoxModel {
   Future<bool> complete() async {
     busy = true;
 
-    bool ok = true;
+    // post the item
+    bool ok = await _post();
 
-    // post the row
-    if (ok) ok = await _post();
-
-    // mark clean
-    if ((ok) && (fields != null)) {
+    // mark fields as clean
+    if (ok && fields != null) {
       for (var field in fields!) {
         field.dirty = false;
       }

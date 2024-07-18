@@ -41,7 +41,7 @@ class GridViewState extends ViewableWidgetState<GridView> {
     super.initState();
 
     // Clean
-    widget.model.clean = true;
+    widget.model.clean();
   }
 
   Widget? itemBuilder(BuildContext context, int rowIndex) {

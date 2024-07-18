@@ -818,10 +818,20 @@ class EventHandler extends Eval {
 
   /// Executes an Object Function - Olajos Match 14, 2020
   /// This is a catch all and is used to manage all of the <id>.func() calls
-  Future<bool?> _handleEventExecute(
-      String id, String function, dynamic arguments) async {
+  Future<bool?> _handleEventExecute(String id, String function, dynamic arguments) async {
+
+    var scope = this.model.scope;
+
+    // named scope reference?
+    if (id.contains(".")) {
+      var parts = id.split(".");
+      scope = Scope.findNamedScope(id) ?? scope;
+      if (scope != this.model.scope) parts.removeAt(0);
+      id = parts.first;
+    }
+
     // get widget model
-    Model? model = Scope.findWidgetModel(id, this.model.scope);
+    var model = scope?.findModel(id);
 
     // execute the function
     if (model != null) {
@@ -834,9 +844,6 @@ class EventHandler extends Eval {
     if (id == "STASH" && function.toLowerCase() == "clear") {
       return await System.currentApp?.clearStash() ?? true;
     }
-
-    // model not found
-    Log().debug("Widget Model $id not found", caller: "_handleEventExecute");
 
     return true;
   }

@@ -13,7 +13,7 @@ import 'package:fml/event/event.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
-import 'package:fml/widgets/tabview/tab_view.dart';
+import 'package:fml/widgets/tabview/tabview_view.dart';
 import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';

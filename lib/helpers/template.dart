@@ -104,10 +104,10 @@ import 'package:fml/widgets/table/nodata_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:fml/widgets/table/table_row_model.dart';
 import 'package:fml/widgets/tabview/tab_model.dart';
+import 'package:fml/widgets/tabview/tabview_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/timer/timer_model.dart';
-import 'package:fml/widgets/tooltip/v1/tooltip_model.dart' as v1;
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart' as v2;
 import 'package:fml/datasources/transforms/calc.dart';
 import 'package:fml/datasources/transforms/distinct.dart';
@@ -1089,8 +1089,14 @@ Model? fromXmlNode(
       }
       break;
 
+    case "TAB":
+      if (parent is TabViewModel) {
+        model = TabModel.fromXml(parent, node);
+      }
+      break;
+
     case "TABVIEW":
-      model = TabModel.fromXml(parent, node);
+      model = TabViewModel.fromXml(parent, node);
       break;
 
     case "TEXT":
@@ -1113,12 +1119,7 @@ Model? fromXmlNode(
 
     case "TIP":
     case "TOOLTIP":
-      if (Xml.attribute(node: node, tag: "label") != null ||
-          Xml.attribute(node: node, tag: "text") != null) {
-        model = v1.TooltipModel.fromXml(parent, node);
-      } else {
         model = v2.TooltipModel.fromXml(parent, node);
-      }
       break;
 
     case "TREEVIEW":

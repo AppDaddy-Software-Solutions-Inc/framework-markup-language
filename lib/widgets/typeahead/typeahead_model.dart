@@ -8,6 +8,8 @@ import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/option/tag_model.dart';
 import 'package:fml/widgets/reactive/reactive_view.dart';
+import 'package:fml/widgets/text/text_model.dart';
+import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/model.dart';
@@ -25,6 +27,9 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
   // options
   final List<OptionModel> options = [];
 
+  // special id for user defined input
+  final inputOptionId = const Uuid().v4().toString();
+  
   // add an empty option if no data
   bool addempty = true;
 
@@ -50,9 +55,19 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
+  BooleanObservable? _inputEnabled;
+  set inputenabled(dynamic v) {
+    if (_inputEnabled != null) {
+      _inputEnabled!.set(v);
+    } else if (v != null) {
+      _inputEnabled = BooleanObservable(Binding.toKey(id, 'inputenabled'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get inputenabled => _inputEnabled?.get() ?? false;
 
   bool get readonly => _readonly?.get() ?? false;
-
+  TextEditingController textController = TextEditingController(); // Add this controller
   // value
   StringObservable? _value;
   @override
@@ -61,9 +76,9 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
       _value!.set(v);
     } else if (v != null) {
       _value = StringObservable(
-        Binding.toKey(id, 'value'),
-        v,
-        scope: scope, listener: onValueChange
+          Binding.toKey(id, 'value'),
+          v,
+          scope: scope, listener: onValueChange
       );
     }
   }
@@ -82,7 +97,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
     }
   }
   bool get clear => _clear?.get() ?? false;
-  
+
   //  maximum number of match results to show
   IntegerObservable? _rows;
   set rows(dynamic v) {
@@ -113,7 +128,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
 
   static TypeaheadModel? fromXml(Model parent, XmlElement xml) {
     TypeaheadModel? model =
-        TypeaheadModel(parent, Xml.get(node: xml, tag: 'id'));
+    TypeaheadModel(parent, Xml.get(node: xml, tag: 'id'));
     model.deserialize(xml);
     return model;
   }
@@ -133,7 +148,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
 
     // automatically add an empty widget to the list?
     var addempty = toBool(Xml.get(node: xml, tag: 'addempty'));
-      if (addempty == null && emptyOption != null) addempty = true;
+    if (addempty == null && emptyOption != null) addempty = true;
     this.addempty = addempty ?? true;
 
     // build select options
@@ -141,6 +156,8 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
 
     // set the default selected option
     if (datasource == null) _setSelectedOption();
+    //deserialize inputenabled
+    inputenabled = Xml.get(node: xml, tag: 'inputenabled');
   }
 
   void _setSelectedOption({bool setValue = true}) {
@@ -168,7 +185,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
 
     // Build options
     List<OptionModel> options =
-        findChildrenOfExactType(OptionModel).cast<OptionModel>();
+    findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // strip out special options
     for (var option in options.toList()) {
@@ -264,6 +281,15 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
       // set selected
       selectedOption = option;
 
+      // if picked an actual option remove the user defined options
+      if (inputenabled && selectedOption != null && selectedOption!.id != inputOptionId) {
+        var option = options.firstWhereOrNull((option) => option.id == inputOptionId);
+        if (option != null) {
+          options.remove(option);
+          option.dispose();
+        }
+      }
+
       // set data
       data = option?.data;
 
@@ -274,28 +300,64 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
   }
 
   void onValueChange(Observable observable) {
-
     // set the selected option
     _setSelectedOption(setValue: false);
-
+    textController.text = _value?.get() ?? ''; //controls input?
     // notify listeners
     onPropertyChange(observable);
   }
 
   Future<List<OptionModel>> getMatchingOptions(String pattern) async {
-    // trim
-    pattern.trim();
-
+    // trimpattern.trim();
+    //if inputenabled check if in list, if not in list, then delete from options where label='keypad'
+    //then add to options where label = pattern value = pattern id = keypad, when emptying the value the full list doesnt come back
     // return visible options
+    if(inputenabled) {
+      var option = options.firstWhereOrNull((option) => option.id == inputOptionId);
+      if (option != null) {
+        options.remove(option);
+        option.dispose();
+        if (selectedOption == option) selectedOption = null;
+      }
+    }
+
     if (isNullOrEmpty(pattern)) {
-      return options.where((option) => option.visible).toList();
+      var all = options.where((option) => option.visible).toList();
+      return all;
+    }
+
+    if(inputenabled)
+    {
+      var match = options.firstWhereOrNull((option) => option.label == pattern);
+      if(match == null)
+      {
+        // avoid pattern accidentally being a binding string by first setting to ""
+        var option = OptionModel(this, inputOptionId, label: "", value: "");
+        option.label = pattern;
+        option.value = pattern;
+
+        option.children = [];
+
+        // add a text model
+        var text = TextModel(this,null,value: "", bold: true, italic: true);
+        text.value = pattern;
+        option.children!.add(text);
+
+        var tag = TagModel(option,null, value: "", type: "equal");
+        tag.value = pattern;
+        option.tags.add(tag);
+        options.insert(0,option);
+      }
     }
 
     // matching options at top of list
-    return options
+    List<OptionModel> matchingOptions = options
         .where((option) => compare(option, pattern))
         .take(rows)
         .toList();
+
+    // if not matching options and inputenabled=true create a new option
+    return matchingOptions;
   }
 
   bool compare(OptionModel option, String pattern) {
@@ -314,27 +376,27 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
       if (v2 != null) {
         switch (tag.type) {
 
-          // contains
+        // contains
           case TagType.contains:
             if (v2.contains(v1)) return true;
             break;
 
-          // starts with
+        // starts with
           case TagType.startswith:
             if (v2.startsWith(v1)) return true;
             break;
 
-          // ends with
+        // ends with
           case TagType.endwith:
             if (v2.endsWith(v1)) return true;
             break;
 
-          // exact match
+        // exact match
           case TagType.equal:
             if (v2 == v1) return true;
             break;
 
-          // compares space separated keywords
+        // compares space separated keywords
           case TagType.keyword:
             var keywords = v1.split(" ");
             var values = v2.split(" ");

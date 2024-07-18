@@ -45,15 +45,14 @@ class OptionModel extends RowModel {
   }
   String? get value => _value?.get();
 
-
   // string to search on
-  final List<TagModel> _tags = [];
-  List<TagModel> get tags => _tags.toList();
+  final List<TagModel> tags = [];
 
-  OptionModel(super.parent, super.id, {dynamic data, String? value})
+  OptionModel(super.parent, super.id, {dynamic data, String? value, String? label})
       : super(scope: Scope(parent: parent.scope)) {
     this.data = data;
     if (value != null) this.value = value;
+    if (label != null) this.label = label;
   }
 
   static OptionModel? fromXml(Model parent, XmlElement? xml,
@@ -106,16 +105,16 @@ class OptionModel extends RowModel {
     }
 
     // assign tags
-    _tags.addAll(findChildrenOfExactType(TagModel).cast<TagModel>());
+    tags.addAll(findChildrenOfExactType(TagModel).cast<TagModel>());
 
     // remove child tags
-    if (_tags.isNotEmpty) {
+    if (tags.isNotEmpty) {
       removeChildrenOfExactType(TagModel);
     }
 
     // no tags specified? default is label
-    if (_tags.isEmpty) {
-      _tags.add(TagModel(this,null,value: label ?? value));
+    if (tags.isEmpty) {
+      tags.add(TagModel(this,null,value: label ?? value));
     }
   }
 
@@ -123,7 +122,7 @@ class OptionModel extends RowModel {
   void dispose() {
 
     // dispose of tags
-    for (var tag in _tags) {
+    for (var tag in tags) {
       tag.dispose();
     }
 

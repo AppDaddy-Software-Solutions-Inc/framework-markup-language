@@ -38,8 +38,9 @@ class TagModel extends Model {
   }
   bool get caseSensitive => _caseSensitive?.get() ?? false;
 
-  TagModel(Model super.parent, super.id, {String? value}) {
+  TagModel(Model super.parent, super.id, {String? value, String? type}) {
     if (value != null) this.value = value;
+    if (type != null) _type = type;
   }
 
   static TagModel? fromXml(Model parent, XmlElement xml) {

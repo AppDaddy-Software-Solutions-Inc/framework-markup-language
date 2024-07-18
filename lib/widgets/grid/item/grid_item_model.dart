@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:fml/widgets/grid/grid_model.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
@@ -10,6 +11,9 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class GridItemModel extends BoxModel {
+
+  // list of form fields
+  List<IFormField>? fields;
 
   // indicates if the widget will grow in
   // its horizontal axis
@@ -119,6 +123,19 @@ class GridItemModel extends BoxModel {
   }
   bool get dirty => _dirty?.get() ?? false;
 
+  void onDirtyListener(Observable property) {
+    bool isDirty = false;
+    if (fields != null) {
+      for (IFormField field in fields!) {
+        if ((field.dirty ?? false)) {
+          isDirty = true;
+          break;
+        }
+      }
+    }
+    dirty = isDirty;
+  }
+
   GridItemModel(Model super.parent, super.id,
       {super.data, dynamic backgroundcolor})
       : super(scope: Scope(parent: parent.scope));
@@ -151,6 +168,21 @@ class GridItemModel extends BoxModel {
     onInsert = Xml.get(node: xml, tag: 'oninsert');
     onDelete = Xml.get(node: xml, tag: 'ondelete');
     postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
+
+    // build form fields and register dirty listeners to each
+    for (var field in descendants ?? []) {
+
+      // is a form field?
+      if (field is IFormField) {
+
+        // add to fields collection
+        fields ??= [];
+        fields!.add(field);
+
+        // Register Listener to Dirty Field
+        field.registerDirtyListener(onDirtyListener);
+      }
+    }
   }
 
   Future<bool> onTap() async {

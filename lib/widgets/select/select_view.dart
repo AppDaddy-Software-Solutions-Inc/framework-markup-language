@@ -38,7 +38,7 @@ class _SelectViewState extends ViewableWidgetState<SelectView> {
     // unfocus
     focus.unfocus();
 
-    // force a rebuild
+    // force a rebuild, this is necessary for the alarming values to rebuild
     setState(() {});
   }
 

@@ -109,28 +109,15 @@ class Scope {
     }
   }
 
-  Model? _findWidgetModel(String id) {
+  Model? findModel(String id) {
     if (models.containsKey(id)) return models[id];
-    if (parent != null) return parent!._findWidgetModel(id);
+    if (parent != null) return parent!.findModel(id);
     return null;
   }
 
-  static Model? findWidgetModel(String? id, Scope? scope) {
-    if (id == null) return null;
-
-    // named scope reference?
-    if (id.contains(".")) {
-      var parts = id.split(".");
-      var myScope = System.currentApp?.scopeManager.of(parts.first.trim());
-      if (myScope != null) {
-        scope = myScope;
-        parts.removeAt(0);
-      }
-      id = parts.first;
-    }
-
-    // get the model
-    return scope?._findWidgetModel(id);
+  static Scope? findNamedScope(String? id) {
+    if (id == null || !id.contains(".")) return null;
+    return System.currentApp?.scopeManager.of(id.split(".").first.trim());
   }
 
   bool bind(Observable target) {

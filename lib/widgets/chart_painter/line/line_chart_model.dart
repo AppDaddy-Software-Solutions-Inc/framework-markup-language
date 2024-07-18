@@ -47,10 +47,8 @@ class LineChartModel extends ChartPainterModel {
     dynamic showlegend,
     dynamic horizontal,
     dynamic animated,
-    dynamic selected,
     dynamic legendsize,
   }) {
-    this.selected = selected;
     this.animated = animated;
     this.horizontal = horizontal;
     this.showlegend = showlegend;
@@ -89,13 +87,8 @@ class LineChartModel extends ChartPainterModel {
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
-    //* Deserialize */
+    //deserialize xml
     super.deserialize(xml);
-
-    /////////////////
-    //* Properties */
-    /////////////////
-    selected = Xml.get(node: xml, tag: 'selected');
     animated = Xml.get(node: xml, tag: 'animated');
     horizontal = Xml.get(node: xml, tag: 'horizontal');
     showlegend = Xml.get(node: xml, tag: 'showlegend');

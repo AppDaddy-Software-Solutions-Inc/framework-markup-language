@@ -85,19 +85,6 @@ class _InputViewState extends ViewableWidgetState<InputView>
   }
 
   @override
-  void didUpdateWidget(InputView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    var oldcursorPos = widget.model.controller?.selection.base.offset;
-    if (oldcursorPos != null) {
-      widget.model.controller?.value = TextEditingValue(
-          text: widget.model.value ?? "",
-          selection:
-              TextSelection.fromPosition(TextPosition(offset: oldcursorPos)));
-    }
-  }
-
-  @override
   void dispose() {
     // cleanup the controller.
     // its important to set the controller to null so that it gets recreated
@@ -233,9 +220,17 @@ class _InputViewState extends ViewableWidgetState<InputView>
 
       // commit
       if (ok) await _commit();
-    } else {
+    }
+    else {
+
       // mark field as touched
       widget.model.touched = true;
+
+      // highlight the text
+      if (widget.model.enabled && widget.model.selectOnFocus) {
+          widget.model.controller?.selection = TextSelection(
+          baseOffset: 0, extentOffset: widget.model.controller?.text.length ?? 0);
+      }
     }
   }
 

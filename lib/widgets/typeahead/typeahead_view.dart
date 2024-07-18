@@ -326,6 +326,9 @@ class TypeaheadViewState extends ViewableWidgetState<TypeaheadView> {
 
     // hack to close window
     focus.unfocus();
+
+    // force a rebuild, this is necessary for the alarming values to rebuild
+    setState(() {});
   }
 
   Widget itemBuilder(BuildContext context, OptionModel option) {
@@ -425,6 +428,7 @@ class TypeaheadViewState extends ViewableWidgetState<TypeaheadView> {
     if (widget.model.dense) {
       view = Padding(padding: const EdgeInsets.all(4), child: view);
     }
+
 
     // get the model constraints
     var modelConstraints = widget.model.constraints;

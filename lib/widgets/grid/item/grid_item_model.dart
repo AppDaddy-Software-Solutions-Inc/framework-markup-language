@@ -171,17 +171,14 @@ class GridItemModel extends BoxModel {
     onDelete = Xml.get(node: xml, tag: 'ondelete');
     postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
 
-    // build form fields and register dirty listeners to each
-    for (var field in descendants ?? []) {
+    // grid item is a form?
+    if (_postbrokers != null) {
 
-      // is a form field?
-      if (field is IFormField) {
+      // build form fields and register dirty listeners to each
+      fields = FormModel.formFieldsOf(this);
 
-        // add to fields collection
-        fields ??= [];
-        fields!.add(field);
-
-        // Register Listener to Dirty Field
+      // Register Listener to Dirty Field
+      for (var field in fields ?? []) {
         field.registerDirtyListener(onDirtyListener);
       }
     }

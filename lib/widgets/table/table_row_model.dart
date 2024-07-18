@@ -214,17 +214,14 @@ class TableRowModel extends BoxModel {
     // get cells
     cells.addAll(findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>());
 
-    // build form fields and register dirty listeners to each
-    for (var field in descendants ?? []) {
+    // row is a form?
+    if (_postbrokers != null) {
 
-      // is a form field?
-      if (field is IFormField) {
+      // build form fields and register dirty listeners to each
+      fields = FormModel.formFieldsOf(this);
 
-        // add to fields collection
-        fields ??= [];
-        fields!.add(field);
-
-        // Register Listener to Dirty Field
+      // Register Listener to Dirty Field
+      for (var field in fields ?? []) {
         field.registerDirtyListener(onDirtyListener);
       }
     }

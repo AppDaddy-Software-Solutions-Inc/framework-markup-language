@@ -140,7 +140,7 @@ class PrototypeModel extends BoxModel {
     // this could be done differently
     var form = findAncestorOfExactType(FormModel);
     if (form is FormModel) {
-      form.setFormFields();
+      form.initializeFormFields();
     }
 
     // clear busy

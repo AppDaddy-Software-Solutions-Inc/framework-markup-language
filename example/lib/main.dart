@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    String example1 = 'https://test.appdaddy.co';
+    String example1 = 'https://test.appdaddy.co/ ';
     var version = "3.0.0";
 
     // launch the FML engine

@@ -60,26 +60,26 @@ class TabViewModel extends BoxModel {
     return i;
   }
 
-  BooleanObservable? _tabbar;
-  set tabbar(dynamic v) {
-    if (_tabbar != null) {
-      _tabbar!.set(v);
+  BooleanObservable? _showBar;
+  set showBar(dynamic v) {
+    if (_showBar != null) {
+      _showBar!.set(v);
     } else if (v != null) {
-      _tabbar = BooleanObservable(Binding.toKey(id, 'tabbar'), v, scope: scope);
+      _showBar = BooleanObservable(Binding.toKey(id, 'bar'), v, scope: scope);
     }
   }
-  bool get tabbar => _tabbar?.get() ?? true;
+  bool get showBar => _showBar?.get() ?? true;
 
-  BooleanObservable? _tabbutton;
-  set tabbutton(dynamic v) {
-    if (_tabbutton != null) {
-      _tabbutton!.set(v);
+  BooleanObservable? _showMenu;
+  set showMenu(dynamic v) {
+    if (_showMenu != null) {
+      _showMenu!.set(v);
     } else if (v != null) {
-      _tabbutton =
-          BooleanObservable(Binding.toKey(id, 'tabbutton'), v, scope: scope);
+      _showMenu =
+          BooleanObservable(Binding.toKey(id, 'menu'), v, scope: scope);
     }
   }
-  bool get tabbutton => _tabbutton?.get() ?? true;
+  bool get showMenu => _showMenu?.get() ?? true;
 
   // handle the back button
   BooleanObservable? _allowback;
@@ -100,8 +100,8 @@ class TabViewModel extends BoxModel {
     dynamic tabbutton,
     dynamic allowback
   }) {
-    this.tabbar = tabbar;
-    this.tabbutton = tabbutton;
+    this.showBar = tabbar;
+    this.showMenu = tabbutton;
     this.allowback = allowback;
   }
 
@@ -129,8 +129,8 @@ class TabViewModel extends BoxModel {
 
     // properties
     index = Xml.get(node: xml, tag: 'index');
-    tabbar = Xml.get(node: xml, tag: 'tabbar');
-    tabbutton = Xml.get(node: xml, tag: 'tabbutton');
+    showBar = Xml.get(node: xml, tag: 'bar') ?? Xml.get(node: xml, tag: 'tabbar');
+    showMenu = Xml.get(node: xml, tag: 'menu') ?? Xml.get(node: xml, tag: 'tabbutton');
     allowback = Xml.get(node: xml, tag: 'allowback');
 
     // create Tabs
@@ -215,7 +215,7 @@ class TabViewModel extends BoxModel {
     index = i;
   }
 
-  void showTab(String? url, {bool refresh = false, String? dependency, String? title, bool? closeable}) {
+  void showTab(String? url, {bool refresh = false, String? dependency, String? title, bool? closeable, String? icon}) {
 
     // String template = uri.host;
     var uri = URI.parse(url);
@@ -236,11 +236,14 @@ class TabViewModel extends BoxModel {
       // title
       title = title ?? uri.queryParameters['title'] ?? uri.page.toString();
 
+      // icon
+      icon = icon ?? uri.queryParameters['icon'];
+
       // closeable
       closeable = closeable ?? toBool(uri.queryParameters['closeable']) ?? true;
 
       // build tab
-      tab = TabModel(this, id, url: uri.url, title: title, closeable: closeable);
+      tab = TabModel(this, id, url: uri.url, title: title, closeable: closeable, icon: icon);
       tabs.add(tab);
 
       // add framework child
@@ -324,14 +327,14 @@ class TabViewModel extends BoxModel {
 
       case "open":
 
-        // set the index
+        // open by index
         var index = toInt(elementAt(arguments, 0));
         if (index != null) {
           this.index = index;
           return true;
         }
 
-        // id
+        // open by id
         var id = toStr(elementAt(arguments, 0));
         if (id != null) {
           var tab = tabs.firstWhereOrNull((t) => t.id == id);
@@ -341,7 +344,7 @@ class TabViewModel extends BoxModel {
           }
         }
 
-        // url
+        // open by url
         var url = toStr(elementAt(arguments, 0));
         if (url != null) {
           var tab = tabs.firstWhereOrNull((t) => t.url == url);
@@ -355,18 +358,44 @@ class TabViewModel extends BoxModel {
 
       // close specified tab
       case "close":
-        var index = toInt(elementAt(arguments, 0)) ?? this.index;
-        if (tabs.isEmpty) return true;
-        if (index < 0) index = 0;
-        if (index >= tabs.length) index = tabs.length - 1;
-        deleteTab(tabs[index]);
+
+        // close by index
+        var index = toInt(elementAt(arguments, 0));
+        if (index != null) {
+          if (index < 0) index = 0;
+          if (index >= tabs.length) index = tabs.length - 1;
+          deleteTab(tabs[index]);
+          return true;
+        }
+
+        // close by id
+        var id = toStr(elementAt(arguments, 0));
+        if (id != null) {
+          var tab = tabs.firstWhereOrNull((t) => t.id == id);
+          if (tab != null) {
+            deleteTab(tab);
+            return true;
+          }
+        }
+
+        // close by url
+        var url = toStr(elementAt(arguments, 0));
+        if (url != null) {
+          var tab = tabs.firstWhereOrNull((t) => t.url == url);
+          if (tab != null) {
+            deleteTab(tab);
+            return true;
+          }
+        }
+
         return true;
 
       case "add":
         var url = toStr(elementAt(arguments, 0));
         var title = toStr(elementAt(arguments, 1));
         var closeable = toBool(elementAt(arguments, 2));
-        showTab(url, title: title, closeable: closeable);
+        var icon = toStr(elementAt(arguments, 3));
+        showTab(url, title: title, closeable: closeable, icon: icon);
         return true;
 
       // close specified tab

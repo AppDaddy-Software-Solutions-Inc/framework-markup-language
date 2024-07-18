@@ -455,15 +455,15 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
     if (widget.model.tabs.isEmpty) return Container();
 
     // tab bar
-    if (widget.model.tabbar) {
-      return widget.model.tabbutton
+    if (widget.model.showBar) {
+      return widget.model.showMenu
           ? _tabViewWithTabBarAndButton(constraints)
           : _tabViewWithTabBar(constraints);
     }
 
     // no tab bar
     else {
-      return widget.model.tabbutton ? _tabViewWithTabButton(constraints) : _tabView(constraints);
+      return widget.model.showMenu ? _tabViewWithTabButton(constraints) : _tabView(constraints);
     }
   }
 

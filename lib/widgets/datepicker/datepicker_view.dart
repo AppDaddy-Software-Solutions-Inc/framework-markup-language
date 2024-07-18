@@ -360,7 +360,7 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
               fontWeight: FontWeight.w300,
               color: widget.model.getErrorHintColor(context),
             ),
-            prefixIcon: widget.model.showIcon
+            prefixIcon: widget.model.showicon
                 ? Padding(
                 padding:
                 const EdgeInsets.only(right: 10, left: 10, bottom: 0),

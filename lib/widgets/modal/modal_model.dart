@@ -120,7 +120,6 @@ class ModalModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get closeable => _closeable?.get() ?? true;
 
   bool get minimized {

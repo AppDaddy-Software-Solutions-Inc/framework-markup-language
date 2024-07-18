@@ -45,7 +45,6 @@ class PopoverModel extends ViewableModel implements IModelListener {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   IconData? get icon => _icon?.get();
 
   PopoverModel(

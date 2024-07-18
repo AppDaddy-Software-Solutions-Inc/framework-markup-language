@@ -104,6 +104,7 @@ import 'package:fml/widgets/table/nodata_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:fml/widgets/table/table_row_model.dart';
 import 'package:fml/widgets/tabview/tab_model.dart';
+import 'package:fml/widgets/tabview/tabview_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/timer/timer_model.dart';
@@ -1088,8 +1089,14 @@ Model? fromXmlNode(
       }
       break;
 
+    case "TAB":
+      if (parent is TabViewModel) {
+        model = TabModel.fromXml(parent, node);
+      }
+      break;
+
     case "TABVIEW":
-      model = TabModel.fromXml(parent, node);
+      model = TabViewModel.fromXml(parent, node);
       break;
 
     case "TEXT":

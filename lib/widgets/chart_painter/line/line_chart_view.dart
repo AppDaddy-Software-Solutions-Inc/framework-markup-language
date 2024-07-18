@@ -191,7 +191,6 @@ class _LineChartViewState extends ViewableWidgetState<LineChartView> {
     if (event is FlTapUpEvent) {
       if (response != null && response.lineBarSpots != null) {
         //find the series that corresponds with the response that has been clicked
-        var closest;
         for (var spot in response.lineBarSpots!) {
           var mySpot = spot.bar.spots[spot.spotIndex];
           //check that the series is an extended series interface

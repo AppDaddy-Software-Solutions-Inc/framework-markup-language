@@ -1,7 +1,5 @@
 import 'dart:convert';
-
 import 'package:fml/data/dotnotation.dart';
-import 'package:fml/log/manager.dart';
 import 'package:xml/xml.dart';
 import 'package:xml2json/xml2json.dart';
 
@@ -21,7 +19,7 @@ class Json {
     try {
       if (data != null) json = jsonEncode(data);
     } catch (e) {
-      Log().error('Error encoding json object. Error is $e');
+      json = "{}";
     }
     return json;
   }
@@ -30,7 +28,6 @@ class Json {
     try {
       return jsonDecode(json);
     } catch (e) {
-      Log().debug("Failed to decode json string [$json]. Error is $e");
       return null;
     }
   }
@@ -41,7 +38,6 @@ class Json {
       parser.parse(xml);
       return parser.toParkerWithAttrs();
     } catch (e) {
-      Log().error('Error converting xml [$xml] to json. Error is $e');
       return null;
     }
   }

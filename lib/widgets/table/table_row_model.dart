@@ -268,15 +268,22 @@ class TableRowModel extends BoxModel {
   }
 
   Future<bool> _post() async {
+
     bool ok = true;
     if (scope != null && postbrokers != null) {
+
       for (String id in postbrokers!) {
+
+        // get the post broker
         IDataSource? source = scope!.getDataSource(id);
-        if (source != null && ok && table != null) {
+        if (ok && source != null && table != null) {
+
+          // build the posting body
           if (!source.custombody) {
             source.body = await FormModel.buildPostingBody(table!, fields,
                 rootname: source.root ?? "FORM");
           }
+
           ok = await source.start();
         }
         if (!ok) break;

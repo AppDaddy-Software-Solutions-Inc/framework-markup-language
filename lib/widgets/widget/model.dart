@@ -5,7 +5,6 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/datasource_listener_interface.dart';
 import 'package:fml/fml.dart';
-import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
@@ -330,12 +329,11 @@ class Model implements IDataSourceListener {
     });
   }
 
-  static void unfocus() {
+  // force unfocus on currently focused node
+  static unfocus() async {
     try {
       WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
-    } catch (e) {
-      Log().exception(e);
-    }
+    } catch(_) {}
   }
 
   /// Returns true if the template references observable => key

@@ -57,8 +57,6 @@ class FormModel extends BoxModel implements IForm {
       _warnOnExit = BooleanObservable(Binding.toKey(id, 'warnonexit'), v, scope: scope);
     }
   }
-
-  @override
   bool get warnOnExit => _warnOnExit?.get() ?? true;
 
   // dirty

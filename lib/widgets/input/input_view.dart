@@ -192,6 +192,12 @@ class _InputViewState extends ViewableWidgetState<InputView>
 
   void _handleOnChange(String value) {
 
+    // mark dirty and touched
+    if (!widget.model.dirty) {
+      widget.model.touched = true;
+      widget.model.dirty = true;
+    }
+
     // this should only trigger when the input changes
     if (commitTimer?.isActive ?? false) commitTimer!.cancel();
 
@@ -200,10 +206,6 @@ class _InputViewState extends ViewableWidgetState<InputView>
     if (milliseconds > 0) {
       commitTimer = Timer(Duration(milliseconds: milliseconds), () async => _commit());
     }
-  }
-
-  String validate(String text) {
-    return 'field must be supplied';
   }
 
   onFocusChange() async {
@@ -242,6 +244,7 @@ class _InputViewState extends ViewableWidgetState<InputView>
 
     // value changed?
     if (widget.model.value != value) {
+
       // set answer
       await widget.model.answer(value);
 

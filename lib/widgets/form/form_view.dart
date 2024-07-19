@@ -78,7 +78,7 @@ class FormViewState extends ViewableWidgetState<FormView> implements IGpsListene
   Future<bool> canPop() async => await quit();
 
   Future<bool> quit() async {
-    Model.unfocus();
+
     bool exit = true;
 
     // show warning if form is dirty?

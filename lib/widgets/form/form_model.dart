@@ -48,6 +48,19 @@ class FormModel extends BoxModel implements IForm {
   @override
   bool? get post => _post?.get();
 
+  /// if the form is dirty, a warning dialog is displayed by default when the user tries to exit the form.
+  BooleanObservable? _warnOnExit;
+  set warnOnExit(dynamic v) {
+    if (_warnOnExit != null) {
+      _warnOnExit!.set(v);
+    } else if (v != null) {
+      _warnOnExit = BooleanObservable(Binding.toKey(id, 'warnonexit'), v, scope: scope);
+    }
+  }
+
+  @override
+  bool get warnOnExit => _warnOnExit?.get() ?? true;
+
   // dirty
   @override
   BooleanObservable? get dirtyObservable => _dirty;
@@ -298,6 +311,8 @@ class FormModel extends BoxModel implements IForm {
     post = Xml.get(node: xml, tag: 'post');
     geocode = Xml.get(node: xml, tag: 'geocode');
     postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
+    warnOnExit = Xml.attribute(node: xml, tag: 'warnonexit');
+
 
     // events
     onComplete = Xml.get(node: xml, tag: 'oncomplete');

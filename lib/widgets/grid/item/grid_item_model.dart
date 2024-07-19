@@ -1,9 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/rendering.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
+import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/widgets/grid/grid_model.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
@@ -169,17 +171,14 @@ class GridItemModel extends BoxModel {
     onDelete = Xml.get(node: xml, tag: 'ondelete');
     postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
 
-    // build form fields and register dirty listeners to each
-    for (var field in descendants ?? []) {
+    // grid item is a form?
+    if (_postbrokers != null) {
 
-      // is a form field?
-      if (field is IFormField) {
+      // build form fields and register dirty listeners to each
+      fields = FormModel.formFieldsOf(this);
 
-        // add to fields collection
-        fields ??= [];
-        fields!.add(field);
-
-        // Register Listener to Dirty Field
+      // Register Listener to Dirty Field
+      for (var field in fields ?? []) {
         field.registerDirtyListener(onDirtyListener);
       }
     }
@@ -199,5 +198,47 @@ class GridItemModel extends BoxModel {
     if (parent is GridModel) {
       (parent as GridModel).onDragDrop(this, draggable, dropSpot: dropSpot);
     }
+  }
+
+  Future<bool> _post() async {
+    if (dirty == false) return true;
+
+    var list = findAncestorOfExactType(GridModel);
+
+    bool ok = true;
+    if (list != null && scope != null && postbrokers != null) {
+      for (String id in postbrokers!) {
+        IDataSource? source = scope!.getDataSource(id);
+        if (source != null && ok && list != null) {
+          if (!source.custombody) {
+            source.body = await FormModel.buildPostingBody(list!, fields,
+                rootname: source.root ?? "FORM");
+          }
+          ok = await source.start();
+        }
+        if (!ok) break;
+      }
+    } else {
+      ok = false;
+    }
+    return ok;
+  }
+
+  Future<bool> complete() async {
+    busy = true;
+
+    // post the ITEM
+    bool ok = await _post();
+
+    // mark fields as clean
+    if (ok && fields != null) {
+      for (var field in fields!) {
+        field.dirty = false;
+      }
+    }
+
+    busy = false;
+
+    return ok;
   }
 }

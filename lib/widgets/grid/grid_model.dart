@@ -9,6 +9,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
+import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/grid/grid_view.dart';
 import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
@@ -26,7 +27,7 @@ import 'package:fml/platform/platform.vm.dart'
     if (dart.library.io) 'package:fml/platform/platform.vm.dart'
     if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
-class GridModel extends BoxModel implements IScrollable {
+class GridModel extends BoxModel implements IForm, IScrollable {
 
   // data map from the list item that is currently selected
   ListObservable? _selected;
@@ -64,8 +65,11 @@ class GridModel extends BoxModel implements IScrollable {
   bool get scrollShadows => _scrollShadows?.get() ?? false;
 
   // dirty
+  @override
   BooleanObservable? get dirtyObservable => _dirty;
+
   BooleanObservable? _dirty;
+  @override
   set dirty(dynamic v) {
     if (_dirty != null) {
       _dirty!.set(v);
@@ -73,8 +77,8 @@ class GridModel extends BoxModel implements IScrollable {
       _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
     }
   }
-
-  bool? get dirty => _dirty?.get();
+  @override
+  bool get dirty => _dirty?.get() ?? false;
 
   void onDirtyListener(Observable property) {
     bool isDirty = false;
@@ -87,17 +91,43 @@ class GridModel extends BoxModel implements IScrollable {
     dirty = isDirty;
   }
 
-  ///////////
-  /* Clean */
-  ///////////
-  set clean(bool b) {
+  @override
+  bool? get post => true;
+
+  // Clean
+  @override
+  bool clean() {
     dirty = false;
     items.forEach((index, item) => item.dirty = false);
+    return true;
   }
 
-  ////////////
+  @override
+  bool clear() => true;
+
+  @override
+  Future<bool> save() async => true;
+
+  @override
+  Future<bool> validate() async => true;
+
+  @override
+  Future<bool> complete() async {
+    busy = true;
+
+    bool ok = true;
+
+    // post the dirty items
+    var list = items.values.where((row) => row.dirty == true).toList();
+    for (var item in list) {
+      ok = await item.complete();
+    }
+
+    busy = false;
+    return ok;
+  }
+
   /* moreup */
-  ////////////
   BooleanObservable? get moreUpObservable => _moreUp;
   BooleanObservable? _moreUp;
   @override
@@ -295,7 +325,7 @@ class GridModel extends BoxModel implements IScrollable {
     myDataSource = source;
 
     if (list != null) {
-      clean = true;
+      clean();
 
       // clear items
       items.forEach((_, item) => item.dispose());

@@ -184,17 +184,14 @@ class ListItemModel extends BoxModel {
     onDelete = Xml.get(node: xml, tag: 'ondelete');
     postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
 
-    // build form fields and register dirty listeners to each
-    for (var field in descendants ?? []) {
+    // list item is a form?
+    if (_postbrokers != null) {
 
-      // is a form field?
-      if (field is IFormField) {
+      // build form fields and register dirty listeners to each
+      fields = FormModel.formFieldsOf(this);
 
-        // add to fields collection
-        fields ??= [];
-        fields!.add(field);
-
-        // Register Listener to Dirty Field
+      // Register Listener to Dirty Field
+      for (var field in fields ?? []) {
         field.registerDirtyListener(onDirtyListener);
       }
     }
@@ -203,13 +200,11 @@ class ListItemModel extends BoxModel {
   Future<bool> complete() async {
     busy = true;
 
-    bool ok = true;
+    // post the item
+    bool ok = await _post();
 
-    // post the row
-    if (ok) ok = await _post();
-
-    // mark clean
-    if ((ok) && (fields != null)) {
+    // mark fields as clean
+    if (ok && fields != null) {
       for (var field in fields!) {
         field.dirty = false;
       }

@@ -153,9 +153,9 @@ class HttpModel extends DataSourceModel implements IDataSource {
     if (!enabled) return false;
 
     busy = true;
-    await _start(refresh, key);
+    bool ok = await _start(refresh, key);
     busy = false;
-    return true;
+    return ok;
   }
 
   Future<bool> _start(bool refresh, String? key) async {

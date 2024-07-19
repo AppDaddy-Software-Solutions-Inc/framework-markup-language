@@ -96,12 +96,12 @@ class TabViewModel extends BoxModel {
   TabViewModel(
     super.parent,
     super.id, {
-    dynamic tabbar,
-    dynamic tabbutton,
+    dynamic showBar,
+    dynamic showMenu,
     dynamic allowback
   }) {
-    this.showBar = tabbar;
-    this.showMenu = tabbutton;
+    this.showBar = showBar;
+    this.showMenu = showMenu;
     this.allowback = allowback;
   }
 

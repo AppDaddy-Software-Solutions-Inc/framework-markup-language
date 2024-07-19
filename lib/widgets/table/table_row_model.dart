@@ -214,17 +214,14 @@ class TableRowModel extends BoxModel {
     // get cells
     cells.addAll(findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>());
 
-    // build form fields and register dirty listeners to each
-    for (var field in descendants ?? []) {
+    // row is a form?
+    if (_postbrokers != null) {
 
-      // is a form field?
-      if (field is IFormField) {
+      // build form fields and register dirty listeners to each
+      fields = FormModel.formFieldsOf(this);
 
-        // add to fields collection
-        fields ??= [];
-        fields!.add(field);
-
-        // Register Listener to Dirty Field
+      // Register Listener to Dirty Field
+      for (var field in fields ?? []) {
         field.registerDirtyListener(onDirtyListener);
       }
     }
@@ -247,12 +244,10 @@ class TableRowModel extends BoxModel {
   Future<bool> complete() async {
     busy = true;
 
-    bool ok = true;
+    // post the row
+    bool ok = await _post();
 
-    // Post the Row
-    if (ok && dirty) ok = await _post();
-
-    // mark row clean
+    // mark row cells as clean
     if (ok) {
       dirty = false;
       for (var cell in cells) {
@@ -260,7 +255,7 @@ class TableRowModel extends BoxModel {
       }
     }
 
-    // mark custom form fields as clean
+    // mark fields as clean
     if (ok && fields != null) {
       for (var field in fields!) {
         field.dirty = false;
@@ -272,28 +267,23 @@ class TableRowModel extends BoxModel {
     return ok;
   }
 
-  Future<bool> onComplete() async {
-    busy = true;
-
-    bool ok = true;
-
-    // Post the Form
-    if (ok && dirty) ok = await complete();
-
-    busy = false;
-    return ok;
-  }
-
   Future<bool> _post() async {
+
     bool ok = true;
     if (scope != null && postbrokers != null) {
+
       for (String id in postbrokers!) {
+
+        // get the post broker
         IDataSource? source = scope!.getDataSource(id);
-        if (source != null && ok && table != null) {
+        if (ok && source != null && table != null) {
+
+          // build the posting body
           if (!source.custombody) {
             source.body = await FormModel.buildPostingBody(table!, fields,
                 rootname: source.root ?? "FORM");
           }
+
           ok = await source.start();
         }
         if (!ok) break;

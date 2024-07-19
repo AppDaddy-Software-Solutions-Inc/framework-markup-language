@@ -81,8 +81,9 @@ class FormViewState extends ViewableWidgetState<FormView> implements IGpsListene
     Model.unfocus();
     bool exit = true;
 
-    // model is dirty?
-    if (widget.model.dirty) {
+    // show warning if form is dirty?
+    if (widget.model.dirty && widget.model.warnOnExit) {
+
       //var color = Theme.of(context).buttonTheme.colorScheme?.inversePrimary ?? Theme.of(context).colorScheme.inversePrimary;
       var color = Colors.black87;
       var no = Text(phrase.no,
@@ -104,7 +105,7 @@ class FormViewState extends ViewableWidgetState<FormView> implements IGpsListene
     try {
       bool found = false;
 
-      for (IFormField field in widget.model.formFields) {
+      for (IFormField field in widget.model.fields) {
         if (field == model) {
           found = true;
           try {

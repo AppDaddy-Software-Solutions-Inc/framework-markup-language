@@ -31,7 +31,7 @@ class FormModel extends BoxModel implements IForm {
   String get layout => super.layout ?? "column";
 
   // list of all form fields
-  List<IFormField> formFields = [];
+  List<IFormField> fields = [];
 
   List<IForm> forms = [];
 
@@ -47,6 +47,19 @@ class FormModel extends BoxModel implements IForm {
 
   @override
   bool? get post => _post?.get();
+
+  /// if the form is dirty, a warning dialog is displayed by default when the user tries to exit the form.
+  BooleanObservable? _warnOnExit;
+  set warnOnExit(dynamic v) {
+    if (_warnOnExit != null) {
+      _warnOnExit!.set(v);
+    } else if (v != null) {
+      _warnOnExit = BooleanObservable(Binding.toKey(id, 'warnonexit'), v, scope: scope);
+    }
+  }
+
+  @override
+  bool get warnOnExit => _warnOnExit?.get() ?? true;
 
   // dirty
   @override
@@ -145,7 +158,7 @@ class FormModel extends BoxModel implements IForm {
   void onDirtyListener(Observable property) {
     // set form dirty
     bool isDirty = false;
-    for (var field in formFields) {
+    for (var field in fields) {
       if (field.dirty == true) isDirty = true;
     }
     dirty = isDirty;
@@ -225,7 +238,7 @@ class FormModel extends BoxModel implements IForm {
   Map<String, String?> get map {
     Map<String, String?> myMap = <String, String?>{};
 
-    for (var field in formFields) {
+    for (var field in fields) {
       if ((field.elementName != "attachment") &&
           (!isNullOrEmpty(field.value))) {
         String? value;
@@ -298,6 +311,8 @@ class FormModel extends BoxModel implements IForm {
     post = Xml.get(node: xml, tag: 'post');
     geocode = Xml.get(node: xml, tag: 'geocode');
     postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
+    warnOnExit = Xml.attribute(node: xml, tag: 'warnonexit');
+
 
     // events
     onComplete = Xml.get(node: xml, tag: 'oncomplete');
@@ -306,7 +321,7 @@ class FormModel extends BoxModel implements IForm {
     onInvalid = Xml.get(node: xml, tag: 'oninvalid');
 
     // get fields
-    setFormFields();
+    initializeFormFields();
 
     // fill all empty fields with the datasource if specified
     var datasource = Xml.attribute(node: xml, tag: 'data');
@@ -315,8 +330,9 @@ class FormModel extends BoxModel implements IForm {
       if (source != null) source.register(this);
     }
 
-    // get forms
-    forms.addAll(getForms(children));
+    // get sub forms
+    var forms = formsOf(this);
+    forms.addAll(forms);
 
     // get all answers
     var nodes = xml.findElements("ANSWER", namespace: "*");
@@ -360,7 +376,7 @@ class FormModel extends BoxModel implements IForm {
     clean();
 
     // add dirty listener to each field
-    for (var field in formFields) {
+    for (var field in fields) {
       field.registerDirtyListener(onDirtyListener);
     }
 
@@ -371,31 +387,30 @@ class FormModel extends BoxModel implements IForm {
     }
   }
 
-  void setFormFields() {
-    formFields.clear();
-    formFields.addAll(_getFormFields(children));
+  void initializeFormFields() {
+    var fields = formFieldsOf(this);
+    this.fields.clear();
+    this.fields.addAll(fields);
   }
 
-  static List<IFormField> _getFormFields(List<Model>? children) {
-    List<IFormField> fields = [];
-    if (children != null) {
-      for (var child in children) {
-        if (child is IFormField) fields.add(child as IFormField);
-        if (child is! IForm) fields.addAll(_getFormFields(child.children));
-      }
-    }
-    return fields;
-  }
-
-  static List<IForm> getForms(List<Model>? children) {
+  // gets a list of the forms contained in the specified model
+  static List<IForm> formsOf(Model model) {
     List<IForm> forms = [];
-    if (children != null) {
-      for (var child in children) {
-        if (child is IForm) forms.add(child as IForm);
-        if (child is! IForm) forms.addAll(getForms(child.children));
-      }
+    for (var child in model.children ?? []) {
+      if (child is IForm) forms.add(child);
+      if (child is! IForm) forms.addAll(formsOf(child));
     }
     return forms;
+  }
+
+  // gets a list of the form fields contained in the specified model
+  static List<IFormField> formFieldsOf(Model model) {
+    List<IFormField> fields = [];
+    for (var child in model.children ?? []) {
+      if (child is IFormField) fields.add(child);
+      if (child is! IForm) fields.addAll(formFieldsOf(child));
+    }
+    return fields;
   }
 
   Future<bool> _postForm(hive.Form? form, {bool? commit}) async {
@@ -405,7 +420,7 @@ class FormModel extends BoxModel implements IForm {
         IDataSource? source = scope!.getDataSource(id);
         if ((source != null) && (ok) && (commit != false)) {
           if (!source.custombody) {
-            source.body = await buildPostingBody(this, formFields,
+            source.body = await buildPostingBody(this, fields,
                 rootname: source.root ?? "FORM");
           }
           ok = await source.start(key: form!.key);
@@ -424,7 +439,7 @@ class FormModel extends BoxModel implements IForm {
   bool clean() {
 
     // clean all fields
-    for (var field in formFields) {
+    for (var field in fields) {
       field.dirty = false;
     }
 
@@ -446,7 +461,7 @@ class FormModel extends BoxModel implements IForm {
     bool ok = true;
 
     // Clear Fields
-    for (var field in formFields) {
+    for (var field in fields) {
       field.value = field.defaultValue ?? "";
     }
 
@@ -503,7 +518,7 @@ class FormModel extends BoxModel implements IForm {
 
   IFormField? getField(String? id) {
     IFormField? model;
-    for (IFormField field in formFields) {
+    for (IFormField field in fields) {
       if (field.id == id) {
         model = field;
         break;
@@ -770,7 +785,7 @@ class FormModel extends BoxModel implements IForm {
     hive.Form? form;
 
     // Serialize the Form
-    await serialize(element, this, formFields);
+    await serialize(element, this, fields);
 
     // Serialize Outer Xml
     String xml = framework!.element!.toXmlString(pretty: true);
@@ -809,7 +824,7 @@ class FormModel extends BoxModel implements IForm {
 
   List<IFormField> _getAlarmingFields() {
     List<IFormField> list = [];
-    for (var field in formFields) {
+    for (var field in fields) {
       // touch all fields
       field.touched = true;
 
@@ -827,7 +842,7 @@ class FormModel extends BoxModel implements IForm {
   void _fillEmptyFields(Data? data) {
     // if the data is null do not fill fields
     if (data != null) {
-      for (var field in formFields) {
+      for (var field in fields) {
         // check to see if the field is not assigned a by the developer, even if that value is null, and is not answered.
         if (isNullOrEmpty(field.value) && !field.touched) {
           //create the binding string based on the fields ID.

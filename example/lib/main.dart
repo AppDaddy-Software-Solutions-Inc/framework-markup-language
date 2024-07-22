@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
 
     String example1 = 'https://test.appdaddy.co';
 
-    var version = "3.0.0";
+    var version = "3.1.0";
 
     // launch the FML engine
     return FmlEngine(

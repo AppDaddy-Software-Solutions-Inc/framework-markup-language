@@ -166,7 +166,6 @@ class TableHeaderCellModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get field => _field?.get();
 
   // position in row

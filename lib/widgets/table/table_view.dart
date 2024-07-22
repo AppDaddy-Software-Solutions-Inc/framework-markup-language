@@ -1036,6 +1036,12 @@ class TableViewState extends ViewableWidgetState<TableView> {
     map.clear();
 
     if (widget.model.header == null) return;
+    if (widget.model.header!.isDynamic) {
+      if (widget.model.data == null) return;
+      if (widget.model.data is List) {
+       if ((widget.model.data as List).isEmpty) return;
+      }
+    }
 
     List<String> fields = [];
     for (var cell in widget.model.header!.cells) {

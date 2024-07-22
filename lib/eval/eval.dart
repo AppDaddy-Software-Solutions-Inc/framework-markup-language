@@ -575,18 +575,6 @@ class Eval {
     return null;
   }
 
-  // TODO: define this with a better name perhaps
-  static String? normalize(dynamic expression) {
-    expression = toStr(expression);
-    if (expression == null) return null;
-
-    //////////////////////////////////////////////
-    /* Remove Extraneous Unquoted Blank Strings */
-    //////////////////////////////////////////////
-    return expression.replaceAll(
-        RegExp(r"\s+(?=(?:[^\']*[\'][^\']*[\'])*[^\']*$)"), '');
-  }
-
   /// Replace all [Pattern] occurrences in a String with a String
   static String _replace(dynamic s, dynamic pattern, dynamic replace) {
     pattern = toStr(pattern);

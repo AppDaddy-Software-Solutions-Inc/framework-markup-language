@@ -460,10 +460,10 @@ class ListModel extends BoxModel implements IForm, IScrollable {
         moveInHashmap(items, dragIndex, dropIndex);
 
         // reorder data
-        notificationsEnabled = false;
+        disableNotifications();
         myDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
         data = myDataSource?.data ?? data;
-        notificationsEnabled = true;
+        enableNotifications();
 
         // notify listeners
         notifyListeners('list', items);
@@ -564,10 +564,10 @@ class ListModel extends BoxModel implements IForm, IScrollable {
       // important to do this first as
       // get row model below depends on an entry
       // in the dataset at specified index
-      notificationsEnabled = false;
+      disableNotifications();
       myDataSource?.insert(jsonOrXml, index, notifyListeners: false);
       data = myDataSource?.data ?? data;
-      notificationsEnabled = true;
+      enableNotifications();
 
       // open up a space for the new model
       insertInHashmap(items, index);
@@ -611,10 +611,10 @@ class ListModel extends BoxModel implements IForm, IScrollable {
           deleteInHashmap(items, index);
 
           // remove the data associated with the row
-          notificationsEnabled = false;
+          disableNotifications();
           myDataSource?.delete(index, notifyListeners: false);
           data = myDataSource?.data ?? data;
-          notificationsEnabled = true;
+          enableNotifications();
 
           // notify
           data = myDataSource?.notify();
@@ -646,10 +646,10 @@ class ListModel extends BoxModel implements IForm, IScrollable {
       moveInHashmap(items, fromIndex, toIndex);
 
       // reorder data
-      notificationsEnabled = false;
+      disableNotifications();
       myDataSource?.move(fromIndex, toIndex, notifyListeners: false);
       data = myDataSource?.data ?? data;
-      notificationsEnabled = true;
+      enableNotifications();
 
       // notify
       data = myDataSource?.notify();

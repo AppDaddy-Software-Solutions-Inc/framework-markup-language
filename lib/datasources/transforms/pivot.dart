@@ -19,7 +19,6 @@ class Pivot extends TransformModel implements ITransform {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get column => _column?.get();
 
   // row
@@ -37,7 +36,7 @@ class Pivot extends TransformModel implements ITransform {
   @override
   String? get row => _row?.get();
 
-  // Field
+  // field
   StringObservable? _field;
   set field(dynamic v) {
     if (_field != null) {
@@ -47,15 +46,28 @@ class Pivot extends TransformModel implements ITransform {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get field => _field?.get();
 
+  // add summary rows (total, avg)
+  BooleanObservable? _addSummaryRows;
+  set addSummaryRows(dynamic v) {
+    if (_addSummaryRows != null) {
+      _addSummaryRows!.set(v);
+    } else if (v != null) {
+      _addSummaryRows = BooleanObservable(Binding.toKey(id, 'addsummaryrows'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get addSummaryRows => _addSummaryRows?.get() ?? false;
+
+
   Pivot(Model? parent,
-      {String? id, String? row, String? column, String? field})
+      {String? id, String? row, String? column, String? field, dynamic addSummaryRows})
       : super(parent, id) {
     this.row = row;
     this.column = column;
     this.field = field;
+    this.addSummaryRows = addSummaryRows;
   }
 
   static Pivot? fromXml(Model? parent, XmlElement xml) {
@@ -63,7 +75,8 @@ class Pivot extends TransformModel implements ITransform {
         id: Xml.get(node: xml, tag: 'id'),
         row: Xml.get(node: xml, tag: "row"),
         column: Xml.get(node: xml, tag: "column"),
-        field: Xml.get(node: xml, tag: "field"));
+        field: Xml.get(node: xml, tag: "field"),
+        addSummaryRows: Xml.get(node: xml, tag: "addsummaryrows"));
     model.deserialize(xml);
     return model;
   }
@@ -210,12 +223,15 @@ class Pivot extends TransformModel implements ITransform {
     totals[row!] = "TOTAL";
     averages[row!] = "AVG";
 
-    totals["AVG"] = "";
-    averages["TOTAL"] = "";
-    result.add(averages);
-    result.add(totals);
+    // add summary rows
+    if (addSummaryRows) {
+      totals["AVG"] = "";
+      averages["TOTAL"] = "";
+      result.add(averages);
+      result.add(totals);
+    }
 
-    return result; //16 19 14 19 18 21
+    return result;
   }
 
   @override

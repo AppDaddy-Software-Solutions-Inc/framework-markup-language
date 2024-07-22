@@ -501,10 +501,10 @@ class GridModel extends BoxModel implements IForm, IScrollable {
         moveInHashmap(items, dragIndex, dropIndex);
 
         // reorder data
-        notificationsEnabled = false;
+        disableNotifications();
         myDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
         data = myDataSource?.data ?? data;
-        notificationsEnabled = true;
+        enableNotifications();
 
         // notify listeners
         notifyListeners('list', items);

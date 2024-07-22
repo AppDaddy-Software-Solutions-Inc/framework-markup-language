@@ -157,15 +157,14 @@ class TabViewModel extends BoxModel {
   void onIndexChange(Observable observable) {
 
     try {
-      // lookup key and url
+
       String? key;
       String? url;
+
+      // lookup key and url
       if (index >= 0) {
-        var tab = tabs[index];
-        if (tab is FrameworkModel) {
-          key = (tab as FrameworkModel).dependency;
-        }
-        url = tab.url;
+        key = tabs[index].dependency;
+        url = tabs[index].url;
       }
 
       // broadcast the event
@@ -228,7 +227,7 @@ class TabViewModel extends BoxModel {
     if (id == 'last') return showLastTab();
 
     // get tab by matching id
-    var tab = tabs.firstWhereOrNull((tab) => tab.url == id);
+    var tab = tabs.firstWhereOrNull((tab) => tab.url == uri.url);
 
     // New Tab
     if (tab == null || refresh) {
@@ -243,7 +242,7 @@ class TabViewModel extends BoxModel {
       closeable = closeable ?? toBool(uri.queryParameters['closeable']) ?? true;
 
       // build tab
-      tab = TabModel(this, id, url: uri.url, title: title, closeable: closeable, icon: icon);
+      tab = TabModel(this, id, url: uri.url, title: title, closeable: closeable, icon: icon, dependency: dependency);
       tabs.add(tab);
 
       // add framework child
@@ -259,7 +258,7 @@ class TabViewModel extends BoxModel {
     if (tabs.contains(tab)) {
       tab.dispose();
       tabs.remove(tab);
-      showPreviousTab();
+      return index < 0 ? onIndexChange(_index!) : showPreviousTab();
     }
   }
 

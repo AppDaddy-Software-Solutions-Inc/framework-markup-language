@@ -12,8 +12,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    //String example = 'https://test.appdaddy.co';
-    String example = 'http://10.69.4.245:81/';
+    String example = 'https://test.appdaddy.co';
+    //String example = 'http://10.69.4.245:81/';
 
     var version = "3.0.0";
 

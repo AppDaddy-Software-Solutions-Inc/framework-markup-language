@@ -663,6 +663,14 @@ class TableModel extends BoxModel implements IForm {
 
     bool ok = true;
 
+    // unfocus and wait
+    // this forces an onchange() if the user is focused in the edit field
+    //await Model.unfocus(waitMilliseconds: 100);
+    if (stateManager?.isEditing ?? false) {
+      stateManager?.setEditing(false);
+      await Future.delayed(Duration(milliseconds: 500));
+    }
+
     // post the dirty rows
     var list = rows.values.where((row) => row.dirty == true).toList();
     for (var model in list) {

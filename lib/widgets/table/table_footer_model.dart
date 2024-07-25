@@ -18,7 +18,11 @@ class TableFooterModel extends BoxModel {
 
   // dynamic cells
   bool get isDynamic => prototypes.isNotEmpty;
-  List<XmlElement> prototypes = [];
+  var prototypes = <XmlElement, Model?>{};
+
+  // list of static cell ids
+  // used in dynamic table creation
+  List<String>? staticFields;
 
   // cell by index
   TableFooterCellModel? cell(int index) =>
@@ -88,7 +92,11 @@ class TableFooterModel extends BoxModel {
         if (cell.isDynamic) {
           e.attributes.add(XmlAttribute(XmlName("dynamic"), ""));
         }
-        prototypes.add(e);
+        else {
+          staticFields ??= [];
+          staticFields!.add(cell.id);
+        }
+        prototypes[e] = cell.parent;
       }
     }
   }

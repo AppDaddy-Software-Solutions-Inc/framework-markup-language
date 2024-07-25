@@ -83,7 +83,21 @@ class TabModel extends BoxModel {
   }
   IconData? get icon => _icon?.get();
 
-  TabModel(super.parent, super.id, {bool scoped = false, dynamic data, dynamic url, dynamic icon, String? title, bool? closeable, String? tooltip})
+  // dependency key
+  StringObservable? _dependency;
+  set dependency(dynamic v) {
+    if (_dependency != null) {
+      _dependency!.set(v);
+      if (element != null) Xml.setAttribute(element!, 'dependency', v);
+    } else if (v != null) {
+      _dependency =
+          StringObservable(Binding.toKey(id, 'dependency'), v, scope: scope);
+      if (element != null) Xml.setAttribute(element!, 'dependency', v);
+    }
+  }
+  String? get dependency => _dependency?.get();
+
+  TabModel(super.parent, super.id, {bool scoped = false, dynamic data, dynamic url, dynamic icon, String? dependency, String? title, bool? closeable, String? tooltip})
       : super(scope: scoped ? Scope(parent: parent?.scope) : null) {
     this.data = data;
     this.url = url;
@@ -91,6 +105,7 @@ class TabModel extends BoxModel {
     this.closeable = closeable;
     this.tooltip = tooltip;
     this.icon = icon;
+    this.dependency = dependency;
   }
 
   static TabModel? fromXml(Model? parent, XmlElement? xml,

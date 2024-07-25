@@ -12,14 +12,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    String example1 = 'https://test.appdaddy.co';
+    String example = 'https://test.appdaddy.co';
+    //String example = 'http://10.69.4.245:81/';
 
     var version = "3.1.0";
 
     // launch the FML engine
     return FmlEngine(
             ApplicationType.multi,
-            domain: example1,
+            domain: example,
             title: "Framework Markup Language V$version",
             version: version,
             color: Colors.lightBlue,

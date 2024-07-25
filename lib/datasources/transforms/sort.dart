@@ -10,9 +10,8 @@ import 'package:fml/helpers/helpers.dart';
 enum SortTypes { none, ascending, descending }
 
 class Sort extends TransformModel implements ITransform {
-  ///////////////
-  /*   Field   */
-  ///////////////
+
+  // field
   StringObservable? _field;
   set field(dynamic v) {
     if (_field != null) {
@@ -22,12 +21,9 @@ class Sort extends TransformModel implements ITransform {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get field => _field?.get();
 
-  ////////////////
-  /* Field Type */
-  ////////////////
+  // field type
   Type? _type;
   set type(dynamic v) {
     Type sortType = String;
@@ -41,12 +37,9 @@ class Sort extends TransformModel implements ITransform {
     }
     _type = sortType;
   }
-
   Type get type => _type ?? String;
 
-  ///////////////
-  /* Ascending */
-  ///////////////
+  // asscending
   BooleanObservable? _ascending;
   set ascending(dynamic v) {
     if (_ascending != null) {
@@ -56,17 +49,13 @@ class Sort extends TransformModel implements ITransform {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get ascending => _ascending?.get() ?? true;
 
-  ////////////////////
-  /* Case Sensitive */
-  ////////////////////
+  // sase sensitive
   bool? _casesensitive;
   set casesensitive(dynamic v) {
     _casesensitive = toBool(v);
   }
-
   bool get casesensitive => _casesensitive ?? false;
 
   Sort(Model? parent,

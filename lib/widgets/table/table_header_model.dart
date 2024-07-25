@@ -64,7 +64,6 @@ class TableHeaderModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get menu => _menu?.get() ?? table?.menu ?? true;
 
   // allow sorting

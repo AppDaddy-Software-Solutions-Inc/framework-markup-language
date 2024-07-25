@@ -44,7 +44,9 @@ class Model implements IDataSourceListener {
   // used to silence notifications
   // during data manipulation or
   // batch updates
-  bool notificationsEnabled = true;
+  bool _notifications = true;
+  void enableNotifications() => _notifications = true;
+  void disableNotifications() => _notifications = false;
 
   // data element
   ListObservable? _data;
@@ -306,7 +308,7 @@ class Model implements IDataSourceListener {
 
   /// notifies property listeners of any changes to a property
   void onPropertyChange(Observable observable) {
-    if(notificationsEnabled) {
+    if(_notifications) {
       notifyListeners(observable.key, observable.get());
     }
   }

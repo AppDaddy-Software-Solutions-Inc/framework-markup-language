@@ -2,14 +2,18 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:math';
+import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
+import 'package:fml/widgets/field/field_model.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/reactive/reactive_view.dart';
+import 'package:fml/widgets/table/table_footer_cell_model.dart';
 import 'package:fml/widgets/table/table_footer_model.dart';
 import 'package:fml/widgets/table/nodata_model.dart';
 import 'package:fml/widgets/widget/model.dart';
@@ -499,10 +503,20 @@ class TableModel extends BoxModel implements IForm {
       // save pointer to data source
       myDataSource = source;
 
-      await _buildDynamic(data);
+      // build dynamic headers
+      _buildDynamicHeaders(data);
+
+      // build dynamic footers
+      _buildDynamicFooters(data);
+
+      // build row model prototype
+      _buildRowPrototype(data);
 
       // mark all fields clean
       clean();
+
+      // summarize the data for each header and footer cell
+      _summarizeData(data);
 
       // clear rows
       rows.forEach((_, row) => row.dispose());
@@ -518,6 +532,61 @@ class TableModel extends BoxModel implements IForm {
     }
 
     return true;
+  }
+
+  void _summarizeData(Data? data) {
+
+    // summarize the data
+    for (var headerCell in header?.cells ?? []) {
+      if (headerCell.field != null) {
+
+        var sum = 0.0;
+        var cnt = 0.0;
+        num? min;
+        num? max;
+        num? avg;
+
+        for (var row in data ?? []) {
+          var v = Data.read(row, headerCell.field);
+          if (v != null) {
+            cnt += 1;
+            var n = toNum(v);
+            if (n != null) {
+              sum += n;
+              min ??= n;
+              if (n < min) min = n;
+              max ??= n;
+              if (n > max) max = n;
+              avg = sum/cnt;
+            }
+          }
+        }
+
+        var d = Data();
+        var row = <String, dynamic>{};
+        row["sum"] = sum;
+        row["count"] = cnt;
+        row["min"] = min;
+        row["max"] = max;
+        row["avg"] = avg;
+        d.add(row);
+
+        // get corresponding footer cell
+        var footerCell = footer?.cells.firstWhereOrNull((c) => c.field == headerCell.field);
+
+        // disable onModelChange() notifications
+        headerCell.disableNotifications();
+        footerCell?.disableNotifications();
+
+        // set the header & footer cell data
+        headerCell.data = d;
+        footerCell?.data = d;
+
+        // re-enable onModelChange() notifications
+        footerCell?.enableNotifications();
+        headerCell.enableNotifications();
+      }
+    }
   }
 
   @override
@@ -594,6 +663,14 @@ class TableModel extends BoxModel implements IForm {
 
     bool ok = true;
 
+    // unfocus and wait
+    // this forces an onchange() if the user is focused in the edit field
+    //await Model.unfocus(waitMilliseconds: 100);
+    if (stateManager?.isEditing ?? false) {
+      stateManager?.setEditing(false);
+      await Future.delayed(Duration(milliseconds: 500));
+    }
+
     // post the dirty rows
     var list = rows.values.where((row) => row.dirty == true).toList();
     for (var model in list) {
@@ -636,10 +713,12 @@ class TableModel extends BoxModel implements IForm {
       if (Xml.hasAttribute(node: prototype, tag: "dynamic")) {
         var hasData = (data?.isNotEmpty ?? false) && (data?.first is Map);
         if (hasData) {
+
           // replace wildcards
           var keys = (data!.first as Map)
               .keys
               .where((key) => key != 'xml' && key != 'rownum');
+
           for (var key in keys) {
             // replace [*] and {field} with key
             var xml = prototype
@@ -650,10 +729,11 @@ class TableModel extends BoxModel implements IForm {
             // parse the element
             XmlDocument? document = Xml.tryParse(xml);
             if (document != null) {
+
               // get id of proposed model
               var id = Xml.attribute(node: document.rootElement, tag: "id");
 
-              // get id of proposed model
+              // visible?
               var visible = toBool(Xml.attribute(
                       node: document.rootElement, tag: "visible")) ??
                   true;
@@ -662,9 +742,16 @@ class TableModel extends BoxModel implements IForm {
               var exists = header!.staticFields?.contains(id) ?? false;
 
               if (!exists && visible) {
-                var cell = TableHeaderCellModel.fromXml(
-                        parent, document.rootElement) ??
-                    TableHeaderCellModel(parent, null);
+
+                // apply prototype conversions
+                var prototype = prototypeOf(document.rootElement);
+
+                // build cell
+                TableHeaderCellModel? cell;
+                if (prototype != null) cell = TableHeaderCellModel.fromXml(parent, prototype);
+                cell ??= TableHeaderCellModel(parent, null);
+
+                // add cells
                 parent.children!.add(cell);
                 header!.cells.add(cell);
               }
@@ -682,13 +769,21 @@ class TableModel extends BoxModel implements IForm {
 
       // build static cell
       else {
-        // get id of proposed model
+
+        // visible?
         var visible =
             toBool(Xml.attribute(node: prototype, tag: "visible")) ?? true;
 
         if (visible) {
-          var cell = TableHeaderCellModel.fromXml(parent, prototype) ??
-              TableHeaderCellModel(parent, null);
+
+          // apply prototype conversions
+          var pt = prototypeOf(prototype);
+
+          // build cell
+          TableHeaderCellModel? cell;
+          if (pt != null) cell = TableHeaderCellModel.fromXml(parent, pt);
+          cell ??= TableHeaderCellModel(parent, null);
+
           parent.children!.add(cell);
           header!.cells.add(cell);
         }
@@ -696,6 +791,115 @@ class TableModel extends BoxModel implements IForm {
     });
   }
 
+  void _buildDynamicFooters(Data? data) {
+    
+    // footer has no dynamic fields?
+    if (footer == null || !footer!.isDynamic) return;
+
+    // cleanup
+    for (var cell in footer!.cells) {
+      // remove cell from parent child list
+      cell.parent?.children?.remove(cell);
+
+      // dispose of the cell
+      cell.dispose();
+    }
+
+    // clear footer cells
+    footer!.cells.clear();
+
+    // build new footer cells
+    footer!.prototypes.forEach((prototype, parentModel) {
+
+      // create a new footer cells
+      Model parent = parentModel ?? footer!;
+      parent.children ??= [];
+
+      // build dynamic cell(s)
+      if (Xml.hasAttribute(node: prototype, tag: "dynamic")) {
+
+        var hasData = (data?.isNotEmpty ?? false) && (data?.first is Map);
+        if (hasData) {
+
+          // replace wildcards
+          var keys = (data!.first as Map)
+              .keys
+              .where((key) => key != 'xml' && key != 'rownum');
+
+          for (var key in keys) {
+
+            // replace [*] and {field} with key
+            var xml = prototype
+                .toString()
+                .replaceAll(dynamicTableValue1, key)
+                .replaceAll(dynamicTableValue2, key);
+
+            // parse the element
+            var document = Xml.tryParse(xml);
+            if (document != null) {
+
+              // get id of model
+              var id = Xml.attribute(node: document.rootElement, tag: "id");
+
+              // visible?
+              var visible = toBool(Xml.attribute(
+                  node: document.rootElement, tag: "visible")) ??
+                  true;
+
+              // dynamic cells with the same id as static fields do not get rendered
+              var exists = footer!.staticFields?.contains(id) ?? false;
+
+              if (!exists && visible) {
+
+                // apply prototype conversions
+                var prototype = prototypeOf(document.rootElement);
+
+                // build cell
+                TableFooterCellModel? cell;
+                if (prototype != null) cell = TableFooterCellModel.fromXml(parent, prototype);
+                cell ??= TableFooterCellModel(parent, null);
+
+                // add cells
+                parent.children!.add(cell);
+                footer!.cells.add(cell);
+              }
+            }
+
+            // dummy model form invalid xml
+            else {
+
+              var cell = TableFooterCellModel(parent, null);
+              parent.children!.add(cell);
+              footer!.cells.add(cell);
+
+            }
+          }
+        }
+      }
+
+      // build static cell
+      else {
+        // visible?
+        var visible =
+            toBool(Xml.attribute(node: prototype, tag: "visible")) ?? true;
+
+        if (visible) {
+
+          // apply prototype conversions
+          var pt = prototypeOf(prototype);
+
+          // build cell
+          TableFooterCellModel? cell;
+          if (pt != null) cell = TableFooterCellModel.fromXml(parent, pt);
+          cell ??= TableFooterCellModel(parent, null);
+
+          parent.children!.add(cell);
+          footer!.cells.add(cell);
+        }
+      }
+    });
+  }
+  
   void _buildRowPrototype(Data? data) {
 
     if (prototype == null) return;
@@ -771,14 +975,6 @@ class TableModel extends BoxModel implements IForm {
     }
   }
 
-  Future<void> _buildDynamic(Data? data) async {
-    // build dynamic headers
-    _buildDynamicHeaders(data);
-
-    // build row model prototype
-    _buildRowPrototype(data);
-  }
-
   Future<bool> onChangeHandler(
       int rowIdx,
       int colIdx,
@@ -797,6 +993,19 @@ class TableModel extends BoxModel implements IForm {
       // mark dirty
       row?.dirty = true;
       rowCell?.dirty = true;
+
+      IFormField? ifield;
+
+      // create a form field for editable fields to allow posting
+      if (row != null) {
+        ifield = row.fields?.firstWhereOrNull((f) => f.id == fld);
+        if (ifield == null) {
+          row.fields ??= [];
+          ifield  = FieldModel(row,fld, value: value);
+          row.fields!.add(ifield);
+        }
+      }
+
       //rowCell?.touched = true;
 
       // write new value
@@ -841,6 +1050,9 @@ class TableModel extends BoxModel implements IForm {
 
         // reset current row data
         row?.data = data;
+
+        // reset form field
+        ifield = oldValue;
 
         // reset selected
         selected = data;
@@ -976,10 +1188,10 @@ class TableModel extends BoxModel implements IForm {
         // important to do this first as
         // get row model below depends on an entry
         // in the dataset at specified index
-        notificationsEnabled = false;
+        disableNotifications();
         myDataSource?.insert(jsonOrXml, rowIndex, notifyListeners: false);
         data = myDataSource?.data ?? data;
-        notificationsEnabled = true;
+        enableNotifications();
 
         // open up a space for the new model
         insertInHashmap(rows, rowIndex);
@@ -1028,10 +1240,10 @@ class TableModel extends BoxModel implements IForm {
               deleteInHashmap(rows, rowIndex);
 
               // remove the data associated with the row
-              notificationsEnabled = false;
+              disableNotifications();
               myDataSource?.delete(rowIndex, notifyListeners: false);
               data = myDataSource?.data ?? data;
-              notificationsEnabled = true;
+              enableNotifications();
             }
           }
         }
@@ -1049,10 +1261,10 @@ class TableModel extends BoxModel implements IForm {
       moveInHashmap(rows, fromIndex, toIndex);
 
       // reorder data
-      notificationsEnabled = false;
+      disableNotifications();
       myDataSource?.move(fromIndex, toIndex, notifyListeners: false);
       data = myDataSource?.data ?? data;
-      notificationsEnabled = true;
+      enableNotifications();
     } catch (e) {
       Log().exception(e);
     }

@@ -258,10 +258,10 @@ class MenuModel extends ViewableModel implements IScrollable {
       // move the cell in the items list
       if (dragIndex >= 0 && dropIndex >= 0 && dragIndex != dropIndex) {
         // move the cell in the dataset
-        notificationsEnabled = false;
+        disableNotifications();
         myDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
         data = myDataSource?.data ?? data;
-        notificationsEnabled = true;
+        enableNotifications();
 
         // remove drag item from the list
         items.remove(draggable);

@@ -1,5 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/observable/binding.dart';
+import 'package:fml/observable/observables/string.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/table/table_footer_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
@@ -52,6 +54,19 @@ class TableFooterCellModel extends BoxModel {
   // position in row
   int get index => hdr?.cells.indexOf(this) ?? -1;
 
+
+  // field - name of field in data set (non row prototype only)
+  StringObservable? _field;
+  set field(dynamic v) {
+    if (_field != null) {
+      _field!.set(v);
+    } else if (v != null) {
+      _field = StringObservable(Binding.toKey(id, 'field'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get field => _field?.get();
+
   TableFooterCellModel(Model super.parent, super.id);
 
   static TableFooterCellModel? fromXml(Model parent, XmlElement xml) {
@@ -76,6 +91,10 @@ class TableFooterCellModel extends BoxModel {
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
+
+    // field - used to drive simple tables for performance
+    field = Xml.get(node: xml, tag: 'field');
+
     // deserialize
     super.deserialize(xml);
   }

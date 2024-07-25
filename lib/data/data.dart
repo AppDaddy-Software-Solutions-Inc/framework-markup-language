@@ -255,8 +255,8 @@ class Data with ListMixin<dynamic> {
   static Data testData(int rows) {
     Data data = Data();
     for (int i = 0; i < rows; i++) {
-      var first = names[Random().nextInt(names.length)];
-      var last = surnames[Random().nextInt(surnames.length)];
+      var first = _names[Random().nextInt(_names.length)];
+      var last = _surnames[Random().nextInt(_surnames.length)];
       var user = "$first.$last${Random().nextInt(100)}".toUpperCase();
 
       var row = <String, dynamic>{};
@@ -266,16 +266,16 @@ class Data with ListMixin<dynamic> {
       row["first"] = first;
       row["last"] = last;
       row["age"] = Random().nextInt(100);
-      row["city"] = cities[Random().nextInt(cities.length)];
-      row["occupation"] = jobs[Random().nextInt(jobs.length)];
-      row["company"] = companies[Random().nextInt(companies.length)];
+      row["city"] = _cities[Random().nextInt(_cities.length)];
+      row["occupation"] = _jobs[Random().nextInt(_jobs.length)];
+      row["company"] = _companies[Random().nextInt(_companies.length)];
       row["email"] = "$user@gmail.com".toLowerCase();
       data.add(row);
     }
     return data;
   }
 
-  static List<String> cities = [
+  static final List<String> _cities = [
     "Tokyo",
     "Jakarta",
     "Delhi",
@@ -309,7 +309,8 @@ class Data with ListMixin<dynamic> {
     "Toronto",
     "Montreal"
   ];
-  static List<String> names = [
+
+  static final List<String> _names = [
     "John",
     "William",
     "James",
@@ -488,7 +489,8 @@ class Data with ListMixin<dynamic> {
     "Emmett",
     "Eli"
   ];
-  static List<String> surnames = [
+
+  static final List<String> _surnames = [
     "Smith",
     "Johnson",
     "Williams",
@@ -596,7 +598,8 @@ class Data with ListMixin<dynamic> {
     "Jordan",
     "Reynolds"
   ];
-  static List<String> jobs = [
+
+  static final List<String> _jobs = [
     "Veterinarian",
     "Firefighter",
     "Software Developer",
@@ -626,7 +629,8 @@ class Data with ListMixin<dynamic> {
     "Hair Dresser",
     "Realtor"
   ];
-  static List<String> companies = [
+
+  static final List<String> _companies = [
     "Apple",
     "Microsoft",
     "Saudi Aramco",

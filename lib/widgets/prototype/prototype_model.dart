@@ -168,10 +168,10 @@ class PrototypeModel extends BoxModel {
     // move the cell in the items list
     if (dragIndex != null && dropIndex != null && dragIndex != dropIndex) {
       // move the cell in the dataset
-      notificationsEnabled = false;
+      disableNotifications();
       myDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
       data = myDataSource?.data ?? data;
-      notificationsEnabled = true;
+      enableNotifications();
     }
   }
 }

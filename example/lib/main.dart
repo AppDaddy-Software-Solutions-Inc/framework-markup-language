@@ -13,9 +13,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
 
     String example = 'https://test.appdaddy.co';
-    //String example = 'http://10.69.4.245:81/';
 
-    var version = "3.1.0";
+    var version = "3.1.1";
 
     // launch the FML engine
     return FmlEngine(

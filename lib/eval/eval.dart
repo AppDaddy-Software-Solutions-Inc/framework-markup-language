@@ -552,8 +552,13 @@ class Eval {
   static dynamic _toXml(dynamic value, [dynamic rootName, dynamic nodeName]) {
     // parse and validate
     if (value is String) {
-      var doc = Xml.tryParse(value);
-      return doc?.toString();
+
+      var xml = (value as String);
+      //xml = xml.replaceAll("\\r", "").replaceAll("\\\n", "");
+
+      var doc = Xml.tryParse(xml);
+      xml = doc?.toXmlString(pretty: true) ?? value;
+      return xml;
     }
 
     // convert from Data to xml

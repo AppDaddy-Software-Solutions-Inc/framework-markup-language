@@ -40,7 +40,12 @@ class Reader {
     notifyListeners(payload);
   }
 
-  void _onError(Object error) {}
+  void _onError(Object error) {
+
+    Log().error('Zebra Channel Error on Initialize');
+
+
+  }
 
   startScan() {
     _send("com.symbol.datawedge.api.SOFT_SCAN_TRIGGER", "START_SCANNING");

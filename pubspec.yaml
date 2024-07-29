@@ -81,7 +81,7 @@ dependencies:
 
   fl_chart: ^0.68.0
 
-  flutter_code_editor: ^0.3.1
+  flutter_code_editor: ^0.3.2
   # Apache-2.0, MIT
 
   flex_color_picker: ^3.5.0

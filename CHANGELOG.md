@@ -4,6 +4,9 @@
 - Added ApplicationType.branded functionality
 - Updated packages
 
+3.1.1+21
+- Miscellaneous fixes
+
 3.0.0+15
 - Attempt to resolve anaysis issue for "unknown platforms"
 

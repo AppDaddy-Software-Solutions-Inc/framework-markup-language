@@ -14,10 +14,10 @@ class MyApp extends StatelessWidget {
 
     //String example = 'https://test.appdaddy.co';
     //String example = 'http://10.69.4.245:81/';
-    String example = 'http://in4.pro';
-    //String example = 'https://pad.fml.dev';
+    //String example = 'http://in4.pro';
+    String example = 'https://pad.fml.dev';
 
-    var version = "3.0.0";
+    var version = "3.1.1";
 
     // launch the FML engine
     return FmlEngine(

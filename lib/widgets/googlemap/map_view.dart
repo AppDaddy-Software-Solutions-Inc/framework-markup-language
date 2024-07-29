@@ -244,7 +244,7 @@ class _MapViewState extends ViewableWidgetState<MapView> {
           BitmapDescriptor icon = BitmapDescriptor.defaultMarker;
           if (!icons.containsKey(location.marker)) {
             if (location.icon != null) {
-              icon = BitmapDescriptor.fromBytes(location.icon!);
+              icon = BitmapDescriptor.bytes(location.icon!);
             }
             icons[location.marker] = icon;
           }

@@ -821,13 +821,18 @@ class EventHandler extends Eval {
   Future<bool?> _handleEventExecute(String id, String function, dynamic arguments) async {
 
     var scope = this.model.scope;
+    //grab the raw ID before splitting to pass to execute
+    var rawID = id;
 
     // named scope reference?
     if (id.contains(".")) {
+
       var parts = id.split(".");
       scope = Scope.findNamedScope(id) ?? scope;
       if (scope != this.model.scope) parts.removeAt(0);
-      id = parts.first;
+      // ID should not be set to parts. first as the execute relies on the secondary part of the id to choose the attribute to be set
+       id = parts.first;
+
     }
 
     // get widget model
@@ -835,7 +840,8 @@ class EventHandler extends Eval {
 
     // execute the function
     if (model != null) {
-      return await model.execute(id, function, arguments);
+      //execute expects the ID to contain the property to be set appended with dot notation.
+      return await model.execute(rawID, function, arguments);
     }
 
     // stash clear?

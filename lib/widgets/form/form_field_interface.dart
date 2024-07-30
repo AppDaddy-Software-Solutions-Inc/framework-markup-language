@@ -18,6 +18,9 @@ abstract class IFormField {
   dynamic get defaultValue;
   set defaultValue(dynamic v);
 
+  // the starting value
+  String? get initialValue;
+
   // field metadata
   dynamic get metaData;
   set metaData(dynamic v);

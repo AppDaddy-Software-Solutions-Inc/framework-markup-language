@@ -622,7 +622,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "3.0.0+18"
+    version: "3.1.1+21"
   geolocator:
     dependency: transitive
     description:

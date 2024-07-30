@@ -841,9 +841,11 @@ class FormModel extends BoxModel implements IForm {
     // if the data is null do not fill fields
     if (data != null) {
       for (var field in fields) {
-        // check to see if the field is not assigned a by the developer, even if that value is null, and is not answered.
-        if (isNullOrEmpty(field.value) && !field.touched) {
-          //create the binding string based on the fields ID.
+
+        // check to see if the field is not assigned a value by the developer, even if that value is null, and is not answered.
+        if (isNullOrEmpty(field.initialValue) && !field.touched) {
+
+          // create the binding string based on the fields ID.
           String binding = '${field.id}';
 
           //assign the signature of the source to the field and grab it from the data. Data will generally return a list, so we must grab the 0th element.

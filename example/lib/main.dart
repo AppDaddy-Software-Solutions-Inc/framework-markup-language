@@ -11,15 +11,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-
-
     String example = 'https://pad.fml.dev';
 
     var version = "3.1.1";
 
     // launch the FML engine
-    return FmlEngine(
-            ApplicationType.multi,
+    return FmlEngine(ApplicationType.multi,
             domain: example,
             title: "Framework Markup Language V$version",
             version: version,

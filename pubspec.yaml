@@ -40,7 +40,7 @@ dependencies:
   camera: ^0.11.0
   # BSD-3-Clause
 
-  camera_windows: ^0.2.2
+  camera_windows: ^0.2.5
   # BSD-3-Clause
 
   changeicon: ^1.0.0
@@ -57,7 +57,7 @@ dependencies:
   community_charts_common: ^1.0.4
   # Apache-2.0
 
-  connectivity_plus: ^6.0.3
+  connectivity_plus: ^6.0.4
   # BSD-3-Clause
 
   cross_file: ^0.3.3+1
@@ -70,21 +70,21 @@ dependencies:
   # Apache-2.0
 
   # file picker with extension support
-  file_picker: ^8.0.3
+  file_picker: ^8.0.6
   # MIT
 
   # Microsoft Logon - Newer versions of these packages require web < 0.5.0
-  firebase_auth: ^4.19.6
-  firebase_core: ^2.31.1
+  firebase_auth: ^5.1.2
+  firebase_core: ^3.2.0
   # firebase_core_platform_interface: ^4.8.0
   # BSD-3-Clause
 
   fl_chart: ^0.68.0
 
-  flutter_code_editor: ^0.3.2
+  flutter_code_editor: ^0.3.1
   # Apache-2.0, MIT
 
-  flex_color_picker: ^3.5.0
+  flex_color_picker: ^3.5.1
   # BSD-3-Clause
 
   flutter_beacon: ^0.5.1
@@ -96,10 +96,10 @@ dependencies:
   flutter_image_transform: ^1.0.1
   # MIT
 
-  flutter_map: ^6.1.0
+  flutter_map: ^7.0.2
   # BSD-3-Clause
 
-  flutter_multi_formatter: ^2.12.8
+  flutter_multi_formatter: ^2.13.0
   # MIT
 
   flutter_nfc_kit: ^3.4.2
@@ -126,10 +126,10 @@ dependencies:
   google_mlkit_text_recognition: ^0.13.0
   # MIT
 
-  google_maps_flutter: ^2.6.1
+  google_maps_flutter: ^2.7.0
   # BSD-3-Clause
 
-  google_maps_flutter_web: ^0.5.7
+  google_maps_flutter_web: ^0.5.8
   # BSD-3-Clause, MIT
 
   highlight: ^0.7.0
@@ -138,7 +138,7 @@ dependencies:
   hive: ^2.2.3
   # Apache-2.0
 
-  http: ^1.2.1
+  http: ^1.2.2
   # BSD-3-Clause
 
   # Our library "flutter_image_transform" is blocking this update
@@ -160,7 +160,7 @@ dependencies:
   mime: ^1.0.4
   # BSD-3-Clause
 
-  mqtt_client: ^10.2.1
+  mqtt_client: ^10.3.0
   # BSD-3-Clause, MIT
 
   ndef: ^0.3.1
@@ -213,25 +213,25 @@ dependencies:
   universal_html: ^2.2.4
   # Apache-2.0
 
-  url_launcher: ^6.2.6
+  url_launcher: ^6.3.0
   # BSD-3-Clause
 
-  uuid: ^4.4.0
+  uuid: ^4.4.2
   # MIT
 
   validators: ^3.0.0
   # MIT
 
-  video_player: ^2.8.6
+  video_player: ^2.9.1
   # BSD-3-Clause
 
-  video_player_win: ^2.3.6
+  video_player_win: ^2.3.9
   # BSD-3-Clause
 
   visibility_detector: ^0.4.0+2
   # BSD-3-Clause
 
-  webview_flutter: ^4.7.0
+  webview_flutter: ^4.8.0
   # BSD-3-Clause
 
   xml: ^6.5.0

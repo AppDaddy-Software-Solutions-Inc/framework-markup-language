@@ -553,7 +553,7 @@ class Eval {
     // parse and validate
     if (value is String) {
 
-      var xml = (value as String);
+      var xml = value;
       //xml = xml.replaceAll("\\r", "").replaceAll("\\\n", "");
 
       var doc = Xml.tryParse(xml);

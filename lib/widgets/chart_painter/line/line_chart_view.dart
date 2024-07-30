@@ -239,7 +239,7 @@ class _LineChartViewState extends ViewableWidgetState<LineChartView> {
 
     List<LineTooltipItem> tooltips = [];
     for (var spot in touchedSpots) {
-      var mySpot = spot.bar.spots[spot.spotIndex];
+      //var mySpot = spot.bar.spots[spot.spotIndex];
 
       //unsure of the reason for this check
       //if (mySpot is FlSpotExtended && mySpot.series.tooltips) showTips = true;

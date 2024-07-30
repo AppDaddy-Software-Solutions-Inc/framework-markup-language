@@ -668,7 +668,7 @@ class TableModel extends BoxModel implements IForm {
     //await Model.unfocus(waitMilliseconds: 100);
     if (stateManager?.isEditing ?? false) {
       stateManager?.setEditing(false);
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
     }
 
     // post the dirty rows

@@ -3,6 +3,9 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/file/model.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/icon/icon_model.dart';
+import 'package:fml/widgets/link/link_model.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/filepicker/filepicker_view.dart' as file_picker;
@@ -69,6 +72,15 @@ class FilepickerModel extends FileModel implements IDataSource {
     allow = Xml.get(node: xml, tag: 'allow');
     onstart = Xml.get(node: xml, tag: 'onstart');
     ondismissed = Xml.get(node: xml, tag: 'ondismissed');
+
+    // add default launcher icon?
+    if (Xml.get(node: xml, tag: 'icon') != null && parent is ViewableModel) {
+      var link = LinkModel(parent!, null, onclick: "$id.launch()");
+      var icon = IconModel(link, null, icon: Xml.get(node: xml, tag: 'icon'));
+      link.children = [icon];
+      parent!.children ??= [];
+      parent!.children!.add(link);
+    }
   }
 
   @override

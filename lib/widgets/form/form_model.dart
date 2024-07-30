@@ -867,6 +867,7 @@ class FormModel extends BoxModel implements IForm {
 
     var function = propertyOrFunction.toLowerCase().trim();
     switch (function) {
+      case 'submit':
       case 'complete':
         return await complete();
 

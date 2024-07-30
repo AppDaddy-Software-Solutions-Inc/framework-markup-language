@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:convert';
 import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:fml/crypto/crypto.dart';
@@ -37,9 +38,11 @@ class Eval {
     'ceil': _ceil,
     'contains': _contains,
     'cos': cos,
+    'decode': _decode,
     'decrypt': _decrypt,
     'distance': _distance,
     'elementat': _elementAt,
+    'encode': _encode,
     'encrypt': _encrypt,
     'endswith': _endsWith,
     'floor': _floor,
@@ -296,6 +299,30 @@ class Eval {
         return (l >> r);
     }
     return null;
+  }
+
+  /// Returns a decoded base64 string
+  static dynamic _encode(dynamic value) {
+    try {
+      if (value is String) {
+        return base64.encode(utf8.encode(value));
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Returns a base64 encoded string
+  static dynamic _decode(dynamic value) {
+    try {
+      if (value is String) {
+        return utf8.decode(base64.decode(value));
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
   }
 
   /// Returns a bool from a dynamic value using [toBool]

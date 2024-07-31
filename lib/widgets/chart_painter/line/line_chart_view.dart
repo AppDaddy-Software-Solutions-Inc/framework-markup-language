@@ -117,6 +117,23 @@ class _LineChartViewState extends ViewableWidgetState<LineChartView> {
         lineBarsData: widget.model.lineDataList,
         lineTouchData: LineTouchData(
           distanceCalculator: calculateDistance,
+          getTouchedSpotIndicator: (LineChartBarData barData, List<int> spotIndexes) {
+            return spotIndexes.map((index) {
+              final FlSpot spot = barData.spots[index];
+              if (spot.x == 0 || spot.y == 0) return null;
+              return TouchedSpotIndicatorData(
+                FlLine(color: Colors.blueGrey, strokeWidth: 2),
+                FlDotData(show: true, getDotPainter: (spot, percent, barData, index) {
+                  return FlDotCirclePainter(
+                    radius: 4,
+                    color: Colors.blueGrey,
+                    strokeWidth: 2,
+                    strokeColor: Colors.white,
+                  );
+                }),
+              );
+            }).toList();
+          },
           touchSpotThreshold: 10,
           touchCallback: onLineTouch, touchTooltipData: LineTouchTooltipData(getTooltipColor: getColor , getTooltipItems: getTooltipItems)),
 

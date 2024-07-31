@@ -151,6 +151,11 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
         plotFunction = pointFromWaterfallBarData;
         break;
 
+      // this case is specific to how goodyear visualises their waterfall data.
+      case 'gywaterfall':
+        plotFunction = pointFromGYWaterfallBarData;
+        break;
+
       case 'bar':
       default:
         plotFunction = pointFromBarData;
@@ -162,7 +167,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
       //set the data of the series for databinding
       data = dataList[i];
 
-      if (type == 'bar' || type == 'waterfall' || type == null) {
+      if (type == 'bar' || type == 'waterfall' || type == null || type == "gywaterfall") {
         xValues.add(x);
         x = len;
         len += 1;
@@ -212,6 +217,31 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
           width: width,
           color: color ?? toColor('random'))
     ]);
+    barDataPoint.add(point);
+  }
+
+  void pointFromGYWaterfallBarData() {
+    if (y == null) return;
+    //get the previous toY value
+    double? prevY = barDataPoint.isNotEmpty
+        ? barDataPoint[(barDataPoint.length - 1)].barRods[0].toY
+        : 0;
+
+    //get the expected Y value of this point; If it is 0, then we use the previous toY
+    double? thisY = toDouble(y) == 0 ? prevY : toDouble(y) ?? 0;
+
+    BarChartGroupDataExtended point =
+    BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0, barRods: [
+      BarChartRodDataExtended(this, data,
+          fromY: prevY,
+          toY: thisY,
+          width: width,
+          color: color ?? toColor('random'))
+    ]);
+
+    var fromy =  barDataPoint.isNotEmpty
+        ? barDataPoint[(barDataPoint.length - 1)].barRods[0].toY
+        : 0;
     barDataPoint.add(point);
   }
 

@@ -122,11 +122,11 @@ class _LineChartViewState extends ViewableWidgetState<LineChartView> {
               final FlSpot spot = barData.spots[index];
               if (spot.x == 0 || spot.y == 0) return null;
               return TouchedSpotIndicatorData(
-                FlLine(color: Colors.blueGrey, strokeWidth: 2),
+                FlLine(color: barData.color, strokeWidth: 2),
                 FlDotData(show: true, getDotPainter: (spot, percent, barData, index) {
                   return FlDotCirclePainter(
                     radius: 4,
-                    color: Colors.blueGrey,
+                    color: barData.color ?? Colors.blueGrey,
                     strokeWidth: 2,
                     strokeColor: Colors.white,
                   );

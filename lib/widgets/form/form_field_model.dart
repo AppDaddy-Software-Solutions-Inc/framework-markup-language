@@ -16,6 +16,10 @@ class FormFieldModel extends ViewableModel {
   set value(dynamic v) {}
   dynamic get value => null;
 
+  // initial value - used by form autofill
+  String? _initialValue;
+  String? get initialValue => _initialValue;
+
   // default value
   StringObservable? _defaultValue;
   set defaultValue(dynamic v) {
@@ -200,6 +204,7 @@ class FormFieldModel extends ViewableModel {
     super.deserialize(xml);
 
     // properties
+    _initialValue = Xml.get(node: xml, tag: 'value');
     defaultValue = Xml.get(node: xml, tag: 'default');
     metaData = Xml.get(node: xml, tag: 'meta');
     field = Xml.get(node: xml, tag: 'field');

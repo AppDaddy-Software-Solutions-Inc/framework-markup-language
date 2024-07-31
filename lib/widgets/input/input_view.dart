@@ -112,7 +112,7 @@ class _InputViewState extends ViewableWidgetState<InputView>
       // set the controllers value to the model value.
       // this acts in cases where the value changes based on an eval or set.
       widget.model.controller?.value =
-          TextEditingValue(text: widget.model.value ?? "");
+          TextEditingValue(text: value ?? "");
     }
 
     super.onModelChange(model);

@@ -29,6 +29,8 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
   List<BarChartGroupData> barDataPoint = [];
   List<BarChartRodData> rodDataPoint = [];
   List<BarChartRodStackItem> stackDataPoint = [];
+  var previousColor;
+  Color? currentColor;
 
   BarChartSeriesModel(
     super.parent,
@@ -222,26 +224,80 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
 
   void pointFromGYWaterfallBarData() {
     if (y == null) return;
+
+
+
+
     //get the previous toY value
     double? prevY = barDataPoint.isNotEmpty
-        ? barDataPoint[(barDataPoint.length - 1)].barRods[0].toY
+        ? barDataPoint.last.barRods[0].fromY
         : 0;
 
+    //if the barDataPoints y value is 0, and the previous toY value is 0, then we set this toY to 100
+    //this is to ensure that the waterfall chart starts at 100
+    if (toDouble(y) == 0 && prevY == 0) {
+      prevY = 100;
+    }
+
+
+
     //get the expected Y value of this point; If it is 0, then we use the previous toY
-    double? thisY = toDouble(y) == 0 ? prevY : toDouble(y) ?? 0;
+    double? thisY;
+    if(prevY == 0){
+      thisY = barDataPoint.last.barRods[0].fromY - (toDouble(y) ?? 0);
+    } else {
+      thisY = prevY - (toDouble(y) ?? 0);
+    }
+
+
+    //get the current group color and track the group for single datasets
+    if(previousColor != color ){
+      BarChartGroupDataExtended point;
+      if(previousColor == null) {
+        point =
+            BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0, barRods: [
+              BarChartRodDataExtended(this, data,
+                  //borderSide: BorderSide(width: 2, strokeAlign: 1.0,),
+                  fromY: 0,
+                  toY: 100,
+                  width: width,
+                  color: color ?? toColor('random'))
+            ]);
+        barDataPoint.add(point);
+      } else {
+        point =
+            BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0, barRods: [
+              BarChartRodDataExtended(this, data,
+                  //borderSide: BorderSide(width: 2, strokeAlign: 1.0,),
+                  fromY: 0,
+                  toY: barDataPoint.last.barRods[0].fromY,
+                  width: width,
+                  color: barDataPoint.last.barRods[0].color ?? toColor('random'))
+            ]);
+        barDataPoint.add(point);
+      }
+
+    }
+
+    previousColor = color;
+
 
     BarChartGroupDataExtended point =
     BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0, barRods: [
       BarChartRodDataExtended(this, data,
-          fromY: prevY,
-          toY: thisY,
+          //borderSide: BorderSide(width: 2, strokeAlign: 1.0,),
+          backDrawRodData: BackgroundBarChartRodData(
+              show: true,
+              fromY: prevY == thisY? thisY + 0.05 : thisY,
+              toY:   prevY ==  thisY? prevY - 0.05 : prevY,
+              color: color ?? currentColor ?? toColor('random')),
+          fromY: thisY,
+          toY: prevY,
           width: width,
           color: color ?? toColor('random'))
     ]);
 
-    var fromy =  barDataPoint.isNotEmpty
-        ? barDataPoint[(barDataPoint.length - 1)].barRods[0].toY
-        : 0;
+
     barDataPoint.add(point);
   }
 

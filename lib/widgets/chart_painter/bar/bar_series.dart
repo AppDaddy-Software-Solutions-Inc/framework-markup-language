@@ -50,6 +50,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
     dynamic showarea,
     dynamic showline,
     dynamic showpoints,
+        dynamic width,
   }) {
     data = Data();
     this.x = x;
@@ -65,6 +66,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
     this.showarea = showarea;
     this.showline = showline;
     this.showpoints = showpoints;
+    this.width = width;
   }
 
   static BarChartSeriesModel? fromXml(Model parent, XmlElement xml) {
@@ -100,6 +102,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
     showarea = Xml.get(node: xml, tag: 'showarea');
     showline = Xml.get(node: xml, tag: 'showline');
     showpoints = Xml.get(node: xml, tag: 'showpoints');
+    width = Xml.get(node: xml, tag: 'width');
 
     // Remove datasource listener. The parent chart will take care of this.
     if ((datasource != null) &&
@@ -255,7 +258,8 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
       BarChartGroupDataExtended point;
       if(previousColor == null) {
         point =
-            BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0, barRods: [
+            BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0,
+                barRods: [
               BarChartRodDataExtended(this, data,
                   //borderSide: BorderSide(width: 2, strokeAlign: 1.0,),
                   fromY: 0,

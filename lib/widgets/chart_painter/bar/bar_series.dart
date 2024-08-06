@@ -50,7 +50,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
     dynamic showarea,
     dynamic showline,
     dynamic showpoints,
-        dynamic width,
+    dynamic width,
   }) {
     data = Data();
     this.x = x;
@@ -190,6 +190,9 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
             BarChartRodDataExtended(this, data,
                 toY: stackDataPoint[0].toY,
                 color: Colors.transparent,
+        width: width,
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),
                 rodStackItems: stackDataPoint)
           ]));
     }
@@ -205,6 +208,8 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
           fromY: toDouble(y0) ?? 0,
           toY: toDouble(y) ?? 0,
           width: width,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),
           color: color ?? toColor('random'))
     ]);
     barDataPoint.add(point);
@@ -220,6 +225,8 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
               : 0,
           toY: toDouble(y) ?? 0,
           width: width,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),
           color: color ?? toColor('random'))
     ]);
     barDataPoint.add(point);
@@ -265,6 +272,8 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
                   fromY: 0,
                   toY: 100,
                   width: width,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),
                   color: color ?? toColor('random'))
             ]);
         barDataPoint.add(point);
@@ -275,7 +284,9 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
                   //borderSide: BorderSide(width: 2, strokeAlign: 1.0,),
                   fromY: 0,
                   toY: barDataPoint.last.barRods[0].fromY,
-                  width: width,
+              width: width,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),
                   color: barDataPoint.last.barRods[0].color ?? toColor('random'))
             ]);
         barDataPoint.add(point);
@@ -298,6 +309,8 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
           fromY: thisY,
           toY: prevY,
           width: width,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),
           color: color ?? toColor('random'))
     ]);
 
@@ -310,7 +323,12 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
     BarChartRodDataExtended point = BarChartRodDataExtended(this, data,
         fromY: toDouble(y0) ?? 0,
         toY: toDouble(y) ?? 0,
-        color: color ?? toColor('random'));
+        color: color ?? toColor('random'),
+      width: width,
+      borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),);
+
+
     rodDataPoint.add(point);
   }
 
@@ -321,6 +339,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
         data,
         toDouble(y0) ?? 0,
         toDouble(y) ?? 0,
+
         color ?? toColor('random') ?? Colors.blue);
     stackDataPoint.add(point);
   }

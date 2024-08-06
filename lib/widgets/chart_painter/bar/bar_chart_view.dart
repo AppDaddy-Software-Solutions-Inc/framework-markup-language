@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
@@ -196,8 +197,29 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
   }
 
   void onBarTouch(FlTouchEvent event, BarTouchResponse? response) {
-    bool exit = response?.spot == null;
+
+    bool exit = (response?.spot?.touchedBarGroup.barRods.isEmpty ?? true) || event is FlPointerExitEvent;
     bool enter = !exit;
+    response?.spot != null ? print('response: ${response?.spot}'): null;
+
+    //check if the response is a tap event
+    if (event is FlTapUpEvent) {
+      if (response != null && response.spot != null) {
+        //find the series that corresponds with the response that has been clicked
+        for (var rod in response.spot!.touchedBarGroup.barRods) {
+          var mySpot = rod;
+          //check that the series is an extended series interface
+          if (mySpot is IExtendedSeriesInterface) {
+            // get the height of the render
+            //set the selected on the chart model to the series spot data that was clicked
+            widget.model.selected = (mySpot as IExtendedSeriesInterface).data;
+            //execute the onclick method of the series
+            (mySpot as IExtendedSeriesInterface).series.onClick(context);
+            break;
+          }
+        }
+      }
+    }
 
     if (enter) {
       List<IExtendedSeriesInterface> spots = [];
@@ -267,4 +289,6 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
       Log().exception(e);
     }
   }
+
+
 }

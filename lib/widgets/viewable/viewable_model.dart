@@ -18,6 +18,7 @@ import 'dart:math';
 class ViewableModel extends Model with ViewableMixin {
 
   ViewableModel(super.parent, super.id, {super.scope, super.data});
+
 }
 
 mixin ViewableMixin on Model implements IDragDrop {
@@ -76,6 +77,18 @@ mixin ViewableMixin on Model implements IDragDrop {
   // override where necessary
   bool get expandVertically => false;
 
+  /// allow drag to resize
+  BooleanObservable? _resizeable;
+  set resizeable(dynamic v) {
+    if (_resizeable != null) {
+      _resizeable!.set(v);
+    } else if (v != null) {
+      _resizeable = BooleanObservable(Binding.toKey(id, 'resizeable'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get resizeable => _resizeable?.get() ?? false;
+
   // width
   double? _widthPercentage;
   double? get widthPercentage => _widthPercentage;
@@ -90,6 +103,7 @@ mixin ViewableMixin on Model implements IDragDrop {
     }
   }
   double? get width => _width?.get();
+  DoubleObservable? get widthObservable => _width;
 
   // this routine enforces the min and max width
   // constraints from the template
@@ -616,7 +630,11 @@ mixin ViewableMixin on Model implements IDragDrop {
 
     // we handle this slightly different for performance reasons
     // The observable is only created in deserialize if its bound
-    if (_viewWidthObservable != null) _viewWidthObservable!.set(v);
+    if (_viewWidthObservable != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _viewWidthObservable!.set(v);
+      });
+    }
   }
   double? get viewWidth => _viewWidth;
 
@@ -624,12 +642,17 @@ mixin ViewableMixin on Model implements IDragDrop {
   double? _viewHeight;
   DoubleObservable? _viewHeightObservable;
   set viewHeight(double? v) {
+
     // important this gets before the observable
     _viewHeight = v;
 
     // we handle this slightly different for performance reasons
     // The observable is only created in deserialize if its bound
-    if (_viewHeightObservable != null) _viewHeightObservable!.set(v);
+    if (_viewHeightObservable != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _viewHeightObservable!.set(v);
+      });
+    }
   }
   double? get viewHeight => _viewHeight;
 
@@ -642,9 +665,12 @@ mixin ViewableMixin on Model implements IDragDrop {
 
     // we handle this slightly different for performance reasons
     // The observable is only created in deserialize if its bound
-    if (_viewXObservable != null) _viewXObservable!.set(v);
+    if (_viewXObservable != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _viewXObservable!.set(v);
+      });
+    }
   }
-
   double? get viewX => _viewX;
 
   // view global Y position
@@ -656,7 +682,11 @@ mixin ViewableMixin on Model implements IDragDrop {
 
     // we handle this slightly different for performance reasons
     // The observable is only created in deserialize if its bound
-    if (_viewYObservable != null) _viewYObservable!.set(v);
+    if (_viewYObservable != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _viewYObservable!.set(v);
+      });
+    }
   }
 
   double? get viewY => _viewY;
@@ -914,7 +944,7 @@ mixin ViewableMixin on Model implements IDragDrop {
       onDragObservable!.set(v);
     } else if (v != null) {
       onDragObservable = StringObservable(Binding.toKey(id, 'ondrag'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -941,7 +971,7 @@ mixin ViewableMixin on Model implements IDragDrop {
       onDropObservable!.set(v);
     } else if (v != null) {
       onDropObservable = StringObservable(Binding.toKey(id, 'ondrop'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -955,7 +985,7 @@ mixin ViewableMixin on Model implements IDragDrop {
       onDroppedObservable!.set(v);
     } else if (v != null) {
       onDroppedObservable = StringObservable(Binding.toKey(id, 'ondropped'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -1125,6 +1155,7 @@ mixin ViewableMixin on Model implements IDragDrop {
     opacity = Xml.get(node: xml, tag: 'opacity');
     rotation = Xml.get(node: xml, tag: 'rotate') ?? Xml.get(node: xml, tag: 'rotation');
     flip = Xml.get(node: xml, tag: 'flip');
+    resizeable = Xml.get(node: xml, tag: 'resizeable');
 
     // drag
     draggable = Xml.get(node: xml, tag: 'draggable');

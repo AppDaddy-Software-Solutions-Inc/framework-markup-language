@@ -114,7 +114,7 @@ class ListItemModel extends BoxModel {
       _onClick!.set(v);
     } else if (v != null) {
       _onClick = StringObservable(Binding.toKey(id, 'onclick'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
   String? get onClick => _onClick?.get();
@@ -126,7 +126,7 @@ class ListItemModel extends BoxModel {
       _onInsert!.set(v);
     } else if (v != null) {
       _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
   String? get onInsert => _onInsert?.get();
@@ -138,7 +138,7 @@ class ListItemModel extends BoxModel {
       _onDelete!.set(v);
     } else if (v != null) {
       _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
   String? get onDelete => _onDelete?.get();

@@ -62,7 +62,7 @@ class TimerModel extends Model {
       _action!.set(v);
     } else if (v != null) {
       _action = StringObservable(Binding.toKey(id, 'action'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 

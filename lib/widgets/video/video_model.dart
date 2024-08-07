@@ -106,7 +106,7 @@ class VideoModel extends ViewableModel {
       _onInitialized!.set(v);
     } else if (v != null) {
       _onInitialized = StringObservable(Binding.toKey(id, 'oninitialized'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 

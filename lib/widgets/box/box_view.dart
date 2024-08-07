@@ -17,6 +17,8 @@ import 'package:fml/widgets/widget/model.dart';
 
 typedef Builder = List<Widget> Function(BuildContext context, BoxConstraints constraints);
 
+enum DragSource { topLeft, topCenter, topRight, centerLeft, centerRight, bottomLeft, bottomCenter, bottomRight }
+
 /// [BOX] view
 class BoxView extends StatefulWidget implements ViewableWidgetView {
 
@@ -415,6 +417,9 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     }
     return view;
   }
+
+  Rect? rect;
+  Offset? offset;
 
   // build a decorated box around the specified child
   static Widget _buildView(BuildContext context, BoxConstraints constraints, BoxModel model, List<Widget> children) {

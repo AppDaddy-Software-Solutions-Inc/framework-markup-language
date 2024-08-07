@@ -94,21 +94,7 @@ class ModalModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get dismissable => _dismissable?.get() ?? true;
-
-  // resizeable
-  BooleanObservable? _resizeable;
-  set resizeable(dynamic v) {
-    if (_resizeable != null) {
-      _resizeable!.set(v);
-    } else if (v != null) {
-      _resizeable = BooleanObservable(Binding.toKey(id, 'resizeable'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  bool get resizeable => _resizeable?.get() ?? true;
 
   // closeable
   BooleanObservable? _closeable;

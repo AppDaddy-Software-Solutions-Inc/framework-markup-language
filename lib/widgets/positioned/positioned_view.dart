@@ -17,6 +17,24 @@ class PositionedView extends StatefulWidget implements ViewableWidgetView {
 
 class _PositionedViewState extends ViewableWidgetState<PositionedView> {
 
+  onDrag(DragUpdateDetails details) {
+
+    if (!widget.model.draggable) return;
+
+    var dx = details.delta.dx;
+    var dy = details.delta.dy;
+
+    widget.model.disableNotifications();
+    widget.model.right   = null;
+    widget.model.bottom  = null;
+    widget.model.xoffset = null;
+    widget.model.yoffset = null;
+    widget.model.left = (widget.model.left ?? 0) + dx;
+    widget.model.top  = (widget.model.top ?? 0)  + dy;
+    widget.model.enableNotifications();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
@@ -25,12 +43,24 @@ class _PositionedViewState extends ViewableWidgetState<PositionedView> {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
+
     // build the child views
     List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
     var view = children.length == 1 ? children[0] : Column(mainAxisSize: MainAxisSize.min, children: children);
+
+    // draggable?
+    if (widget.model.draggable) {
+      view = MouseRegion(cursor: SystemMouseCursors.move, child: GestureDetector(
+          onPanUpdate: onDrag,
+          behavior: HitTestBehavior.deferToChild,
+          child: view));
+    }
+
     view = BoxLayout(model: widget.model, child: view);
+
+    view = applyTransforms(view);
 
     return view;
   }

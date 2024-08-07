@@ -55,34 +55,43 @@ class _DraggableViewState extends ViewableWidgetState<DraggableView> {
     width ??= constraints.maxWidth;
     height ??= constraints.maxHeight;
 
-    var child = widget.view;
+    Widget view = widget.view;
+
+    // feeback is what is displayed while dragging
+    var feedback = widget.view;
     if (width != null && height != null) {
-      child = ConstrainedBox(
+      feedback = ConstrainedBox(
           constraints: BoxConstraints(maxWidth: width!, maxHeight: height!),
-          child: widget.view);
+          child: view);
     }
+    // we need to wrap in Material, otherwise widgets like FieldText
+    // will throw an exception when dragging starts.
+    feedback = Material(color: Colors.transparent, child: feedback);
+
+    // putting the view insidea container fixes the
+    // issue with the view not being draggable until entered.
+    // this happens with <INPUT/> elements
+    view = Container(color: Colors.transparent, child: view);
 
     // build the draggable
-    var draggable = Draggable(
-        feedback: child,
+   view = Draggable(
+        feedback: feedback,
         data: widget.model,
         onDragCompleted: onDragCompleted,
         onDragStarted: onDragStarted,
         onDragEnd: onDragEnd,
-        child: widget.view);
+        child: view);
 
-    var view = MouseRegion(cursor: cursor, child: draggable);
+   // show hand cursor over draggable
+    view = MouseRegion(cursor: cursor, child: view);
 
     // is wrapped inside a IScrollable?
-    var scroller =
-        widget.model.firstAncestorWhere((element) => element is IScrollable);
+    var scroller = widget.model.firstAncestorWhere((element) => element is IScrollable);
+    if (scroller == null) return view;
 
-    // wrap in listener if in IScrollable
-    return scroller == null
-        ? view
-        : Listener(
-            child: view,
-            onPointerMove: (event) => onPointerMove(event, scroller));
+    // we want to force a scroll when we drag teh view to the edge of the scroller
+    view = Listener(child: view, onPointerMove: (event) => onPointerMove(event, scroller));
+    return view;
   }
 
   void onDragCompleted() {

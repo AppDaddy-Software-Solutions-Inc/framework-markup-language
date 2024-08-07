@@ -105,7 +105,7 @@ class DataSourceModel extends Model implements IDataSource {
       _onsuccess!.set(v);
     } else if (v != null) {
       _onsuccess = StringObservable(Binding.toKey(id, 'onsuccess'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -118,7 +118,7 @@ class DataSourceModel extends Model implements IDataSource {
       _onwritesuccess!.set(v);
     } else if (v != null) {
       _onwritesuccess = StringObservable(Binding.toKey(id, 'onwritesuccess'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -131,7 +131,7 @@ class DataSourceModel extends Model implements IDataSource {
       _onreadsuccess!.set(v);
     } else if (v != null) {
       _onreadsuccess = StringObservable(Binding.toKey(id, 'onreadsuccess'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -145,7 +145,7 @@ class DataSourceModel extends Model implements IDataSource {
       _onfail!.set(v);
     } else if (v != null) {
       _onfail = StringObservable(Binding.toKey(id, 'onfail'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -314,7 +314,7 @@ class DataSourceModel extends Model implements IDataSource {
             scope: scope, setter: _valueSetter);
 
         // the setter will have already fired if the value (v) is an eval
-        // or contains bindings, so no need to refire the setter.
+        // or contains bindings, so no need to fire it again.
         if ((_value?.bindings?.isEmpty ?? true) || !(_value?.isEval ?? false)) {
           _value!.set(v);
         }

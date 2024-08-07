@@ -78,6 +78,11 @@ abstract class ViewableWidgetState<T extends StatefulWidget> extends State<T>
       }
     }
 
+    // add resize handles?
+    if (model?.resizeable ?? false) {
+      view = _resizeableView(view);
+    }
+
     return view;
   }
 
@@ -154,6 +159,27 @@ abstract class ViewableWidgetState<T extends StatefulWidget> extends State<T>
     }
 
     return view;
+  }
+
+  Widget _resizeableView(Widget child)  {
+
+    if (this.model == null) return child;
+    var model = this.model!;
+    if (!model.resizeable) return child;
+
+    var dragHandle =
+    GestureDetector(
+        onPanUpdate: (details) {
+          var w = (model.width ?? 0)  + details.delta.dx;
+          var h = (model.height ?? 0) + details.delta.dy;
+          if (w > 1) model.width = w;
+          if (h > 1) model.height = h;
+        },
+        child: const MouseRegion(
+            cursor: SystemMouseCursors.resizeUpLeftDownRight,
+            child: Icon(Icons.apps, size: 24, color: Colors.transparent)));
+
+    return Stack(children: [child, Positioned(bottom: 0, right: 0, child: dragHandle)]);
   }
 
   void onLayout(BoxConstraints constraints) => model?.setLayoutConstraints(constraints);

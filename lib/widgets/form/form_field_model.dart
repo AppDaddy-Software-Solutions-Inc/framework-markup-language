@@ -122,7 +122,7 @@ class FormFieldModel extends ViewableModel {
       _onchange!.set(v);
     } else if (v != null) {
       _onchange = StringObservable(Binding.toKey(id, 'onchange'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
   String? get onchange => _onchange?.get();
@@ -149,7 +149,7 @@ class FormFieldModel extends ViewableModel {
       _alarm!.set(v);
     } else {
       _alarm = StringObservable(Binding.toKey(id, 'alarm'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
   String? get alarm {
@@ -172,7 +172,7 @@ class FormFieldModel extends ViewableModel {
       _onfocuslost!.set(v);
     } else if (v != null) {
       _onfocuslost = StringObservable(Binding.toKey(id, 'onfocuslost'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 

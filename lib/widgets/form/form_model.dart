@@ -188,7 +188,7 @@ class FormModel extends BoxModel implements IForm {
       _onComplete!.set(v);
     } else if (v != null) {
       _onComplete = StringObservable(Binding.toKey(id, 'onComplete'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -201,7 +201,7 @@ class FormModel extends BoxModel implements IForm {
       _onSave!.set(v);
     } else if (v != null) {
       _onSave = StringObservable(Binding.toKey(id, 'onSave'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -214,7 +214,7 @@ class FormModel extends BoxModel implements IForm {
       _onValidate!.set(v);
     } else if (v != null) {
       _onValidate = StringObservable(Binding.toKey(id, 'onValidate'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -227,7 +227,7 @@ class FormModel extends BoxModel implements IForm {
       _onInvalid!.set(v);
     } else if (v != null) {
       _onInvalid = StringObservable(Binding.toKey(id, 'onInvalid'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 

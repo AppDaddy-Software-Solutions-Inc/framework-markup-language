@@ -23,7 +23,7 @@ class TreeNodeModel extends ViewableModel {
       _onclick!.set(v);
     } else if (v != null) {
       _onclick = StringObservable(Binding.toKey(id, 'onclick'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 

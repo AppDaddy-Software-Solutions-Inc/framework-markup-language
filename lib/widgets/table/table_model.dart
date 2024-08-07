@@ -171,21 +171,7 @@ class TableModel extends BoxModel implements IForm {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get sortable => _sortable?.get() ?? true;
-
-  // allow resizing
-  BooleanObservable? _resizeable;
-  set resizeable(dynamic v) {
-    if (_resizeable != null) {
-      _resizeable!.set(v);
-    } else if (v != null) {
-      _resizeable = BooleanObservable(Binding.toKey(id, 'resizeable'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  bool get resizeable => _resizeable?.get() ?? true;
 
   // column uses editable
   bool get maybeEditable => _editable != null;
@@ -269,7 +255,7 @@ class TableModel extends BoxModel implements IForm {
       _onInsert!.set(v);
     } else if (v != null) {
       _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -282,7 +268,7 @@ class TableModel extends BoxModel implements IForm {
       _onDelete!.set(v);
     } else if (v != null) {
       _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 

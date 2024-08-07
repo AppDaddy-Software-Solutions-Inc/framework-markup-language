@@ -37,7 +37,7 @@ class LinkModel extends ColumnModel {
       _onclick!.set(v);
     } else if (v != null) {
       _onclick = StringObservable(Binding.toKey(id, 'onclick'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 
@@ -52,7 +52,7 @@ class LinkModel extends ColumnModel {
       _onlongpress!.set(v);
     } else if (v != null) {
       _onlongpress = StringObservable(Binding.toKey(id, 'onlongpress'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 
@@ -67,7 +67,7 @@ class LinkModel extends ColumnModel {
       _ondoubletap!.set(v);
     } else if (v != null) {
       _ondoubletap = StringObservable(Binding.toKey(id, 'ondoubletap'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 

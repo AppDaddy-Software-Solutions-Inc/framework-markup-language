@@ -97,7 +97,7 @@ class TableRowModel extends BoxModel {
       _onClick!.set(v);
     } else if (v != null) {
       _onClick = StringObservable(Binding.toKey(id, 'onclick'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
   String? get onclick => _onClick?.get();
@@ -109,7 +109,7 @@ class TableRowModel extends BoxModel {
       _onComplete!.set(v);
     } else if (v != null) {
       _onComplete = StringObservable(Binding.toKey(id, 'oncomplete'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
   String? get oncomplete => _onComplete?.get();
@@ -121,7 +121,7 @@ class TableRowModel extends BoxModel {
       _onInsert!.set(v);
     } else if (v != null) {
       _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
   String? get onInsert => _onInsert?.get();
@@ -133,7 +133,7 @@ class TableRowModel extends BoxModel {
       _onDelete!.set(v);
     } else if (v != null) {
       _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
   String? get onDelete => _onDelete?.get();

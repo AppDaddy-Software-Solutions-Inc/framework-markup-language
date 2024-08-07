@@ -51,7 +51,6 @@ class Scope {
   static Scope? of(Model? model) {
     if (model == null) return null;
     if (model.scope != null) return model.scope!;
-    if (model.parent?.subscope != null) return model.parent!.subscope!;
     return Scope.of(model.parent);
   }
 
@@ -90,9 +89,7 @@ class Scope {
     return true;
   }
 
-  void registerModel(Model model) {
-    models[model.id] = model;
-  }
+  void registerModel(Model model) => models[model.id] = model;
 
   void unregisterModel(Model model) {
     models.remove(model.id);

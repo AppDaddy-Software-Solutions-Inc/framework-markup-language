@@ -1,35 +1,85 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/log/manager.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
+enum VariableTypes { string, integer, double, boolean, blob, list, constant }
+
 class VariableModel extends Model {
-  late final bool constant;
-  String? type;
+
+  String? encoding;
+  VariableTypes type = VariableTypes.string;
+  bool readonly = false;
 
   // value
-  StringObservable? _value;
+  dynamic _value;
   set value(dynamic v) {
+
     if (_value != null) {
       _value!.set(v);
-    } else {
-      if ((v != null) ||
-          (Model.isBound(this, Binding.toKey(id, 'value')))) {
-        Formatter? formatter = type != null ? _encodeBody : null;
-        Setter? setter =
-            constant ? (dynamic value, {Observable? setter}) => v : null;
-        _value = StringObservable(Binding.toKey(id, 'value'), v,
+    }
+    else if (v != null || Model.isBound(this, Binding.toKey(id, 'value'))) {
+
+      switch (type) {
+
+        case VariableTypes.string:
+            _value = StringObservable(Binding.toKey(id, 'value'), v,
             scope: scope,
             listener: onPropertyChange,
-            setter: setter,
-            formatter: formatter);
+            setter: readonly ? (dynamic value, {Observable? setter}) => v : null,
+            formatter: encoding != null ? _encodeBody : null);
+          break;
+
+        case VariableTypes.integer:
+          _value = IntegerObservable(Binding.toKey(id, 'value'), v,
+              scope: scope,
+              listener: onPropertyChange,
+              setter: readonly ? (dynamic value, {Observable? setter}) => v : null);
+          break;
+
+        case VariableTypes.double:
+          _value = DoubleObservable(Binding.toKey(id, 'value'), v,
+              scope: scope,
+              listener: onPropertyChange,
+              setter: readonly ? (dynamic value, {Observable? setter}) => v : null);
+          break;
+
+        case VariableTypes.boolean:
+          _value = BooleanObservable(Binding.toKey(id, 'value'), v,
+              scope: scope,
+              listener: onPropertyChange,
+              setter: readonly ? (dynamic value, {Observable? setter}) => v : null);
+          break;
+
+        case VariableTypes.list:
+          _value = ListObservable(Binding.toKey(id, 'value'), v,
+              scope: scope,
+              listener: onPropertyChange,
+              setter: readonly ? (dynamic value, {Observable? setter}) => v : null);
+          break;
+
+        case VariableTypes.blob:
+          // setting the value to null before the actual value defeats any bindings
+          _value = StringObservable(Binding.toKey(id, 'value'), null,
+              scope: scope,
+              listener: onPropertyChange,
+              setter: readonly ? (dynamic value, {Observable? setter}) => v : null,
+              formatter: encoding != null ? _encodeBody : null);
+          _value.set(v);
+          break;
+
+        case VariableTypes.constant:
+          _value = StringObservable(Binding.toKey(id, 'value'), v,
+              scope: scope,
+              listener: onPropertyChange,
+              setter: (dynamic value, {Observable? setter}) => v,
+              formatter: encoding != null ? _encodeBody : null);
+          break;
       }
     }
   }
-
   dynamic get value => _value?.get();
 
   // onchange
@@ -39,7 +89,7 @@ class VariableModel extends Model {
       _onchange!.set(v);
     } else if (v != null) {
       _onchange = StringObservable(Binding.toKey(id, 'onchange'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -50,38 +100,29 @@ class VariableModel extends Model {
   set returnas(dynamic v) {
     if ((v != null) && (v is String)) _returnas = v.trim().toLowerCase();
   }
-
   String? get returnas => _returnas;
 
-  VariableModel(Model super.parent, super.id,
-      {String? type, dynamic value, dynamic onchange, bool? constant}) {
-    this.constant = constant ?? false;
+  VariableModel(this.type, super.parent, super.id, {dynamic value, dynamic onchange}) {
     if (value != null) this.value = value;
     if (onchange != null) this.onchange = onchange;
   }
 
-  static VariableModel? fromXml(Model parent, XmlElement xml,
-      {String? type, bool? constant}) {
-    VariableModel? model;
-    try {
-      model = VariableModel(parent, Xml.get(node: xml, tag: 'id'),
-          type: type, constant: constant);
-      model.deserialize(xml);
-    } catch (e) {
-      Log().exception(e, caller: 'variable.Model');
-      model = null;
-    }
+  static VariableModel? fromXml(VariableTypes type, Model parent, XmlElement xml, {bool constant = false}) {
+    var model = VariableModel(type, parent, Xml.get(node: xml, tag: 'id'));
+    model.deserialize(xml);
     return model;
   }
 
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
+
     // deserialize
     super.deserialize(xml);
 
     // properties
-    type = Xml.get(node: xml, tag: 'type')?.trim().toLowerCase();
+    encoding = Xml.get(node: xml, tag: 'type')?.trim().toLowerCase();
+    readonly = toBool(Xml.get(node: xml, tag: 'readonly')?.trim().toLowerCase()) ?? false;
     value = Xml.get(node: xml, tag: 'value', innerXmlAsText: true);
     onchange = Xml.get(node: xml, tag: 'onchange');
     returnas = Xml.get(node: xml, tag: 'return');
@@ -102,7 +143,7 @@ class VariableModel extends Model {
   }
 
   // encode segments
-  String? _encodeBody(dynamic value) => encode(value, type);
+  String? _encodeBody(dynamic value) => encode(value, encoding);
   static String? encode(dynamic value, String? type) {
     if (value == null || value is! String || type == null) return value;
     switch (type) {

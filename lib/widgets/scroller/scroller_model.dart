@@ -71,7 +71,7 @@ class ScrollerModel extends BoxModel implements IScrollable {
     } else if (v != null) {
       _onscrolledtoend = StringObservable(
           Binding.toKey(id, 'onscrolledtoend'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 
@@ -84,7 +84,7 @@ class ScrollerModel extends BoxModel implements IScrollable {
       _onpulldown!.set(v);
     } else if (v != null) {
       _onpulldown = StringObservable(Binding.toKey(id, 'onpulldown'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 

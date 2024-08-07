@@ -18,7 +18,7 @@ class GestureModel extends ViewableModel {
       _onclick!.set(v);
     } else if (v != null) {
       _onclick = StringObservable(Binding.toKey(id, 'onclick'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 
@@ -33,7 +33,7 @@ class GestureModel extends ViewableModel {
       _onlongpress!.set(v);
     } else if (v != null) {
       _onlongpress = StringObservable(Binding.toKey(id, 'onlongpress'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 
@@ -48,7 +48,7 @@ class GestureModel extends ViewableModel {
       _ondoubletap!.set(v);
     } else if (v != null) {
       _ondoubletap = StringObservable(Binding.toKey(id, 'ondoubletap'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 
@@ -63,7 +63,7 @@ class GestureModel extends ViewableModel {
       _onswipeleft!.set(v);
     } else if (v != null) {
       _onswipeleft = StringObservable(Binding.toKey(id, 'onswipeleft'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 
@@ -78,7 +78,7 @@ class GestureModel extends ViewableModel {
       _onswiperight!.set(v);
     } else if (v != null) {
       _onswiperight = StringObservable(Binding.toKey(id, 'onswiperight'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 
@@ -93,7 +93,7 @@ class GestureModel extends ViewableModel {
       _onswipeup!.set(v);
     } else if (v != null) {
       _onswipeup = StringObservable(Binding.toKey(id, 'onswipeup'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 
@@ -108,7 +108,7 @@ class GestureModel extends ViewableModel {
       _onswipedown!.set(v);
     } else if (v != null) {
       _onswipedown = StringObservable(Binding.toKey(id, 'onswipedown'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 
@@ -123,7 +123,7 @@ class GestureModel extends ViewableModel {
       _onrightclick!.set(v);
     } else if (v != null) {
       _onrightclick = StringObservable(Binding.toKey(id, 'onrightclick'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 

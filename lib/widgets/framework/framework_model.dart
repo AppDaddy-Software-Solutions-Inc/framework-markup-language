@@ -173,7 +173,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
       _onstart!.set(v);
     } else if (v != null) {
       _onstart = StringObservable(Binding.toKey(id, 'onstart'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -204,7 +204,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
       _onreturn!.set(v);
     } else if (v != null) {
       _onreturn = StringObservable(Binding.toKey(id, 'onreturn'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -317,9 +317,14 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
       }
 
       // register late scope
-      var alias = Xml.attribute(node: xml, tag: "id");
-      if (scope != null && alias != null) {
-        System.currentApp?.scopeManager.add(scope!, alias: alias);
+      var id = Xml.attribute(node: xml, tag: "id");
+      if (scope != null && id != null) {
+
+        System.currentApp?.scopeManager.add(scope!, alias: id);
+
+        scope!.unregisterModel(this);
+        this.id = id;
+        scope!.registerModel(this);
       }
 
       // set template name

@@ -54,7 +54,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener {
       _onwritefail!.set(v);
     } else if (v != null) {
       _onwritefail = StringObservable(Binding.toKey(id, 'onwritefail'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -68,7 +68,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener {
       _onreadfail!.set(v);
     } else if (v != null) {
       _onreadfail = StringObservable(Binding.toKey(id, 'onreadfail'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -82,7 +82,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener {
       _ontimeout!.set(v);
     } else if (v != null) {
       _ontimeout = StringObservable(Binding.toKey(id, 'ontimeout'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 

@@ -280,6 +280,11 @@ class StackRenderer extends RenderBox
 
     childParentData.offset = Offset(x, y);
 
+    // set child size in its model
+    if (child.parentData is BoxData) {
+      (child.parentData as BoxData).model?.layoutComplete(child.size, childParentData.offset);
+    }
+
     return hasVisualOverflow;
   }
 
@@ -345,7 +350,9 @@ class StackRenderer extends RenderBox
     // height and/or width is based on non-positioned children
     RenderBox? child = firstChild;
     while (child != null) {
+
       final BoxData childData = child.parentData! as BoxData;
+
       if (!childData.isPositioned) {
         // get child constraints
         var childConstraints = myConstraints;
@@ -364,6 +371,7 @@ class StackRenderer extends RenderBox
         if (!hardSizedWidth) width = math.max(width, child.size.width);
         if (!hardSizedHeight) height = math.max(height, child.size.height);
       }
+
       child = childData.nextSibling;
     }
 

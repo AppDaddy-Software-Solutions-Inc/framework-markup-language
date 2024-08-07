@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/dragdrop/draggable_view.dart';
 import 'package:fml/widgets/dragdrop/droppable_view.dart';
+import 'package:fml/widgets/positioned/positioned_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
@@ -84,7 +85,7 @@ class ReactiveViewState extends ViewableWidgetState<ReactiveView> {
     }
 
     // draggable?
-    if (model.draggable && view is! DraggableView) {
+    if (model.draggable && view is! DraggableView && model is! PositionedModel) {
       view = DraggableView(model, view);
     }
 

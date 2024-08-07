@@ -78,7 +78,7 @@ class TableHeaderGroupModel extends BoxModel {
       _onInsert!.set(v);
     } else if (v != null) {
       _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -91,7 +91,7 @@ class TableHeaderGroupModel extends BoxModel {
       _onDelete!.set(v);
     } else if (v != null) {
       _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 

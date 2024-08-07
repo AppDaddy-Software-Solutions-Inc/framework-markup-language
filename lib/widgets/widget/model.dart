@@ -14,17 +14,14 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class Model implements IDataSourceListener {
+
   // primary identifier
   // needs to be unique within the scope
-  late final String id;
+  late String id;
 
   // scope
   Scope? scope;
   late final bool isLocalScope;
-
-  // child scope
-  Scope? _subscope;
-  Scope? get subscope => _subscope;
 
   // this is used in the renderer to determine if the widget
   // should rebuild on layout changes
@@ -33,8 +30,17 @@ class Model implements IDataSourceListener {
   // framework
   FrameworkModel? framework;
 
-  // xml node
-  XmlElement? element;
+  // xml element
+  StringObservable? _xml;
+  XmlElement? _element;
+  set element (XmlElement? v) {
+    _element = v;
+    if (Model.isBound(this, Binding.toKey(id, 'xml'))) {
+      _xml = StringObservable(Binding.toKey(id, 'xml'), v, scope: scope);
+    }
+  }
+  String? get xml => _xml?.get();
+  XmlElement? get element => _element;
   String get elementName => element?.localName.toUpperCase() ?? '$runtimeType';
 
   // datasource
@@ -44,9 +50,9 @@ class Model implements IDataSourceListener {
   // used to silence notifications
   // during data manipulation or
   // batch updates
-  bool _notifications = true;
-  void enableNotifications() => _notifications = true;
-  void disableNotifications() => _notifications = false;
+  bool _notificationsEnabled = true;
+  void enableNotifications() => _notificationsEnabled = true;
+  void disableNotifications() => _notificationsEnabled = false;
 
   // data element
   ListObservable? _data;
@@ -205,9 +211,12 @@ class Model implements IDataSourceListener {
     // set busy
     busy = true;
 
-    // inner scope
-    if (!isNullOrEmpty(Xml.get(node: xml, tag: 'scope'))) {
-      _subscope = Scope(parent: scope, id: Xml.get(node: xml, tag: 'scope'));
+    // scoped?
+    var scope = Xml.get(node: xml, tag: 'scope');
+    if (!isLocalScope && !isNullOrEmpty(scope)) {
+      this.scope?.unregisterModel(this);
+      this.scope = Scope(parent: parent?.scope, id: scope);
+      this.scope?.registerModel(this);
     }
 
     // retain a pointer to the xml
@@ -218,7 +227,7 @@ class Model implements IDataSourceListener {
     datasource = Xml.get(node: xml, tag: 'datasource') ?? Xml.get(node: xml, tag: 'data');
 
     // register a listener to the datasource if specified
-    IDataSource? source = scope?.getDataSource(datasource);
+    IDataSource? source = this.scope?.getDataSource(datasource);
     source?.register(this);
 
     // we first sort the elements moving vars and datasources to the top of the
@@ -279,9 +288,6 @@ class Model implements IDataSourceListener {
 
     // dispose of the local scope
     if (isLocalScope) scope?.dispose();
-
-    // dispose of the sub-scope
-    _subscope?.dispose();
   }
 
   /// adds a models listener to the list
@@ -308,7 +314,7 @@ class Model implements IDataSourceListener {
 
   /// notifies property listeners of any changes to a property
   void onPropertyChange(Observable observable) {
-    if(_notifications) {
+    if(_notificationsEnabled) {
       notifyListeners(observable.key, observable.get());
     }
   }

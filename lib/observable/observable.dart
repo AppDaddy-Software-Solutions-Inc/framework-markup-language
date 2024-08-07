@@ -5,7 +5,6 @@ import 'package:fml/observable/observables/string.dart';
 import 'binding.dart';
 import 'scope.dart';
 import 'package:fml/eval/eval.dart' as fml_eval;
-import 'package:fml/observable/blob.dart';
 import 'package:fml/helpers/helpers.dart';
 
 typedef Getter = dynamic Function();
@@ -80,10 +79,10 @@ class Observable {
       this.formatter,
       this.lazyEvaluation = false}) {
     if (value is String) {
-      // bindings?
-      if (this is! BlobObservable) {
-        bindings = Binding.getBindings(value, scope: scope);
-      }
+
+      // get bindings?
+      bindings = Binding.getBindings(value, scope: scope);
+
       if (bindings != null) {
         // replace the "this" and "parent" operators
         value = replaceReferences(this, scope, value);
@@ -257,13 +256,9 @@ class Observable {
         // is this an eval?
         if (isEval) {
           variables ??= <String?, dynamic>{};
-          if ((source is BlobObservable) &&
-              (!isNullOrEmpty(replacementValue))) {
-            variables[binding.signature] = 'blob';
-          } else {
-            variables[binding.signature] = replacementValue;
-          }
-        } else if (this is! StringObservable &&
+          variables[binding.signature] = replacementValue;
+        }
+        else if (this is! StringObservable &&
             bindings!.length == 1 &&
             signature != null &&
             signature!.replaceFirst(binding.signature, "").trim().isEmpty) {

@@ -137,6 +137,8 @@ Future<void> addChild(Model model, List<dynamic> arguments) async {
   // fml
   var xml = elementAt(arguments, 0);
 
+  xml = xml.replaceAll("[ignore]", "");
+
   // if index is null, add to end of list.
   int? index = toInt(elementAt(arguments, 1));
 
@@ -455,8 +457,8 @@ XmlElement? prototypeOf(XmlElement? node) {
   return node;
 }
 
-Model? fromXmlNode(
-    Model parent, XmlElement node, Scope? scope, dynamic data) {
+Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
+
   Model? model;
 
   switch (node.localName) {
@@ -483,6 +485,10 @@ Model? fromXmlNode(
 
     case "BIOMETRIC":
       model = BiometricsDetectorModel.fromXml(parent, node);
+      break;
+
+    case "BLOB":
+      model = VariableModel.fromXml(VariableTypes.blob, parent, node);
       break;
 
     case "BOX": // Preferred Case
@@ -571,6 +577,11 @@ Model? fromXmlNode(
     //   model = HtmlModel.fromXml(parent, node);
     //   break;
 
+    case "BOOL":
+    case "BOOLEAN":
+      model = VariableModel.fromXml(VariableTypes.boolean, parent, node);
+      break;
+
     case "CHECKBOX":
     case "CHECK":
       model = CheckboxModel.fromXml(parent, node);
@@ -578,7 +589,7 @@ Model? fromXmlNode(
 
     case "CONST":
     case "CONSTANT":
-      model = VariableModel.fromXml(parent, node, constant: true);
+      model = VariableModel.fromXml(VariableTypes.string, parent, node, constant: true);
       break;
 
     case "CROP":
@@ -624,6 +635,10 @@ Model? fromXmlNode(
 
     case "DISTINCT":
       if (parent is IDataSource) model = Distinct.fromXml(parent, node);
+      break;
+
+    case "DOUBLE":
+      model = VariableModel.fromXml(VariableTypes.double, parent, node);
       break;
 
     case "EDITOR":
@@ -732,6 +747,11 @@ Model? fromXmlNode(
       model = IconModel.fromXml(parent, node);
       break;
 
+    case "INT":
+    case "INTEGER":
+      model = VariableModel.fromXml(VariableTypes.integer, parent, node);
+      break;
+
     case "WEBVIEW":
     case "IFRAME":
       model = InlineFrameModel.fromXml(parent, node);
@@ -818,6 +838,10 @@ Model? fromXmlNode(
           parent is CheckboxModel ||
           parent is RadioModel ||
           parent is TypeaheadModel) model = OptionModel.fromXml(parent, node);
+      break;
+
+    case "PROTOTYPE":
+      model = PrototypeModel.fromXml(parent, node);
       break;
 
     case "FADE":
@@ -1137,7 +1161,7 @@ Model? fromXmlNode(
 
     case "VARIABLE":
     case "VAR":
-      model = VariableModel.fromXml(parent, node);
+      model = VariableModel.fromXml(VariableTypes.string, parent, node);
       break;
 
     case "VIDEO":

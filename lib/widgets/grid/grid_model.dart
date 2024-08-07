@@ -217,7 +217,7 @@ class GridModel extends BoxModel implements IForm, IScrollable {
       _onpulldown!.set(v);
     } else if (v != null) {
       _onpulldown = StringObservable(Binding.toKey(id, 'onpulldown'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 

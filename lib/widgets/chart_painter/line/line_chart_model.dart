@@ -159,7 +159,7 @@ class LineChartModel extends ChartPainterModel {
             belowBarData: BarAreaData(show: serie.showarea),
             dotData: FlDotData(show: serie.showpoints),
             barWidth: serie.type == 'point' || serie.showline == false
-                ? 0
+                ? 0.01
                 : serie.stroke ?? 2,
             color: serie.color));
         serie.xValues.clear();

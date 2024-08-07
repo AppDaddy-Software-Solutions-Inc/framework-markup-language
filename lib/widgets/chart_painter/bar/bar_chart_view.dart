@@ -206,8 +206,7 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
     if (event is FlTapUpEvent) {
       if (response != null && response.spot != null) {
         //find the series that corresponds with the response that has been clicked
-        for (var rod in response.spot!.touchedBarGroup.barRods) {
-          var mySpot = rod;
+          var mySpot = response.spot!.touchedRodData;
           //check that the series is an extended series interface
           if (mySpot is IExtendedSeriesInterface) {
             // get the height of the render
@@ -215,8 +214,6 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
             widget.model.selected = (mySpot as IExtendedSeriesInterface).data;
             //execute the onclick method of the series
             (mySpot as IExtendedSeriesInterface).series.onClick(context);
-            break;
-          }
         }
       }
     }

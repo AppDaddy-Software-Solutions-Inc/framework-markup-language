@@ -58,12 +58,9 @@ class _PositionedViewState extends ViewableWidgetState<PositionedView> {
           child: view));
     }
 
-    // resizeable?
-    if (widget.model.resizeable) {
-      view = getResizeableView(view);
-    }
-
     view = BoxLayout(model: widget.model, child: view);
+
+    view = applyTransforms(view);
 
     return view;
   }

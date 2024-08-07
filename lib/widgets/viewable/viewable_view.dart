@@ -78,6 +78,11 @@ abstract class ViewableWidgetState<T extends StatefulWidget> extends State<T>
       }
     }
 
+    // add resize handles?
+    if (model?.resizeable ?? false) {
+      view = _resizeableView(view);
+    }
+
     return view;
   }
 
@@ -156,7 +161,7 @@ abstract class ViewableWidgetState<T extends StatefulWidget> extends State<T>
     return view;
   }
 
-  Widget getResizeableView(Widget child)  {
+  Widget _resizeableView(Widget child)  {
 
     if (this.model == null) return child;
     var model = this.model!;

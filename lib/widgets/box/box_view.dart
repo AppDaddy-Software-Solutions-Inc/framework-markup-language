@@ -478,9 +478,6 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     // build the box
     var view = _buildView(context, constraints, widget.model, children!);
 
-    // add resize handles
-    if (widget.model.resizeable) view = getResizeableView(view);
-
     // add margins
     view = addMargins(view);
 

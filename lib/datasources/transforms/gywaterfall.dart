@@ -92,12 +92,11 @@ class GYWaterfall extends TransformModel implements ITransform {
 
       if (result.isEmpty) {
         //this will be set to 0-100 in the chart
-        newData["$x"] = 0;
-        newData["$y"] = 'Total Capacity';
+        newData["$x"] = 'Total Capacity';
+        newData["$y"] = 100;
         newData["$group"] = groupValue;
         result.add(newData);
       }
-
 
       newData["$x"] = xValue;
       newData["$y"] = yValue;
@@ -106,9 +105,9 @@ class GYWaterfall extends TransformModel implements ITransform {
 
       //ensure we are not within the first two elements of the result
       if(groupValue != previousGroup && result.length > 2){
-        newData["$x"] = 0;
-        //Set the Y to the group value
-        newData["$y"] = groupValue;
+        //Set the X to the group value
+        newData["$x"] = groupValue;
+        newData["$y"] = 0;
         newData["$group"] = groupValue;
         result.add(newData);
       }

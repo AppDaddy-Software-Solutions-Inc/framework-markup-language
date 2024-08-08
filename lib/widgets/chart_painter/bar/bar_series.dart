@@ -29,7 +29,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
   List<BarChartGroupData> barDataPoint = [];
   List<BarChartRodData> rodDataPoint = [];
   List<BarChartRodStackItem> stackDataPoint = [];
-  var previousColor;
+  var previousGroup;
   Color? currentColor;
 
   BarChartSeriesModel(
@@ -239,85 +239,78 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
   void pointFromGYWaterfallBarData() {
     if (y == null) return;
 
+    BarChartGroupDataExtended point;
 
     //get the previous toY value
-    double? prevY = barDataPoint.isNotEmpty
-        ? barDataPoint.last.barRods[0].fromY
-        : 0;
+    double? prevY;
 
-    //if the barDataPoints y value is 0, and the previous toY value is 0, then we set this toY to 100
-    //this is to ensure that the waterfall chart starts at 100
-    if (toDouble(y) == 0 && prevY == 0) {
-      prevY = 100;
+    if(barDataPoint.isNotEmpty) {
+      if (barDataPoint.length == 1) {
+        prevY = 100;
+      } else {
+        prevY = barDataPoint.last.barRods[0].fromY ?? 100;
+      }
     }
 
 
-
-    //get the expected Y value of this point; If it is 0, then we use the previous toY
-    double? thisY;
-    if(prevY == 0){
-      thisY = barDataPoint.last.barRods[0].fromY - (toDouble(y) ?? 0);
-    } else {
-      thisY = prevY - (toDouble(y) ?? 0);
-    }
+      //get the expected Y value of this point; If it is 0, then we use the previous toY
+      double? thisY;
+      if(barDataPoint.isNotEmpty){
+        thisY = prevY! - (toDouble(y) ?? 100);
+      }
 
 
-    //get the current group color and track the group for single datasets
-    if(previousColor != color ){
-      BarChartGroupDataExtended point;
-      if(previousColor == null) {
-        point =
-            BarChartGroupDataExtended(this, data, x: 0,
-                barRods: [
-              BarChartRodDataExtended(this, data,
-                  //borderSide: BorderSide(width: 2, strokeAlign: 1.0,),
-                  fromY: 0,
-                  toY: 100,
-                  width: width,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),
-                  color: color ?? toColor('random'))
-            ]);
-        barDataPoint.add(point);
+      //get the current group color and track the group for single datasets
+      if(previousGroup != group){
+
+        if(previousGroup == null) {
+          prevY = 100;
+          point =
+              BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0,
+                  barRods: [
+                    BarChartRodDataExtended(this, data,
+                        //borderSide: BorderSide(width: 2, strokeAlign: 1.0,),
+                        fromY: 0,
+                        toY: 100,
+                        width: width,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),
+                        color: color ?? toColor('random'))
+                  ]);
+        } else {
+          point =
+              BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0, barRods: [
+                BarChartRodDataExtended(this, data,
+                    //borderSide: BorderSide(width: 2, strokeAlign: 1.0,),
+                    fromY: 0,
+                    toY: barDataPoint.last.barRods[0].fromY,
+                    width: width,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),
+                    color: barDataPoint.last.barRods[0].color ?? toColor('random'))
+              ]);
+        }
+
       } else {
         point =
             BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0, barRods: [
               BarChartRodDataExtended(this, data,
                   //borderSide: BorderSide(width: 2, strokeAlign: 1.0,),
-                  fromY: 0,
-                  toY: barDataPoint.last.barRods[0].fromY,
-              width: width,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),
-                  color: barDataPoint.last.barRods[0].color ?? toColor('random'))
+                  backDrawRodData: BackgroundBarChartRodData(
+                      show: true,
+                      fromY: prevY == thisY ? thisY! + 0.05 : thisY,
+                      toY: prevY == thisY ? prevY! - 0.05 : prevY,
+                      color: color ?? currentColor ?? toColor('random')),
+                  fromY: thisY,
+                  toY: prevY!,
+                  width: width,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),
+                  color: color ?? toColor('random'))
             ]);
-        barDataPoint.add(point);
       }
-
-    }
-
-    previousColor = color;
-
-
-    BarChartGroupDataExtended point =
-    BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0, barRods: [
-      BarChartRodDataExtended(this, data,
-          //borderSide: BorderSide(width: 2, strokeAlign: 1.0,),
-          backDrawRodData: BackgroundBarChartRodData(
-              show: true,
-              fromY: prevY == thisY? thisY + 0.05 : thisY,
-              toY:   prevY ==  thisY? prevY - 0.05 : prevY,
-              color: color ?? currentColor ?? toColor('random')),
-          fromY: thisY,
-          toY: prevY,
-          width: width,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),
-          color: color ?? toColor('random'))
-    ]);
-
-
-    barDataPoint.add(point);
+      barDataPoint.add(point);
+      previousGroup = group;
   }
 
   void pointFromGroupedBarData() {

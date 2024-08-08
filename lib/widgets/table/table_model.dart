@@ -12,6 +12,7 @@ import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/field/field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:fml/widgets/form/form_interface.dart';
+import 'package:fml/widgets/form/form_mixin.dart';
 import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/table/table_footer_cell_model.dart';
 import 'package:fml/widgets/table/table_footer_model.dart';
@@ -34,7 +35,8 @@ import 'package:fml/platform/platform.vm.dart'
     if (dart.library.io) 'package:fml/platform/platform.vm.dart'
     if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
-class TableModel extends BoxModel implements IForm {
+class TableModel extends BoxModel with FormMixin implements IForm {
+
   static String dynamicTableValue1 = "{field}";
   static String dynamicTableValue2 = "[*]";
 
@@ -274,22 +276,7 @@ class TableModel extends BoxModel implements IForm {
 
   String? get onDelete => _onDelete?.get();
 
-  // dirty
   @override
-  BooleanObservable? get dirtyObservable => _dirty;
-  BooleanObservable? _dirty;
-  @override
-  set dirty(dynamic v) {
-    if (_dirty != null) {
-      _dirty!.set(v);
-    } else if (v != null) {
-      _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
-    }
-  }
-
-  @override
-  bool get dirty => _dirty?.get() ?? false;
-
   void onDirtyListener(Observable property) {
     bool isDirty = false;
     for (var entry in rows.entries) {
@@ -984,11 +971,10 @@ class TableModel extends BoxModel implements IForm {
 
       // create a form field for editable fields to allow posting
       if (row != null) {
-        ifield = row.fields?.firstWhereOrNull((f) => f.id == fld);
+        ifield = row.fields.firstWhereOrNull((f) => f.id == fld);
         if (ifield == null) {
-          row.fields ??= [];
           ifield  = FieldModel(row,fld, value: value);
-          row.fields!.add(ifield);
+          row.fields.add(ifield);
         }
       }
 

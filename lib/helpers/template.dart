@@ -7,6 +7,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/stash/stash_model.dart';
 import 'package:fml/datasources/log/log_model.dart';
 import 'package:fml/datasources/test/test_data_model.dart';
+import 'package:fml/datasources/transforms/gywaterfall.dart';
 import 'package:fml/datasources/transforms/subquery.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector_model.dart';
 import 'package:fml/datasources/detectors/text/text_detector_model.dart';
@@ -920,6 +921,10 @@ Model? fromXmlNode(
 
     case "PIVOT":
       if (parent is IDataSource) model = Pivot.fromXml(parent, node);
+      break;
+
+    case "GYWATERFALL":
+      if (parent is IDataSource) model = GYWaterfall.fromXml(parent, node);
       break;
 
     case "PUT":

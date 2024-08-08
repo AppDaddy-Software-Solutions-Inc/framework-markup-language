@@ -136,8 +136,9 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
   void plotPoints(dynamic dataList, List uniqueValues) {
     xValues.clear();
     barDataPoint.clear();
-
     var type = this.type?.toLowerCase().trim();
+
+
 
     switch (type) {
       case 'stacked':
@@ -170,13 +171,16 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
     int len = uniqueValues.length;
     for (var i = 0; i < dataList.length; i++) {
       //set the data of the series for databinding
+
       data = dataList[i];
 
       if (type == 'bar' || type == 'waterfall' || type == null || type == "gywaterfall") {
+
         xValues.add(x);
         x = len;
         len += 1;
-      } else {
+      }
+        else {
         x = len;
       }
       plotFunction!();
@@ -236,8 +240,6 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
     if (y == null) return;
 
 
-
-
     //get the previous toY value
     double? prevY = barDataPoint.isNotEmpty
         ? barDataPoint.last.barRods[0].fromY
@@ -265,7 +267,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
       BarChartGroupDataExtended point;
       if(previousColor == null) {
         point =
-            BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0,
+            BarChartGroupDataExtended(this, data, x: 0,
                 barRods: [
               BarChartRodDataExtended(this, data,
                   //borderSide: BorderSide(width: 2, strokeAlign: 1.0,),
@@ -342,5 +344,9 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
 
         color ?? toColor('random') ?? Colors.blue);
     stackDataPoint.add(point);
+  }
+
+  addWaterfallData(dynamic data) {
+    var d = data;
   }
 }

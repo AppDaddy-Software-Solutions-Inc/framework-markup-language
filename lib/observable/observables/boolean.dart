@@ -2,8 +2,12 @@
 import '../observable.dart';
 
 class BooleanObservable extends Observable {
-  BooleanObservable(super.name, super.value,
-      {super.scope, super.listener, super.getter, super.setter});
+  BooleanObservable(super.name, super.value, {
+    super.scope,
+    super.listener,
+    super.getter,
+    super.setter,
+    super.readonly});
 
   @override
   bool? get() {

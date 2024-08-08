@@ -304,7 +304,6 @@ class FormModel extends BoxModel with FormMixin implements IForm {
     postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
     warnOnExit = Xml.attribute(node: xml, tag: 'warnonexit');
 
-
     // events
     onComplete = Xml.get(node: xml, tag: 'oncomplete');
     onSave = Xml.get(node: xml, tag: 'onsave');

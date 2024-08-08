@@ -46,8 +46,12 @@ class ListObservable extends Observable with ListMixin<dynamic> {
     return true;
   }
 
-  ListObservable(super.name, super.value,
-      {super.scope, super.listener, super.getter, super.setter});
+  ListObservable(super.name, super.value, {
+    super.scope,
+    super.listener,
+    super.getter,
+    super.setter,
+    super.readonly});
 
   @override
   List get() => _value;

@@ -312,9 +312,8 @@ mixin ViewableMixin on Model implements IDragDrop {
       }
     }
   }
-
   double? get maxHeight => _maxHeight?.get();
-
+  
   // return the bounded width
   double? getWidth({double? widthParent}) {
     if (!hasBoundedWidth) return null;

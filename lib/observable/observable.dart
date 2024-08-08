@@ -28,6 +28,8 @@ class Observable {
   final String? key;
   String? signature;
 
+  final bool readonly;
+
   List<Binding>? bindings;
   List<OnChangeCallback>? listeners;
   List<Observable>? sources;
@@ -57,6 +59,7 @@ class Observable {
     }
     value = to(value);
     if (value is Exception) return;
+    if (_value != null && readonly) return;
     if (value != _value) {
       _value = value;
       if (notify != false) notifyListeners();
@@ -77,13 +80,16 @@ class Observable {
       this.getter,
       this.setter,
       this.formatter,
+      this.readonly = false,
       this.lazyEvaluation = false}) {
+
     if (value is String) {
 
       // get bindings?
       bindings = Binding.getBindings(value, scope: scope);
 
       if (bindings != null) {
+
         // replace the "this" and "parent" operators
         value = replaceReferences(this, scope, value);
 
@@ -114,7 +120,7 @@ class Observable {
     if (bindings == null) _value = to(value);
 
     // Perform Evaluation
-    if ((isEval) || bindings != null) onObservableChange(null);
+    if (isEval || bindings != null) onObservableChange(null);
 
     // Add Listener
     if (listener != null) registerListener(listener);
@@ -235,22 +241,29 @@ class Observable {
   }
 
   onObservableChange(Observable? observable) {
+
     dynamic value = signature;
+
+    bool evaluated = true;
 
     // resolve all bindings
     Map<String?, dynamic>? variables;
-    if ((bindings != null) && (scope != null)) {
+    if (bindings != null && scope != null) {
+
       for (Binding binding in bindings!) {
+
         dynamic replacementValue;
 
         // get binding source
-        Observable? source =
-            scope!.getObservable(binding, requestor: observable);
+        Observable? source = scope!.getObservable(binding, requestor: observable);
         if (source != null) {
           replacementValue = binding.translate(source.get());
           if (formatter != null) {
             replacementValue = formatter!(replacementValue);
           }
+        }
+        else {
+          evaluated = false;
         }
 
         // is this an eval?
@@ -258,6 +271,7 @@ class Observable {
           variables ??= <String?, dynamic>{};
           variables[binding.signature] = replacementValue;
         }
+
         else if (this is! StringObservable &&
             bindings!.length == 1 &&
             signature != null &&
@@ -286,6 +300,27 @@ class Observable {
 
     // set the target value
     else {
+
+      // if readonly and all bindings are satisfied, set the value and return
+      if (readonly && evaluated) {
+
+        //clear signature
+        signature = null;
+
+        // clear bindings
+        bindings?.clear();
+
+        // clear binding sources
+        if (sources != null) {
+          for (var source in sources!) {
+            source.removeListener(onObservableChange);
+          }
+          sources = null;
+        }
+        sources?.clear();
+      }
+
+      // set the value
       set(value);
     }
   }

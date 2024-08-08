@@ -36,28 +36,28 @@ class VariableModel extends Model {
           _value = IntegerObservable(Binding.toKey(id, 'value'), v,
               scope: scope,
               listener: onPropertyChange,
-              setter: readonly ? (dynamic value, {Observable? setter}) => v : null);
+              readonly: readonly);
           break;
 
         case VariableTypes.double:
           _value = DoubleObservable(Binding.toKey(id, 'value'), v,
               scope: scope,
               listener: onPropertyChange,
-              setter: readonly ? (dynamic value, {Observable? setter}) => v : null);
+              readonly: readonly);
           break;
 
         case VariableTypes.boolean:
           _value = BooleanObservable(Binding.toKey(id, 'value'), v,
               scope: scope,
               listener: onPropertyChange,
-              setter: readonly ? (dynamic value, {Observable? setter}) => v : null);
+              readonly: readonly);
           break;
 
         case VariableTypes.list:
           _value = ListObservable(Binding.toKey(id, 'value'), v,
               scope: scope,
               listener: onPropertyChange,
-              setter: readonly ? (dynamic value, {Observable? setter}) => v : null);
+              readonly: readonly);
           break;
 
         case VariableTypes.blob:
@@ -65,7 +65,7 @@ class VariableModel extends Model {
           _value = StringObservable(Binding.toKey(id, 'value'), null,
               scope: scope,
               listener: onPropertyChange,
-              setter: readonly ? (dynamic value, {Observable? setter}) => v : null,
+              readonly: readonly,
               formatter: encoding != null ? _encodeBody : null);
           _value.set(v);
           break;
@@ -74,7 +74,7 @@ class VariableModel extends Model {
           _value = StringObservable(Binding.toKey(id, 'value'), v,
               scope: scope,
               listener: onPropertyChange,
-              setter: (dynamic value, {Observable? setter}) => v,
+              readonly: true,
               formatter: encoding != null ? _encodeBody : null);
           break;
       }
@@ -107,7 +107,7 @@ class VariableModel extends Model {
     if (onchange != null) this.onchange = onchange;
   }
 
-  static VariableModel? fromXml(VariableTypes type, Model parent, XmlElement xml, {bool constant = false}) {
+  static VariableModel? fromXml(VariableTypes type, Model parent, XmlElement xml) {
     var model = VariableModel(type, parent, Xml.get(node: xml, tag: 'id'));
     model.deserialize(xml);
     return model;

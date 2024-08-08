@@ -8,6 +8,7 @@ class StringObservable extends Observable {
       super.getter,
       super.setter,
       super.formatter,
+      super.readonly,
       super.lazyEvaluation});
 
   @override

@@ -728,12 +728,12 @@ class EventHandler extends Eval {
   }
 
   /// Puts the value on the OS clipboard
-  Future<bool> _handleEventCopy([dynamic value]) async {
+  Future<bool> _handleEventCopy([dynamic value, dynamic toast]) async {
     try {
       String? label = toStr(value);
       if (label != null && label.isNotEmpty) {
         Clipboard.setData(ClipboardData(text: label));
-        System.toast('"${toStr(value)!}" ${phrase.copiedToClipboard}');
+        if (toBool(toast) != false) System.toast('"${toStr(value)!}" ${phrase.copiedToClipboard}', duration: 1);
       }
     } catch (e) {
       Log().debug('$e');

@@ -18,6 +18,7 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class TypeaheadModel extends DecoratedInputModel implements IFormField {
+
   // data sourced prototype
   XmlElement? prototype;
 

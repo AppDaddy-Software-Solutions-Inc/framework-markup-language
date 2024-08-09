@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/data/dotnotation.dart';
 import 'package:fml/datasources/gps/payload.dart';
@@ -503,7 +504,7 @@ class FormModel extends BoxModel with FormMixin implements IForm {
     // Remove Old Answers
 
     node.children.removeWhere((child) {
-      if ((child is XmlElement) && (child.name.local == "ANSWER")) {
+      if (child is XmlElement && child.name.local == "ANSWER") {
         return true;
       } else {
         return false;
@@ -521,7 +522,7 @@ class FormModel extends BoxModel with FormMixin implements IForm {
   static bool _insertAnswers(XmlElement root, IForm form, IFormField field) {
     try {
       // field is postable?
-      if (FormMixin.isPostable(form, field) && (field.values != null)) {
+      if (FormMixin.isPostable(form, field) && field.values != null) {
         for (var value in field.values!) {
           // create new element
           XmlElement node = XmlElement(XmlName("ANSWER"));
@@ -543,9 +544,10 @@ class FormModel extends BoxModel with FormMixin implements IForm {
           }
 
           // field meta data
-          if (!isNullOrEmpty(field.metaData)) {
-            node.attributes.add(XmlAttribute(XmlName('meta'), field.metaData));
-          }
+          field.metaData.forEach((key, value) {
+            var exists = node.attributes.firstWhereOrNull((a) => a.name.local == key) != null;
+            if (!exists) node.attributes.add(XmlAttribute(XmlName(key), value));
+          });
 
           /// GeoCode for each [iFormField] which is set on answer
           if (field.geocode != null) field.geocode!.serialize(node);

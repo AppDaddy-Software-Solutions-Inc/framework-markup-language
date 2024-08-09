@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:collection';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/datasources/gps/payload.dart';
@@ -33,17 +35,15 @@ class FormFieldModel extends ViewableModel {
   }
   dynamic get defaultValue => _defaultValue?.get();
 
-  /// metadata to save with the post
-  StringObservable? _metaData;
-  set metaData(dynamic v) {
-    if (_metaData != null) {
-      _metaData!.set(v);
-    } else if (v != null) {
-      _metaData = StringObservable(Binding.toKey(id, 'meta'), v, scope: scope);
-    }
+  /// metadata
+  LinkedHashMap<String, Observable>? _metaData;
+  LinkedHashMap<String, String> get metaData {
+    LinkedHashMap<String, String> data = LinkedHashMap();
+    _metaData?.forEach((key, value) {
+      data[key] = toStr(value.get()) ?? "";
+    });
+    return data;
   }
-
-  String? get metaData => _metaData?.get();
 
   /// If the input has been focused at least once
   BooleanObservable? _touched;
@@ -209,12 +209,34 @@ class FormFieldModel extends ViewableModel {
     // properties
     _initialValue = Xml.get(node: xml, tag: 'value');
     defaultValue = Xml.get(node: xml, tag: 'default');
-    metaData = Xml.get(node: xml, tag: 'meta');
     field = Xml.get(node: xml, tag: 'field');
     mandatory = Xml.get(node: xml, tag: 'mandatory');
     editable = Xml.get(node: xml, tag: 'editable');
     post = Xml.get(node: xml, tag: 'post');
     onchange = Xml.get(node: xml, tag: 'onchange');
+
+    // build meta tags
+    var attributes = xml.attributes.where((node)    => node.name.local == "meta" || node.name.local.startsWith("meta-"));
+    var elements   = xml.childElements.where((node) => node.name.local == "meta" || node.name.local.startsWith("meta-"));
+    if (attributes.isNotEmpty || elements.isNotEmpty) {
+      List<String> names = [];
+      names.addAll(attributes.map((attribute) => attribute.name.local));
+      names.addAll(elements.map((element) => element.name.local));
+      names = names.toSet().toList();
+      for (var name in names) {
+        var tag = name.replaceFirst('meta-', "");
+        var key = Binding.toKey(id, tag);
+
+        // meta tags cant be named the same as reserved field names
+        const reserved = ["value", "default", "field", "mandatory", "editable", "post", "onchange"];
+        var exists = reserved.contains(tag.toLowerCase());
+        if (!exists) {
+            var value = Xml.get(node: xml, tag: name);
+            _metaData ??= LinkedHashMap<String, Observable>();
+            _metaData![tag] = StringObservable(key, value, scope: scope);
+        }
+      }
+    }
 
     // add alarms
     List<AlarmModel> alarmModels =

@@ -272,6 +272,7 @@ Future<void> replaceWidget(Model model, List<dynamic> arguments) async {
 
 Future<bool> _appendXml(Model model, String xml, int? index,
     [bool silent = true]) async {
+
   List<XmlElement> nodes = [];
 
   Exception? exception;
@@ -321,34 +322,35 @@ Future<bool> _appendXml(Model model, String xml, int? index,
 /// This will be overridden for more complex widgets such as TABLE
 /// where children may actually be header or footer declarations that require
 /// a complete restructuring/rebuild of the parent
-Future<bool> _appendChild(
-    Model parent, XmlElement element, int? index) async {
+Future<bool> _appendChild(Model parent, XmlElement element, int? index) async {
+
+  // create the model
   Model? model = Model.fromXml(parent, element);
-  if (model != null) {
-    // model is a datasource
-    if (model is IDataSource) {
-      // add it to the datasource list
-      parent.datasources ??= [];
-      parent.datasources!.add(model as IDataSource);
 
-      // start brokers
-      parent.initialize();
-    }
+  if (model == null) return false;
 
-    // model is widget
-    else {
-      // add it to the child list
-      parent.children ??= [];
+  // model is a datasource
+  if (model is IDataSource) {
 
-      // position specified?
-      if (index != null && index < parent.children!.length) {
-        parent.children!.insert(index, model);
-      } else {
-        parent.children!.add(model);
-      }
-    }
+    // add it to the datasource list
+    parent.datasources ??= [];
+    parent.datasources!.add(model as IDataSource);
+
+    // start brokers
+    parent.initialize();
+
+    return true;
   }
-  return (model != null);
+
+  // model is widget
+  // position specified?
+  parent.children ??= [];
+  if (index != null && index < parent.children!.length) {
+    parent.children!.insert(index, model);
+  } else {
+    parent.children!.add(model);
+  }
+  return true;
 }
 
 // XmlElement cloneNode(XmlElement node, Scope? scope) {
@@ -589,7 +591,7 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
 
     case "CONST":
     case "CONSTANT":
-      model = VariableModel.fromXml(VariableTypes.string, parent, node, constant: true);
+      model = VariableModel.fromXml(VariableTypes.constant, parent, node);
       break;
 
     case "CROP":

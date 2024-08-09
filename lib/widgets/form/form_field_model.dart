@@ -76,6 +76,9 @@ class FormFieldModel extends ViewableModel {
   /// registers a listener to the diry observable
   void registerDirtyListener(OnChangeCallback callback) => _dirty?.registerListener(callback);
 
+  /// removes a listener to the diry observable
+  void removeDirtyListener(OnChangeCallback callback) => _dirty?.removeListener(callback);
+
   /// mandatory will dictate if the field will stop the form from `complete()`ing if not filled out.
   BooleanObservable? _mandatory;
   set mandatory(dynamic v) {

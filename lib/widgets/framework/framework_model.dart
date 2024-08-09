@@ -176,10 +176,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
           scope: scope, lazyEvaluation: true);
     }
   }
-
-  String? get onstart {
-    return _onstart?.get();
-  }
+  String? get onstart => _onstart?.get();
 
   // orientation
   StringObservable? _orientation;

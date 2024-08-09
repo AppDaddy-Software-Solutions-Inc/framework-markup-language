@@ -477,6 +477,10 @@ class Model implements IDataSourceListener {
     this.busy = busy;
   }
 
+  // this call walks up the model tree notifying ancestor widgets that the child list has changed
+  // some widgets like form and list need to know when children are added or removed
+  void notifyAncestorsOfDescendantChange() => parent?.notifyAncestorsOfDescendantChange();
+
   Future<bool?> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
     if (scope == null) return null;
@@ -490,7 +494,11 @@ class Model implements IDataSourceListener {
 
       // add child
       case 'addchild':
+
         addChild(this, arguments);
+
+        // notifies child list has changed
+        notifyAncestorsOfDescendantChange();
 
         // force rebuild
         notifyListeners("rebuild", true);
@@ -499,7 +507,11 @@ class Model implements IDataSourceListener {
 
       // remove child
       case 'removechild':
+
         removeChild(this, arguments);
+
+        // notifies child list has changed
+        notifyAncestorsOfDescendantChange();
 
         // force rebuild
         notifyListeners("rebuild", true);
@@ -508,7 +520,11 @@ class Model implements IDataSourceListener {
 
       // remove all children
       case 'removechildren':
+
         removeChildren(this, arguments);
+
+        // notifies child list has changed
+        notifyAncestorsOfDescendantChange();
 
         // force rebuild
         notifyListeners("rebuild", true);
@@ -517,7 +533,11 @@ class Model implements IDataSourceListener {
 
       // replace child
       case 'replacechild':
+
         replaceChild(this, arguments);
+
+        // notifies child list has changed
+        notifyAncestorsOfDescendantChange();
 
         // force rebuild
         notifyListeners("rebuild", true);
@@ -526,7 +546,11 @@ class Model implements IDataSourceListener {
 
       // replace all children
       case 'replacechildren':
+
         replaceChildren(this, arguments);
+
+        // notifies child list has changed
+        notifyAncestorsOfDescendantChange();
 
         // force rebuild
         notifyListeners("rebuild", true);
@@ -535,7 +559,11 @@ class Model implements IDataSourceListener {
 
       // remove me
       case 'removewidget':
+
         removeWidget(this, arguments);
+
+        // notifies child list has changed
+        parent?.notifyAncestorsOfDescendantChange();
 
         // force rebuild
         parent?.notifyListeners("rebuild", true);
@@ -544,7 +572,11 @@ class Model implements IDataSourceListener {
 
       // replace me
       case 'replacewidget':
+
         replaceWidget(this, arguments);
+
+        // notifies child list has changed
+        parent?.notifyAncestorsOfDescendantChange();
 
         // force rebuild
         parent?.notifyListeners("rebuild", true);

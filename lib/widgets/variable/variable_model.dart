@@ -9,9 +9,10 @@ enum VariableTypes { string, integer, double, boolean, blob, list, constant }
 
 class VariableModel extends Model {
 
-  String? encoding;
   VariableTypes type = VariableTypes.string;
   bool readonly = false;
+  int? precision;
+  String? encoding;
 
   // value
   dynamic _value;
@@ -36,28 +37,29 @@ class VariableModel extends Model {
           _value = IntegerObservable(Binding.toKey(id, 'value'), v,
               scope: scope,
               listener: onPropertyChange,
-              setter: readonly ? (dynamic value, {Observable? setter}) => v : null);
+              readonly: readonly);
           break;
 
         case VariableTypes.double:
           _value = DoubleObservable(Binding.toKey(id, 'value'), v,
               scope: scope,
               listener: onPropertyChange,
-              setter: readonly ? (dynamic value, {Observable? setter}) => v : null);
+              setter: precision != null ? (dynamic value, {Observable? setter}) => toDouble(value, precision: precision) : null,
+              readonly: readonly);
           break;
 
         case VariableTypes.boolean:
           _value = BooleanObservable(Binding.toKey(id, 'value'), v,
               scope: scope,
               listener: onPropertyChange,
-              setter: readonly ? (dynamic value, {Observable? setter}) => v : null);
+              readonly: readonly);
           break;
 
         case VariableTypes.list:
           _value = ListObservable(Binding.toKey(id, 'value'), v,
               scope: scope,
               listener: onPropertyChange,
-              setter: readonly ? (dynamic value, {Observable? setter}) => v : null);
+              readonly: readonly);
           break;
 
         case VariableTypes.blob:
@@ -65,7 +67,7 @@ class VariableModel extends Model {
           _value = StringObservable(Binding.toKey(id, 'value'), null,
               scope: scope,
               listener: onPropertyChange,
-              setter: readonly ? (dynamic value, {Observable? setter}) => v : null,
+              readonly: readonly,
               formatter: encoding != null ? _encodeBody : null);
           _value.set(v);
           break;
@@ -74,7 +76,7 @@ class VariableModel extends Model {
           _value = StringObservable(Binding.toKey(id, 'value'), v,
               scope: scope,
               listener: onPropertyChange,
-              setter: (dynamic value, {Observable? setter}) => v,
+              readonly: true,
               formatter: encoding != null ? _encodeBody : null);
           break;
       }
@@ -107,7 +109,7 @@ class VariableModel extends Model {
     if (onchange != null) this.onchange = onchange;
   }
 
-  static VariableModel? fromXml(VariableTypes type, Model parent, XmlElement xml, {bool constant = false}) {
+  static VariableModel? fromXml(VariableTypes type, Model parent, XmlElement xml) {
     var model = VariableModel(type, parent, Xml.get(node: xml, tag: 'id'));
     model.deserialize(xml);
     return model;
@@ -126,6 +128,7 @@ class VariableModel extends Model {
     value = Xml.get(node: xml, tag: 'value', innerXmlAsText: true);
     onchange = Xml.get(node: xml, tag: 'onchange');
     returnas = Xml.get(node: xml, tag: 'return');
+    precision = toInt(Xml.get(node: xml, tag: 'precision'));
   }
 
   Future<bool> onChange() async {

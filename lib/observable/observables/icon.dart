@@ -8,8 +8,13 @@ class IconObservable extends Observable {
   static Completer? libraryLoader;
   String? _pendingIcon;
 
-  IconObservable(super.name, super.value,
-      {super.scope, super.listener, super.getter, super.setter}) {
+  IconObservable(super.name, super.value, {
+    super.scope,
+    super.listener,
+    super.getter,
+    super.setter,
+    super.readonly}) {
+
     // load the library
     if (libraryLoader == null) {
       libraryLoader = Completer();

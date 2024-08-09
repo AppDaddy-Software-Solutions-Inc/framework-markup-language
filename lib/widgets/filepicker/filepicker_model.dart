@@ -28,10 +28,7 @@ class FilepickerModel extends FileModel implements IDataSource {
           scope: scope, lazyEvaluation: true);
     }
   }
-
-  String? get onstart {
-    return _onstart?.get();
-  }
+  String? get onstart => _onstart?.get();
 
   // ondismissed - fired when the picker is dismissed
   StringObservable? _ondismissed;

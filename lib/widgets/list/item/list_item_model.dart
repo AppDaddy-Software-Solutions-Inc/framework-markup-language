@@ -4,19 +4,15 @@ import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
-import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/form/form_mixin.dart';
 import 'package:fml/widgets/list/list_model.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class ListItemModel extends BoxModel {
-
-  // list of form fields
-  List<IFormField>? fields;
+class ListItemModel extends BoxModel with FormMixin {
 
   // posting source source
   List<String>? _postbrokers;
@@ -68,32 +64,6 @@ class ListItemModel extends BoxModel {
     }
   }
   int get index => _index?.get() ?? -1;
-
-
-  // dirty
-  BooleanObservable? get dirtyObservable => _dirty;
-  BooleanObservable? _dirty;
-  set dirty(dynamic v) {
-    if (_dirty != null) {
-      _dirty!.set(v);
-    } else if (v != null) {
-      _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
-    }
-  }
-  bool get dirty => _dirty?.get() ?? false;
-
-  void onDirtyListener(Observable property) {
-    bool isDirty = false;
-    if (fields != null) {
-      for (IFormField field in fields!) {
-        if ((field.dirty ?? false)) {
-          isDirty = true;
-          break;
-        }
-      }
-    }
-    dirty = isDirty;
-  }
 
   // title
   StringObservable? _title;
@@ -188,10 +158,10 @@ class ListItemModel extends BoxModel {
     if (_postbrokers != null) {
 
       // build form fields and register dirty listeners to each
-      fields = FormModel.formFieldsOf(this);
+      fields = formFieldsOf(this);
 
       // Register Listener to Dirty Field
-      for (var field in fields ?? []) {
+      for (var field in fields) {
         field.registerDirtyListener(onDirtyListener);
       }
     }
@@ -204,8 +174,8 @@ class ListItemModel extends BoxModel {
     bool ok = await _post();
 
     // mark fields as clean
-    if (ok && fields != null) {
-      for (var field in fields!) {
+    if (ok) {
+      for (var field in fields) {
         field.dirty = false;
       }
     }
@@ -226,7 +196,7 @@ class ListItemModel extends BoxModel {
         IDataSource? source = scope!.getDataSource(id);
         if (source != null && ok && list != null) {
           if (!source.custombody) {
-            source.body = await FormModel.buildPostingBody(list!, fields,
+            source.body = await FormMixin.buildPostingBody(list!, fields,
                 rootname: source.root ?? "FORM");
           }
           ok = await source.start();

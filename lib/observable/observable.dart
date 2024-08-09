@@ -1,10 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart';
-import 'package:fml/log/manager.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'binding.dart';
 import 'scope.dart';
-import 'package:fml/eval/eval.dart' as fml_eval;
+import 'package:fml/eval/eval.dart';
 import 'package:fml/helpers/helpers.dart';
 
 typedef Getter = dynamic Function();
@@ -28,11 +27,13 @@ class Observable {
   final String? key;
   String? signature;
 
+  final bool lazyEvaluation;
+  final bool readonly;
+
   List<Binding>? bindings;
   List<OnChangeCallback>? listeners;
   List<Observable>? sources;
 
-  final bool lazyEvaluation;
   bool _isEval = false;
   bool get isEval => _isEval && lazyEvaluation == false;
   set isEval(bool value) {
@@ -47,28 +48,44 @@ class Observable {
   }
 
   dynamic _value;
-  dynamic get value {
-    return to(_value);
-  }
+  dynamic get value => to(_value);
 
+  /// Observable set function
   set(dynamic value, {bool notify = true, Observable? setter}) {
+
+    // if a customer setter is declared, use it
     if (this.setter != null) {
       value = this.setter!(value, setter: setter);
     }
+
+    // convert the value to the specified type
     value = to(value);
+
+    // quit on exception of to()
     if (value is Exception) return;
+
+    // for readonly variables, we only set the value once
+    if (readonly && _value != null) return;
+
+    // if value has changed, set it and notify of changes
     if (value != _value) {
+
+      // set the value
       _value = value;
+
+      // notify listeners
       if (notify != false) notifyListeners();
     }
   }
 
+  /// Observable get function
   dynamic get() {
-    if (getter == null) {
-      return _value;
-    } else {
-      return getter!();
-    }
+
+    // custom getter function defined?
+    if (getter != null) return getter!();
+
+    // return value
+    return _value;
   }
 
   Observable(this.key, dynamic value,
@@ -77,13 +94,16 @@ class Observable {
       this.getter,
       this.setter,
       this.formatter,
+      this.readonly = false,
       this.lazyEvaluation = false}) {
+
     if (value is String) {
 
       // get bindings?
       bindings = Binding.getBindings(value, scope: scope);
 
       if (bindings != null) {
+
         // replace the "this" and "parent" operators
         value = replaceReferences(this, scope, value);
 
@@ -110,19 +130,19 @@ class Observable {
       }
     }
 
-    // Set the Value
-    if (bindings == null) _value = to(value);
+    // set the value
+    if (bindings == null) set(value, notify: false);
 
-    // Perform Evaluation
-    if ((isEval) || bindings != null) onObservableChange(null);
+    // perform evaluation
+    if (isEval || bindings != null) onObservableChange(null);
 
-    // Add Listener
+    // add listener
     if (listener != null) registerListener(listener);
 
-    // Register
+    // register the observable in the scope
     if (scope != null) scope!.register(this);
 
-    // Notify
+    // notify any listeners
     notifyListeners();
   }
 
@@ -235,22 +255,29 @@ class Observable {
   }
 
   onObservableChange(Observable? observable) {
+
     dynamic value = signature;
+
+    bool hasMissingBindings = false;
 
     // resolve all bindings
     Map<String?, dynamic>? variables;
-    if ((bindings != null) && (scope != null)) {
+    if (bindings != null && scope != null) {
+
       for (Binding binding in bindings!) {
+
         dynamic replacementValue;
 
         // get binding source
-        Observable? source =
-            scope!.getObservable(binding, requestor: observable);
+        Observable? source = scope!.getObservable(binding, requestor: observable);
         if (source != null) {
           replacementValue = binding.translate(source.get());
           if (formatter != null) {
             replacementValue = formatter!(replacementValue);
           }
+        }
+        else {
+          hasMissingBindings = true;
         }
 
         // is this an eval?
@@ -258,6 +285,7 @@ class Observable {
           variables ??= <String?, dynamic>{};
           variables[binding.signature] = replacementValue;
         }
+
         else if (this is! StringObservable &&
             bindings!.length == 1 &&
             signature != null &&
@@ -284,8 +312,32 @@ class Observable {
       set(observable!.value, setter: observable);
     }
 
-    // set the target value
-    else {
+    // set the value
+    if (!readonly) return set(value);
+
+    // if all bindings are satisfied, clear the eval flag, signature,
+    // bindings remove all source listeners
+    if (!hasMissingBindings) {
+
+      // clear eval flag
+      _isEval = false;
+
+      // clear signature
+      signature = null;
+
+      // clear bindings
+      bindings?.clear();
+
+      // clear binding sources
+      if (sources != null) {
+        for (var source in sources!) {
+          source.removeListener(onObservableChange);
+        }
+        sources = null;
+      }
+      sources?.clear();
+
+      // set the value
       set(value);
     }
   }
@@ -320,18 +372,9 @@ class Observable {
     return null;
   }
 
-  static dynamic doEvaluation(dynamic expression,
-      {Map<String?, dynamic>? variables, Scope? scope}) {
-    dynamic result;
-    try {
-      result = fml_eval.Eval.evaluate(expression, variables: variables);
-      result ??= "";
-    } catch (e) {
-      Log().error('Error in Eval() -> $expression. Error is $e');
-      result = null;
-    }
-    return result;
-  }
+  static dynamic doEvaluation(String? expression, {
+    Map<String?, dynamic>? variables,
+    Scope? scope}) => Eval.evaluate(expression, variables: variables) ?? "";
 
   Map<String, dynamic> getVariables() {
     Map<String, dynamic> variables = <String, dynamic>{};

@@ -34,6 +34,18 @@ class GYWaterfall extends TransformModel implements ITransform {
 
   String? get y => _y?.get();
 
+  StringObservable? _color;
+  set color(dynamic v) {
+    if (_color != null) {
+      _color!.set(v);
+    } else if (v != null) {
+      _color = StringObservable(Binding.toKey(id, 'color'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  String? get color => _color?.get();
+
   // The group used to group each waterfall section
   StringObservable? _group;
   set group(dynamic v) {
@@ -49,10 +61,11 @@ class GYWaterfall extends TransformModel implements ITransform {
 
 
  GYWaterfall(Model? parent,
-      {String? id, String? x, String? y, String? group})
+      {String? id, String? x, String? y, String? color, String? group})
       : super(parent, id) {
     this.x = x;
     this.y = y;
+    this.color = color;
     this.group = group;
   }
 
@@ -61,7 +74,9 @@ class GYWaterfall extends TransformModel implements ITransform {
         id: Xml.get(node: xml, tag: 'id'),
         x: Xml.get(node: xml, tag: "x"),
         y: Xml.get(node: xml, tag: "y"),
+        color: Xml.get(node: xml, tag: "color"),
         group: Xml.get(node: xml, tag: "group"),);
+
     model.deserialize(xml);
     return model;
   }
@@ -73,54 +88,105 @@ class GYWaterfall extends TransformModel implements ITransform {
   }
 
   Data? _waterfall(Data data) {
-    bool xFound = false;
-    bool yFound = false;
-    bool groupFound = false;
     Data result = Data();
     // build new list of data
     dynamic previousGroup;
-
-
+    bool groupStart = false;
+    var len = data.length;
+    int i = 0;
 
 
 
     for (var row in data) {
-      Map<String, dynamic> newData = <String, dynamic>{};
+      i += 1;
       var xValue = Data.read(row, x);
-      var yValue = Data.read(row, y);
+      double yValue = toDouble(Data.read(row, y)) ?? 0;
       var groupValue = Data.read(row, group);
+      var colorValue = Data.read(row, color);
 
       if (result.isEmpty) {
-        //this will be set to 0-100 in the chart
-        newData["$x"] = 'Total Capacity';
-        newData["$y"] = 100;
-        newData["$group"] = groupValue;
+        //add the empty initial result starting at 100
+        //set the starting label to total capacity
+        Map<String, dynamic> newData = <String, dynamic>{};
+        newData["x"] = 'Total Capacity';
+        //y0 is the fromy value
+        newData["y0"] = "0";
+        //y is the toy value
+        newData["y"] = "100";
+        newData["group"] = groupValue;
+        newData["color"] = "0xD303FD";
         result.add(newData);
+
+        Map<String, dynamic> newData2 = <String, dynamic>{};
+        //set the x, y0, y, and group values
+        newData2["x"] = xValue;
+        //the fromy becomes the previous y value
+        newData2["y0"] = "${(100 - yValue)}";
+        newData2["y"] = "100";
+        newData2["group"] = groupValue;
+        newData["color"] = colorValue;
+        result.add(newData2);
+        previousGroup = groupValue;
+      } else {
+        //ensure we are not within the first two elements of the result
+        if (groupValue != previousGroup && result.length > 2) {
+          Map<String, dynamic> newData = <String, dynamic>{};
+          //Set the label to the group value
+          newData["x"] = groupValue;
+          //fromy will be 0
+          newData["y0"] = "0";
+          //toY will be the previous values fromy
+          newData["y"] = result.last["y0"];
+          newData["group"] = groupValue;
+          newData["color"] =  result.last["color"];
+          result.add(newData);
+          groupStart = true;
+        }
+
+        //we then add the current point here
+        if (groupStart) {
+          Map<String, dynamic> newData = <String, dynamic>{};
+          //set the x, y0, y, and group values
+          newData["x"] = xValue;
+          //the fromy becomes the previous y value minus the previous to y value
+          newData["y"] = result.last["y"];
+          double d1 = toDouble(result.last["y"]) ?? 0;
+          newData["y0"] = "${d1 - yValue}";
+          newData["group"] = groupValue;
+          newData["color"] = colorValue;
+          result.add(newData);
+          groupStart = false;
+        } else {
+          Map<String, dynamic> newData = <String, dynamic>{};
+          //set the x, y0, y, and group values
+          newData["x"] = xValue;
+          //the fromy becomes the previous y value
+          newData["y"] = result.last["y0"];
+          double d1 = toDouble(result.last["y0"]) ?? 0;
+          newData["y0"] = "${d1 - yValue}";
+          newData["group"] = groupValue;
+          newData["color"] = colorValue;
+          result.add(newData);
+        }
+        previousGroup = groupValue;
+        //check if the loop is on its last item
+        if(i == len){
+          Map<String, dynamic> newData = <String, dynamic>{};
+          //Set the label to the group value
+          newData["x"] = groupValue;
+          //fromy will be 0
+          newData["y0"] = "0";
+          //toY will be the previous values fromy
+          newData["y"] = result.last["y0"];
+          newData["group"] = groupValue;
+          newData["color"] = colorValue;
+          result.add(newData);
+        }
       }
-
-      newData["$x"] = xValue;
-      newData["$y"] = yValue;
-      newData["$group"] = groupValue;
-      result.add(newData);
-
-      //ensure we are not within the first two elements of the result
-      if(groupValue != previousGroup && result.length > 2){
-        //Set the X to the group value
-        newData["$x"] = groupValue;
-        newData["$y"] = 0;
-        newData["$group"] = groupValue;
-        result.add(newData);
-      }
-
-      previousGroup = groupValue;
-
-
-
-
     }
 
 
-
+    result = result;
     return result;
   }
 

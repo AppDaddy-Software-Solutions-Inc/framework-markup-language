@@ -9,9 +9,10 @@ enum VariableTypes { string, integer, double, boolean, blob, list, constant }
 
 class VariableModel extends Model {
 
-  String? encoding;
   VariableTypes type = VariableTypes.string;
   bool readonly = false;
+  int? precision;
+  String? encoding;
 
   // value
   dynamic _value;
@@ -43,6 +44,7 @@ class VariableModel extends Model {
           _value = DoubleObservable(Binding.toKey(id, 'value'), v,
               scope: scope,
               listener: onPropertyChange,
+              setter: precision != null ? (dynamic value, {Observable? setter}) => toDouble(value, precision: precision) : null,
               readonly: readonly);
           break;
 
@@ -126,6 +128,7 @@ class VariableModel extends Model {
     value = Xml.get(node: xml, tag: 'value', innerXmlAsText: true);
     onchange = Xml.get(node: xml, tag: 'onchange');
     returnas = Xml.get(node: xml, tag: 'return');
+    precision = toInt(Xml.get(node: xml, tag: 'precision'));
   }
 
   Future<bool> onChange() async {

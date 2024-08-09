@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:collection';
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/alarm/alarm_model.dart';
@@ -22,8 +23,7 @@ abstract class IFormField {
   String? get initialValue;
 
   // field metadata
-  dynamic get metaData;
-  set metaData(dynamic v);
+  LinkedHashMap<String, String> get metaData;
 
   // field is required
   bool? get mandatory;

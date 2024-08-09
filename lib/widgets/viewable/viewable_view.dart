@@ -170,10 +170,18 @@ abstract class ViewableWidgetState<T extends StatefulWidget> extends State<T>
     var dragHandle =
     GestureDetector(
         onPanUpdate: (details) {
-          var w = (model.width ?? 0)  + details.delta.dx;
-          var h = (model.height ?? 0) + details.delta.dy;
-          if (w > 1) model.width = w;
-          if (h > 1) model.height = h;
+
+          // set width
+          var width  = (model.width  ?? model.viewWidth  ?? model.maxWidth ?? model.minWidth ?? 100) + details.delta.dx;
+          if (model.minWidth != null && width < model.minWidth!) width = model.minWidth!;
+          if (model.maxWidth != null && width > model.maxWidth!) width = model.maxWidth!;
+          if (!width.isNegative) model.width = width;
+
+          // set height
+          var height = (model.height ?? model.viewHeight ?? model.maxHeight ?? model.minHeight ?? 100) + details.delta.dy;
+          if (model.minHeight != null && height < model.minHeight!) height = model.minHeight!;
+          if (model.maxHeight != null && height > model.maxHeight!) height = model.maxWidth!;
+          if (!height.isNegative) model.height = height;
         },
         child: const MouseRegion(
             cursor: SystemMouseCursors.resizeUpLeftDownRight,

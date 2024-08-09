@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/helpers/xml.dart';
 import 'package:fml/log/manager.dart';
@@ -153,10 +154,10 @@ mixin FormMixin on Model {
                 if (field.geocode != null) field.geocode!.serialize(node);
 
                 // add meta data
-                if (!isNullOrEmpty(field.metaData)) {
-                  node.attributes
-                      .add(XmlAttribute(XmlName('meta'), field.metaData));
-                }
+                field.metaData.forEach((key, value) {
+                  bool exists = node.attributes.firstWhereOrNull((a) => a.name.local == key) != null;
+                  if (!exists) node.attributes.add(XmlAttribute(XmlName(key), value));
+                });
 
                 // value
                 try {

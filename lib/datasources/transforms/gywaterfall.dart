@@ -114,7 +114,7 @@ class GYWaterfall extends TransformModel implements ITransform {
         //y is the toy value
         newData["y"] = "100";
         newData["group"] = groupValue;
-        newData["color"] = "0xD303FD";
+        newData["color"] = toColor('random');
         result.add(newData);
 
         Map<String, dynamic> newData2 = <String, dynamic>{};
@@ -124,7 +124,7 @@ class GYWaterfall extends TransformModel implements ITransform {
         newData2["y0"] = "${(100 - yValue)}";
         newData2["y"] = "100";
         newData2["group"] = groupValue;
-        newData["color"] = colorValue;
+        newData2["color"] = colorValue;
         result.add(newData2);
         previousGroup = groupValue;
       } else {

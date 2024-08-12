@@ -78,6 +78,7 @@ import 'package:fml/widgets/option/tag_model.dart';
 import 'package:fml/widgets/padding/padding_model.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
+import 'package:fml/widgets/plugin/plugin_model.dart';
 import 'package:fml/widgets/popover/item/popover_item_model.dart';
 import 'package:fml/widgets/popover/popover_model.dart';
 import 'package:fml/widgets/positioned/positioned_model.dart';
@@ -840,6 +841,10 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
           parent is CheckboxModel ||
           parent is RadioModel ||
           parent is TypeaheadModel) model = OptionModel.fromXml(parent, node);
+      break;
+
+    case "PLUGIN":
+      model = PluginModel.fromXml(parent, node);
       break;
 
     case "PROTOTYPE":

@@ -821,6 +821,7 @@ class EventHandler extends Eval {
   Future<bool?> _handleEventExecute(String id, String function, dynamic arguments) async {
 
     var scope = this.model.scope;
+
     //grab the raw ID before splitting to pass to execute
     var rawID = id;
 
@@ -830,9 +831,9 @@ class EventHandler extends Eval {
       var parts = id.split(".");
       scope = Scope.findNamedScope(id) ?? scope;
       if (scope != this.model.scope) parts.removeAt(0);
-      // ID should not be set to parts. first as the execute relies on the secondary part of the id to choose the attribute to be set
-       id = parts.first;
 
+      // id should not be set to parts. first as the execute relies on the secondary part of the id to choose the attribute to be set
+      id = parts.first;
     }
 
     // get widget model

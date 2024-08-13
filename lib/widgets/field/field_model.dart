@@ -4,11 +4,13 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
+import 'package:fml/widgets/plugin/plugin_mixin.dart';
+import 'package:fml/widgets/plugin/plugin_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class FieldModel extends FormFieldModel implements IFormField {
+class FieldModel extends FormFieldModel with PluginMixin implements IFormField {
 
   /// the value of the input. If not set to "" initially, the value will not be settable through events.
   StringObservable? _value;
@@ -55,5 +57,43 @@ class FieldModel extends FormFieldModel implements IFormField {
   }
 
   @override
-  Widget getView({Key? key}) => const Offstage();
+  void set(String key, dynamic value)
+  {
+    // value?
+    var binding = Binding.fromString(key);
+    if (binding != null) {
+      var o = scope?.getObservable(binding);
+      if (o == _value) {
+        disableNotifications();
+        answer(value);
+        enableNotifications();
+        return;
+      }
+    }
+
+    // other property
+    super.set(key, value);
+  }
+
+  @override
+  dynamic get(String key)
+  {
+    // value?
+    var binding = Binding.fromString(key);
+    if (binding != null) {
+      var o = scope?.getObservable(binding);
+      if (o == _value) {
+        return value ?? initialValue ?? "";
+      }
+    }
+
+    // other property
+    return super.get(key);
+  }
+
+  @override
+  Widget getView({Key? key}) {
+    if (uri == null) return const Offstage();
+    return PluginView(this);
+  }
 }

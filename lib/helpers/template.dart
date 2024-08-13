@@ -78,7 +78,9 @@ import 'package:fml/widgets/option/tag_model.dart';
 import 'package:fml/widgets/padding/padding_model.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
-import 'package:fml/widgets/plugin/plugin_model.dart';
+import 'package:fml/widgets/plugin/plugin_eval_model.dart';
+import 'package:fml/widgets/plugin/plugin_field_model.dart';
+import 'package:fml/widgets/plugin/plugin_widget_model.dart';
 import 'package:fml/widgets/popover/item/popover_item_model.dart';
 import 'package:fml/widgets/popover/popover_model.dart';
 import 'package:fml/widgets/positioned/positioned_model.dart';
@@ -844,7 +846,29 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
       break;
 
     case "PLUGIN":
-      model = PluginModel.fromXml(parent, node);
+
+      // get plugin type
+      var type = Xml.get(node: node, tag: "type")?.trim().toLowerCase();
+      switch (type) {
+
+        // evaluator
+        case "eval":
+        case "evaluation":
+          model = PluginEvalModel.fromXml(parent, node);
+        break;
+
+        // form field
+        case "field":
+        case "control":
+          model = PluginFieldModel.fromXml(parent, node);
+          break;
+
+        // widget
+        case "widget":
+        default:
+          model = PluginWidgetModel.fromXml(parent, node);
+          break;
+      }
       break;
 
     case "PROTOTYPE":

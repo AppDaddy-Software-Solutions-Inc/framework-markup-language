@@ -9,6 +9,7 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class FieldModel extends FormFieldModel implements IFormField {
+
   /// the value of the input. If not set to "" initially, the value will not be settable through events.
   StringObservable? _value;
   @override

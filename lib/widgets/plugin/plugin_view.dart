@@ -35,7 +35,7 @@ class PluginState extends ViewableWidgetState<PluginView> {
   void _loadRuntime() async {
 
     // wait for evc code to load
-    await widget.mixin.initialized.future;
+    await widget.mixin.initialized?.future;
 
     // set the runtime
     runtime = widget.mixin.runtime;
@@ -46,7 +46,7 @@ class PluginState extends ViewableWidgetState<PluginView> {
 
   Widget _errorBuilder(dynamic exception, StackTrace? stackTrace) {
 
-    var msg = "Oops something went wrong loading plugin method ${widget.mixin.methodSignature} in ${widget.mixin.library}";
+    var msg = "Oops something went wrong loading plugin ${widget.model.element}";
     msg = "$msg \n\n $exception \n\n $stackTrace";
     var view = Tooltip(message: msg, child: const Icon(Icons.error_outline, color: Colors.red, size: 24));
     return view;

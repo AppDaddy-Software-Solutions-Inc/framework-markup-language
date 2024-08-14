@@ -10,25 +10,17 @@ import 'package:xml/xml.dart';
 
 class PluginModel extends ViewableModel with PluginMixin {
 
-  PluginModel(super.parent, super.id, PluginType type) {
-    this.type = type;
-  }
+  PluginModel(super.parent, super.id);
 
-  static PluginModel fromXml(Model parent, XmlElement xml, PluginType type) {
+  static PluginModel fromXml(Model parent, XmlElement xml) {
 
-    var model = PluginModel(parent, Xml.get(node: xml, tag: 'id'), type);
+    var model = PluginModel(parent, Xml.get(node: xml, tag: 'id'));
     model.deserialize(xml);
     return model;
   }
 
   @override
   Widget getView({Key? key}) {
-
-    // functions don't have a view
-    if (type == PluginType.function) {
-      return const Offstage();
-    }
-
     var view = PluginView(this);
     return isReactive ? ReactiveView(this, view) : view;
   }

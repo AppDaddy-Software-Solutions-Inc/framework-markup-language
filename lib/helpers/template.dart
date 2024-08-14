@@ -56,6 +56,7 @@ import 'package:fml/widgets/filepicker/filepicker_model.dart';
 import 'package:fml/widgets/footer/footer_model.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
+import 'package:fml/widgets/function/function_model.dart';
 import 'package:fml/widgets/gesture/gesture_model.dart';
 import 'package:fml/datasources/http/get/model.dart';
 import 'package:fml/widgets/grid/item/grid_item_model.dart';
@@ -78,7 +79,6 @@ import 'package:fml/widgets/option/tag_model.dart';
 import 'package:fml/widgets/padding/padding_model.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
-import 'package:fml/widgets/plugin/plugin_mixin.dart';
 import 'package:fml/widgets/plugin/plugin_model.dart';
 import 'package:fml/widgets/popover/item/popover_item_model.dart';
 import 'package:fml/widgets/popover/popover_model.dart';
@@ -709,8 +709,9 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
       }
       break;
 
+    case "FUNC":
     case "FUNCTION":
-      model = PluginModel.fromXml(parent, node, PluginType.function);
+      model = FunctionModel.fromXml(parent, node);
       break;
 
     case "GESTURE":
@@ -1192,7 +1193,7 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
       break;
 
     case "WIDGET":
-      model = PluginModel.fromXml(parent, node, PluginType.widget);
+      model = PluginModel.fromXml(parent, node);
       break;
 
     case "XAXIS":

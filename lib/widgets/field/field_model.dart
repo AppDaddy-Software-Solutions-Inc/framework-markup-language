@@ -6,6 +6,7 @@ import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:fml/widgets/plugin/plugin_mixin.dart';
 import 'package:fml/widgets/plugin/plugin_view.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -93,7 +94,10 @@ class FieldModel extends FormFieldModel with PluginMixin implements IFormField {
 
   @override
   Widget getView({Key? key}) {
-    if (uri == null) return const Offstage();
-    return PluginView(this);
+
+    if (!isPlugin) return const Offstage();
+
+    var view = PluginView(this);
+    return isReactive ? ReactiveView(this, view) : view;
   }
 }

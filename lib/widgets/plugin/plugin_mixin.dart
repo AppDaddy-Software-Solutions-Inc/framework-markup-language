@@ -13,38 +13,30 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:http/http.dart' as http;
 
-enum PluginType {widget, function}
 
 mixin PluginMixin on Model {
 
-  late final PluginType type;
+  bool get isPlugin => (_uri != null && _library != null && _method != null);
 
   // cached plugin evc code
-  static final Map<String, Runtime> _runtimes = <String, Runtime>{};
-  Runtime? get runtime {
-    var key = uri?.url;
-    if (isNullOrEmpty(key)) return null;
-    if (!_runtimes.containsKey(key)) return null;
-    return _runtimes[key];
+  static Map<String, Runtime>? _runtimes;
+
+  // runtime
+  Runtime? get runtime => (_runtimes?.containsKey(_uri?.url) ?? false) ? _runtimes![_uri?.url] : null;
+  set _runtime(Runtime value) {
+    _runtimes ??= <String, Runtime>{};
+    _runtimes![_uri?.url ?? ""] = value;
   }
 
-  set runtime(Runtime? value) {
-    var key = uri?.url;
-    if (isNullOrEmpty(key)) return;
-    if (value == null) {
-      _runtimes.remove(key);
-    }
-    else {
-      _runtimes[key!] = value;
-    }
-  }
+  Uri? _uri;
 
-  Uri? uri;
-  String library = "";
-  String method = "";
-  String methodSignature = "";
+  String? _library;
+  String get library => _library ?? "";
 
-  Completer<bool> initialized = Completer();
+  String? _method;
+  String get method => _method ?? "";
+
+  Completer<bool>? initialized;
   dynamic error;
   StackTrace? trace;
 
@@ -63,7 +55,7 @@ mixin PluginMixin on Model {
   dynamic get value => _value?.get();
 
   // standard arguments to pass to the plugin
-  List<dynamic> get arguments => [$String(id), $Closure(_get), $Closure(_set)];
+  List<dynamic> get arguments => isPlugin ? [$String(id), $Closure(_get), $Closure(_set)] : [];
 
   /// Deserializes the FML template elements, attributes and children
   @override
@@ -73,33 +65,35 @@ mixin PluginMixin on Model {
     super.deserialize(xml);
 
     // properties
-    uri = URI.parse(Xml.get(node: xml, tag: 'url'));
+    _uri = URI.parse(Xml.get(node: xml, tag: 'url'));
 
-    var library = Xml.get(node: xml, tag: 'import')?.trim() ?? "";
-    if (!isNullOrEmpty(library) && !library.startsWith("package:")) library = "package:$library";
-    this.library = library;
+    var library = Xml.get(node: xml, tag: 'import')?.trim();
+    if (!isNullOrEmpty(library) && !library!.startsWith("package:")) library = "package:$library";
+    _library = library;
 
     // set function
-    methodSignature = Xml.get(node: xml, tag: 'method')?.trim() ?? "";
-    method = methodSignature.split("(").first.trim();
-    if (!isNullOrEmpty(method) && !method.contains(".")) method = "$method.";
-    method = method.trim();
+    var method = Xml.get(node: xml, tag: 'method')?.trim();
+    _method = method?.split("(").first.trim();
+    if (!isNullOrEmpty(_method) && !_method!.contains(".")) _method = "$_method.";
+    _method = _method?.trim();
 
     // load the plugin
-    _load();
+    if (isPlugin) _load();
   }
 
   Future _load() async {
 
+    initialized ??= Completer<bool>();
+
     try {
 
-      if (uri == null) throw("Invalid plugin url");
+      if (_uri == null) throw("Invalid plugin url");
 
       // cached?
       if (runtime == null) {
 
         // query
-        final response = await http.get(uri!);
+        final response = await http.get(_uri!);
 
         // error?
         if (response.statusCode != 200) throw("error: ${response.statusCode} ${response.reasonPhrase}");
@@ -111,17 +105,17 @@ mixin PluginMixin on Model {
         runtime.addPlugin(flutterEvalPlugin);
 
         // save result
-        this.runtime = runtime;
+        _runtime = runtime;
       }
     }
 
     catch (e, trace) {
-      error = "Error loading plugin from ${uri?.url} $e";
+      error = "Error loading plugin from ${_uri?.url} $e";
       this.trace = trace;
     }
 
     // mark complete
-    initialized.complete(true);
+    initialized!.complete(true);
   }
 
   $Value? _get(Runtime runtime, $Value? target, List<$Value?> args) {
@@ -171,45 +165,5 @@ mixin PluginMixin on Model {
       var o = scope?.getObservable(b);
       o?.set(value);
     }
-  }
-
-  void _execute() async {
-    // not a function
-    if (type != PluginType.function) return;
-
-    // wait for runtime to load
-    await initialized.future;
-
-    if (runtime == null) return;
-
-    try {
-
-      // execute the dart code
-      var result = runtime?.executeLib(library, method, arguments);
-
-      // set value
-      value = toStr(result);
-    }
-    catch(e) {
-      if (kDebugMode) print(e);
-    }
-  }
-
-  @override
-  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async {
-
-    if (scope == null) return null;
-
-    var function = propertyOrFunction.toLowerCase().trim();
-
-    switch (function) {
-
-      // fire event handler
-      case 'execute':
-        _execute();
-        return true;
-    }
-
-    return super.execute(caller, propertyOrFunction, arguments);
   }
 }

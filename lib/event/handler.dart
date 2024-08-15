@@ -818,7 +818,7 @@ class EventHandler extends Eval {
 
   /// Executes an Object Function - Olajos Match 14, 2020
   /// This is a catch all and is used to manage all of the <id>.func() calls
-  Future<bool?> _handleEventExecute(String id, String function, dynamic arguments) async {
+  Future<dynamic> _handleEventExecute(String id, String function, dynamic arguments) async {
 
     var scope = this.model.scope;
 

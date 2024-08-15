@@ -1074,7 +1074,7 @@ class TableModel extends BoxModel with FormMixin implements IForm {
   int getDataRowCount() => data is Data ? (data as Data).length : 0;
 
   @override
-  Future<bool?> execute(
+  Future<dynamic> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
     /// setter
     if (scope == null) return null;

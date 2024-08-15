@@ -148,7 +148,7 @@ class VideoModel extends ViewableModel {
   }
 
   @override
-  Future<bool?> execute(
+  Future<dynamic> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
     /// setter
     if (scope == null) return null;

@@ -46,7 +46,7 @@ class TestDataModel extends DataSourceModel implements IDataSource {
   }
 
   @override
-  Future<bool?> execute(
+  Future<dynamic> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();

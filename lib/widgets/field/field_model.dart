@@ -1,17 +1,23 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/observable_barrel.dart';
+import 'package:fml/widgets/field/field_view.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
-import 'package:fml/widgets/plugin/plugin_mixin.dart';
-import 'package:fml/widgets/plugin/plugin_view.dart';
+import 'package:fml/widgets/package/package_mixin.dart';
+import 'package:fml/widgets/package/package_model.dart';
 import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class FieldModel extends FormFieldModel with PluginMixin implements IFormField {
+class FieldModel extends FormFieldModel with PackageMixin implements IFormField {
+
+  // name of the package constructor
+  String? _package;
+  String? _class;
+  PackageModel? get _plugin => framework?.packages[_package];
 
   /// the value of the input. If not set to "" initially, the value will not be settable through events.
   StringObservable? _value;
@@ -55,6 +61,13 @@ class FieldModel extends FormFieldModel with PluginMixin implements IFormField {
     // deserialize
     super.deserialize(xml);
     value = Xml.get(node: xml, tag: fromEnum('value'));
+
+    var plugin = Xml.get(node: xml, tag: fromEnum('package'))?.trim().split(".");
+    if (plugin != null && plugin.isNotEmpty) {
+      _package = plugin.first.trim();
+      if (plugin.length > 1)
+        _class = plugin[1].trim();
+    }
   }
 
   @override
@@ -92,12 +105,25 @@ class FieldModel extends FormFieldModel with PluginMixin implements IFormField {
     return super.get(key);
   }
 
+  Future<Widget> plugin()  async {
+
+    // no package defined
+    if (_plugin == null) return const Offstage();
+
+    // build the view
+    var view = await _plugin?.view(_class) ?? const Offstage();
+
+    return view;
+  }
+
   @override
   Widget getView({Key? key}) {
 
-    if (!isPlugin) return const Offstage();
+    // no package defined
+    if (plugin == null) return const Offstage();
 
-    var view = PluginView(this);
+    // custom package view
+    var view = FieldView(this);
     return isReactive ? ReactiveView(this, view) : view;
   }
 }

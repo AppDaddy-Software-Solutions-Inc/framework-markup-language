@@ -10,6 +10,7 @@ import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/template/template_manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/package/package_model.dart';
 import 'package:fml/widgets/shortcut/shortcut_model.dart';
 import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:fml/widgets/widget/model.dart';
@@ -50,6 +51,9 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
   @override
   executeEvent(Model source, String event) =>
       eventManager.execute(this, event);
+
+  // list of packages
+  Map<String, PackageModel> packages = {};
 
   HeaderModel? header;
   BoxModel? body;
@@ -409,6 +413,13 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
     orientation = Xml.get(node: xml, tag: 'orientation') ?? orientation;
     onreturn = Xml.get(node: xml, tag: 'onreturn') ?? onreturn;
 
+    // build package list
+    List<PackageModel> packages = findChildrenOfExactType(PackageModel).cast<PackageModel>();
+    for (var package in packages) {
+      this.packages[package.id] = package;
+    }
+    removeChildrenOfExactType(PackageModel);
+
     // header
     List<HeaderModel> headers =
         findChildrenOfExactType(HeaderModel).cast<HeaderModel>();
@@ -546,7 +557,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
   }
 
   @override
-  Future<bool?> execute(
+  Future<dynamic> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();

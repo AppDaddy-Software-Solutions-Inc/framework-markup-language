@@ -35,7 +35,7 @@ class LogModel extends DataSourceModel implements IDataSource {
   }
 
   @override
-  Future<bool?> execute(
+  Future<dynamic> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
     var function = propertyOrFunction.toLowerCase().trim();
     switch (function) {

@@ -230,7 +230,7 @@ class AnimationModel extends ViewableModel {
 
   //we need a reset function to set the controller back to 0 without ticking.
   @override
-  Future<bool?> execute(
+  Future<dynamic> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
     /// setter
     if (scope == null) return null;

@@ -112,15 +112,21 @@ mixin PackageMixin on Model {
     _initialized!.complete(true);
   }
 
-  $Value _wrap(dynamic value) {
-    if (value == null) return const $null();
+  $Value _wrapped(dynamic value) {
     if (value is String) return $String(value);
     if (value is bool) return $bool(value);
     if (value is int) return $int(value);
     if (value is double) return $double(value);
     if (value is Color) return $String(toStr(value) ?? "");
-    //if (value is List) return (value as List);
-    return const $null();
+    if (value is! $Value) return $null();
+    return value;
+  }
+
+  dynamic _unwrapped(dynamic value) {
+    if (value is $Value) {
+      value = value.$reified;
+    }
+    return value;
   }
 
   $Value? _get(Runtime runtime, $Value? target, List<$Value?> args) {
@@ -131,7 +137,7 @@ mixin PackageMixin on Model {
     if (key != null) {
       value = get(key);
     }
-    return _wrap(value);
+    return _wrapped(value);
   }
 
   dynamic get(String key)
@@ -172,7 +178,7 @@ mixin PackageMixin on Model {
     return view;
   }
 
-  Future<dynamic> call(String method, dynamic arguments) async {
+  Future<dynamic> call(String method, List<dynamic> arguments) async {
     try {
 
       // format the package name
@@ -181,12 +187,17 @@ mixin PackageMixin on Model {
         package = "package:$package";
       }
 
+      // wrap the arguments to pass to the plugin
+      var args = [];
+      for (var arg in arguments) {
+        args.add(_wrapped(arg));
+      }
+
       // execute the dart code
-      var result = _runtime?.executeLib(package, method, [toStr("Jeff")]);
+      var result = _runtime?.executeLib(package, method, args);
 
-      // set value
-      return toStr(result);
-
+      // return the result
+      return _unwrapped(result);
     }
     catch(error, trace) {
 
@@ -195,7 +206,7 @@ mixin PackageMixin on Model {
     return null;
   }
 
-  Future<Widget?> view(String? className, {dynamic arguments}) async {
+  Future<Widget?> view(String? className, {List<dynamic>? arguments}) async {
 
     Widget? view;
 

@@ -10,7 +10,6 @@ import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/template/template_manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/package/package_model.dart';
 import 'package:fml/widgets/shortcut/shortcut_model.dart';
 import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:fml/widgets/widget/model.dart';

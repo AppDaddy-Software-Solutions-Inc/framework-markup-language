@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:dart_eval/dart_eval_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/emoji.dart';
 import 'package:fml/helpers/color.dart';
@@ -80,9 +79,6 @@ String? toStr(dynamic s) {
       var b = s.blue.toRadixString(16).padLeft(2, '0');
       var o = s.alpha.toRadixString(16).padLeft(2, '0');
       return "#$r$g$b$o";
-    }
-    if (s is $Value) {
-      return toStr(s.$value);
     }
     return s.toString();
   } catch (e) {

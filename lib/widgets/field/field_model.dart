@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/log/manager.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/field/field_view.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
@@ -12,23 +11,82 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
+enum ValueTypes { string, int, integer, double, bool, boolean, blob, list }
+
 class FieldModel extends FormFieldModel with PackageMixin implements IFormField {
+
+  ValueTypes type = ValueTypes.string;
+
+  bool readonly = false;
+  int? precision;
 
   // name of the package constructor
   String? _package;
   String? _class;
-  PackageModel? get _plugin => framework?.packages[_package];
+  PackageModel? get _plugin {
+    if (_package == null) return null;
+    var model = scope?.findModel(_package!);
+    if (model is PackageModel) return model;
+    return null;
+  }
 
-  /// the value of the input. If not set to "" initially, the value will not be settable through events.
-  StringObservable? _value;
+  dynamic _value;
+
   @override
   set value(dynamic v) {
+
     if (_value != null) {
       _value!.set(v);
-    } else if (v != null ||
-        Model.isBound(this, Binding.toKey(id, 'value'))) {
-      _value = StringObservable(Binding.toKey(id, 'value'), v,
-          scope: scope, listener: onPropertyChange);
+      return;
+    }
+
+    switch (type) {
+
+      case ValueTypes.string:
+        _value = StringObservable(Binding.toKey(id, 'value'), v,
+            scope: scope,
+            listener: onPropertyChange,
+            setter: readonly ? (dynamic value, {Observable? setter}) => v : null);
+        break;
+
+      case ValueTypes.int:
+      case ValueTypes.integer:
+        _value = IntegerObservable(Binding.toKey(id, 'value'), v,
+            scope: scope,
+            listener: onPropertyChange,
+            readonly: readonly);
+        break;
+
+      case ValueTypes.double:
+        _value = DoubleObservable(Binding.toKey(id, 'value'), v,
+            scope: scope,
+            listener: onPropertyChange,
+            setter: precision != null ? (dynamic value, {Observable? setter}) => toDouble(value, precision: precision) : null,
+            readonly: readonly);
+        break;
+
+      case ValueTypes.bool:
+      case ValueTypes.boolean:
+        _value = BooleanObservable(Binding.toKey(id, 'value'), v,
+            scope: scope,
+            listener: onPropertyChange,
+            readonly: readonly);
+        break;
+
+      case ValueTypes.list:
+        _value = ListObservable(Binding.toKey(id, 'value'), v,
+            scope: scope,
+            listener: onPropertyChange,
+            readonly: readonly);
+        break;
+
+      case ValueTypes.blob:
+        _value = StringObservable(Binding.toKey(id, 'value'), null,
+            scope: scope,
+            listener: onPropertyChange,
+            readonly: readonly);
+        _value.set(v);
+        break;
     }
   }
 
@@ -36,37 +94,43 @@ class FieldModel extends FormFieldModel with PackageMixin implements IFormField 
   dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
   FieldModel(
-    Model super.parent,
-    super.id, {
-    dynamic value,
+      Model super.parent,
+      super.id, {
+      this.type = ValueTypes.string,
+      dynamic value,
   }) {
     if (value != null) this.value = value;
   }
 
-  static FieldModel? fromXml(Model parent, XmlElement xml) {
-    FieldModel? model;
-    try {
-      model = FieldModel(parent, Xml.get(node: xml, tag: 'id'));
-      model.deserialize(xml);
-    } catch (e) {
-      Log().exception(e, caller: 'field.Model');
-      model = null;
-    }
+  static FieldModel fromXml(Model parent, XmlElement xml) {
+
+    var type = toEnum(Xml.get(node: xml, tag: 'type')?.trim().toLowerCase(), ValueTypes.values) ?? ValueTypes.string;
+    FieldModel model = FieldModel(parent, Xml.get(node: xml, tag: 'id'), type: type);
+    model.deserialize(xml);
+
     return model;
   }
 
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
+
     // deserialize
     super.deserialize(xml);
-    value = Xml.get(node: xml, tag: fromEnum('value'));
 
-    var plugin = Xml.get(node: xml, tag: fromEnum('package'))?.trim().split(".");
-    if (plugin != null && plugin.isNotEmpty) {
-      _package = plugin.first.trim();
-      if (plugin.length > 1)
-        _class = plugin[1].trim();
+    // properties
+    value = Xml.get(node: xml, tag: fromEnum('value'));
+    readonly = toBool(Xml.get(node: xml, tag: 'readonly')?.trim().toLowerCase()) ?? false;
+    precision = toInt(Xml.get(node: xml, tag: 'precision'));
+
+    // package is <package>.<class> where <package> is the id of the package model <class>
+    // is the class name to instantiate the widget
+    var package = Xml.get(node: xml, tag: fromEnum('package'))?.trim().split(".");
+    if (package != null && package.isNotEmpty) {
+      _package = package.first.trim();
+      if (package.length > 1) {
+        _class = package[1].trim();
+      }
     }
   }
 
@@ -120,7 +184,7 @@ class FieldModel extends FormFieldModel with PackageMixin implements IFormField 
   Widget getView({Key? key}) {
 
     // no package defined
-    if (plugin == null) return const Offstage();
+    if (_plugin == null) return const Offstage();
 
     // custom package view
     var view = FieldView(this);

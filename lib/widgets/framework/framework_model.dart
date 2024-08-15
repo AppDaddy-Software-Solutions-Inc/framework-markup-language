@@ -52,9 +52,6 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
   executeEvent(Model source, String event) =>
       eventManager.execute(this, event);
 
-  // list of packages
-  Map<String, PackageModel> packages = {};
-
   HeaderModel? header;
   BoxModel? body;
   FooterModel? footer;
@@ -412,13 +409,6 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
     url = Xml.get(node: xml, tag: 'url') ?? url;
     orientation = Xml.get(node: xml, tag: 'orientation') ?? orientation;
     onreturn = Xml.get(node: xml, tag: 'onreturn') ?? onreturn;
-
-    // build package list
-    List<PackageModel> packages = findChildrenOfExactType(PackageModel).cast<PackageModel>();
-    for (var package in packages) {
-      this.packages[package.id] = package;
-    }
-    removeChildrenOfExactType(PackageModel);
 
     // header
     List<HeaderModel> headers =

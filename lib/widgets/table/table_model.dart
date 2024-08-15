@@ -973,7 +973,7 @@ class TableModel extends BoxModel with FormMixin implements IForm {
       if (row != null) {
         ifield = row.fields.firstWhereOrNull((f) => f.id == fld);
         if (ifield == null) {
-          ifield  = FieldModel(row,fld, value: value);
+          ifield  = FieldModel(row, fld, value: value);
           row.fields.add(ifield);
         }
       }

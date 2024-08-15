@@ -164,26 +164,35 @@ mixin PackageMixin on Model {
     }
   }
 
-  Future<dynamic> call(String package, String method, dynamic arguments) async {
-    try {
-      // execute the dart code
-      var result = _runtime?.executeLib("package:$package", method, [toStr("Jeff")]);
-
-      // set value
-      return toStr(result);
-    }
-    catch(error, trace) {
-      if (kDebugMode) print("Error calling $package.$method \n\n $error \n\n $trace");
-    }
-    return null;
-  }
-
   Widget _errorBuilder(dynamic exception, StackTrace? stackTrace) {
 
     var msg = "Oops something went wrong loading plugin";
     msg = "$msg \n\n $exception \n\n $stackTrace";
     var view = Tooltip(message: msg, child: const Icon(Icons.error_outline, color: Colors.red, size: 24));
     return view;
+  }
+
+  Future<dynamic> call(String method, dynamic arguments) async {
+    try {
+
+      // format the package name
+      var package = _name ?? "";
+      if (!package.toLowerCase().trim().startsWith("package:")) {
+        package = "package:$package";
+      }
+
+      // execute the dart code
+      var result = _runtime?.executeLib(package, method, [toStr("Jeff")]);
+
+      // set value
+      return toStr(result);
+
+    }
+    catch(error, trace) {
+
+      if (kDebugMode) print("Error calling $method in package $_name\n\n $error \n\n $trace");
+    }
+    return null;
   }
 
   Future<Widget?> view(String? className, {dynamic arguments}) async {
@@ -206,8 +215,11 @@ mixin PackageMixin on Model {
         package = "package:$package";
       }
 
+      // format class name
+      className ??= ".";
+
       // format the
-      view = _runtime?.executeLib(package, className ??= ".", args);
+      view = _runtime?.executeLib(package, className, args);
     }
     catch(error, trace) {
       view =_errorBuilder(error,trace);
@@ -219,17 +231,12 @@ mixin PackageMixin on Model {
 
   @override
   Future<dynamic> execute(
-      String caller, String propertyOrFunction, List<dynamic> arguments) async {
-    if (scope == null) return null;
+      String caller,
+      String propertyOrFunction,
+      List<dynamic> arguments) async {
 
-    var function = propertyOrFunction.toLowerCase().trim();
-
-    switch (function) {
-    // fire event handler
-      case 'execute':
-        return await call('a','b', arguments);
-    }
-    return await super.execute(caller, propertyOrFunction, arguments);
+    var method = "${caller.split(".").last.trim()}.${propertyOrFunction.trim()}";
+    return await call(method, arguments);
   }
 }
 

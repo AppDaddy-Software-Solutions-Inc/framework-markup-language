@@ -200,7 +200,6 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
 
     bool exit = (response?.spot?.touchedBarGroup.barRods.isEmpty ?? true) || event is FlPointerExitEvent;
     bool enter = !exit;
-    response?.spot != null ? print('response: ${response?.spot}'): null;
 
     //check if the response is a tap event
     if (event is FlTapUpEvent) {

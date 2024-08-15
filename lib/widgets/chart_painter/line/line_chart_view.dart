@@ -114,6 +114,7 @@ class _LineChartViewState extends ViewableWidgetState<LineChartView> {
   LineChart buildLineChart(List<ChartPainterSeriesModel> seriesData) {
     LineChart chart = LineChart(
       LineChartData(
+        clipData: const FlClipData.all(),
         lineBarsData: widget.model.lineDataList,
         lineTouchData: LineTouchData(
           distanceCalculator: calculateDistance,

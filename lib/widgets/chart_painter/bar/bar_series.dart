@@ -260,7 +260,6 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
                   color: color ?? toColor('random'))
             ]);
       barDataPoint.add(point);
-      previousGroup = group;
   }
 
   void pointFromGroupedBarData() {

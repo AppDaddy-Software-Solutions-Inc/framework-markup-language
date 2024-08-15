@@ -98,7 +98,7 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
         barTouchData: BarTouchData(
             touchCallback: onBarTouch,
             touchTooltipData:
-                BarTouchTooltipData(getTooltipItem: getTooltipItems)),
+                BarTouchTooltipData(getTooltipColor: getColor, getTooltipItem: getTooltipItems)),
         titlesData: FlTitlesData(
           topTitles: AxisTitles(
             sideTitles: const SideTitles(showTitles: false),
@@ -286,5 +286,6 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
     }
   }
 
+  Color getColor(lineBarSpot) => widget.model.showtips ?  Colors.blueGrey : Colors.transparent ;
 
 }

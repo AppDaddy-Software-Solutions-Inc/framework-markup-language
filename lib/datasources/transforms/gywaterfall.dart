@@ -125,6 +125,7 @@ class GYWaterfall extends TransformModel implements ITransform {
         newData2["y"] = "100";
         newData2["group"] = groupValue;
         newData2["color"] = colorValue;
+        newData2.addAll(row);
         result.add(newData2);
         previousGroup = groupValue;
       } else {
@@ -154,6 +155,7 @@ class GYWaterfall extends TransformModel implements ITransform {
           newData["y0"] = "${d1 - yValue}";
           newData["group"] = groupValue;
           newData["color"] = colorValue;
+          newData.addAll(row);
           result.add(newData);
           groupStart = false;
         } else {
@@ -166,6 +168,7 @@ class GYWaterfall extends TransformModel implements ITransform {
           newData["y0"] = "${d1 - yValue}";
           newData["group"] = groupValue;
           newData["color"] = colorValue;
+          newData.addAll(row);
           result.add(newData);
         }
         previousGroup = groupValue;
@@ -185,8 +188,6 @@ class GYWaterfall extends TransformModel implements ITransform {
       }
     }
 
-
-    result = result;
     return result;
   }
 

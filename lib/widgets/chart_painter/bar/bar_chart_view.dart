@@ -98,7 +98,7 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
         barTouchData: BarTouchData(
             touchCallback: onBarTouch,
             touchTooltipData:
-                BarTouchTooltipData(getTooltipItem: widget.model.showtips ? getTooltipItems : null)),
+                BarTouchTooltipData(getTooltipItem: getTooltipItems)),
         titlesData: FlTitlesData(
           topTitles: AxisTitles(
             sideTitles: const SideTitles(showTitles: false),
@@ -192,8 +192,7 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
 
   BarTooltipItem getTooltipItems(BarChartGroupData group, int groupIndex,
       BarChartRodData rod, int rodIndex) {
-
-    return BarTooltipItem("${rod.fromY}, ${rod.toY}", const TextStyle());
+    return BarTooltipItem( widget.model.showtips == true ? "${rod.fromY}, ${rod.toY}" : "", const TextStyle());
   }
 
   void onBarTouch(FlTouchEvent event, BarTouchResponse? response) {

@@ -211,6 +211,7 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
             // get the height of the render
             //set the selected on the chart model to the series spot data that was clicked
             widget.model.selected = (mySpot as IExtendedSeriesInterface).data;
+            (mySpot as IExtendedSeriesInterface).series.data = (mySpot as IExtendedSeriesInterface).data;
             //execute the onclick method of the series
             (mySpot as IExtendedSeriesInterface).series.onClick(context);
         }

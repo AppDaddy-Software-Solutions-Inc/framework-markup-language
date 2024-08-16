@@ -153,7 +153,7 @@ class PackageModel extends Model {
     return loaded;
   }
 
-  $Value _wrapped(dynamic value) {
+  $Value _wrap(dynamic value) {
     if (value is String) return $String(value);
     if (value is bool) return $bool(value);
     if (value is int) return $int(value);
@@ -163,7 +163,7 @@ class PackageModel extends Model {
     return value;
   }
 
-  dynamic _unwrapped(dynamic value) {
+  dynamic _unwrap(dynamic value) {
     if (value is $Value) {
       value = value.$reified;
     }
@@ -178,7 +178,7 @@ class PackageModel extends Model {
     if (key != null) {
       value = get(key);
     }
-    return _wrapped(value);
+    return _wrap(value);
   }
 
   dynamic get(String key)
@@ -232,14 +232,14 @@ class PackageModel extends Model {
       // wrap the arguments to pass to the plugin
       var args = [];
       for (var arg in arguments) {
-        args.add(_wrapped(arg));
+        args.add(_wrap(arg));
       }
 
       // execute the dart code
       var result = _runtime?.executeLib(package, "$method.", args);
 
       // return the result
-      return _unwrapped(result);
+      return _unwrap(result);
     }
     catch(error, trace) {
 
@@ -263,10 +263,10 @@ class PackageModel extends Model {
     }
 
     // this is necessary for plugin functions
-    variables["{scope)"]  = scope;
+    variables["{scope}"] = scope;
     variables["{id}"] = id;
-    variables["{getter}"] = get;
-    variables["{setter}"] = set;
+    variables["{getter}"] = _get;
+    variables["{setter}"] = _set;
 
     var view = Eval.evaluate(plugin, variables: variables);
     if (view is! Widget) view = null;

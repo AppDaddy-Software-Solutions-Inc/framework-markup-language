@@ -100,7 +100,7 @@ class Eval {
 
   static dynamic evaluate(String? expression, {
     Map<String?, dynamic>? variables,
-    Map<String?, dynamic>? altFunctions}) async {
+    Map<String?, dynamic>? altFunctions}) {
 
     // expressions with leading or trailing spaces fail parse
     expression = expression?.trim();

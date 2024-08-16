@@ -52,6 +52,7 @@ class EventHandler extends Eval {
   EventHandler(this.model);
 
   Future<bool> execute(Observable? observable) async {
+
     bool ok = true;
     if (observable == null) return ok;
 
@@ -59,6 +60,7 @@ class EventHandler extends Eval {
     String? expression = (observable.isEval)
         ? observable.value
         : (observable.signature ?? observable.value);
+
     if (isNullOrEmpty(expression)) return ok;
 
     // replace 'this' pointer with the parent model id
@@ -69,12 +71,16 @@ class EventHandler extends Eval {
     // get variables from observable
     Map<String, dynamic> variables = observable.getVariables();
 
+    // this is necessary for plugin functions
+    variables["scope"] = model.scope;
+
     // execute the expression
     return executeExpression(expression, variables);
   }
 
   Future<bool> executeExpression(
       String? expression, Map<String, dynamic> variables) async {
+
     if (isNullOrEmpty(expression)) return true;
 
     bool ok = true;

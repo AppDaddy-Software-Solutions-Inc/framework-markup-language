@@ -8,8 +8,8 @@ class StringObservable extends Observable {
       super.getter,
       super.setter,
       super.formatter,
-      bool lazyEval = false})
-      : super(lazyEvaluation: lazyEval);
+      super.readonly,
+      super.lazyEvaluation});
 
   @override
   String? get() {

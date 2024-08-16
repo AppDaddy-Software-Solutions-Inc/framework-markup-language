@@ -138,6 +138,8 @@ Future<void> addChild(Model model, List<dynamic> arguments) async {
   // fml
   var xml = elementAt(arguments, 0);
 
+  xml = xml.replaceAll("[ignore]", "");
+
   // if index is null, add to end of list.
   int? index = toInt(elementAt(arguments, 1));
 
@@ -271,6 +273,7 @@ Future<void> replaceWidget(Model model, List<dynamic> arguments) async {
 
 Future<bool> _appendXml(Model model, String xml, int? index,
     [bool silent = true]) async {
+
   List<XmlElement> nodes = [];
 
   Exception? exception;
@@ -320,34 +323,35 @@ Future<bool> _appendXml(Model model, String xml, int? index,
 /// This will be overridden for more complex widgets such as TABLE
 /// where children may actually be header or footer declarations that require
 /// a complete restructuring/rebuild of the parent
-Future<bool> _appendChild(
-    Model parent, XmlElement element, int? index) async {
+Future<bool> _appendChild(Model parent, XmlElement element, int? index) async {
+
+  // create the model
   Model? model = Model.fromXml(parent, element);
-  if (model != null) {
-    // model is a datasource
-    if (model is IDataSource) {
-      // add it to the datasource list
-      parent.datasources ??= [];
-      parent.datasources!.add(model as IDataSource);
 
-      // start brokers
-      parent.initialize();
-    }
+  if (model == null) return false;
 
-    // model is widget
-    else {
-      // add it to the child list
-      parent.children ??= [];
+  // model is a datasource
+  if (model is IDataSource) {
 
-      // position specified?
-      if (index != null && index < parent.children!.length) {
-        parent.children!.insert(index, model);
-      } else {
-        parent.children!.add(model);
-      }
-    }
+    // add it to the datasource list
+    parent.datasources ??= [];
+    parent.datasources!.add(model as IDataSource);
+
+    // start brokers
+    parent.initialize();
+
+    return true;
   }
-  return (model != null);
+
+  // model is widget
+  // position specified?
+  parent.children ??= [];
+  if (index != null && index < parent.children!.length) {
+    parent.children!.insert(index, model);
+  } else {
+    parent.children!.add(model);
+  }
+  return true;
 }
 
 // XmlElement cloneNode(XmlElement node, Scope? scope) {
@@ -456,8 +460,8 @@ XmlElement? prototypeOf(XmlElement? node) {
   return node;
 }
 
-Model? fromXmlNode(
-    Model parent, XmlElement node, Scope? scope, dynamic data) {
+Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
+
   Model? model;
 
   switch (node.localName) {
@@ -484,6 +488,10 @@ Model? fromXmlNode(
 
     case "BIOMETRIC":
       model = BiometricsDetectorModel.fromXml(parent, node);
+      break;
+
+    case "BLOB":
+      model = VariableModel.fromXml(VariableTypes.blob, parent, node);
       break;
 
     case "BOX": // Preferred Case
@@ -572,6 +580,11 @@ Model? fromXmlNode(
     //   model = HtmlModel.fromXml(parent, node);
     //   break;
 
+    case "BOOL":
+    case "BOOLEAN":
+      model = VariableModel.fromXml(VariableTypes.boolean, parent, node);
+      break;
+
     case "CHECKBOX":
     case "CHECK":
       model = CheckboxModel.fromXml(parent, node);
@@ -579,7 +592,7 @@ Model? fromXmlNode(
 
     case "CONST":
     case "CONSTANT":
-      model = VariableModel.fromXml(parent, node, constant: true);
+      model = VariableModel.fromXml(VariableTypes.constant, parent, node);
       break;
 
     case "CROP":
@@ -625,6 +638,10 @@ Model? fromXmlNode(
 
     case "DISTINCT":
       if (parent is IDataSource) model = Distinct.fromXml(parent, node);
+      break;
+
+    case "DOUBLE":
+      model = VariableModel.fromXml(VariableTypes.double, parent, node);
       break;
 
     case "EDITOR":
@@ -733,6 +750,11 @@ Model? fromXmlNode(
       model = IconModel.fromXml(parent, node);
       break;
 
+    case "INT":
+    case "INTEGER":
+      model = VariableModel.fromXml(VariableTypes.integer, parent, node);
+      break;
+
     case "WEBVIEW":
     case "IFRAME":
       model = InlineFrameModel.fromXml(parent, node);
@@ -819,6 +841,10 @@ Model? fromXmlNode(
           parent is CheckboxModel ||
           parent is RadioModel ||
           parent is TypeaheadModel) model = OptionModel.fromXml(parent, node);
+      break;
+
+    case "PROTOTYPE":
+      model = PrototypeModel.fromXml(parent, node);
       break;
 
     case "FADE":
@@ -1142,7 +1168,7 @@ Model? fromXmlNode(
 
     case "VARIABLE":
     case "VAR":
-      model = VariableModel.fromXml(parent, node);
+      model = VariableModel.fromXml(VariableTypes.string, parent, node);
       break;
 
     case "VIDEO":

@@ -29,7 +29,6 @@ class PositionedModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get left => _left?.get();
 
   // right
@@ -47,7 +46,6 @@ class PositionedModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get right => _right?.get();
 
   // top
@@ -65,7 +63,6 @@ class PositionedModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get top => _top?.get();
 
   // bottom
@@ -83,7 +80,6 @@ class PositionedModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get bottom => _bottom?.get();
 
   // horizontal center
@@ -96,7 +92,6 @@ class PositionedModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get xoffset => _xoffset?.get();
 
   // vertical center
@@ -109,7 +104,6 @@ class PositionedModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get yoffset => _yoffset?.get();
 
   // depth
@@ -162,6 +156,7 @@ class PositionedModel extends ViewableModel {
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
+
     // deserialize
     super.deserialize(xml);
 
@@ -173,6 +168,11 @@ class PositionedModel extends ViewableModel {
     xoffset = Xml.get(node: xml, tag: 'xoffset'); // formally hcenter
     yoffset = Xml.get(node: xml, tag: 'yoffset'); // formally vcenter
     depth = Xml.get(node: xml, tag: 'depth');
+  }
+
+  @override
+  void onPropertyChange(Observable observable) {
+    parent?.onPropertyChange(observable);
   }
 
   @override

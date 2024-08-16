@@ -18,6 +18,7 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class TypeaheadModel extends DecoratedInputModel implements IFormField {
+
   // data sourced prototype
   XmlElement? prototype;
 
@@ -55,6 +56,8 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
+  bool get readonly => _readonly?.get() ?? false;
+
   BooleanObservable? _inputEnabled;
   set inputenabled(dynamic v) {
     if (_inputEnabled != null) {
@@ -66,7 +69,6 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField {
   }
   bool get inputenabled => _inputEnabled?.get() ?? false;
 
-  bool get readonly => _readonly?.get() ?? false;
   TextEditingController textController = TextEditingController(); // Add this controller
   // value
   StringObservable? _value;

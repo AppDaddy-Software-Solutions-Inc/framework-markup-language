@@ -151,7 +151,7 @@ class AnimationModel extends ViewableModel {
       _oncomplete!.set(v);
     } else if (v != null) {
       _oncomplete = StringObservable(Binding.toKey(id, 'oncomplete'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 
@@ -163,7 +163,7 @@ class AnimationModel extends ViewableModel {
       _ondismiss!.set(v);
     } else if (v != null) {
       _ondismiss = StringObservable(Binding.toKey(id, 'ondismiss'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 
@@ -175,7 +175,7 @@ class AnimationModel extends ViewableModel {
       _onstart!.set(v);
     } else if (v != null) {
       _onstart = StringObservable(Binding.toKey(id, 'onstart'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 

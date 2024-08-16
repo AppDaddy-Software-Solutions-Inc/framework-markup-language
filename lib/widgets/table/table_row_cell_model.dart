@@ -124,7 +124,7 @@ class TableRowCellModel extends BoxModel {
       _alarm!.set(v);
     } else {
       _alarm = StringObservable(Binding.toKey(id, 'alarm'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
   String? get alarm => _alarm?.get();

@@ -7,7 +7,7 @@ class IntegerObservable extends Observable {
       super.listener,
       super.getter,
       super.setter,
-      bool? bindable});
+      super.readonly});
 
   @override
   int? get() {

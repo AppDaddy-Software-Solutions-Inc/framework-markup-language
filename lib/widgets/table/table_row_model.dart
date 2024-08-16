@@ -2,22 +2,18 @@
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/form/form_field_interface.dart';
+import 'package:fml/widgets/form/form_mixin.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
-import 'package:fml/widgets/form/form_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TableRowModel extends BoxModel {
-
-  // list of form fields
-  List<IFormField>? fields;
+class TableRowModel extends BoxModel  with FormMixin {
 
   @override
   String? get layout => super.layout ?? "row";
@@ -97,7 +93,7 @@ class TableRowModel extends BoxModel {
       _onClick!.set(v);
     } else if (v != null) {
       _onClick = StringObservable(Binding.toKey(id, 'onclick'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
   String? get onclick => _onClick?.get();
@@ -109,7 +105,7 @@ class TableRowModel extends BoxModel {
       _onComplete!.set(v);
     } else if (v != null) {
       _onComplete = StringObservable(Binding.toKey(id, 'oncomplete'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
   String? get oncomplete => _onComplete?.get();
@@ -121,7 +117,7 @@ class TableRowModel extends BoxModel {
       _onInsert!.set(v);
     } else if (v != null) {
       _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
   String? get onInsert => _onInsert?.get();
@@ -133,7 +129,7 @@ class TableRowModel extends BoxModel {
       _onDelete!.set(v);
     } else if (v != null) {
       _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
   String? get onDelete => _onDelete?.get();
@@ -149,31 +145,6 @@ class TableRowModel extends BoxModel {
     }
   }
   String? get onChange => _onChange?.get();
-
-  // dirty
-  BooleanObservable? get dirtyObservable => _dirty;
-  BooleanObservable? _dirty;
-  set dirty(dynamic v) {
-    if (_dirty != null) {
-      _dirty!.set(v);
-    } else if (v != null) {
-      _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
-    }
-  }
-  bool get dirty => _dirty?.get() ?? false;
-
-  void onDirtyListener(Observable property) {
-    bool isDirty = false;
-    if (fields != null) {
-      for (IFormField field in fields!) {
-        if (field.dirty ?? false) {
-          isDirty = true;
-          break;
-        }
-      }
-    }
-    dirty = isDirty;
-  }
 
   TableRowModel(Model super.parent, super.id, {dynamic data})
       : super(scope: Scope(parent: parent.scope)) {
@@ -218,10 +189,10 @@ class TableRowModel extends BoxModel {
     if (_postbrokers != null) {
 
       // build form fields and register dirty listeners to each
-      fields = FormModel.formFieldsOf(this);
+      fields = formFieldsOf(this);
 
       // Register Listener to Dirty Field
-      for (var field in fields ?? []) {
+      for (var field in fields) {
         field.registerDirtyListener(onDirtyListener);
       }
     }
@@ -256,8 +227,8 @@ class TableRowModel extends BoxModel {
     }
 
     // mark fields as clean
-    if (ok && fields != null) {
-      for (var field in fields!) {
+    if (ok) {
+      for (var field in fields) {
         field.dirty = false;
       }
     }
@@ -280,7 +251,7 @@ class TableRowModel extends BoxModel {
 
           // build the posting body
           if (!source.custombody) {
-            source.body = await FormModel.buildPostingBody(table!, fields,
+            source.body = await FormMixin.buildPostingBody(table!, fields,
                 rootname: source.root ?? "FORM");
           }
 

@@ -61,13 +61,27 @@ class Pivot extends TransformModel implements ITransform {
   bool get addSummaryRows => _addSummaryRows?.get() ?? false;
 
 
+  // add summary rows (total, avg)
+  BooleanObservable? _addSummaryColumns;
+  set addSummaryColumns(dynamic v) {
+    if (_addSummaryColumns != null) {
+      _addSummaryColumns!.set(v);
+    } else if (v != null) {
+      _addSummaryColumns = BooleanObservable(Binding.toKey(id, 'addsummarycolumns'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get addSummaryColumns => _addSummaryColumns?.get() ?? false;
+
+
   Pivot(Model? parent,
-      {String? id, String? row, String? column, String? field, dynamic addSummaryRows})
+      {String? id, String? row, String? column, String? field, dynamic addSummaryRows, dynamic addSummaryColumns})
       : super(parent, id) {
     this.row = row;
     this.column = column;
     this.field = field;
     this.addSummaryRows = addSummaryRows;
+    this.addSummaryColumns = addSummaryColumns;
   }
 
   static Pivot? fromXml(Model? parent, XmlElement xml) {
@@ -76,7 +90,8 @@ class Pivot extends TransformModel implements ITransform {
         row: Xml.get(node: xml, tag: "row"),
         column: Xml.get(node: xml, tag: "column"),
         field: Xml.get(node: xml, tag: "field"),
-        addSummaryRows: Xml.get(node: xml, tag: "addsummaryrows"));
+        addSummaryRows: Xml.get(node: xml, tag: "addsummaryrows"),
+        addSummaryColumns: Xml.get(node: xml, tag: "addsummarycolumns"));
     model.deserialize(xml);
     return model;
   }
@@ -174,7 +189,6 @@ class Pivot extends TransformModel implements ITransform {
     statistics.forEach((key, value) {
       Map<String?, dynamic> myrow = <String?, dynamic>{};
       myrow[row] = key;
-
       // Sum
       double sum = 0;
       double count = 0;
@@ -185,9 +199,11 @@ class Pivot extends TransformModel implements ITransform {
         sum = sum + (v ?? 0);
         count++;
       });
-
-      myrow["AVG"] = (count > 0) ? (sum / count).toStringAsFixed(2) : "";
-      myrow["TOTAL"] = sum.toString();
+      if (_addSummaryColumns?.get() == true)
+        {
+          myrow["AVG"] = (count > 0) ? (sum / count).toStringAsFixed(2) : "";
+          myrow["TOTAL"] = sum.toString();
+        }
       result.add(myrow);
     });
 

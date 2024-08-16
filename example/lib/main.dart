@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    String example = 'test.appdaddy.co';
+    String example = 'https://test.appdaddy.co';
     //String example = 'http://10.69.4.245:81/';
     //String example = 'http://in4.pro';
     //String example = 'https://pad.fml.dev';

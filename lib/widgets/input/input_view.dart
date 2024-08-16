@@ -615,6 +615,10 @@ class _InputViewState extends ViewableWidgetState<InputView>
     // apply constraints
     view = applyConstraints(view, modelConstraints);
 
+    if (widget.model.draggable){
+
+    }
+
     return view;
   }
 }

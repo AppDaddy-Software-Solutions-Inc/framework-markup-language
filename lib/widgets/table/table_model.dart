@@ -12,6 +12,7 @@ import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/field/field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:fml/widgets/form/form_interface.dart';
+import 'package:fml/widgets/form/form_mixin.dart';
 import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/table/table_footer_cell_model.dart';
 import 'package:fml/widgets/table/table_footer_model.dart';
@@ -34,7 +35,8 @@ import 'package:fml/platform/platform.vm.dart'
     if (dart.library.io) 'package:fml/platform/platform.vm.dart'
     if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
-class TableModel extends BoxModel implements IForm {
+class TableModel extends BoxModel with FormMixin implements IForm {
+
   static String dynamicTableValue1 = "{field}";
   static String dynamicTableValue2 = "[*]";
 
@@ -171,21 +173,7 @@ class TableModel extends BoxModel implements IForm {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get sortable => _sortable?.get() ?? true;
-
-  // allow resizing
-  BooleanObservable? _resizeable;
-  set resizeable(dynamic v) {
-    if (_resizeable != null) {
-      _resizeable!.set(v);
-    } else if (v != null) {
-      _resizeable = BooleanObservable(Binding.toKey(id, 'resizeable'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  bool get resizeable => _resizeable?.get() ?? true;
 
   // column uses editable
   bool get maybeEditable => _editable != null;
@@ -269,7 +257,7 @@ class TableModel extends BoxModel implements IForm {
       _onInsert!.set(v);
     } else if (v != null) {
       _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -282,28 +270,13 @@ class TableModel extends BoxModel implements IForm {
       _onDelete!.set(v);
     } else if (v != null) {
       _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
   String? get onDelete => _onDelete?.get();
 
-  // dirty
   @override
-  BooleanObservable? get dirtyObservable => _dirty;
-  BooleanObservable? _dirty;
-  @override
-  set dirty(dynamic v) {
-    if (_dirty != null) {
-      _dirty!.set(v);
-    } else if (v != null) {
-      _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
-    }
-  }
-
-  @override
-  bool get dirty => _dirty?.get() ?? false;
-
   void onDirtyListener(Observable property) {
     bool isDirty = false;
     for (var entry in rows.entries) {
@@ -998,11 +971,10 @@ class TableModel extends BoxModel implements IForm {
 
       // create a form field for editable fields to allow posting
       if (row != null) {
-        ifield = row.fields?.firstWhereOrNull((f) => f.id == fld);
+        ifield = row.fields.firstWhereOrNull((f) => f.id == fld);
         if (ifield == null) {
-          row.fields ??= [];
           ifield  = FieldModel(row,fld, value: value);
-          row.fields!.add(ifield);
+          row.fields.add(ifield);
         }
       }
 

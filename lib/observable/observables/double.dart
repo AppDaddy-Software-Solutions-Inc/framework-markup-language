@@ -2,8 +2,12 @@
 import '../observable.dart';
 
 class DoubleObservable extends Observable {
-  DoubleObservable(super.name, super.value,
-      {super.scope, super.listener, super.getter, super.setter});
+  DoubleObservable(super.name, super.value, {
+    super.scope,
+    super.listener,
+    super.getter,
+    super.setter,
+    super.readonly});
 
   @override
   double? get() {

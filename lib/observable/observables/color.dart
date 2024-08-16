@@ -5,8 +5,12 @@ import 'package:fml/helpers/string.dart';
 import 'package:fml/observable/observable.dart';
 
 class ColorObservable extends Observable {
-  ColorObservable(super.name, super.value,
-      {super.scope, super.listener, super.getter, super.setter});
+  ColorObservable(super.name, super.value, {
+    super.scope,
+    super.listener,
+    super.getter,
+    super.setter,
+    super.readonly});
 
   @override
   Color? get() => toColor(super.get());

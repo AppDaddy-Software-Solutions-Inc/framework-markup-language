@@ -232,7 +232,7 @@ class CameraModel extends CameraImageModel with ViewableMixin {
       _oninitialized!.set(v);
     } else if (v != null) {
       _oninitialized = StringObservable(Binding.toKey(id, 'oninitialized'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 

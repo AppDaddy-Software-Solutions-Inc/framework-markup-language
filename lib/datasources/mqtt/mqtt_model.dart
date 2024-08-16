@@ -36,7 +36,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener {
       _onconnected!.set(v);
     } else if (v != null) {
       _onconnected = StringObservable(Binding.toKey(id, 'onconnected'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -49,7 +49,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener {
       _ondisconnected!.set(v);
     } else if (v != null) {
       _ondisconnected = StringObservable(Binding.toKey(id, 'ondisconnected'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -62,7 +62,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener {
       _onsubscribed!.set(v);
     } else if (v != null) {
       _onsubscribed = StringObservable(Binding.toKey(id, 'onsubscribed'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -75,7 +75,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener {
       _onunsubscribed!.set(v);
     } else if (v != null) {
       _onunsubscribed = StringObservable(Binding.toKey(id, 'onunsubscribed'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -88,7 +88,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener {
       _onpublished!.set(v);
     } else if (v != null) {
       _onpublished = StringObservable(Binding.toKey(id, 'onpublished'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -101,7 +101,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener {
       _onerror!.set(v);
     } else if (v != null) {
       _onerror = StringObservable(Binding.toKey(id, 'onerror'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 

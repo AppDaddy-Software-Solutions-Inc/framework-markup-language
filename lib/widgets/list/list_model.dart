@@ -9,6 +9,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
+import 'package:fml/widgets/form/form_mixin.dart';
 import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
 import 'package:xml/xml.dart';
@@ -19,7 +20,7 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class ListModel extends BoxModel implements IForm, IScrollable {
+class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
 
   // indicates if the widget expands infinitely in
   // it's horizontal axis if not constrained
@@ -144,22 +145,7 @@ class ListModel extends BoxModel implements IForm, IScrollable {
   @override
   bool get moreRight => _moreRight?.get() ?? false;
 
-  // dirty
   @override
-  BooleanObservable? get dirtyObservable => _dirty;
-  BooleanObservable? _dirty;
-  @override
-  set dirty(dynamic v) {
-    if (_dirty != null) {
-      _dirty!.set(v);
-    } else if (v != null) {
-      _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
-    }
-  }
-
-  @override
-  bool get dirty => _dirty?.get() ?? false;
-
   void onDirtyListener(Observable property) {
     bool isDirty = false;
     for (var entry in items.entries) {
@@ -189,7 +175,7 @@ class ListModel extends BoxModel implements IForm, IScrollable {
       _oncomplete!.set(v);
     } else if (v != null) {
       _oncomplete = StringObservable(Binding.toKey(id, 'oncomplete'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -226,7 +212,7 @@ class ListModel extends BoxModel implements IForm, IScrollable {
       _onpulldown!.set(v);
     } else if (v != null) {
       _onpulldown = StringObservable(Binding.toKey(id, 'onpulldown'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
 

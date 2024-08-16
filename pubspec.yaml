@@ -90,6 +90,9 @@ dependencies:
   flutter_beacon: ^0.5.1
   # BSD-3-Clause
 
+  flutter_box_transform: 0.4.4
+  # # Apache-2.0
+
   flutter_highlight: ^0.7.0
   # MIT
 

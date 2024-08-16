@@ -25,13 +25,10 @@ class FilepickerModel extends FileModel implements IDataSource {
       _onstart!.set(v);
     } else if (v != null) {
       _onstart = StringObservable(Binding.toKey(id, 'onstart'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
-
-  String? get onstart {
-    return _onstart?.get();
-  }
+  String? get onstart => _onstart?.get();
 
   // ondismissed - fired when the picker is dismissed
   StringObservable? _ondismissed;
@@ -40,7 +37,7 @@ class FilepickerModel extends FileModel implements IDataSource {
       _ondismissed!.set(v);
     } else if (v != null) {
       _ondismissed = StringObservable(Binding.toKey(id, 'ondismissed'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 

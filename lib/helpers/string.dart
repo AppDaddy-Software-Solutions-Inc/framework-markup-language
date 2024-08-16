@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
@@ -138,13 +139,32 @@ num? toNum(dynamic s, {allowMalformed = true}) {
 }
 
 /// If a value (typically a String) is numeric return as a double
-double? toDouble(dynamic s) {
+double? toDouble(dynamic s, {int? precision}) {
   try {
+    double? v;
     if (isNullOrEmpty(s)) return null;
-    if (s is double) return s;
-    if (s is String) return double.parse(s);
-    return toDouble(s.toString());
-  } catch (e) {
+
+    if (s is double) {
+      v = s;
+    }
+
+    else if (s is String) {
+      v = double.parse(s);
+    }
+
+    else {
+      v = toDouble(s.toString());
+    }
+
+    // apply precision rounding
+    if (v is double && precision != null && !precision.isNegative) {
+      var mod = pow(10.0, precision);
+      v = ((v * mod).round().toDouble() / mod);
+    }
+
+    return v;
+  }
+  catch (e) {
     return null;
   }
 }

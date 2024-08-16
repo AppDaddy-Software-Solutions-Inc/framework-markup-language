@@ -4,18 +4,14 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
-import 'package:fml/widgets/form/form_field_interface.dart';
-import 'package:fml/widgets/form/form_model.dart';
+import 'package:fml/widgets/form/form_mixin.dart';
 import 'package:fml/widgets/grid/grid_model.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class GridItemModel extends BoxModel {
-
-  // list of form fields
-  List<IFormField>? fields;
+class GridItemModel extends BoxModel with FormMixin {
 
   // indicates if the widget will grow in
   // its horizontal axis
@@ -85,7 +81,7 @@ class GridItemModel extends BoxModel {
       _onClick!.set(v);
     } else if (v != null) {
       _onClick = StringObservable(Binding.toKey(id, 'onclick'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
+          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
   String? get onClick => _onClick?.get();
@@ -97,7 +93,7 @@ class GridItemModel extends BoxModel {
       _onInsert!.set(v);
     } else if (v != null) {
       _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
   String? get onInsert => _onInsert?.get();
@@ -109,34 +105,10 @@ class GridItemModel extends BoxModel {
       _onDelete!.set(v);
     } else if (v != null) {
       _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
   String? get onDelete => _onDelete?.get();
-  
-  BooleanObservable? _dirty;
-  BooleanObservable? get dirtyObservable => _dirty;
-  set dirty(dynamic v) {
-    if (_dirty != null) {
-      _dirty!.set(v);
-    } else if (v != null) {
-      _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
-    }
-  }
-  bool get dirty => _dirty?.get() ?? false;
-
-  void onDirtyListener(Observable property) {
-    bool isDirty = false;
-    if (fields != null) {
-      for (IFormField field in fields!) {
-        if ((field.dirty ?? false)) {
-          isDirty = true;
-          break;
-        }
-      }
-    }
-    dirty = isDirty;
-  }
 
   GridItemModel(Model super.parent, super.id,
       {super.data, dynamic backgroundcolor})
@@ -175,10 +147,10 @@ class GridItemModel extends BoxModel {
     if (_postbrokers != null) {
 
       // build form fields and register dirty listeners to each
-      fields = FormModel.formFieldsOf(this);
+      fields = formFieldsOf(this);
 
       // Register Listener to Dirty Field
-      for (var field in fields ?? []) {
+      for (var field in fields) {
         field.registerDirtyListener(onDirtyListener);
       }
     }
@@ -211,7 +183,7 @@ class GridItemModel extends BoxModel {
         IDataSource? source = scope!.getDataSource(id);
         if (source != null && ok && list != null) {
           if (!source.custombody) {
-            source.body = await FormModel.buildPostingBody(list!, fields,
+            source.body = await FormMixin.buildPostingBody(list!, fields,
                 rootname: source.root ?? "FORM");
           }
           ok = await source.start();
@@ -231,8 +203,8 @@ class GridItemModel extends BoxModel {
     bool ok = await _post();
 
     // mark fields as clean
-    if (ok && fields != null) {
-      for (var field in fields!) {
+    if (ok) {
+      for (var field in fields) {
         field.dirty = false;
       }
     }

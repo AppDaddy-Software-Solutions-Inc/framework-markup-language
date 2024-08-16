@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/data/dotnotation.dart';
 import 'package:fml/datasources/gps/payload.dart';
@@ -10,6 +11,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/form/form_interface.dart';
+import 'package:fml/widgets/form/form_mixin.dart';
 import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
@@ -26,14 +28,9 @@ if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 enum StatusCodes { incomplete, complete }
 
-class FormModel extends BoxModel implements IForm {
+class FormModel extends BoxModel with FormMixin implements IForm {
   @override
   String get layout => super.layout ?? "column";
-
-  // list of all form fields
-  List<IFormField> fields = [];
-
-  List<IForm> forms = [];
 
   /// Post tells the form whether or not to include the field in the posting body. If post is null, visible determines post.
   BooleanObservable? _post;
@@ -153,16 +150,13 @@ class FormModel extends BoxModel implements IForm {
 
   bool? get mandatory => _mandatory?.get();
 
+  @override
   void onDirtyListener(Observable property) {
-    // set form dirty
-    bool isDirty = false;
-    for (var field in fields) {
-      if (field.dirty == true) isDirty = true;
-    }
-    dirty = isDirty;
+
+    super.onDirtyListener(property);
 
     // auto save?
-    if (isDirty && autosave == true) _saveForm();
+    if (dirty && autosave == true) _saveForm();
   }
 
   // gps
@@ -188,7 +182,7 @@ class FormModel extends BoxModel implements IForm {
       _onComplete!.set(v);
     } else if (v != null) {
       _onComplete = StringObservable(Binding.toKey(id, 'onComplete'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -201,7 +195,7 @@ class FormModel extends BoxModel implements IForm {
       _onSave!.set(v);
     } else if (v != null) {
       _onSave = StringObservable(Binding.toKey(id, 'onSave'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -214,7 +208,7 @@ class FormModel extends BoxModel implements IForm {
       _onValidate!.set(v);
     } else if (v != null) {
       _onValidate = StringObservable(Binding.toKey(id, 'onValidate'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -227,7 +221,7 @@ class FormModel extends BoxModel implements IForm {
       _onInvalid!.set(v);
     } else if (v != null) {
       _onInvalid = StringObservable(Binding.toKey(id, 'onInvalid'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -311,7 +305,6 @@ class FormModel extends BoxModel implements IForm {
     postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
     warnOnExit = Xml.attribute(node: xml, tag: 'warnonexit');
 
-
     // events
     onComplete = Xml.get(node: xml, tag: 'oncomplete');
     onSave = Xml.get(node: xml, tag: 'onsave');
@@ -329,8 +322,7 @@ class FormModel extends BoxModel implements IForm {
     }
 
     // get sub forms
-    var forms = formsOf(this);
-    forms.addAll(forms);
+    forms = formsOf(this);
 
     // get all answers
     var nodes = xml.findElements("ANSWER", namespace: "*");
@@ -391,26 +383,6 @@ class FormModel extends BoxModel implements IForm {
     this.fields.addAll(fields);
   }
 
-  // gets a list of the forms contained in the specified model
-  static List<IForm> formsOf(Model model) {
-    List<IForm> forms = [];
-    for (var child in model.children ?? []) {
-      if (child is IForm) forms.add(child);
-      if (child is! IForm) forms.addAll(formsOf(child));
-    }
-    return forms;
-  }
-
-  // gets a list of the form fields contained in the specified model
-  static List<IFormField> formFieldsOf(Model model) {
-    List<IFormField> fields = [];
-    for (var child in model.children ?? []) {
-      if (child is IFormField) fields.add(child);
-      if (child is! IForm) fields.addAll(formFieldsOf(child));
-    }
-    return fields;
-  }
-
   Future<bool> _postForm(hive.Form? form, {bool? commit}) async {
     bool ok = true;
     if ((scope != null) && (postbrokers != null)) {
@@ -418,7 +390,7 @@ class FormModel extends BoxModel implements IForm {
         IDataSource? source = scope!.getDataSource(id);
         if ((source != null) && (ok) && (commit != false)) {
           if (!source.custombody) {
-            source.body = await buildPostingBody(this, fields,
+            source.body = await FormMixin.buildPostingBody(this, fields,
                 rootname: source.root ?? "FORM");
           }
           ok = await source.start(key: form!.key);
@@ -532,7 +504,7 @@ class FormModel extends BoxModel implements IForm {
     // Remove Old Answers
 
     node.children.removeWhere((child) {
-      if ((child is XmlElement) && (child.name.local == "ANSWER")) {
+      if (child is XmlElement && child.name.local == "ANSWER") {
         return true;
       } else {
         return false;
@@ -550,7 +522,7 @@ class FormModel extends BoxModel implements IForm {
   static bool _insertAnswers(XmlElement root, IForm form, IFormField field) {
     try {
       // field is postable?
-      if (isPostable(form, field) && (field.values != null)) {
+      if (FormMixin.isPostable(form, field) && field.values != null) {
         for (var value in field.values!) {
           // create new element
           XmlElement node = XmlElement(XmlName("ANSWER"));
@@ -572,9 +544,10 @@ class FormModel extends BoxModel implements IForm {
           }
 
           // field meta data
-          if (!isNullOrEmpty(field.metaData)) {
-            node.attributes.add(XmlAttribute(XmlName('meta'), field.metaData));
-          }
+          field.metaData.forEach((key, value) {
+            var exists = node.attributes.firstWhereOrNull((a) => a.name.local == key) != null;
+            if (!exists) node.attributes.add(XmlAttribute(XmlName(key), value));
+          });
 
           /// GeoCode for each [iFormField] which is set on answer
           if (field.geocode != null) field.geocode!.serialize(node);
@@ -620,125 +593,6 @@ class FormModel extends BoxModel implements IForm {
 
     // Return Formatted Xml
     return node.toXmlString(pretty: true);
-  }
-
-  static bool isPostable(IForm form, IFormField field) {
-    if (field.post != null) return field.post!;
-    if (form.post != null) return form.post!;
-    if (field.value == null) return false;
-    if (field is List && (field as List).isEmpty) return false;
-    return true;
-  }
-
-  static Future<String?> buildPostingBody(IForm form, List<IFormField>? fields,
-      {String rootname = "FORM"}) async {
-    try {
-      // build xml document
-      XmlDocument document = XmlDocument();
-      XmlElement root =
-          XmlElement(XmlName(isNullOrEmpty(rootname) ? "FORM" : rootname));
-      document.children.add(root);
-
-      if (fields != null) {
-        for (var field in fields) {
-          // postable?
-          if (isPostable(form, field) == true) {
-            if (field.values != null) {
-              field.values?.forEach((value) {
-                XmlElement node;
-                String name = field.field ?? field.id ?? "";
-                try {
-                  // valid element name?
-                  if (!isNumeric(name.substring(0, 1))) {
-                    node = XmlElement(XmlName(name));
-                  } else {
-                    node = XmlElement(XmlName("FIELD"));
-                    node.attributes.add(XmlAttribute(XmlName('id'), name));
-                  }
-                } catch (e) {
-                  node = XmlElement(XmlName("FIELD"));
-                  node.attributes.add(XmlAttribute(XmlName('id'), name));
-                }
-
-                // add field type
-                if (!isNullOrEmpty(field.elementName)) {
-                  node.attributes
-                      .add(XmlAttribute(XmlName('type'), field.elementName));
-                }
-
-                /// GeoCode for each [iFormField] which is set on answer
-                if (field.geocode != null) field.geocode!.serialize(node);
-
-                // add meta data
-                if (!isNullOrEmpty(field.metaData)) {
-                  node.attributes
-                      .add(XmlAttribute(XmlName('meta'), field.metaData));
-                }
-
-                // value
-                try {
-                  // Xml Data
-                  if (field is InputModel && field.formatType == "xml") {
-                    var document = XmlDocument.parse(value);
-                    var e = document.rootElement;
-                    document.children.remove(e);
-                    node.children.add(e);
-                  }
-
-                  // Non-XML? Wrap in CDATA
-                  else if (Xml.hasIllegalCharacters(value)) {
-                    node.children.add(XmlCDATA(value));
-                  } else {
-                    node.children.add(XmlText(value));
-                  }
-                } on XmlException catch (e) {
-                  node.children.add(XmlCDATA(e.message));
-                }
-
-                // Add Node
-                root.children.add(node);
-              });
-            } else {
-              // Build Element
-              XmlElement node;
-              String name = field.field ?? field.id ?? "";
-              try {
-                // Valid Element Name
-                if (!isNumeric(name.substring(0, 1))) {
-                  node = XmlElement(XmlName(name));
-                }
-
-                // In-Valid Element Name
-                else {
-                  node = XmlElement(XmlName("FIELD"));
-                  node.attributes.add(XmlAttribute(XmlName('id'), name));
-                }
-              } catch (e) {
-                // In-Valid Element Name
-                node = XmlElement(XmlName("FIELD"));
-                node.attributes.add(XmlAttribute(XmlName('id'), name));
-              }
-
-              // Add Field Type
-              if (!isNullOrEmpty(field.elementName)) {
-                node.attributes
-                    .add(XmlAttribute(XmlName('type'), field.elementName));
-              }
-
-              // Add Node
-              root.children.add(node);
-            }
-          }
-        }
-      }
-
-      // Set Body
-      return document.toXmlString(pretty: true);
-    } catch (e) {
-      Log().error(
-          "Error serializing posting document. Error is ${e.toString()}");
-      return null;
-    }
   }
 
   @override

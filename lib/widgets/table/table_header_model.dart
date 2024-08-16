@@ -79,19 +79,6 @@ class TableHeaderModel extends BoxModel {
 
   bool get sortable => _sortable?.get() ?? table?.sortable ?? true;
 
-  // allow resizing
-  BooleanObservable? _resizeable;
-  set resizeable(dynamic v) {
-    if (_resizeable != null) {
-      _resizeable!.set(v);
-    } else if (v != null) {
-      _resizeable = BooleanObservable(Binding.toKey(id, 'resizeable'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  bool get resizeable => _resizeable?.get() ?? table?.resizeable ?? true;
-
   // column uses editable
   bool get maybeEditable => _editable != null;
 
@@ -167,7 +154,7 @@ class TableHeaderModel extends BoxModel {
       _onInsert!.set(v);
     } else if (v != null) {
       _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 
@@ -180,7 +167,7 @@ class TableHeaderModel extends BoxModel {
       _onDelete!.set(v);
     } else if (v != null) {
       _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v,
-          scope: scope, lazyEval: true);
+          scope: scope, lazyEvaluation: true);
     }
   }
 

@@ -1192,7 +1192,7 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
       model = FrameworkModel.fromXml(parent, node);
       break;
 
-    case "PLUGIN":
+    case "WIDGET":
       model = PluginModel.fromXml(parent, node);
       break;
 

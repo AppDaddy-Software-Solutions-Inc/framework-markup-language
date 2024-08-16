@@ -11,21 +11,19 @@ import 'package:fml/helpers/helpers.dart';
 
 class PluginModel extends ViewableModel implements IPlugin {
 
-  String? _package;
   @override
-  String? get packageName => _package;
-
-  String? _class;
-  @override
-  String? get packageClass => _class;
-
-  @override
-  PackageModel? get packageModel {
+  PackageModel? get package {
     if (_package == null) return null;
     var model = scope?.findModel(_package!);
     if (model is PackageModel) return model;
     return null;
   }
+  String? _package;
+
+  // holds the plugin eval string
+  @override
+  String? get plugin => _plugin;
+  String? _plugin;
 
   PluginModel(Model super.parent, super.id);
 
@@ -43,18 +41,16 @@ class PluginModel extends ViewableModel implements IPlugin {
     // deserialize
     super.deserialize(xml);
 
-    // field is a plugin package?
-    _package = Xml.get(node: xml, tag: fromEnum('package'))?.trim();
-    _class   = Xml.get(node: xml, tag: fromEnum('class'))?.trim();
+    // plugin properties
+    _plugin = Xml.get(node: xml, tag: fromEnum('plugin'))?.trim();
+    _package = _plugin?.split(".").first.trim();
   }
 
   @override
+  Widget? build() => package?.build(scope, plugin);
+
+  @override
   Widget getView({Key? key}) {
-
-    // no package defined
-    if (packageModel == null) return const Offstage();
-
-    // custom package view
     var view = PluginView(this);
     return isReactive ? ReactiveView(this, view) : view;
   }

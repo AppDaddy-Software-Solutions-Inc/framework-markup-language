@@ -33,11 +33,8 @@ class PluginViewState extends ViewableWidgetState<PluginView> {
 
   void _loadRuntime() async {
 
-    var packageModel = widget.plugin.packageModel;
-    var packageClass = widget.plugin.packageClass;
-
     // build the inner plugin
-    plugin = await packageModel?.widget(widget.model, packageClass) ?? const Offstage();
+    plugin = widget.plugin.build();
 
     // rebuild the widget
     setState(() {});

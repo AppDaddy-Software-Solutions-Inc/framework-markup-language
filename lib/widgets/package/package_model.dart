@@ -5,10 +5,11 @@ import 'package:dart_eval/stdlib/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_eval/flutter_eval.dart';
+import 'package:fml/eval/eval.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/helpers/uri.dart';
 import 'package:fml/helpers/xml.dart';
-import 'package:fml/observable/binding.dart';
+import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
@@ -218,17 +219,8 @@ class PackageModel extends Model {
     return view;
   }
 
-  dynamic call(String method, List<dynamic> arguments)  => _call(method, arguments);
+  dynamic call(String method, List<dynamic> arguments) {
 
-  Future<dynamic> callAsync(String method, List<dynamic> arguments)  async {
-
-    // wait for evc code to load
-    await initialized.future;
-
-    return _call(method, arguments);
-  }
-
-  dynamic _call(String method, List<dynamic> arguments)  {
     try {
 
       // format the package name
@@ -244,7 +236,7 @@ class PackageModel extends Model {
       }
 
       // execute the dart code
-      var result = _runtime?.executeLib(package, method, args);
+      var result = _runtime?.executeLib(package, "$method.", args);
 
       // return the result
       return _unwrapped(result);
@@ -256,37 +248,28 @@ class PackageModel extends Model {
     return null;
   }
 
-  Future<dynamic> widget(Model wrapper, String? className, {List<dynamic>? arguments})  async {
+  Widget? build(Scope? scope, String? plugin) {
 
-    // wait for evc code to load
-    await initialized.future;
+    Map<String?, dynamic> variables = {};
 
-    Widget? view;
+    // get bindings?
+    var bindings = Binding.getBindings(plugin, scope: scope) ?? [];
+    for (var binding in bindings) {
 
-    try {
-
-      // error during build?
-      if (error != null) return _errorBuilder(error,trace);
-
-      // standard interface to all widgets is the id of the model and
-      // the getter and setter functions callbacks
-      var args =[$String(wrapper.id), $Closure(_get), $Closure(_set)];
-
-      // format the package name
-      var package = _name ?? "";
-      if (!package.toLowerCase().trim().startsWith("package:")) {
-        package = "package:$package";
-      }
-
-      // format class name
-      className ??= ".";
-
-      // format the
-      view = _runtime?.executeLib(package, className, args);
+      // get binding source
+      var observable = scope?.getObservable(binding);
+      var value = binding.translate(observable?.get() ?? "");
+      variables[binding.signature] = value;
     }
-    catch(error, trace) {
-      view =_errorBuilder(error,trace);
-    }
+
+    // this is necessary for plugin functions
+    variables["{scope)"]  = scope;
+    variables["{id}"] = id;
+    variables["{getter}"] = get;
+    variables["{setter}"] = set;
+
+    var view = Eval.evaluate(plugin, variables: variables);
+    if (view is! Widget) view = null;
 
     return view;
   }
@@ -298,7 +281,7 @@ class PackageModel extends Model {
       List<dynamic> arguments) async {
 
     var method = "${caller.split(".").last.trim()}.${propertyOrFunction.trim()}";
-    var result = await callAsync(method, arguments);
+    var result = await call(method, arguments);
     return result;
   }
 }

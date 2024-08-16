@@ -20,22 +20,19 @@ class FieldModel extends FormFieldModel implements IFormField, IPlugin {
   bool readonly = false;
   int? precision;
 
-  // name of the package constructor
-  String? _package;
   @override
-  String? get packageName => _package;
-
-  String? _class;
-  @override
-  String? get packageClass => _class;
-
-  @override
-  PackageModel? get packageModel {
+  PackageModel? get package {
     if (_package == null) return null;
     var model = scope?.findModel(_package!);
     if (model is PackageModel) return model;
     return null;
   }
+  String? _package;
+
+  // holds the plugin eval string
+  @override
+  String? get plugin => _plugin;
+  String? _plugin;
 
   dynamic _value;
 
@@ -130,16 +127,16 @@ class FieldModel extends FormFieldModel implements IFormField, IPlugin {
     readonly = toBool(Xml.get(node: xml, tag: 'readonly')?.trim().toLowerCase()) ?? false;
     precision = toInt(Xml.get(node: xml, tag: 'precision'));
 
-    // field is a plugin package?
-    _package = Xml.get(node: xml, tag: fromEnum('package'))?.trim();
-    _class   = Xml.get(node: xml, tag: fromEnum('class'))?.trim();
+    // plugin properties
+    _plugin = Xml.get(node: xml, tag: fromEnum('plugin'))?.trim();
+    _package = _plugin?.split(".").first.trim();
   }
 
   @override
   void onPropertyChange(Observable observable) {
 
     // intercept value setter on backing plugin
-    if (observable == _value && packageModel != null) {
+    if (observable == _value && package != null) {
       disableNotifications();
       answer(value);
       enableNotifications();
@@ -149,10 +146,13 @@ class FieldModel extends FormFieldModel implements IFormField, IPlugin {
   }
 
   @override
+  Widget? build() => package?.build(scope, plugin);
+
+  @override
   Widget getView({Key? key}) {
 
     // no package defined
-    if (packageModel == null) return const Offstage();
+    if (package == null) return const Offstage();
 
     // custom package view
     var view = PluginView(this);

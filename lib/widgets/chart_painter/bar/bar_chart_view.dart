@@ -69,7 +69,7 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
     // replace the value with the x value of the index[value] in the list of data points.
     return SideTitleWidget(
       axisSide: meta.axisSide,
-      space: 8,
+      space: (widget.model.yaxis.padding ?? 16) /2,
       fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
       angle: widget.model.xaxis.labelrotation,
       child: Text(text, style: style),
@@ -82,7 +82,7 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
         color: Theme.of(context).colorScheme.outline);
     return SideTitleWidget(
       axisSide: meta.axisSide,
-      space: 8,
+      space: (widget.model.yaxis.padding ?? 16) /2,
       angle: widget.model.yaxis.labelrotation,
       fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
       child: Text(value.toString(), style: style, textAlign: TextAlign.center),

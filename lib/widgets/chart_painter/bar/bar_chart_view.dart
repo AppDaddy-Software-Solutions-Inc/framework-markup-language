@@ -244,7 +244,7 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
 
       // show tooltip in post frame callback
       WidgetsBinding.instance.addPostFrameCallback((_) => showTooltip(
-          widget.model.getTooltips(spots), point?.dx ?? 0, point?.dy ?? 0));
+          widget.model.getTooltips(spots), point!.dx + ((widget.model.marginLeft?.toInt()) ?? 0) ?? 0, point!.dy +  ((widget.model.marginTop?.toInt()) ?? 0)  ?? 0));
 
       // ensure screen updates
       WidgetsBinding.instance.ensureVisualUpdate();

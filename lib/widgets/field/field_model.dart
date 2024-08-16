@@ -1,11 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/widgets/field/field_view.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
-import 'package:fml/widgets/package/package_mixin.dart';
 import 'package:fml/widgets/package/package_model.dart';
+import 'package:fml/widgets/plugin/plugin_interface.dart';
+import 'package:fml/widgets/plugin/plugin_view.dart';
 import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
@@ -13,7 +13,7 @@ import 'package:fml/helpers/helpers.dart';
 
 enum ValueTypes { string, int, integer, double, bool, boolean, blob, list }
 
-class FieldModel extends FormFieldModel with PackageMixin implements IFormField {
+class FieldModel extends FormFieldModel implements IFormField, IPlugin {
 
   ValueTypes type = ValueTypes.string;
 
@@ -22,8 +22,15 @@ class FieldModel extends FormFieldModel with PackageMixin implements IFormField 
 
   // name of the package constructor
   String? _package;
+  @override
+  String? get packageName => _package;
+
   String? _class;
-  PackageModel? get _plugin {
+  @override
+  String? get packageClass => _class;
+
+  @override
+  PackageModel? get packageModel {
     if (_package == null) return null;
     var model = scope?.findModel(_package!);
     if (model is PackageModel) return model;
@@ -123,71 +130,32 @@ class FieldModel extends FormFieldModel with PackageMixin implements IFormField 
     readonly = toBool(Xml.get(node: xml, tag: 'readonly')?.trim().toLowerCase()) ?? false;
     precision = toInt(Xml.get(node: xml, tag: 'precision'));
 
-    // package is <package>.<class> where <package> is the id of the package model <class>
-    // is the class name to instantiate the widget
-    var package = Xml.get(node: xml, tag: fromEnum('package'))?.trim().split(".");
-    if (package != null && package.isNotEmpty) {
-      _package = package.first.trim();
-      if (package.length > 1) {
-        _class = package[1].trim();
-      }
-    }
+    // field is a plugin package?
+    _package = Xml.get(node: xml, tag: fromEnum('package'))?.trim();
+    _class   = Xml.get(node: xml, tag: fromEnum('class'))?.trim();
   }
 
   @override
-  void set(String key, dynamic value)
-  {
-    // value?
-    var binding = Binding.fromString(key);
-    if (binding != null) {
-      var o = scope?.getObservable(binding);
-      if (o == _value) {
-        disableNotifications();
-        answer(value);
-        enableNotifications();
-        return;
-      }
+  void onPropertyChange(Observable observable) {
+
+    // intercept value setter on backing plugin
+    if (observable == _value && packageModel != null) {
+      disableNotifications();
+      answer(value);
+      enableNotifications();
+      return;
     }
-
-    // other property
-    super.set(key, value);
-  }
-
-  @override
-  dynamic get(String key)
-  {
-    // value?
-    var binding = Binding.fromString(key);
-    if (binding != null) {
-      var o = scope?.getObservable(binding);
-      if (o == _value) {
-        return value ?? initialValue ?? "";
-      }
-    }
-
-    // other property
-    return super.get(key);
-  }
-
-  Future<Widget> plugin()  async {
-
-    // no package defined
-    if (_plugin == null) return const Offstage();
-
-    // build the view
-    var view = await _plugin?.view(_class) ?? const Offstage();
-
-    return view;
+    super.onPropertyChange(observable);
   }
 
   @override
   Widget getView({Key? key}) {
 
     // no package defined
-    if (_plugin == null) return const Offstage();
+    if (packageModel == null) return const Offstage();
 
     // custom package view
-    var view = FieldView(this);
+    var view = PluginView(this);
     return isReactive ? ReactiveView(this, view) : view;
   }
 }

@@ -137,14 +137,15 @@ class EventHandler extends Eval {
     return variables;
   }
 
-  Future<dynamic> executeEvent(String event,
-      {Map<String?, dynamic>? variables}) async {
+  Future<dynamic> executeEvent(String event, {Map<String?, dynamic>? variables}) async {
+
     // initialize event handlers
     initialize();
 
-    dynamic ok = await Eval.evaluate(event,
+    dynamic result = await Eval.evaluate(event,
         variables: variables, altFunctions: functions);
-    return ok;
+
+    return result;
   }
 
   initialize() {
@@ -841,7 +842,7 @@ class EventHandler extends Eval {
 
     // execute the function
     if (model != null) {
-      //execute expects the ID to contain the property to be set appended with dot notation.
+      // execute expects the ID to contain the property to be set appended with dot notation.
       return await model.execute(rawID, function, arguments);
     }
 

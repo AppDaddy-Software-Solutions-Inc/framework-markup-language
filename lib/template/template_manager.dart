@@ -7,6 +7,7 @@ import 'package:fml/observable/binding.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/template/template.dart';
+import 'package:fml/widgets/package/package_model.dart';
 import 'package:validators/validators.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/datasources/http/http.dart';
@@ -307,6 +308,9 @@ class TemplateManager {
     // process includes
     await _processIncludes(result.document!, parameters, refresh);
 
+    // load packages
+    await _loadPackages(result.document!, refresh);
+
     // write template to memory
     await _toMemory(url, result.document);
 
@@ -403,6 +407,7 @@ class TemplateManager {
     }
   }
 
+  /// finds all <INCLUDE ../> nodes and injects them into the template
   Future<bool> _processIncludes(XmlDocument document,
       Map<String, String?>? parameters, bool refresh) async {
     Iterable<XmlElement> includes =
@@ -445,6 +450,15 @@ class TemplateManager {
 
       // remove the node from the document
       element.parent!.children.remove(element);
+    }
+    return true;
+  }
+
+  /// finds all <PACKAGE ../> nodes and loads them in advance of loading the template
+  Future<bool> _loadPackages(XmlDocument document, bool refresh) async {
+    Iterable<XmlElement> packages = document.findAllElements("PACKAGE", namespace: "*");
+    for (XmlElement element in packages) {
+      await PackageModel.load(element, refresh);
     }
     return true;
   }

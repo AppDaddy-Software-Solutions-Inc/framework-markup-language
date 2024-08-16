@@ -304,6 +304,8 @@ class Observable {
 
     // perform the evaluation
     if (isEval) {
+      variables ??= <String?, dynamic>{};
+      variables["scope"] = scope;
       value = doEvaluation(signature, variables: variables);
     }
 

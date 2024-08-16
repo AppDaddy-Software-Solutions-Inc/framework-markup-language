@@ -79,6 +79,7 @@ import 'package:fml/widgets/package/package_model.dart';
 import 'package:fml/widgets/padding/padding_model.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
+import 'package:fml/widgets/plugin/plugin_model.dart';
 import 'package:fml/widgets/popover/item/popover_item_model.dart';
 import 'package:fml/widgets/popover/popover_model.dart';
 import 'package:fml/widgets/positioned/positioned_model.dart';
@@ -1192,7 +1193,7 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
       break;
 
     case "PLUGIN":
-      model = FieldModel.fromXml(parent, node);
+      model = PluginModel.fromXml(parent, node);
       break;
 
     case "XAXIS":

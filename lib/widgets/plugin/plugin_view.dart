@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/field/field_model.dart';
+import 'package:fml/widgets/plugin/plugin_interface.dart';
+import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 
-class FieldView extends StatefulWidget implements ViewableWidgetView {
+class PluginView extends StatefulWidget implements ViewableWidgetView {
 
   @override
-  final FieldModel model;
+  final ViewableModel model;
+  IPlugin get plugin => model as IPlugin;
 
-  FieldView(this.model) : super(key: ObjectKey(model));
+  PluginView(this.model) : super(key: ObjectKey(model)) {
+    assert(model is IPlugin);
+  }
 
   @override
-  State<FieldView> createState() => PluginState();
+  State<PluginView> createState() => PluginViewState();
 }
 
-class PluginState extends ViewableWidgetState<FieldView> {
+class PluginViewState extends ViewableWidgetState<PluginView> {
 
   Widget? plugin;
 
@@ -26,10 +30,14 @@ class PluginState extends ViewableWidgetState<FieldView> {
     _loadRuntime();
   }
 
+
   void _loadRuntime() async {
 
-    // wait for evc code to load
-    plugin = await widget.model.plugin();
+    var packageModel = widget.plugin.packageModel;
+    var packageClass = widget.plugin.packageClass;
+
+    // build the inner plugin
+    plugin = await packageModel?.widget(widget.model, packageClass) ?? const Offstage();
 
     // rebuild the widget
     setState(() {});

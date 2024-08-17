@@ -235,7 +235,8 @@ class PackageModel extends Model {
   Widget _errorBuilder(dynamic exception, StackTrace? stackTrace) {
 
     var msg = "Oops something went wrong loading plugin";
-    msg = "$msg \n\n $exception \n\n $stackTrace";
+    if (exception != null) msg = "$msg \n\n $exception";
+    if (stackTrace != null) msg = "$msg \n\n $stackTrace";
     var view = Tooltip(message: msg, child: const Icon(Icons.error_outline, color: Colors.red, size: 24));
     return view;
   }
@@ -295,7 +296,10 @@ class PackageModel extends Model {
     var view = Eval.evaluate(plugin, variables: variables);
 
     // error?
-    if (view is! Widget) view = null;
+    if (view is! Widget) {
+      var error = this.error ?? "Failed to create widget from plugin='$plugin'";
+      view = _errorBuilder(error, trace);
+    }
 
     return view;
   }

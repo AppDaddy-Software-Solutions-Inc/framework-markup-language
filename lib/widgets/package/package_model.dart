@@ -5,6 +5,7 @@ import 'package:dart_eval/stdlib/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_eval/flutter_eval.dart';
+import 'package:fml/data/data.dart';
 import 'package:fml/eval/eval.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/helpers/uri.dart';
@@ -12,6 +13,7 @@ import 'package:fml/helpers/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/model.dart';
+import 'package:universal_html/js.dart';
 import 'package:xml/xml.dart';
 import 'package:http/http.dart' as http;
 
@@ -159,11 +161,34 @@ class PackageModel extends Model {
   }
 
   dynamic _wrap(dynamic value) {
+
+    // null?
+    if (value == null) return const $null();
+
+    // String?
     if (value is String) return $String(value);
+
+    // Boolean?
     if (value is bool) return $bool(value);
+
+    // Integer?
     if (value is int) return $int(value);
+
+    // Double?
     if (value is double) return $double(value);
+
+    // Color?
     if (value is Color) return $String(toStr(value) ?? "");
+
+    // Function?
+    if (value is Function) {
+
+      // Callback functions must be of type "EvalCallableFunc"
+      // EvalCallableFunc => $Value? Function(Runtime runtime, $Value? target, List<$Value?> args)
+     return (value is EvalCallableFunc) ? $Closure(value) : const $null();
+    }
+
+    // otherwise return the value
     return value;
   }
 
@@ -174,31 +199,35 @@ class PackageModel extends Model {
     return value;
   }
 
-  $Value? _getter($Value k) {
+  // {setter} call back function
+  // must be EvalCallableFunc => $Value? Function(Runtime runtime, $Value? target, List<$Value?> args)
+  $Value? _getCallback(Runtime runtime, $Value? target, List<$Value?> args) {
 
-    dynamic value;
+    String? key = toStr(_unwrap(args.isNotEmpty ? args.first : null));
+    dynamic val;
 
-    var key = _unwrap(k);
     if (key != null) {
       var binding = Binding.fromString(key);
       if (binding != null) {
         var observable = scope?.getObservable(binding);
-        value = observable?.get();
+        val = observable?.get();
       }
     }
-    return _wrap(value);
+    return _wrap(val);
   }
 
-  void _setter(Runtime runtime, $Value? target, List<$Value?> args) {
+  // {getter} call back function
+  // must be EvalCallableFunc => $Value? Function(Runtime runtime, $Value? target, List<$Value?> args)
+  $Value? _setCallback(Runtime runtime, $Value? target, List<$Value?> args) {
 
-    var key   = args.isNotEmpty ? toStr(args.first) : null;
-    var value = args.isNotEmpty  && args.length > 1 ? args[1]!.$value : null;
+    String? key = toStr(_unwrap(args.isNotEmpty ? args.first : null));
+    dynamic val = _unwrap(args.isNotEmpty && args.length > 1 ? args[1] : null);
 
     if (key != null) {
       var binding = Binding.fromString(key);
       if (binding != null) {
         var observable = scope?.getObservable(binding);
-        observable?.set(value);
+        observable?.set(val);
       }
     }
   }
@@ -228,7 +257,11 @@ class PackageModel extends Model {
       }
 
       // execute the dart code
-      var result = _runtime?.executeLib(package, "$method.", args);
+      if (method.split(".").length == 1) {
+        method = "$method.";
+      }
+
+      var result = _runtime?.executeLib(package, method, args);
 
       // return the result
       return _unwrap(result);
@@ -240,7 +273,7 @@ class PackageModel extends Model {
     return null;
   }
 
-  Widget? build(Scope? scope, String? plugin) {
+  Widget? build(String? id, Scope? scope, String? plugin) {
 
     Map<String?, dynamic> variables = {};
 
@@ -255,12 +288,13 @@ class PackageModel extends Model {
     }
 
     // this is necessary for plugin functions
-    variables["{scope}"] = scope;
-    variables["{id}"] = id;
-    variables["{getter}"] = _getter;
-    variables["{setter}"] = _setter;
-
+    variables["{\$id}"] = id;
+    variables["{\$scope}"] = scope;
+    variables["{\$get}"] = _getCallback;
+    variables["{\$set}"] = _setCallback;
     var view = Eval.evaluate(plugin, variables: variables);
+
+    // error?
     if (view is! Widget) view = null;
 
     return view;

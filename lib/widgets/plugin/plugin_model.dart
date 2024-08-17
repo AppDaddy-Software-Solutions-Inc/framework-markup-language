@@ -47,7 +47,7 @@ class PluginModel extends ViewableModel implements IPlugin {
   }
 
   @override
-  Widget? build() => package?.build(scope, plugin);
+  Widget? build() => package?.build(id, scope, plugin);
 
   @override
   Widget getView({Key? key}) {

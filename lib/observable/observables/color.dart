@@ -20,6 +20,7 @@ class ColorObservable extends Observable {
     try {
       if (value == null) return null;
       if (value is Color) return value;
+      if (value is MaterialColor) return value;
       if (value is String) return toColor(value);
       return Exception();
     } catch (e) {

@@ -197,6 +197,8 @@ class Model implements IDataSourceListener {
     "MQTT",
     "NFC",
     "OCR",
+    "PACKAGE",
+    "PKG",
     "PATCH",
     "POST",
     "PUT",

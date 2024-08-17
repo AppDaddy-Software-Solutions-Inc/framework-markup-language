@@ -456,7 +456,8 @@ class TemplateManager {
 
   /// finds all <PACKAGE ../> nodes and loads them in advance of loading the template
   Future<bool> _loadPackages(XmlDocument document, bool refresh) async {
-    Iterable<XmlElement> packages = document.findAllElements("PACKAGE", namespace: "*");
+    var packages = document.findAllElements("PACKAGE", namespace: "*").toList();
+    packages.addAll(document.findAllElements("PKG", namespace: "*").toList());
     for (XmlElement element in packages) {
       await PackageModel.load(element, refresh);
     }

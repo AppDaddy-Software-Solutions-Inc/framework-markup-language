@@ -85,9 +85,12 @@ class PackageModel extends Model {
 
     try {
 
+      // cache key
+      dynamic cacheKey = _url?.hashCode ?? _dart?.hashCode;
+
       // cached?
-      if (!isNullOrEmpty(_url) && System.plugins.containsKey(_url!)) {
-        _runtime = System.plugins[_url!];
+      if (System.plugins.containsKey(cacheKey)) {
+        _runtime = System.plugins[cacheKey];
       }
 
       // force reload?
@@ -122,20 +125,20 @@ class PackageModel extends Model {
             _runtime!.addPlugin(flutterEvalPlugin);
 
             // cache the plugin
-            System.plugins[_url!] = _runtime!;
+            System.plugins[cacheKey] = _runtime!;
           }
         }
 
         // dart code
         else if (!isNullOrEmpty(_dart)) {
 
-          //var parts = _package!.replaceFirst("package:", "").split("/");
-          //var name = parts.isNotEmpty ? parts.first : "";
-          //var file = parts.length > 1 ? parts.last  : "";
+          var parts = _name?.replaceFirst("package:", "").split("/");
+          var name = (parts?.isNotEmpty ?? true) ? parts!.first : "";
+          var file = (parts?.isNotEmpty ?? true) ? parts!.length > 1 ? parts.last : ""  : "";
 
           final compiler = Compiler();
           compiler.addPlugin(flutterEvalPlugin);
-          final program = compiler.compile({'name' : { 'file' : 'package' }});
+          final program = compiler.compile({name : { file : _dart! }});
 
           var bytes = program.write();
 
@@ -144,6 +147,9 @@ class PackageModel extends Model {
 
           // load eval plugin
           _runtime!.addPlugin(flutterEvalPlugin);
+
+          // cache the plugin
+          System.plugins[cacheKey] = _runtime!;
         }
       }
     }

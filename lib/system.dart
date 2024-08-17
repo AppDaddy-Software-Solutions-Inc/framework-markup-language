@@ -73,7 +73,7 @@ class System extends Model implements IEventManager {
   static ThemeModel get theme => _theme;
 
   // holds compiled package plugins
-  static Map<String, Runtime> plugins = {};
+  static Map<dynamic, Runtime> plugins = {};
 
   // post master service
   final PostMaster postmaster = PostMaster();

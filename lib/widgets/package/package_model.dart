@@ -54,7 +54,7 @@ class PackageModel extends Model {
     _dart = Xml.get(node: xml, tag: 'dart');
 
     // load the plugin
-    _loadPlugin();
+    _loadPlugin(false);
   }
 
   // this function is called by thge template manger for loading
@@ -67,17 +67,17 @@ class PackageModel extends Model {
     _url  = Xml.get(node: xml, tag: 'url');
     _dart = Xml.get(node: xml, tag: 'dart');
 
-    // load the plugin
+    // load the plugin in the background
     if (_defer) {
-      _loadPlugin();
+      _loadPlugin(refresh);
       return true;
     }
-    else {
-      return await _loadPlugin();
-    }
+
+    // wait for the plugin to load
+    return await _loadPlugin(refresh);
   }
 
-  Future<bool> _loadPlugin() async {
+  Future<bool> _loadPlugin(bool refresh) async {
 
     bool loaded = true;
 
@@ -86,6 +86,11 @@ class PackageModel extends Model {
       // cached?
       if (!isNullOrEmpty(_url) && System.plugins.containsKey(_url!)) {
         _runtime = System.plugins[_url!];
+      }
+
+      // force reload?
+      if (refresh) {
+        _runtime = null;
       }
 
       // load the plugin?
@@ -153,13 +158,12 @@ class PackageModel extends Model {
     return loaded;
   }
 
-  $Value _wrap(dynamic value) {
+  dynamic _wrap(dynamic value) {
     if (value is String) return $String(value);
     if (value is bool) return $bool(value);
     if (value is int) return $int(value);
     if (value is double) return $double(value);
     if (value is Color) return $String(toStr(value) ?? "");
-    if (value is! $Value) return const $null();
     return value;
   }
 
@@ -170,44 +174,25 @@ class PackageModel extends Model {
     return value;
   }
 
-  $Value? _get(Runtime runtime, $Value? target, List<$Value?> args) {
-
-    var key = args.isNotEmpty ? toStr(args.first) : null;
+  $Value? _getter(String? key) {
     dynamic value;
-
     if (key != null) {
-      value = get(key);
+      var binding = Binding.fromString(key);
+      if (binding != null) {
+        var observable = scope?.getObservable(binding);
+        value = observable?.get();
+      }
     }
     return _wrap(value);
   }
 
-  dynamic get(String key)
-  {
-    var b = Binding.fromString(key);
-    if (b != null) {
-      var o = scope?.getObservable(b);
-      return o?.get();
-    }
-    return null;
-  }
-
-  $Value? _set(Runtime runtime, $Value? target, List<$Value?> args) {
-
-    var key   = args.isNotEmpty ? toStr(args.first) : null;
-    var value = args.isNotEmpty  && args.length > 1 ? args[1]!.$value : null;
-
+  void _setter(String? key, dynamic value) {
     if (key != null) {
-      set(key, value);
-    }
-    return null;
-  }
-
-  void set(String key, dynamic value)
-  {
-    var b = Binding.fromString(key);
-    if (b != null) {
-      var o = scope?.getObservable(b);
-      o?.set(value);
+      var binding = Binding.fromString(key);
+      if (binding != null) {
+        var observable = scope?.getObservable(binding);
+        observable?.set(value);
+      }
     }
   }
 
@@ -265,8 +250,8 @@ class PackageModel extends Model {
     // this is necessary for plugin functions
     variables["{scope}"] = scope;
     variables["{id}"] = id;
-    variables["{getter}"] = _get;
-    variables["{setter}"] = _set;
+    variables["{getter}"] = _getter;
+    variables["{setter}"] = _setter;
 
     var view = Eval.evaluate(plugin, variables: variables);
     if (view is! Widget) view = null;

@@ -174,8 +174,11 @@ class PackageModel extends Model {
     return value;
   }
 
-  $Value? _getter(String? key) {
+  $Value? _getter($Value k) {
+
     dynamic value;
+
+    var key = _unwrap(k);
     if (key != null) {
       var binding = Binding.fromString(key);
       if (binding != null) {
@@ -186,7 +189,11 @@ class PackageModel extends Model {
     return _wrap(value);
   }
 
-  void _setter(String? key, dynamic value) {
+  void _setter(Runtime runtime, $Value? target, List<$Value?> args) {
+
+    var key   = args.isNotEmpty ? toStr(args.first) : null;
+    var value = args.isNotEmpty  && args.length > 1 ? args[1]!.$value : null;
+
     if (key != null) {
       var binding = Binding.fromString(key);
       if (binding != null) {

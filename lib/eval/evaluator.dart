@@ -97,7 +97,7 @@ class ExpressionEvaluator {
         ? (expression.callee as MemberExpression)
         : null;
 
-    // member expression execute
+    // member expression execute or plugin call
     if (exp != null && isVariable(exp.object) && expression.arguments is List) {
 
       // evaluate id. id may be a bindable
@@ -131,8 +131,7 @@ class ExpressionEvaluator {
     }
     else {
       var callee = eval(expression.callee, context);
-      var arguments =
-          expression.arguments!.map((e) => eval(e, context)).toList();
+      var arguments = expression.arguments!.map((e) => eval(e, context)).toList();
      Function.apply(callee, arguments);
     }
   }

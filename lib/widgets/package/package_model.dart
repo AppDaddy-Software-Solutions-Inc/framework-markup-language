@@ -4,7 +4,7 @@ import 'package:dart_eval/dart_eval_bridge.dart';
 import 'package:dart_eval/stdlib/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_eval/flutter_eval.dart';
+import 'package:flutter_eval/flutter_eval.dart' deferred as eval;
 import 'package:fml/eval/eval.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/helpers/uri.dart';
@@ -102,6 +102,9 @@ class PackageModel extends Model {
         // is url?
         if (!isNullOrEmpty(_url)) {
 
+          // deferred library load
+          await eval.loadLibrary();
+
           // parse the url
           var uri = URI.parse(_url);
 
@@ -120,7 +123,7 @@ class PackageModel extends Model {
             _runtime = Runtime(ByteData.sublistView(bytes));
 
             // load eval plugin
-            _runtime!.addPlugin(flutterEvalPlugin);
+            _runtime!.addPlugin(eval.flutterEvalPlugin);
 
             // cache the plugin
             System.plugins[cacheKey] = _runtime!;
@@ -130,12 +133,15 @@ class PackageModel extends Model {
         // dart code
         else if (!isNullOrEmpty(_dart)) {
 
+          // deferred library load
+          await eval.loadLibrary();
+
           var parts = _name?.replaceFirst("package:", "").split("/");
           var name = (parts?.isNotEmpty ?? true) ? parts!.first : "";
           var file = (parts?.isNotEmpty ?? true) ? parts!.length > 1 ? parts.last : ""  : "";
 
           final compiler = Compiler();
-          compiler.addPlugin(flutterEvalPlugin);
+          compiler.addPlugin(eval.flutterEvalPlugin);
           final program = compiler.compile({name : { file : _dart! }});
 
           var bytes = program.write();
@@ -144,7 +150,7 @@ class PackageModel extends Model {
           _runtime = Runtime(ByteData.sublistView(bytes));
 
           // load eval plugin
-          _runtime!.addPlugin(flutterEvalPlugin);
+          _runtime!.addPlugin(eval.flutterEvalPlugin);
 
           // cache the plugin
           System.plugins[cacheKey] = _runtime!;

@@ -5,7 +5,6 @@ import 'package:dart_eval/stdlib/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_eval/flutter_eval.dart';
-import 'package:fml/data/data.dart';
 import 'package:fml/eval/eval.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/helpers/uri.dart';
@@ -13,7 +12,6 @@ import 'package:fml/helpers/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/model.dart';
-import 'package:universal_html/js.dart';
 import 'package:xml/xml.dart';
 import 'package:http/http.dart' as http;
 
@@ -236,6 +234,7 @@ class PackageModel extends Model {
         observable?.set(val);
       }
     }
+    return const $null();
   }
 
   Widget _errorBuilder(dynamic exception, StackTrace? stackTrace) {

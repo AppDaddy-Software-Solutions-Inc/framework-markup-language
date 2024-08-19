@@ -2,6 +2,7 @@
 import 'dart:core';
 import 'package:changeicon/changeicon.dart';
 import 'package:collection/collection.dart';
+import 'package:dart_eval/dart_eval_bridge.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/connection/connection.dart';
@@ -70,6 +71,9 @@ class System extends Model implements IEventManager {
   // current theme
   static late ThemeModel _theme;
   static ThemeModel get theme => _theme;
+
+  // holds compiled package plugins
+  static Map<dynamic, Runtime> plugins = {};
 
   // post master service
   final PostMaster postmaster = PostMaster();

@@ -171,5 +171,8 @@ class VariableModel extends Model {
   @override
   void onPropertyChange(Observable observable) {
     onChange();
+    if (observable == _value) {
+      notifyListeners('value', value);
+    }
   }
 }

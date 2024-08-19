@@ -190,7 +190,9 @@ class FormFieldModel extends ViewableModel {
       dynamic post,
       dynamic mandatory,
       dynamic onchange,
-      dynamic onfocuslost}) {
+      dynamic onfocuslost,
+      super.scope}) {
+
     if (editable != null) this.editable = editable;
     if (enabled != null) this.enabled = enabled;
     if (post != null) this.post = post;

@@ -52,6 +52,7 @@ class EventHandler extends Eval {
   EventHandler(this.model);
 
   Future<bool> execute(Observable? observable) async {
+
     bool ok = true;
     if (observable == null) return ok;
 
@@ -59,6 +60,7 @@ class EventHandler extends Eval {
     String? expression = (observable.isEval)
         ? observable.value
         : (observable.signature ?? observable.value);
+
     if (isNullOrEmpty(expression)) return ok;
 
     // replace 'this' pointer with the parent model id
@@ -69,12 +71,16 @@ class EventHandler extends Eval {
     // get variables from observable
     Map<String, dynamic> variables = observable.getVariables();
 
+    // this is necessary for plugin functions
+    variables["scope"] = model.scope;
+
     // execute the expression
     return executeExpression(expression, variables);
   }
 
   Future<bool> executeExpression(
       String? expression, Map<String, dynamic> variables) async {
+
     if (isNullOrEmpty(expression)) return true;
 
     bool ok = true;
@@ -137,14 +143,15 @@ class EventHandler extends Eval {
     return variables;
   }
 
-  Future<dynamic> executeEvent(String event,
-      {Map<String?, dynamic>? variables}) async {
+  Future<dynamic> executeEvent(String event, {Map<String?, dynamic>? variables}) async {
+
     // initialize event handlers
     initialize();
 
-    dynamic ok = await Eval.evaluate(event,
+    dynamic result = await Eval.evaluate(event,
         variables: variables, altFunctions: functions);
-    return ok;
+
+    return result;
   }
 
   initialize() {
@@ -818,9 +825,10 @@ class EventHandler extends Eval {
 
   /// Executes an Object Function - Olajos Match 14, 2020
   /// This is a catch all and is used to manage all of the <id>.func() calls
-  Future<bool?> _handleEventExecute(String id, String function, dynamic arguments) async {
+  Future<dynamic> _handleEventExecute(String id, String function, dynamic arguments) async {
 
     var scope = this.model.scope;
+
     //grab the raw ID before splitting to pass to execute
     var rawID = id;
 
@@ -830,9 +838,9 @@ class EventHandler extends Eval {
       var parts = id.split(".");
       scope = Scope.findNamedScope(id) ?? scope;
       if (scope != this.model.scope) parts.removeAt(0);
-      // ID should not be set to parts. first as the execute relies on the secondary part of the id to choose the attribute to be set
-       id = parts.first;
 
+      // id should not be set to parts. first as the execute relies on the secondary part of the id to choose the attribute to be set
+      id = parts.first;
     }
 
     // get widget model
@@ -840,7 +848,7 @@ class EventHandler extends Eval {
 
     // execute the function
     if (model != null) {
-      //execute expects the ID to contain the property to be set appended with dot notation.
+      // execute expects the ID to contain the property to be set appended with dot notation.
       return await model.execute(rawID, function, arguments);
     }
 

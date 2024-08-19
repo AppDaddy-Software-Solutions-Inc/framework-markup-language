@@ -76,9 +76,11 @@ import 'package:fml/widgets/menu/menu_model.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/option/tag_model.dart';
+import 'package:fml/widgets/package/package_model.dart';
 import 'package:fml/widgets/padding/padding_model.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
+import 'package:fml/widgets/plugin/plugin_model.dart';
 import 'package:fml/widgets/popover/item/popover_item_model.dart';
 import 'package:fml/widgets/popover/popover_model.dart';
 import 'package:fml/widgets/positioned/positioned_model.dart';
@@ -708,6 +710,11 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
       }
       break;
 
+    case "PKG":
+    case "PACKAGE":
+      model = PackageModel.fromXml(parent, node);
+      break;
+
     case "GESTURE":
       model = GestureModel.fromXml(parent, node);
       break;
@@ -1188,6 +1195,10 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
 
     case "WINDOW":
       model = FrameworkModel.fromXml(parent, node);
+      break;
+
+    case "WIDGET":
+      model = PluginModel.fromXml(parent, node);
       break;
 
     case "XAXIS":

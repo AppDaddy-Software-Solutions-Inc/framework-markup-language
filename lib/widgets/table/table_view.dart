@@ -560,14 +560,20 @@ class TableViewState extends ViewableWidgetState<TableView> {
   void onSortedHandler(PlutoGridOnSortedEvent event) async => views.clear();
 
   void rebuild() {
+
     grid = null;
     rows.clear();
     views.clear();
+
     super.onModelChange(widget.model);
   }
 
   // forces the lazy/page loaders to refire
   void refresh() {
+
+    // if the table isn't visible then dont refresh
+    if (!widget.model.visible) return;
+
     // force a page reload
     widget.model.stateManager?.eventManager
         ?.addEvent(PlutoGridSetColumnFilterEvent(filterRows: []));

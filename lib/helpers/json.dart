@@ -36,7 +36,8 @@ class Json {
     try {
       final Xml2Json parser = Xml2Json();
       parser.parse(xml);
-      return parser.toParkerWithAttrs();
+     var newXml = parser.toParkerWithAttrs();
+      return newXml;
     } catch (e) {
       return null;
     }

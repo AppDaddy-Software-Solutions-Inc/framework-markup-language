@@ -29,6 +29,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
   List<BarChartGroupData> barDataPoint = [];
   List<BarChartRodData> rodDataPoint = [];
   List<BarChartRodStackItem> stackDataPoint = [];
+  var previousGroup;
 
   BarChartSeriesModel(
     super.parent,
@@ -48,6 +49,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
     dynamic showarea,
     dynamic showline,
     dynamic showpoints,
+    dynamic width,
   }) {
     data = Data();
     this.x = x;
@@ -63,6 +65,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
     this.showarea = showarea;
     this.showline = showline;
     this.showpoints = showpoints;
+    this.width = width;
   }
 
   static BarChartSeriesModel? fromXml(Model parent, XmlElement xml) {
@@ -98,6 +101,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
     showarea = Xml.get(node: xml, tag: 'showarea');
     showline = Xml.get(node: xml, tag: 'showline');
     showpoints = Xml.get(node: xml, tag: 'showpoints');
+    width = Xml.get(node: xml, tag: 'width');
 
     // Remove datasource listener. The parent chart will take care of this.
     if ((datasource != null) &&
@@ -131,8 +135,9 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
   void plotPoints(dynamic dataList, List uniqueValues) {
     xValues.clear();
     barDataPoint.clear();
-
     var type = this.type?.toLowerCase().trim();
+
+
 
     switch (type) {
       case 'stacked':
@@ -151,6 +156,11 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
         plotFunction = pointFromWaterfallBarData;
         break;
 
+      // this case is specific to how goodyear visualises their waterfall data.
+      case 'gywaterfall':
+        plotFunction = pointFromGYWaterfallBarData;
+        break;
+
       case 'bar':
       default:
         plotFunction = pointFromBarData;
@@ -160,13 +170,16 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
     int len = uniqueValues.length;
     for (var i = 0; i < dataList.length; i++) {
       //set the data of the series for databinding
+
       data = dataList[i];
 
-      if (type == 'bar' || type == 'waterfall' || type == null) {
+      if (type == 'bar' || type == 'waterfall' || type == null || type == "gywaterfall") {
+
         xValues.add(x);
         x = len;
         len += 1;
-      } else {
+      }
+        else {
         x = len;
       }
       plotFunction!();
@@ -180,6 +193,9 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
             BarChartRodDataExtended(this, data,
                 toY: stackDataPoint[0].toY,
                 color: Colors.transparent,
+        width: width,
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),
                 rodStackItems: stackDataPoint)
           ]));
     }
@@ -195,6 +211,8 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
           fromY: toDouble(y0) ?? 0,
           toY: toDouble(y) ?? 0,
           width: width,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),
           color: color ?? toColor('random'))
     ]);
     barDataPoint.add(point);
@@ -210,9 +228,38 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
               : 0,
           toY: toDouble(y) ?? 0,
           width: width,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),
           color: color ?? toColor('random'))
     ]);
     barDataPoint.add(point);
+  }
+
+  void pointFromGYWaterfallBarData() {
+
+    BarChartGroupDataExtended point;
+    double fromY = toDouble(Data.read(data, "y0")) ?? 0;
+    double toY = toDouble(Data.read(data, "y")) ?? 0;
+    Color? color = toColor(Data.read(data, "color"));
+
+      //get the current group color and track the group for single datasets
+        point =
+            BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0, barRods: [
+              BarChartRodDataExtended(this, data,
+                  //borderSide: BorderSide(width: 2, strokeAlign: 1.0,),
+                  backDrawRodData: BackgroundBarChartRodData(
+                      show: true,
+                      fromY: fromY == toY ? fromY + 0.05 : 0 ,
+                      toY:  fromY == toY ? toY - 0.05 : 0 ,
+                      color: color ?? toColor('random')),
+                  fromY: fromY,
+                  toY: toY,
+                  width: width,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),
+                  color: color ?? toColor('random'))
+            ]);
+      barDataPoint.add(point);
   }
 
   void pointFromGroupedBarData() {
@@ -220,7 +267,12 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
     BarChartRodDataExtended point = BarChartRodDataExtended(this, data,
         fromY: toDouble(y0) ?? 0,
         toY: toDouble(y) ?? 0,
-        color: color ?? toColor('random'));
+        color: color ?? toColor('random'),
+      width: width,
+      borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(radius ?? 2), topRight: Radius.circular(radius ?? 2)),);
+
+
     rodDataPoint.add(point);
   }
 
@@ -231,7 +283,12 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
         data,
         toDouble(y0) ?? 0,
         toDouble(y) ?? 0,
+
         color ?? toColor('random') ?? Colors.blue);
     stackDataPoint.add(point);
+  }
+
+  addWaterfallData(dynamic data) {
+    var d = data;
   }
 }

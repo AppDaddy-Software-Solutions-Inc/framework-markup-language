@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
@@ -68,7 +69,7 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
     // replace the value with the x value of the index[value] in the list of data points.
     return SideTitleWidget(
       axisSide: meta.axisSide,
-      space: 8,
+      space: (widget.model.xaxis.padding ?? 16) /2,
       fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
       angle: widget.model.xaxis.labelrotation,
       child: Text(text, style: style),
@@ -81,7 +82,7 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
         color: Theme.of(context).colorScheme.outline);
     return SideTitleWidget(
       axisSide: meta.axisSide,
-      space: 8,
+      space: (widget.model.yaxis.padding ?? 16) /2,
       angle: widget.model.yaxis.labelrotation,
       fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
       child: Text(value.toString(), style: style, textAlign: TextAlign.center),
@@ -97,7 +98,7 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
         barTouchData: BarTouchData(
             touchCallback: onBarTouch,
             touchTooltipData:
-                BarTouchTooltipData(getTooltipItem: widget.model.showtips ? getTooltipItems : null)),
+                BarTouchTooltipData(getTooltipColor: getColor, getTooltipItem: getTooltipItems)),
         titlesData: FlTitlesData(
           topTitles: AxisTitles(
             sideTitles: const SideTitles(showTitles: false),
@@ -191,13 +192,30 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
 
   BarTooltipItem getTooltipItems(BarChartGroupData group, int groupIndex,
       BarChartRodData rod, int rodIndex) {
-
-    return BarTooltipItem("${rod.fromY}, ${rod.toY}", const TextStyle());
+    return BarTooltipItem( widget.model.showtips == true ? "${rod.fromY}, ${rod.toY}" : "", const TextStyle());
   }
 
   void onBarTouch(FlTouchEvent event, BarTouchResponse? response) {
-    bool exit = response?.spot == null;
+
+    bool exit = (response?.spot?.touchedBarGroup.barRods.isEmpty ?? true) || event is FlPointerExitEvent;
     bool enter = !exit;
+
+    //check if the response is a tap event
+    if (event is FlTapUpEvent) {
+      if (response != null && response.spot != null) {
+        //find the series that corresponds with the response that has been clicked
+          var mySpot = response.spot!.touchedRodData;
+          //check that the series is an extended series interface
+          if (mySpot is IExtendedSeriesInterface) {
+            // get the height of the render
+            //set the selected on the chart model to the series spot data that was clicked
+            widget.model.selected = (mySpot as IExtendedSeriesInterface).data;
+            (mySpot as IExtendedSeriesInterface).series.data = (mySpot as IExtendedSeriesInterface).data;
+            //execute the onclick method of the series
+            (mySpot as IExtendedSeriesInterface).series.onClick(context);
+        }
+      }
+    }
 
     if (enter) {
       List<IExtendedSeriesInterface> spots = [];
@@ -226,7 +244,7 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
 
       // show tooltip in post frame callback
       WidgetsBinding.instance.addPostFrameCallback((_) => showTooltip(
-          widget.model.getTooltips(spots), point?.dx ?? 0, point?.dy ?? 0));
+          widget.model.getTooltips(spots), point!.dx + ((widget.model.marginLeft?.toInt()) ?? 0) ?? 0, point!.dy +  ((widget.model.marginTop?.toInt()) ?? 0)  ?? 0));
 
       // ensure screen updates
       WidgetsBinding.instance.ensureVisualUpdate();
@@ -267,4 +285,7 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
       Log().exception(e);
     }
   }
+
+  Color getColor(lineBarSpot) => widget.model.showtips ?  Colors.blueGrey : Colors.transparent ;
+
 }

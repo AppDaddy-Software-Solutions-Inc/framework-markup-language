@@ -97,7 +97,7 @@ class ExpressionEvaluator {
         ? (expression.callee as MemberExpression)
         : null;
 
-    // member expression execute
+    // member expression execute or plugin call
     if (exp != null && isVariable(exp.object) && expression.arguments is List) {
 
       // evaluate id. id may be a bindable
@@ -129,12 +129,10 @@ class ExpressionEvaluator {
 
       return Function.apply(callee, args);
     }
-    else {
-      var callee = eval(expression.callee, context);
-      var arguments =
-          expression.arguments!.map((e) => eval(e, context)).toList();
-     Function.apply(callee, arguments);
-    }
+
+    var callee = eval(expression.callee, context);
+    var arguments = expression.arguments!.map((e) => eval(e, context)).toList();
+    return Function.apply(callee, arguments);
   }
 
   dynamic evalUnaryExpression(
@@ -148,7 +146,6 @@ class ExpressionEvaluator {
       case '!':
         // if(argument == null) argument = false; removed by Isaac as we have null aware operator now.
         return !argument;
-
       case '~':
         return ~argument;
     }

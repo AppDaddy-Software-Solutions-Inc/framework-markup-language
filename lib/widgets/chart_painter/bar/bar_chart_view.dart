@@ -10,7 +10,6 @@ import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fl_chart/fl_chart.dart';
 
 /// Chart View
 ///
@@ -244,7 +243,7 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
 
       // show tooltip in post frame callback
       WidgetsBinding.instance.addPostFrameCallback((_) => showTooltip(
-          widget.model.getTooltips(spots), point!.dx + ((widget.model.marginLeft?.toInt()) ?? 0) ?? 0, point!.dy +  ((widget.model.marginTop?.toInt()) ?? 0)  ?? 0));
+          widget.model.getTooltips(spots), point!.dx + ((widget.model.marginLeft?.toInt()) ?? 0), point.dy + ((widget.model.marginTop?.toInt()) ?? 0)));
 
       // ensure screen updates
       WidgetsBinding.instance.ensureVisualUpdate();

@@ -29,7 +29,6 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
   List<BarChartGroupData> barDataPoint = [];
   List<BarChartRodData> rodDataPoint = [];
   List<BarChartRodStackItem> stackDataPoint = [];
-  var previousGroup;
 
   BarChartSeriesModel(
     super.parent,
@@ -286,9 +285,5 @@ class BarChartSeriesModel extends ChartPainterSeriesModel {
 
         color ?? toColor('random') ?? Colors.blue);
     stackDataPoint.add(point);
-  }
-
-  addWaterfallData(dynamic data) {
-    var d = data;
   }
 }

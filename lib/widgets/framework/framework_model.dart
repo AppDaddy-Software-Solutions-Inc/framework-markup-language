@@ -10,6 +10,7 @@ import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/template/template_manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/package/package_model.dart';
 import 'package:fml/widgets/shortcut/shortcut_model.dart';
 import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:fml/widgets/widget/model.dart';
@@ -316,7 +317,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
         // logged on?
         if (!connected) {
           // fetch logon template
-          template = await TemplateManager().fetch(
+          var template = await TemplateManager().fetch(
               url: System.currentApp?.loginPage ?? "login.xml", refresh: refresh);
           xml = template.document!.rootElement;
         }
@@ -324,7 +325,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
         // authorized?
         else if (myrights < requiredRights) {
           // fetch unauthorized template
-          template = await TemplateManager().fetchErrorTemplate(FetchResult(
+          var template = await TemplateManager().fetchErrorTemplate(FetchResult(
               code: HttpStatus.unauthorized,
               message: Phrases().unauthorizedAccess,
               detail:
@@ -336,13 +337,14 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
       // register late scope
       var id = Xml.attribute(node: xml, tag: "id");
       if (scope != null && id != null) {
-
         System.currentApp?.scopeManager.add(scope!, alias: id);
-
         scope!.unregisterModel(this);
         this.id = id;
         scope!.registerModel(this);
       }
+
+      // load packages
+      await _loadPackages(xml, refresh);
 
       // deserialize from xml
       deserialize(xml);
@@ -351,13 +353,22 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
       // This normally happens in the view initState(), however, since the view builds before the
       // template has been loaded, initState() has already run and we need to do it here.
       initialize();
-
     }
     catch (e) {
       String msg = "Error building model from node";
       Log().error(msg);
       return Future.error(msg);
     }
+  }
+
+  /// finds all <PACKAGE ../> nodes and loads them in advance of loading the template
+  static Future<bool> _loadPackages(XmlElement node, bool refresh) async {
+    var packages = node.findAllElements("PACKAGE", namespace: "*").toList();
+    packages.addAll(node.findAllElements("PKG", namespace: "*").toList());
+    for (XmlElement element in packages) {
+      await PackageModel.load(element, refresh);
+    }
+    return true;
   }
 
   static FrameworkModel fromJs(String templ8) {

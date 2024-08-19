@@ -98,8 +98,10 @@ class Eval {
     'truncate': _truncate,
   };
 
-  static dynamic evaluate(String? expression,
-      {Map<String?, dynamic>? variables, Map<String?, dynamic>? altFunctions}) {
+  static dynamic evaluate(String? expression, {
+    Map<String?, dynamic>? variables,
+    Map<String?, dynamic>? altFunctions}) {
+
     // expressions with leading or trailing spaces fail parse
     expression = expression?.trim();
 
@@ -148,7 +150,8 @@ class Eval {
 
       // evaluate the expression
       return evaluator.eval(myParsedExpression, myFunctions);
-    } catch (e) {
+    }
+    catch (e) {
       String? msg;
       variables?.forEach((key, value) => msg =
           "${msg ?? ""}${msg == null ? "" : ",  "}$key=${value.toString()}");

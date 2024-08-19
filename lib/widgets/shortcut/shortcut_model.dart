@@ -158,7 +158,7 @@ class ShortcutModel extends Model {
   fire() => EventHandler(this).execute(_action);
 
   @override
-  Future<bool?> execute(
+  Future<dynamic> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
     if (scope == null) return null;
 

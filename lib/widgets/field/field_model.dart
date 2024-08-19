@@ -1,24 +1,96 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:flutter/cupertino.dart';
-import 'package:fml/log/manager.dart';
+import 'package:flutter/material.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
+import 'package:fml/widgets/package/package_model.dart';
+import 'package:fml/widgets/plugin/plugin_interface.dart';
+import 'package:fml/widgets/plugin/plugin_view.dart';
+import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class FieldModel extends FormFieldModel implements IFormField {
-  /// the value of the input. If not set to "" initially, the value will not be settable through events.
-  StringObservable? _value;
+enum ValueTypes { string, int, integer, double, bool, boolean, blob, list }
+
+class FieldModel extends FormFieldModel implements IFormField, IPlugin {
+
+  ValueTypes type = ValueTypes.string;
+
+  bool readonly = false;
+  int? precision;
+
+  @override
+  PackageModel? get package {
+    if (_package == null) return null;
+    var model = scope?.findModel(_package!);
+    if (model is PackageModel) return model;
+    return null;
+  }
+  String? _package;
+
+  // holds the plugin eval string
+  @override
+  String? get plugin => _plugin;
+  String? _plugin;
+
+  dynamic _value;
+
   @override
   set value(dynamic v) {
+
     if (_value != null) {
       _value!.set(v);
-    } else if (v != null ||
-        Model.isBound(this, Binding.toKey(id, 'value'))) {
-      _value = StringObservable(Binding.toKey(id, 'value'), v,
-          scope: scope, listener: onPropertyChange);
+      return;
+    }
+
+    switch (type) {
+
+      case ValueTypes.string:
+        _value = StringObservable(Binding.toKey(id, 'value'), v,
+            scope: scope,
+            listener: onPropertyChange,
+            setter: readonly ? (dynamic value, {Observable? setter}) => v : null);
+        break;
+
+      case ValueTypes.int:
+      case ValueTypes.integer:
+        _value = IntegerObservable(Binding.toKey(id, 'value'), v,
+            scope: scope,
+            listener: onPropertyChange,
+            readonly: readonly);
+        break;
+
+      case ValueTypes.double:
+        _value = DoubleObservable(Binding.toKey(id, 'value'), v,
+            scope: scope,
+            listener: onPropertyChange,
+            setter: precision != null ? (dynamic value, {Observable? setter}) => toDouble(value, precision: precision) : null,
+            readonly: readonly);
+        break;
+
+      case ValueTypes.bool:
+      case ValueTypes.boolean:
+        _value = BooleanObservable(Binding.toKey(id, 'value'), v,
+            scope: scope,
+            listener: onPropertyChange,
+            readonly: readonly);
+        break;
+
+      case ValueTypes.list:
+        _value = ListObservable(Binding.toKey(id, 'value'), v,
+            scope: scope,
+            listener: onPropertyChange,
+            readonly: readonly);
+        break;
+
+      case ValueTypes.blob:
+        _value = StringObservable(Binding.toKey(id, 'value'), null,
+            scope: scope,
+            listener: onPropertyChange,
+            readonly: readonly);
+        _value.set(v);
+        break;
     }
   }
 
@@ -26,33 +98,64 @@ class FieldModel extends FormFieldModel implements IFormField {
   dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
   FieldModel(
-    Model super.parent,
-    super.id, {
-    dynamic value,
+      Model super.parent,
+      super.id, {
+      this.type = ValueTypes.string,
+      dynamic value,
   }) {
     if (value != null) this.value = value;
   }
 
-  static FieldModel? fromXml(Model parent, XmlElement xml) {
-    FieldModel? model;
-    try {
-      model = FieldModel(parent, Xml.get(node: xml, tag: 'id'));
-      model.deserialize(xml);
-    } catch (e) {
-      Log().exception(e, caller: 'field.Model');
-      model = null;
-    }
+  static FieldModel fromXml(Model parent, XmlElement xml) {
+
+    var type = toEnum(Xml.get(node: xml, tag: 'type')?.trim().toLowerCase(), ValueTypes.values) ?? ValueTypes.string;
+    FieldModel model = FieldModel(parent, Xml.get(node: xml, tag: 'id'), type: type);
+    model.deserialize(xml);
+
     return model;
   }
 
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
+
     // deserialize
     super.deserialize(xml);
+
+    // properties
     value = Xml.get(node: xml, tag: fromEnum('value'));
+    readonly = toBool(Xml.get(node: xml, tag: 'readonly')?.trim().toLowerCase()) ?? false;
+    precision = toInt(Xml.get(node: xml, tag: 'precision'));
+
+    // plugin properties
+    _plugin = Xml.get(node: xml, tag: fromEnum('plugin'))?.trim();
+    _package = _plugin?.split(".").first.trim();
   }
 
   @override
-  Widget getView({Key? key}) => const Offstage();
+  void onPropertyChange(Observable observable) {
+
+    // intercept value setter on backing plugin
+    if (observable == _value && package != null) {
+      disableNotifications();
+      answer(value);
+      enableNotifications();
+      return;
+    }
+    super.onPropertyChange(observable);
+  }
+
+  @override
+  Widget? build() => package?.build(id, scope, plugin);
+
+  @override
+  Widget getView({Key? key}) {
+
+    // no package defined
+    if (package == null) return const Offstage();
+
+    // custom package view
+    var view = PluginView(this);
+    return isReactive ? ReactiveView(this, view) : view;
+  }
 }

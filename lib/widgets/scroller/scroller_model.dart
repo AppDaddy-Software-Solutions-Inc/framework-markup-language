@@ -219,7 +219,7 @@ class ScrollerModel extends BoxModel implements IScrollable {
   }
 
   @override
-  Future<bool?> execute(String caller,
+  Future<dynamic> execute(String caller,
       String propertyOrFunction,
       List<dynamic> arguments) async {
 

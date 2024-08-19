@@ -197,6 +197,8 @@ class Model implements IDataSourceListener {
     "MQTT",
     "NFC",
     "OCR",
+    "PACKAGE",
+    "PKG",
     "PATCH",
     "POST",
     "PUT",
@@ -481,7 +483,7 @@ class Model implements IDataSourceListener {
   // some widgets like form and list need to know when children are added or removed
   void notifyAncestorsOfDescendantChange() => parent?.notifyAncestorsOfDescendantChange();
 
-  Future<bool?> execute(
+  Future<dynamic> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
     if (scope == null) return null;
 

@@ -1,7 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 // ignore_for_file: depend_on_referenced_packages
-
+import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/observable/scope.dart';
+import 'package:fml/widgets/package/package_model.dart';
 import 'expressions.dart';
 import 'dart:math';
 import 'package:decimal/decimal.dart';
@@ -10,6 +12,7 @@ class ExpressionEvaluator {
   const ExpressionEvaluator();
 
   dynamic eval(Expression? expression, Map<String?, dynamic> context) {
+
     if (expression == null) throw ArgumentError.notNull('expression');
     if (expression is Literal) return evalLiteral(expression, context);
     if (expression is Variable) return evalVariable(expression, context);
@@ -86,14 +89,17 @@ class ExpressionEvaluator {
     return false;
   }
 
-  dynamic evalCallExpression(
-      CallExpression expression, Map<String?, dynamic> context) {
+  dynamic evalCallExpression(CallExpression expression, Map<String?, dynamic> context)  {
+
     // olajos - March 14, 2022 - Added Functionality to Convert a.b() to _call call with parameters id, function, list<arguments>
     // olajos - Modified January 26, 2023 - Added isVariable to capture dot notated executes like GLOBAL.x.set('value') or <id>.<subproperty>.set('red');
-    MemberExpression? exp = (expression.callee is MemberExpression)
+    var exp = (expression.callee is MemberExpression)
         ? (expression.callee as MemberExpression)
         : null;
+
+    // member expression execute
     if (exp != null && isVariable(exp.object) && expression.arguments is List) {
+
       // evaluate id. id may be a bindable
       String id = (expression.callee as MemberExpression).object.toString();
       if (id.startsWith("___V") &&
@@ -106,19 +112,28 @@ class ExpressionEvaluator {
           context.containsKey(fn) &&
           (context[fn] is String)) fn = context[fn];
 
-      expression =
-          CallExpression(Variable(Identifier("execute")), expression.arguments);
+      expression = CallExpression(Variable(Identifier("execute")), expression.arguments);
       var callee = eval(expression.callee, context);
-      var arguments =
-          expression.arguments!.map((e) => eval(e, context)).toList();
-
+      var arguments = expression.arguments!.map((e) => eval(e, context)).toList();
       final List<dynamic> args = [id, fn, arguments];
+
+      // plugin function?
+      Scope? scope = context.values.firstWhereOrNull((value) => value is Scope);
+      var pkg = id.split(".").first;
+      var plugin = scope?.findModel(pkg);
+      if (plugin is PackageModel) {
+        var method = "$id.$fn".replaceFirst("$pkg.", "");
+        var result = plugin.call(method, arguments);
+        return result;
+      }
+
       return Function.apply(callee, args);
-    } else {
+    }
+    else {
       var callee = eval(expression.callee, context);
       var arguments =
           expression.arguments!.map((e) => eval(e, context)).toList();
-      return Function.apply(callee, arguments);
+     Function.apply(callee, arguments);
     }
   }
 

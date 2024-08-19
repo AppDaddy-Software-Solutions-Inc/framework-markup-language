@@ -35,7 +35,7 @@ class HttpGetModel extends HttpModel implements IDataSource {
   }
 
   @override
-  Future<bool?> execute(
+  Future<dynamic> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();

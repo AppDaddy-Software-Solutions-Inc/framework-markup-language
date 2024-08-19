@@ -686,11 +686,6 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
       break;
 
     case "FML":
-      // <FML> root models are never a child element
-      // of another parent element, rather they get created from the FrameworkModel.fromXml() routine.
-      // If there is a future reason to do that, this item will need to be revisited. In the meantime,
-      // an <FML> tag encountered in the element xml stream is treated as a <BOX>, not as a new outer framework.
-      //model = BoxModel.fromXml(parent, node);
     model = FrameworkModel.fromXml(parent, node);
       break;
 

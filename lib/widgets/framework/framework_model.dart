@@ -255,11 +255,11 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
     this.onreturn = onreturn;
   }
 
-  static FrameworkModel? fromXml(Model parent, XmlElement xml) {
+  static FrameworkModel? fromXml(Model parent, XmlElement xml, {bool refresh = false}) {
     FrameworkModel? model;
     try {
       model = FrameworkModel(parent, Xml.get(node: xml, tag: 'id'));
-      model.deserialize(xml);
+      model._fromXml(xml, refresh: refresh);
     } catch (e) {
       Log().debug(e.toString());
       model = null;
@@ -267,14 +267,17 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
     return model;
   }
 
-  static FrameworkModel fromUrl(Model parent, String url,
-      {String? id, bool? refresh, String? dependency}) {
+  static FrameworkModel fromUrl(Model parent, String url, {
+    String? id,
+    bool refresh = false,
+    String? dependency}) {
+
     FrameworkModel model = FrameworkModel(parent, id, dependency: dependency);
-    model.load(url, refresh: refresh ?? false);
+    model._fromUrl(url, refresh: refresh);
     return model;
   }
 
-  Future load(String url, {required bool refresh, String? dependency}) async {
+  Future _fromUrl(String url, {bool refresh = false, String? dependency}) async {
     try {
       // parse the url
       Uri? uri = URI.parse(url);
@@ -284,8 +287,25 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
       var template = await TemplateManager()
           .fetch(url: url, parameters: uri.queryParameters, refresh: refresh);
 
-      // get the xml
-      var xml = template.document!.rootElement;
+      // render the template
+      if (template.document != null) {
+        _fromXml(template.document!.rootElement, refresh: refresh);
+      }
+
+      // set template name
+      templateName = uri.replace(queryParameters: null).toString();
+      if (dependency != null) this.dependency = dependency;
+    }
+    catch (e) {
+      String msg = "Error building model from template $url";
+      Log().error(msg);
+      return Future.error(msg);
+    }
+  }
+
+  Future _fromXml(XmlElement xml, {bool refresh = false}) async {
+
+    try {
 
       // template requires rights?
       int? requiredRights = toInt(Xml.attribute(node: xml, tag: 'rights'));
@@ -308,7 +328,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
               code: HttpStatus.unauthorized,
               message: Phrases().unauthorizedAccess,
               detail:
-                  "This page requires rights at or above level $requiredRights. You only have rights level $myrights for page $url"));
+              "This page requires rights at or above level $requiredRights. You only have rights level $myrights for page $url"));
           xml = template.document!.rootElement;
         }
       }
@@ -324,10 +344,6 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
         scope!.registerModel(this);
       }
 
-      // set template name
-      templateName = uri.replace(queryParameters: null).toString();
-      if (dependency != null) this.dependency = dependency;
-
       // deserialize from xml
       deserialize(xml);
 
@@ -335,8 +351,10 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
       // This normally happens in the view initState(), however, since the view builds before the
       // template has been loaded, initState() has already run and we need to do it here.
       initialize();
-    } catch (e) {
-      String msg = "Error building model from template $url";
+
+    }
+    catch (e) {
+      String msg = "Error building model from node";
       Log().error(msg);
       return Future.error(msg);
     }

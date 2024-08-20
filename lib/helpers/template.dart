@@ -979,6 +979,11 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
       }
       break;
 
+    case "WIDGET":
+    case "PLUGIN":
+      model = PluginModel.fromXml(parent, node);
+      break;
+
     case "POST":
       model = HttpPostModel.fromXml(parent, node);
       break;
@@ -1190,10 +1195,6 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
 
     case "WINDOW":
       model = FrameworkModel.fromXml(parent, node);
-      break;
-
-    case "WIDGET":
-      model = PluginModel.fromXml(parent, node);
       break;
 
     case "XAXIS":

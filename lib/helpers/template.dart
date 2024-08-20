@@ -437,7 +437,10 @@ XmlElement? prototypeOf(XmlElement? node) {
         processed.add(binding.signature);
 
         // set the signature
-        var signature = "{$id.${binding.source}.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
+        var signature = "{$id.data.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
+        if (binding.property == "value") {
+          signature = "{$id.data}";
+        }
         xml = xml.replaceAll(binding.signature, signature);
       }
 

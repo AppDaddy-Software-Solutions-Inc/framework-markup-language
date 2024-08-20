@@ -72,7 +72,7 @@ class EventHandler extends Eval {
     Map<String, dynamic> variables = observable.getVariables();
 
     // this is necessary for plugin functions
-    variables["scope"] = model.scope;
+    variables["___S"] = model.scope;
 
     // execute the expression
     return executeExpression(expression, variables);

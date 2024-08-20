@@ -426,18 +426,39 @@ XmlElement? prototypeOf(XmlElement? node) {
 
     // process each binding
     for (var binding in bindings) {
-      // special case
-      if ((binding.source == 'data') &&
-          !processed.contains(binding.signature)) {
+
+      // (legacy) special case data.field
+      // use <id>.data.field instead where <id> is an assigned id on the outer prototype container
+      // most prototypes are scoped
+      if (binding.source == 'data' && !processed.contains(binding.signature)) {
+
         doReplace = true;
 
         processed.add(binding.signature);
 
         // set the signature
-        var signature =
-            "{$id.${binding.source}.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
+        var signature = "{$id.data.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
+        if (binding.property == "value") {
+          signature = "{$id.data}";
+        }
         xml = xml.replaceAll(binding.signature, signature);
       }
+
+      // (legacy) special case this.data or this.data.field
+      // use <id>.data.field instead where <id> is an assigned id on the outer prototype container
+      // most prototypes are scoped
+      else if (binding.source == 'this' && binding.property == 'data' && !processed.contains(binding.signature)) {
+
+        doReplace = true;
+
+        processed.add(binding.signature);
+
+        // set the signature
+        var signature = "{$id.data${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
+
+        xml = xml.replaceAll(binding.signature, signature);
+      }
+
     }
 
     // parse the new xml
@@ -501,7 +522,7 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
     case "SBOX":
     case "SHRINKBOX":
 
-      // shrink by default?
+    // shrink by default?
       bool shrink = node.localName == "SBOX" || node.localName == "SHRINKBOX";
 
       // prototype?
@@ -567,20 +588,20 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
       break;
 
     case "BODY":
-      // we dont want to deserialize datasorce body models
-      // in the future we may wish to have a BODY element
-      // for now just return null
+    // we dont want to deserialize datasorce body models
+    // in the future we may wish to have a BODY element
+    // for now just return null
       if (parent is! IDataSource) model = null;
       model = null;
       break;
 
-    // case "sfchart":
-    //   model = SFCHART.ChartModel.fromXml(parent, node);
-    //   break;
+  // case "sfchart":
+  //   model = SFCHART.ChartModel.fromXml(parent, node);
+  //   break;
 
-    // case "HTML":
-    //   model = HtmlModel.fromXml(parent, node);
-    //   break;
+  // case "HTML":
+  //   model = HtmlModel.fromXml(parent, node);
+  //   break;
 
     case "BOOL":
     case "BOOLEAN":
@@ -604,7 +625,7 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
     case "COLUMN":
     case "COL": //shorthand case
 
-      // table row?
+    // table row?
       if (parent is TableModel) {
         model = TableHeaderModel.fromXml(parent, node);
         break;
@@ -650,7 +671,7 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
       model = EditorModel.fromXml(parent, node);
       break;
 
-    // deprecated. use row/column/box with %sizing or flex
+  // deprecated. use row/column/box with %sizing or flex
     case "EXPAND":
     case "EXPANDED":
       model = ColumnModel.fromXml(parent, node);
@@ -686,7 +707,7 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
       break;
 
     case "FML":
-    model = FrameworkModel.fromXml(parent, node);
+      model = FrameworkModel.fromXml(parent, node);
       break;
 
     case "FOOTER":
@@ -998,7 +1019,7 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
 
     case "ROW":
 
-      // table row?
+    // table row?
       if (parent is TableModel) {
         model = TableRowModel.fromXml(parent, node);
         break;
@@ -1061,7 +1082,7 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
 
     case "STACK":
 
-      // prototype?
+    // prototype?
       bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
 
       // define model
@@ -1158,7 +1179,7 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
 
     case "TIP":
     case "TOOLTIP":
-        model = v2.TooltipModel.fromXml(parent, node);
+      model = v2.TooltipModel.fromXml(parent, node);
       break;
 
     case "TREEVIEW":

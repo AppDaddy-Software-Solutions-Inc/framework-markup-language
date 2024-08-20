@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    
+
     String example = 'https://pad.fml.dev';
 
     var version = "3.2.0";

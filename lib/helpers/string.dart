@@ -22,8 +22,12 @@ extension Ex on double {
   double toPrecision(int n) => double.parse(toStringAsFixed(n));
 }
 
-String newId({String prefix = "auto"}) =>
-    "$prefix${const Uuid().v4().replaceAll("-", "").toLowerCase()}";
+String newId({String prefix = "auto"}) => "$prefix${const Uuid().v4().replaceAll("-", "").toLowerCase()}";
+
+// creates a unique id
+//int _ctr = 0;
+//String newId({String prefix = "A"}) => "$prefix${(++_ctr).toString().padLeft(6,'0')}";
+
 
 /// Takes in a String/List and returns true if it is null, blank or empty
 bool isNull(value) => value == null;

@@ -21,7 +21,7 @@ class Model implements IDataSourceListener {
 
   // scope
   Scope? scope;
-  late final bool isLocalScope;
+  bool _scopeIsLocal = false;
 
   // this is used in the renderer to determine if the widget
   // should rebuild on layout changes
@@ -132,54 +132,6 @@ class Model implements IDataSourceListener {
 
   bool get busy => _busy?.get() ?? false;
 
-  Model(this.parent, String? id, {Scope? scope, dynamic data}) {
-    // set the id
-    this.id = getUniqueId(id);
-
-    // set the scope
-    this.scope = scope ?? Scope.of(this);
-    isLocalScope = scope != null;
-
-    // set the framework
-    framework = findAncestorOfExactType(FrameworkModel);
-
-    // set the data
-    if (data != null) this.data = data;
-
-    // register the model
-    this.scope?.registerModel(this);
-  }
-
-  static RegExp onlyAlpha = RegExp(r'''[^a-zA-Z0-9\s.]''');
-  String getUniqueId(String? id) {
-    // user supplied id
-    if (!isNullOrEmpty(id)) return id!;
-
-    // auto generated id
-    String prefix = "auto";
-    if (kDebugMode) {
-      prefix = "$runtimeType";
-      prefix = prefix.replaceAll(onlyAlpha, '');
-      if (prefix.endsWith('model')) {
-        prefix = prefix.substring(0, prefix.lastIndexOf('model'));
-      }
-    }
-    return newId(prefix: prefix);
-  }
-
-  static Model? fromXml(Model parent, XmlElement node,
-      {Scope? scope, dynamic data}) {
-
-    // clone node?
-    // node = cloneNode(node, scope ?? parent.scope);
-
-    // exclude this element?
-    if (excludeFromTemplate(node, parent.scope)) return null;
-
-    // build the element model
-    return fromXmlNode(parent, node, scope, data);
-  }
-
   // used in the sort process to deserialize
   static final List<String> _topmost = [
     "VAR",
@@ -209,16 +161,60 @@ class Model implements IDataSourceListener {
     "ZEBRA"
   ];
 
+  Model(this.parent, String? id, {Scope? scope, dynamic data}) {
+    // set the id
+    this.id = getUniqueId(id);
+
+    // set the scope
+    this.scope = scope ?? Scope.of(this);
+
+    // we want to know if the scope is local so we can dispose of it
+    // whene the model is destroyed
+    if (scope != null) _scopeIsLocal = true;
+
+    // set the framework
+    framework = findAncestorOfExactType(FrameworkModel);
+
+    // set the data
+    if (data != null) this.data = data;
+
+    // register the model
+    this.scope?.registerModel(this);
+  }
+
+  static Model? fromXml(Model parent, XmlElement node,
+      {Scope? scope, dynamic data}) {
+
+    // clone node?
+    // node = cloneNode(node, scope ?? parent.scope);
+
+    // exclude this element?
+    if (excludeFromTemplate(node, parent.scope)) return null;
+
+    // build the element model
+    return fromXmlNode(parent, node, scope, data);
+  }
+
   void deserialize(XmlElement xml) {
     // set busy
     busy = true;
 
-    // scoped?
+    // scoped widget?
     var scope = Xml.get(node: xml, tag: 'scope');
-    if (!isLocalScope && !isNullOrEmpty(scope)) {
-      this.scope?.unregisterModel(this);
-      this.scope = Scope(parent: parent?.scope, id: scope);
-      this.scope?.registerModel(this);
+    if (!isNullOrEmpty(scope)) {
+
+        // unregister from the current scope
+        this.scope?.unregisterModel(this);
+
+        // create a new scope
+        this.scope = Scope(parent: parent?.scope, id: scope);
+
+        // register this model with the new scope
+        this.scope?.registerModel(this);
+
+        // we want to know if the scope is local so we can dispose of it
+        // when the model is destroyed
+        _scopeIsLocal = true;
     }
 
     // retain a pointer to the xml
@@ -289,7 +285,9 @@ class Model implements IDataSourceListener {
     children?.clear();
 
     // dispose of the local scope
-    if (isLocalScope) scope?.dispose();
+    if (_scopeIsLocal) {
+      scope?.dispose();
+    }
   }
 
   /// adds a models listener to the list
@@ -337,6 +335,25 @@ class Model implements IDataSourceListener {
         if (datasource.autoexecute == true) datasource.start();
       }
     });
+  }
+
+  static RegExp onlyAlpha = RegExp(r'''[^a-zA-Z0-9\s.]''');
+  String getUniqueId(String? id) {
+
+    // user supplied id
+    if (!isNullOrEmpty(id)) return id!;
+
+    // auto generated id
+    String prefix = "auto";
+    if (kDebugMode) {
+      prefix = "$runtimeType";
+      prefix = prefix.replaceAll(onlyAlpha, '');
+      if (prefix.endsWith('model')) {
+        prefix = prefix.substring(0, prefix.lastIndexOf('model'));
+      }
+    }
+
+    return newId(prefix: prefix);
   }
 
   // force unfocus on currently focused node

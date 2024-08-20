@@ -307,7 +307,7 @@ class Observable {
       variables ??= <String?, dynamic>{};
 
       // this is necessary for plugin functions
-      variables["scope"] = scope;
+      variables["___S"] = scope;
 
       value = doEvaluation(signature, variables: variables);
     }

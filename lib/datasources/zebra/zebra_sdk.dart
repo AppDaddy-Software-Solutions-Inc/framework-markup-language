@@ -1,13 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'dart:convert';
+import 'package:fml/datasources/detectors/rfid/rfid_detector.dart';
 import 'package:fml/datasources/zebra/zebra_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/helpers/helpers.dart';
 import 'package:zebra_rfid_sdk_plugin/zebra_event_handler.dart';
 import 'package:zebra_rfid_sdk_plugin/zebra_rfid_sdk_plugin.dart';
-
-import '../detectors/rfid/rfid_detector.dart';
 
 class Reader {
   static final Reader _singleton = Reader._initialize();
@@ -120,7 +117,7 @@ class Reader {
       tag.antenna = rfid.antennaID;
       tag.rssi = rfid.peakRSSI;
       tag.distance = rfid.relativeDistance;
-      tag.count = (rfid.count ?? 0) + 1;
+      tag.count = rfid.count;
       tag.size = rfid.allocatedSize;
       tag.data = rfid.memoryBankData;
       tag.lock = rfid.lockData;

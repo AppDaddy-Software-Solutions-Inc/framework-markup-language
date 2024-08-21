@@ -3,10 +3,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:fml/datasources/zebra/zebra_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/datasources/detectors/barcode/barcode_detector.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:zebra_rfid_sdk_plugin/zebra_event_handler.dart';
 import 'package:zebra_rfid_sdk_plugin/zebra_rfid_sdk_plugin.dart';
+
+import '../detectors/rfid/rfid_detector.dart';
 
 class Reader {
   static final Reader _singleton = Reader._initialize();
@@ -67,8 +68,7 @@ class Reader {
   }
 
   void _onEvent(List<RfidData> data) async {
-
-    Payload? payload = getPayload(data);
+    Payload? payload = _fromRfidData(data);
     notifyListeners(payload);
   }
 
@@ -107,20 +107,24 @@ class Reader {
     if (data == null) Log().debug('Zebra Wedge Payload is null');
   }
 
-  Payload? getPayload(List<RfidData> data) {
+  // creates an rfid Payload from RfidData
+  Payload? _fromRfidData(List<RfidData> data) {
 
     if (data.isEmpty) return null;
 
     // build the payload
     Payload payload = Payload();
     for (var rfid in data) {
-      Barcode barcode = Barcode();
-      barcode.type = 0;
-      barcode.source = "rfid";
-      barcode.format = fromEnum(BarcodeFormats.unknown);
-      barcode.display = rfid.tagID;
-      barcode.barcode = rfid.tagID;
-      payload.barcodes.add(barcode);
+      Tag tag = Tag();
+      tag.id = rfid.tagID;
+      tag.antenna = rfid.antennaID;
+      tag.rssi = rfid.peakRSSI;
+      tag.distance = rfid.relativeDistance;
+      tag.count = (rfid.count ?? 0) + 1;
+      tag.size = rfid.allocatedSize;
+      tag.data = rfid.memoryBankData;
+      tag.lock = rfid.lockData;
+      tag.parameters = null;
     }
 
     return payload;

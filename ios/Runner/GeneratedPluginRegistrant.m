@@ -138,6 +138,12 @@
 @import webview_flutter_wkwebview;
 #endif
 
+#if __has_include(<zebra_rfid_sdk_plugin/ZebraRfidSdkPlugin.h>)
+#import <zebra_rfid_sdk_plugin/ZebraRfidSdkPlugin.h>
+#else
+@import zebra_rfid_sdk_plugin;
+#endif
+
 @implementation GeneratedPluginRegistrant
 
 + (void)registerWithRegistry:(NSObject<FlutterPluginRegistry>*)registry {
@@ -163,6 +169,7 @@
   [URLLauncherPlugin registerWithRegistrar:[registry registrarForPlugin:@"URLLauncherPlugin"]];
   [FVPVideoPlayerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FVPVideoPlayerPlugin"]];
   [FLTWebViewFlutterPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTWebViewFlutterPlugin"]];
+  [ZebraRfidSdkPlugin registerWithRegistrar:[registry registrarForPlugin:@"ZebraRfidSdkPlugin"]];
 }
 
 @end

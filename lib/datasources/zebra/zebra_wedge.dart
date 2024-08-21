@@ -1,19 +1,21 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:fml/datasources/zebra/zebra_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector.dart';
 import 'package:fml/helpers/helpers.dart';
-
-abstract class IZebraListener {
-  onZebraData({Payload? payload});
-}
 
 class Reader {
   static final Reader _singleton = Reader._initialize();
 
   MethodChannel? methodChannel;
   EventChannel? scanChannel;
+
+  Completer<bool> initialized = Completer();
+  int status = 0;
+  String statusMessage = "";
 
   List<IZebraListener>? _listeners;
 
@@ -22,17 +24,42 @@ class Reader {
   }
 
   Reader._initialize() {
+    _init();
+  }
+
+  void _init() {
+
+    if (initialized.isCompleted) return;
+
     try {
+
+      // create method channel
       methodChannel ??= const MethodChannel('dev.fml.zebra/command');
+
+      // create scan channel
       scanChannel ??= const EventChannel('dev.fml.zebra/scan');
 
+      // listen for scan events
       scanChannel!.receiveBroadcastStream().listen(_onEvent, onError: _onError);
+
+      // setup the profile
       _send("com.symbol.datawedge.api.CREATEPROFILE", "dev.fml.zebra");
+
+      status = 200;
+      statusMessage = "Connected to Zebra RFID Reader";
+
     } catch (e) {
-      Log().error('Zebra Channel Error on Initialize');
+
+      status = -1;
+      statusMessage = "Error connecting to Zebra RFID Reader. $e";
+      Log().error('Zebra Error on Initialize');
       Log().exception(e);
     }
+
+    // set initialized
+    initialized.complete(true);
   }
+
 
   void _onEvent(event) {
     Map? result = jsonDecode(event);
@@ -41,10 +68,7 @@ class Reader {
   }
 
   void _onError(Object error) {
-
-    Log().error('Zebra Channel Error on Initialize');
-
-
+    Log().error('Zebra Channel Error on Initialize, $error');
   }
 
   startScan() {

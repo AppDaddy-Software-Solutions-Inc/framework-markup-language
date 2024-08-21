@@ -92,4 +92,5 @@ flutter {
 }
 
 dependencies {
+    implementation project(":RFIDAPI3Library",)
 }

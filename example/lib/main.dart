@@ -13,8 +13,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
 
     //String example = 'https://pad.fml.dev';
-    //String example = 'https://test.appdaddy.co';
-    String example = 'http://10.69.4.245:81/';
+    String example = 'https://test.appdaddy.co';
+    //String example = 'http://10.69.4.245:81/';
     //String example = 'http://in4.pro';
     //String example = 'https://pad.fml.dev';
     //String example = 'http://lawapsweb.law.goodyear.com:8081/';
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
 
     // launch the FML engine
     return FmlEngine(
-            ApplicationType.multi,
+            ApplicationType.single,
             domain: example,
             title: "Framework Markup Language V$version",
             version: version,

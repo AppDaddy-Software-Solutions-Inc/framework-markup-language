@@ -135,10 +135,10 @@ dependencies:
   google_mlkit_text_recognition: ^0.13.0
   # MIT
 
-  google_maps_flutter: ^2.7.0
+  google_maps_flutter: ^2.9.0
   # BSD-3-Clause
 
-  google_maps_flutter_web: ^0.5.8
+  google_maps_flutter_web: ^0.5.10
   # BSD-3-Clause, MIT
 
   highlight: ^0.7.0

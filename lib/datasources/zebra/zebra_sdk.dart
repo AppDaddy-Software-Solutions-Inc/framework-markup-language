@@ -1,8 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fml/datasources/detectors/rfid/rfid_detector.dart';
 import 'package:fml/datasources/zebra/zebra_interface.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/system.dart';
 import 'package:zebra_rfid_sdk_plugin/zebra_event_handler.dart';
 import 'package:zebra_rfid_sdk_plugin/zebra_rfid_sdk_plugin.dart';
 
@@ -12,8 +15,8 @@ class Reader {
   List<IZebraListener>? _listeners;
 
   Completer<bool> initialized = Completer();
-  Completer<bool> connected = Completer();
 
+  ReaderConnectionStatus connectionStatus = ReaderConnectionStatus.UnConnection;
   int status = 0;
   String statusMessage = "";
 
@@ -30,16 +33,12 @@ class Reader {
   Future _init() async {
 
     if (initialized.isCompleted) return;
-    connected = Completer();
 
     try {
 
-      // get the platform version
-      platform = await ZebraRfidSdkPlugin.platformVersion;
-
       // build event handler
       var handler = ZebraEngineEventHandler(
-          readRfidCallback: _onEvent,
+          readRfidCallback: _onData,
           errorCallback: _onError,
           connectionStatusCallback: _onConnectionStatusChange);
 
@@ -64,22 +63,26 @@ class Reader {
     initialized.complete(true);
   }
 
-  void _onEvent(List<RfidData> data) async {
+  void _onData(List<RfidData> data) async {
     Payload? payload = _fromRfidData(data);
     notifyListeners(payload);
   }
 
-  void _onError(Object error) {
+  void _onEvent(String event, Map<String, dynamic> map) async {
+    System.toast(event);
+  }
 
-    connected.complete(false);
+  void _onError(ErrorResult error) {
+
     status = -1;
     statusMessage = "Error connecting to the Zebra RFID Reader. $error";
 
     Log().error('Zebra Channel Error on Initialize');
   }
 
-  void _onConnectionStatusChange(Object error) {
-    Log().error('Zebra Channel Error on Initialize');
+  void _onConnectionStatusChange(ReaderConnectionStatus status) {
+    connectionStatus = status;
+    notifyListenersOfConnectionChange(status == ReaderConnectionStatus.ConnectionRealy);
   }
 
   registerListener(IZebraListener listener) {
@@ -104,13 +107,25 @@ class Reader {
     if (data == null) Log().debug('Zebra Wedge Payload is null');
   }
 
+  notifyListenersOfConnectionChange(bool connected) {
+    if (_listeners != null) {
+      var listeners = _listeners!.where((element) => true);
+      for (var listener in listeners) {
+        listener.onZebraConnectionStatus(connected);
+      }
+    }
+  }
+
+
+  Map<String, Tag> _tags = {};
+
   // creates an rfid Payload from RfidData
   Payload? _fromRfidData(List<RfidData> data) {
 
     if (data.isEmpty) return null;
 
     // build the payload
-    Payload payload = Payload();
+    List<Tag> tags = [];
     for (var rfid in data) {
       Tag tag = Tag();
       tag.id = rfid.tagID;
@@ -122,8 +137,21 @@ class Reader {
       tag.data = rfid.memoryBankData;
       tag.lock = rfid.lockData;
       tag.parameters = null;
+      tags.add(tag);
     }
 
+    // set the tags
+    for (var tag in tags) {
+      _tags[tag.id!] = tag;
+    }
+
+    // sort by RSSI - closest the furthest
+    var list = _tags.values.toList();
+    list.sort((a, b) => (b.rssi ?? 0).compareTo(a.rssi ?? 0));
+
+    // return the payload
+    Payload payload = Payload();
+    payload.tags.addAll(list);
     return payload;
   }
 }

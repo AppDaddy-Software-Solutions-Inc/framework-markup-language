@@ -23,9 +23,6 @@ class Payload {
   static Data toData(Payload payload) {
     Data data = Data();
 
-    // sort by RSSI
-    payload.tags.sort((a, b) => (a.rssi ?? 0).compareTo(b.rssi ?? 0));
-
     // build the payload
     for (var tag in payload.tags) {
       Map<dynamic, dynamic> map = <dynamic, dynamic>{};

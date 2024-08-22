@@ -1,11 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/datasources/zebra/zebra_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector.dart';
 import 'package:fml/helpers/helpers.dart';
+import 'package:fml/system.dart';
 
 class Reader {
   static final Reader _singleton = Reader._initialize();
@@ -83,7 +85,7 @@ class Reader {
     try {
       String argumentAsJson =
           Json.encode({"command": command, "parameter": parameter});
-      await methodChannel?.invokeMethod('ZEBRA', argumentAsJson);
+      methodChannel?.invokeMethod('ZEBRA', argumentAsJson);
     } catch (e) {
       Log().error('Zebra Wedge Error');
       Log().exception(e);
@@ -147,6 +149,11 @@ class Reader {
         payload.barcodes.add(bc);
       }
     }
+
+    if (kDebugMode) {
+      System.toast("Barcode(s): ${payload.barcodes.length}");
+    }
+
     return payload;
   }
 }

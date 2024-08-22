@@ -4,6 +4,8 @@ import 'package:fml/datasources/base/model.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/zebra/zebra_interface.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/observable/binding.dart';
+import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/zebra/zebra_wedge.dart' as wedge;
 import 'package:fml/datasources/zebra/zebra_sdk.dart' as sdk;
@@ -17,6 +19,17 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener 
   // holds the reader instance
   dynamic reader;
 
+  /// If the zebra device is connected
+  BooleanObservable? _connected;
+  set connected(dynamic v) {
+    if (_connected != null) {
+      _connected!.set(v);
+    } else if (v != null) {
+      _connected = BooleanObservable(Binding.toKey(id, 'connected'), v, scope: scope);
+    }
+  }
+  bool get connected => _connected?.get() ?? false;
+
   // disable datasource by default when not top of stack
   // override by setting background="true"
   @override
@@ -25,7 +38,9 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener 
   @override
   bool get autoexecute => super.autoexecute ?? true;
 
-  ZebraModel(super.parent, super.id);
+  ZebraModel(super.parent, super.id) {
+    connected = false;
+  }
 
   static ZebraModel? fromXml(Model parent, XmlElement xml) {
     ZebraModel? model;
@@ -47,7 +62,7 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener 
       // attempt to connect to the sdk
       var reader = sdk.Reader();
       await reader.initialized.future;
-      await reader.connected.future;
+      //await reader.connected.future;
       if (reader.status == 200) this.reader = reader;
     }
 
@@ -100,5 +115,10 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener 
       Data data = rfid.Payload.toData(payload);
       onSuccess(data, code: 200);
     }
+  }
+
+  @override
+  void onZebraConnectionStatus(bool connected) {
+    this.connected = connected;
   }
 }

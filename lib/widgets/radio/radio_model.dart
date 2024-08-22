@@ -72,8 +72,7 @@ class RadioModel extends FormFieldModel implements IFormField {
   set value(dynamic v) {
     if (_value != null) {
       _value!.set(v);
-    } else if (v != null ||
-        Model.isBound(this, Binding.toKey(id, 'value'))) {
+    } else {
       _value = StringObservable(Binding.toKey(id, 'value'), v,
           scope: scope, listener: onValueChange);
     }

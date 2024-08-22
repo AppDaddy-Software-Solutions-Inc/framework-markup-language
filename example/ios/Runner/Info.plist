@@ -36,7 +36,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3.0.1</string>
+	<string>3.2.0</string>
 	<key>FlutterDeepLinkingEnabled</key>
 	<true/>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -68,12 +68,12 @@
 	<string>Face ID security</string>
 	<key>NSHomeKitUsageDescription</key>
 	<string>Connect to homekit</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs access to the device location for the GPS</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Keep GPS in background</string>
 	<key>NSLocationUsageDescription</key>
 	<string>Get GPS</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app needs access to the device location for the GPS</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Keep GPS location when open</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -90,6 +90,8 @@
 	<string>Allow Siri to listen and input</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Speech to text accessibility</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -118,8 +120,6 @@
 		<string>TAG</string>
 	</array>
 	<key>io.flutter.embedded_views_preview</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 </dict>
 </plist>

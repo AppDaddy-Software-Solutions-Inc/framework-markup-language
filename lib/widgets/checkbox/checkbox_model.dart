@@ -58,6 +58,18 @@ class CheckboxModel extends FormFieldModel implements IFormField {
 
   bool get center => _center?.get() ?? false;
 
+  /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
+  BooleanObservable? _startSelected;
+  set startSelected(dynamic v) {
+    if (_startSelected != null) {
+      _startSelected!.set(v);
+    } else if (v != null) {
+      _startSelected = BooleanObservable(Binding.toKey(id, 'startselected'), v, scope: scope);
+    }
+  }
+
+  bool get startSelected => _startSelected?.get() ?? false;
+
   // wrap
   BooleanObservable? _wrap;
   set wrap(dynamic v) {
@@ -277,6 +289,7 @@ class CheckboxModel extends FormFieldModel implements IFormField {
     dynamic post,
     dynamic onchange,
     dynamic wrap,
+        dynamic startSelected,
   }) {
     if (mandatory != null) this.mandatory = mandatory;
     if (editable != null) this.editable = editable;
@@ -294,6 +307,7 @@ class CheckboxModel extends FormFieldModel implements IFormField {
     if (post != null) this.post = post;
     if (onchange != null) this.onchange = onchange;
     if (wrap != null) this.wrap = wrap;
+    if (startSelected != null) this.startSelected = startSelected;
 
     alarming = false;
     dirty = false;
@@ -333,6 +347,7 @@ class CheckboxModel extends FormFieldModel implements IFormField {
     center = Xml.get(node: xml, tag: 'center');
     wrap = Xml.get(node: xml, tag: 'wrap');
     size = Xml.get(node: xml, tag: 'size');
+    startSelected = Xml.get(node: xml, tag: 'startselected');
 
     // build radio options
     _buildOptions();
@@ -433,6 +448,7 @@ class CheckboxModel extends FormFieldModel implements IFormField {
       list?.forEach((row) {
         OptionModel? model = OptionModel.fromXml(this, prototype, data: row);
         if (model != null) options.add(model);
+       if(startSelected) _insertAnswer(model?.value);
       });
 
       // set selected option

@@ -94,7 +94,7 @@ class TableFooterModel extends BoxModel {
         }
         else {
           staticFields ??= [];
-          staticFields!.add(cell.field ?? "");
+          staticFields!.add(cell.id);
         }
         prototypes[e] = cell.parent;
       }

@@ -213,6 +213,7 @@ dependencies:
   # syncfusion_flutter_charts: ^20.1.57
   # https://pub.dev/packages/syncfusion_flutter_charts/license
 
+
   stream_channel: ^2.1.1
   # BSD-3-Clause
 

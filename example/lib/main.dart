@@ -12,22 +12,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-<<<<<<< HEAD
     //String example = 'https://pad.fml.dev';
     String example = 'https://test.appdaddy.co';
     //String example = 'http://10.69.4.245:81/';
     //String example = 'http://in4.pro';
     //String example = 'https://pad.fml.dev';
     //String example = 'http://lawapsweb.law.goodyear.com:8081/';
-=======
-    String example = 'https://pad.fml.dev';
->>>>>>> origin/3.2.0
+    //String example = 'https://pad.fml.dev';
 
     var version = "3.2.0";
 
     // launch the FML engine
     return FmlEngine(
-            ApplicationType.single,
+            ApplicationType.multi,
             domain: example,
             title: "Framework Markup Language V$version",
             version: version,

@@ -18,6 +18,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 import android.util.*
 import java.util.ArrayList
+import android.view.KeyEvent
+
 
 //  This sample implementation is heavily based on the flutter demo at
 //  https://github.com/flutter/flutter/blob/master/examples/platform_channel/android/app/src/main/java/com/example/platformchannel/MainActivity.java
@@ -68,7 +70,7 @@ class MainActivity: FlutterActivity() {
         }
     }
 
-    private fun createDataWedgeBroadcastReceiver(events: EventSink?): BroadcastReceiver? {
+    private fun `createDataWedgeBroadcastReceiver`(events: EventSink?): BroadcastReceiver? {
         return object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 if (intent.action.equals(PROFILE_INTENT_ACTION))
@@ -133,7 +135,7 @@ class MainActivity: FlutterActivity() {
         barcodePlugin.putString("PLUGIN_NAME", "BARCODE")
         barcodePlugin.putString("RESET_CONFIG", "true")
         barcodePlugin.putBundle("PARAM_LIST", barcodePluginProperties)
-        plugins.add(barcodePlugin)
+        //plugins.add(barcodePlugin)
 
         // rfid plugin
         val rfidPluginProperties = Bundle()

@@ -58,20 +58,25 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener 
   Future<bool> start({bool refresh = false, String? key}) async {
 
     // connect via the sdk
-    if (reader == null) {
-      // attempt to connect to the sdk
-      var reader = sdk.Reader();
-      await reader.initialized.future;
-      //await reader.connected.future;
-      if (reader.status == 200) this.reader = reader;
-    }
+    // if (reader == null) {
+    //   // attempt to connect to the sdk
+    //   var reader = sdk.Reader();
+    //   await reader.init();
+    //   if (reader.status == 200) {
+    //     this.reader = reader;
+    //     connected = true;
+    //   }
+    // }
 
     // connect via the wedge
     if (reader == null) {
       // attempt to connect to the sdk
       var reader = wedge.Reader();
       await reader.initialized.future;
-      if (reader.status == 200) this.reader = reader;
+      if (reader.status == 200) {
+        this.reader = reader;
+        connected = true;
+      }
     }
 
     // register a listener

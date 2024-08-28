@@ -1,7 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:fml/datasources/detectors/rfid/rfid_detector.dart';
 import 'package:fml/datasources/zebra/zebra_interface.dart';
 import 'package:fml/log/manager.dart';
@@ -14,8 +12,6 @@ class Reader {
 
   List<IZebraListener>? _listeners;
 
-  Completer<bool> initialized = Completer();
-
   ReaderConnectionStatus connectionStatus = ReaderConnectionStatus.UnConnection;
   int status = 0;
   String statusMessage = "";
@@ -26,13 +22,9 @@ class Reader {
     return _singleton;
   }
 
-  Reader._initialize() {
-    _init();
-  }
+  Reader._initialize();
 
-  Future _init() async {
-
-    if (initialized.isCompleted) return;
+  Future<bool> init() async {
 
     try {
 
@@ -60,7 +52,9 @@ class Reader {
     }
 
     // set initialized
-    initialized.complete(true);
+    //initialized.complete(true);
+
+    return true;
   }
 
   void _onData(List<RfidData> data) async {
@@ -117,15 +111,18 @@ class Reader {
   }
 
 
-  Map<String, Tag> _tags = {};
+  final Map<String, Tag> _tags = {};
+  Timer? timer;
 
   // creates an rfid Payload from RfidData
   Payload? _fromRfidData(List<RfidData> data) {
 
     if (data.isEmpty) return null;
 
+    // clear the buffer after 1 second
+    //if (timer == null || !timer!.isActive) timer = Timer(Duration(seconds: 5), () {_tags.clear(); });
+
     // build the payload
-    List<Tag> tags = [];
     for (var rfid in data) {
       Tag tag = Tag();
       tag.id = rfid.tagID;
@@ -137,11 +134,6 @@ class Reader {
       tag.data = rfid.memoryBankData;
       tag.lock = rfid.lockData;
       tag.parameters = null;
-      tags.add(tag);
-    }
-
-    // set the tags
-    for (var tag in tags) {
       _tags[tag.id!] = tag;
     }
 

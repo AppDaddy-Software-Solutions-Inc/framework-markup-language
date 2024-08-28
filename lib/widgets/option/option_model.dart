@@ -34,6 +34,17 @@ class OptionModel extends RowModel {
   }
   String? get label => _label?.get() ?? value;
 
+  BooleanObservable? _startSelected;
+  set startSelected(dynamic v) {
+    if (_startSelected != null) {
+      _startSelected!.set(v);
+    } else if (v != null) {
+      _startSelected = BooleanObservable(Binding.toKey(id, 'startselected'), v, scope: scope);
+    }
+  }
+
+  bool get startSelected => _startSelected?.get() ?? false;
+
   // value
   StringObservable? _value;
   set value(dynamic v) {
@@ -48,9 +59,10 @@ class OptionModel extends RowModel {
   // string to search on
   final List<TagModel> tags = [];
 
-  OptionModel(super.parent, super.id, {dynamic data, String? value, String? label})
+  OptionModel(super.parent, super.id, {dynamic data, String? value, String? label, dynamic startSelected})
       : super(scope: Scope(parent: parent.scope)) {
     this.data = data;
+    this.startSelected = startSelected;
     if (value != null) this.value = value;
     if (label != null) this.label = label;
   }
@@ -80,6 +92,7 @@ class OptionModel extends RowModel {
     // Properties
     var label = Xml.get(node: xml, tag: 'label');
     var value = Xml.get(node: xml, tag: 'value');
+    var startSelected = Xml.get(node: xml, tag: 'startselected');
 
     // <OPTION>xxx</OPTION> style
     if (label == null && viewableChildren.isEmpty) {

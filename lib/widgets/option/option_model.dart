@@ -109,6 +109,7 @@ class OptionModel extends RowModel {
     // set label and value
     this.label = label;
     this.value = value;
+    this.startSelected = startSelected;
 
     // add text model
     if (viewableChildren.isEmpty)

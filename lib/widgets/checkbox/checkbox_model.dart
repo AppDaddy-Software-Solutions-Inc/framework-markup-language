@@ -448,7 +448,7 @@ class CheckboxModel extends FormFieldModel implements IFormField {
       list?.forEach((row) {
         OptionModel? model = OptionModel.fromXml(this, prototype, data: row);
         if (model != null) options.add(model);
-       if(startSelected) _insertAnswer(model?.value);
+       if(startSelected || model!.startSelected) _insertAnswer(model?.value);
       });
 
       // set selected option

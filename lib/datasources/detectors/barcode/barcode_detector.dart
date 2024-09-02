@@ -41,10 +41,11 @@ Map<int, BarcodeFormats> barcodeMap = {
 
 class Barcode {
   int? type;
+  String? source;
   String? barcode;
   String? display;
   String? format;
-  String? source;
+  String? seen;
   Map<String, String?>? parameters;
 }
 
@@ -58,10 +59,12 @@ class Payload {
     Data data = Data();
     for (var barcode in payload.barcodes) {
       Map<dynamic, dynamic> map = <dynamic, dynamic>{};
+      map["source"] = barcode.source;
       map["barcode"] = barcode.barcode;
       map["display"] = barcode.display;
       map["format"] = barcode.format;
       map["type"] = barcode.type != null ? barcode.type.toString() : "";
+      map["seen"] = barcode.seen;
       if (barcode.parameters != null) {
         barcode.parameters!.forEach((key, value) => map[key] = value);
       }

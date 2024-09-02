@@ -1,23 +1,22 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/data/data.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:fml/datasources/datasource_interface.dart';
-import 'package:fml/datasources/zebra/zebra_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
+import 'package:fml/observable/observables/string.dart';
 import 'package:fml/widgets/widget/model.dart';
-import 'package:fml/datasources/zebra/zebra_wedge.dart' as wedge;
-import 'package:fml/datasources/zebra/zebra_sdk.dart' as sdk;
-import 'package:fml/datasources/detectors/barcode/barcode_detector.dart' as barcode;
-import 'package:fml/datasources/detectors/rfid/rfid_detector.dart' as rfid;
+import 'package:fml/datasources/detectors/barcode/barcode_detector.dart' as barcode_detector;
+import 'package:fml/datasources/detectors/rfid/rfid_detector.dart' as rfid_detector;
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
+import 'package:zebra123/zebra123.dart';
 
-class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener {
+class ZebraModel extends DataSourceModel implements IDataSource {
 
   // holds the reader instance
-  dynamic reader;
+  Zebra123? reader;
 
   /// If the zebra device is connected
   BooleanObservable? _connected;
@@ -29,6 +28,17 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener 
     }
   }
   bool get connected => _connected?.get() ?? false;
+
+  /// If the zebra device is connected
+  StringObservable? _method;
+  set method(dynamic v) {
+    if (_method != null) {
+      _method!.set(v);
+    } else if (v != null) {
+      _method = StringObservable(Binding.toKey(id, 'method'), v, scope: scope);
+    }
+  }
+  String get method => _method?.get() ?? "either";
 
   // disable datasource by default when not top of stack
   // override by setting background="true"
@@ -58,72 +68,76 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener 
   Future<bool> start({bool refresh = false, String? key}) async {
 
     // connect via the sdk
-    // if (reader == null) {
-    //   // attempt to connect to the sdk
-    //   var reader = sdk.Reader();
-    //   await reader.init();
-    //   if (reader.status == 200) {
-    //     this.reader = reader;
-    //     connected = true;
-    //   }
-    // }
-
-    // connect via the wedge
-    if (reader == null) {
-      // attempt to connect to the sdk
-      var reader = wedge.Reader();
-      await reader.initialized.future;
-      if (reader.status == 200) {
-        this.reader = reader;
-        connected = true;
-      }
-    }
-
-    // register a listener
-    if (reader != null) {
-      reader.registerListener(this);
-      return true;
-    }
-
+    reader ??= Zebra123(callback: onZebraData);
+    reader!.connect(method: toEnum(method, ZebraConnectionMethod.values) ?? ZebraConnectionMethod.either);
     return false;
+  }
+
+  void onZebraData(ZebraInterfaces source, ZebraEvents event, dynamic data) {
+
+    switch (event) {
+
+      case ZebraEvents.readBarcode:
+        if (data is List<Barcode>) {
+          var payload = barcode_detector.Payload();
+          for (Barcode barcode in data) {
+            if (kDebugMode) print("Source: $source Barcode: ${barcode.barcode} Format: ${barcode.format} Date: ${barcode.seen}");
+            var bc = barcode_detector.Barcode();
+            bc.source = fromEnum(source);
+            bc.barcode = barcode.barcode;
+            bc.display = barcode.barcode;
+            bc.format = barcode.format;
+            bc.seen = barcode.seen;
+            payload.barcodes.add(bc);
+          }
+          onSuccess(barcode_detector.Payload.toData(payload));
+        }
+        break;
+
+      case ZebraEvents.readRfid:
+        if (data is List<RfidTag>) {
+          var payload = rfid_detector.Payload();
+          for (RfidTag tag in data) {
+            if (kDebugMode) print("Source: $source Tag: ${tag.id} Rssi: ${tag.rssi}");
+            var tg = rfid_detector.Tag();
+            tg.source = fromEnum(source);
+            tg.id = tag.id;
+            tg.antenna = tag.antenna;
+            tg.rssi = tag.rssi;
+            tg.distance = tag.distance;
+            tg.size = tag.size;
+            tg.memoryBankData = tag.memoryBankData;
+            tg.lockData = tag.lockData;
+            tg.seen = tag.seen;
+            payload.tags.add(tg);
+          }
+          onSuccess(rfid_detector.Payload.toData(payload));
+        }
+        break;
+
+      case ZebraEvents.error:
+        if (data is Error) {
+          if (kDebugMode) print("Source: $source Error: ${data.message}");
+        }
+        break;
+
+      case ZebraEvents.connectionStatus:
+        if (data is ConnectionStatus) {
+          if (kDebugMode) print("Source: $source ConnectionStatus: ${data.status}");
+          connected = data.status == ZebraConnectionStatus.connected;
+        }
+        break;
+
+      default:
+        if (kDebugMode) {
+          if (kDebugMode) print("Source: $source Unknown Event: $event");
+        }
+    }
   }
 
   @override
   void dispose() {
-    reader?.removeListener(this);
     super.dispose();
-  }
-
-  @override
-  Future<bool> stop() async {
-    reader?.removeListener(this);
-    return true;
-  }
-
-  @override
-  void onZebraData({dynamic payload}) {
-
-    // enabled?
-    if (!enabled) return;
-
-    // no payload
-    if (payload == null) return;
-
-    // barcode data?
-    if (payload is barcode.Payload && payload.barcodes.isNotEmpty) {
-      Data data = barcode.Payload.toData(payload);
-      onSuccess(data, code: 200);
-    }
-
-    // rfid tag data?
-    if (payload is rfid.Payload && payload.tags.isNotEmpty) {
-      Data data = rfid.Payload.toData(payload);
-      onSuccess(data, code: 200);
-    }
-  }
-
-  @override
-  void onZebraConnectionStatus(bool connected) {
-    this.connected = connected;
+    reader?.destroy();
   }
 }

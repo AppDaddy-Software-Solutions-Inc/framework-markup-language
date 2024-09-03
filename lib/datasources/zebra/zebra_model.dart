@@ -75,6 +75,8 @@ class ZebraModel extends DataSourceModel implements IDataSource {
 
   void onZebraData(ZebraInterfaces source, ZebraEvents event, dynamic data) {
 
+    if (!enabled) return;
+    
     switch (event) {
 
       case ZebraEvents.readBarcode:

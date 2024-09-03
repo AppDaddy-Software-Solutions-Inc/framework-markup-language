@@ -213,6 +213,7 @@ dependencies:
   # syncfusion_flutter_charts: ^20.1.57
   # https://pub.dev/packages/syncfusion_flutter_charts/license
 
+
   stream_channel: ^2.1.1
   # BSD-3-Clause
 
@@ -247,6 +248,9 @@ dependencies:
   # MIT
 
   xml2json: ^6.2.3
+  # MIT
+
+  zebra123: ^1.0.3
   # MIT
 
   zxing_lib: ^1.1.2

@@ -17,7 +17,7 @@ import 'package:fml/datasources/http/model.dart';
 import 'package:fml/datasources/mqtt/mqtt_model.dart';
 import 'package:fml/datasources/nfc/nfc_model.dart';
 import 'package:fml/datasources/socket/socket_model.dart';
-import 'package:fml/datasources/zebra/model.dart';
+import 'package:fml/datasources/zebra/zebra_model.dart';
 import 'package:fml/widgets/alarm/alarm_model.dart';
 import 'package:fml/widgets/animation/animation_child/flip/flip_card_model.dart';
 import 'package:fml/widgets/animation/animation_child/transform/transform_model.dart';

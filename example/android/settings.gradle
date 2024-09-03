@@ -23,4 +23,5 @@ plugins {
     id "org.jetbrains.kotlin.android" version "1.9.23" apply false
 }
 
-include ":app"
+include ":app", ':RFIDAPI3Library'
+project(":RFIDAPI3Library").projectDir = file("./RFIDAPI3Library")

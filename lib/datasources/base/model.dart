@@ -52,7 +52,7 @@ class DataSourceModel extends Model implements IDataSource {
   bool enabledInBackground = true;
 
   // position in stack
-  bool _isInBackground = false;
+  bool isInBackground = false;
 
   // enabled
   BooleanObservable? _enabled;
@@ -66,7 +66,7 @@ class DataSourceModel extends Model implements IDataSource {
   }
 
   bool get enabled {
-    if (!enabledInBackground && _isInBackground) return false;
+    if (!enabledInBackground && isInBackground) return false;
     return _enabled?.get() ?? true;
   }
 
@@ -489,7 +489,8 @@ class DataSourceModel extends Model implements IDataSource {
   }
 
   void onIndexChange(Observable index) {
-    _isInBackground = (toInt(index.get()) != 0);
+    isInBackground = (toInt(index.get()) != 0);
+    int i = 0;
   }
 
   @override

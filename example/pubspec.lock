@@ -1792,10 +1792,10 @@ packages:
     dependency: transitive
     description:
       name: zebra123
-      sha256: c091b2b544227283220b781bb844384ccb225c0cca141fe5273f6e54f49bc0d1
+      sha256: b15f3b0c1c74522c85271d93937bbd0bb4226a502934bded9ea78f2c01fedcde
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.7"
   zxing_lib:
     dependency: transitive
     description:

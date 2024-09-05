@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:fml/datasources/datasource_interface.dart';
+import 'package:fml/helpers/xml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
@@ -10,7 +11,6 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector.dart' as barcode_detector;
 import 'package:fml/datasources/detectors/rfid/rfid_detector.dart' as rfid_detector;
 import 'package:xml/xml.dart';
-import 'package:fml/helpers/helpers.dart';
 import 'package:zebra123/zebra123.dart';
 
 class ZebraModel extends DataSourceModel implements IDataSource {
@@ -69,11 +69,11 @@ class ZebraModel extends DataSourceModel implements IDataSource {
 
     // connect via the sdk
     reader ??= Zebra123(callback: onZebraData);
-    reader!.connect(method: toEnum(method, ZebraConnectionMethod.values) ?? ZebraConnectionMethod.either);
+    reader!.connect();
     return false;
   }
 
-  void onZebraData(ZebraInterfaces source, ZebraEvents event, dynamic data) {
+  void onZebraData(ZebraInterfaces interface, ZebraEvents event, dynamic data) {
 
     if (!enabled) return;
     
@@ -83,9 +83,9 @@ class ZebraModel extends DataSourceModel implements IDataSource {
         if (data is List<Barcode>) {
           var payload = barcode_detector.Payload();
           for (Barcode barcode in data) {
-            if (kDebugMode) print("Source: $source Barcode: ${barcode.barcode} Format: ${barcode.format} Date: ${barcode.seen}");
+            print("Source: $interface Barcode: ${barcode.barcode} Format: ${barcode.format} Date: ${barcode.seen}");
             var bc = barcode_detector.Barcode();
-            bc.source = fromEnum(source);
+            bc.source = fromEnum(interface);
             bc.barcode = barcode.barcode;
             bc.display = barcode.barcode;
             bc.format = barcode.format;
@@ -100,9 +100,9 @@ class ZebraModel extends DataSourceModel implements IDataSource {
         if (data is List<RfidTag>) {
           var payload = rfid_detector.Payload();
           for (RfidTag tag in data) {
-            if (kDebugMode) print("Source: $source Tag: ${tag.id} Rssi: ${tag.rssi}");
+            print("Source: $interface Tag: ${tag.id} Rssi: ${tag.rssi}");
             var tg = rfid_detector.Tag();
-            tg.source = fromEnum(source);
+            tg.source = fromEnum(interface);
             tg.id = tag.id;
             tg.antenna = tag.antenna;
             tg.rssi = tag.rssi;
@@ -119,27 +119,28 @@ class ZebraModel extends DataSourceModel implements IDataSource {
 
       case ZebraEvents.error:
         if (data is Error) {
-          if (kDebugMode) print("Source: $source Error: ${data.message}");
+          if (kDebugMode) print("Source: $interface Error: ${data.message}");
         }
         break;
 
       case ZebraEvents.connectionStatus:
         if (data is ConnectionStatus) {
-          if (kDebugMode) print("Source: $source ConnectionStatus: ${data.status}");
+          if (kDebugMode) print("Source: $interface ConnectionStatus: ${data.status}");
           connected = data.status == ZebraConnectionStatus.connected;
         }
         break;
 
       default:
         if (kDebugMode) {
-          if (kDebugMode) print("Source: $source Unknown Event: $event");
+          if (kDebugMode) print("Source: $interface Unknown Event: $event");
         }
     }
   }
 
   @override
   void dispose() {
+    reader?.disconnect();
+    reader = null;
     super.dispose();
-    reader?.destroy();
   }
 }

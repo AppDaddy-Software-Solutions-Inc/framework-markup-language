@@ -1,2 +1,2 @@
 configurations.maybeCreate("default")
-artifacts.add("default", file('RFIDAPI3Library.aar'))
+artifacts.add("default", file('API3_LIB-release-2.0.2.116.aar'))

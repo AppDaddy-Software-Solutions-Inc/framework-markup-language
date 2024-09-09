@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fml/application/application_model.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/helpers/string.dart';
+import 'package:fml/observable/binding.dart';
 import 'package:fml/store/store_app_view.dart';
 import 'package:fml/system.dart';
 import 'package:fml/theme/theme.dart';
@@ -108,6 +109,9 @@ class _ViewState extends State<StoreView>
   /// Callback to fire the [_ViewState.build] when the [StoreModel] changes
   @override
   onModelChange(Model model, {String? property, dynamic value}) {
+
+    var b = Binding.fromString(property);
+    if (b?.property == 'busy') return;
 
     // application model
     if (model is ApplicationModel) {

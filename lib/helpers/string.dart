@@ -322,9 +322,12 @@ String? fromBase64(dynamic s) {
 /// Check if a String is numeric value
 bool isNumeric(dynamic s) {
   try {
-    if (s is double) return true;
-    double.parse(s);
-    return true;
+    if (s == null)    return false;
+    if (s is num)     return true;
+    if (s is int)     return true;
+    if (s is double)  return true;
+    if (s is! String) return false;
+    return double.tryParse(s) != null;
   } catch (_) {}
   return false;
 }

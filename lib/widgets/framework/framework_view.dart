@@ -442,8 +442,8 @@ class FrameworkViewState extends State<FrameworkView>
 
     // simulate a swipe to move back on all desktop applications
     // and mobile IOS applications
-    bool enableSwipeBack = isDesktop ||
-        (isMobile && System().useragent == "ios");
+    //bool enableSwipeBack = isDesktop || (isMobile && System().useragent == "ios");
+    bool enableSwipeBack = isDesktop;
 
     // gesture detector is swipe back on IOS
     if (enableSwipeBack) {

@@ -493,7 +493,6 @@ class ApplicationModel extends Model {
   static Future<ApplicationModel?> _fromMap(dynamic map) async {
     ApplicationModel? app;
     if (map is Map<String, dynamic>) {
-
       // create the application
       app = ApplicationModel(System(),
           key: fromMap(map, "key"),

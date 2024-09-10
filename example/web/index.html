@@ -131,10 +131,11 @@
     <script>
 
         // Set Flutter Renderer
-        // auto      - automatically chooses which renderer to use. This option chooses the HTML renderer when the app is running in a mobile browser, and CanvasKit renderer when the app is running in a desktop browser.
-        // html      - always use the HTML renderer. Uses a combination of HTML elements, CSS, Canvas elements, and SVG elements. This renderer has a smaller download size.
-        // canvaskit - always use the CanvasKit renderer. This renderer is fully consistent with Flutter mobile and desktop, has faster performance with higher widget density, but adds about 2MB in download size.
-        let renderer = "auto";
+        // auto      - (only flutter 3.22 or below). Automatically chooses which renderer to use. This option chooses the HTML renderer when the app is running in a mobile browser, and CanvasKit renderer when the app is running in a desktop browser.
+        // html      - (only flutter 3.22 or below). Always use the HTML renderer. Uses a combination of HTML elements, CSS, Canvas elements, and SVG elements. This renderer has a smaller download size.
+        // canvaskit - Compile to Javascript. This renderer is fully consistent with Flutter mobile and desktop, has faster performance with higher widget density, but adds about 2MB in download size.
+        // skwasm    - (only flutter 3.24 or above). Compile to WebAssembly.
+        let renderer = "canvaskit";
         const userConfig = {'renderer': renderer};
         console.log("Rendering with " + renderer);
 
@@ -153,6 +154,9 @@
             {
                 config: userConfig,
                 serviceWorker: {serviceWorkerVersion: serviceWorkerVersion},
+                serviceWorkerSettings: {
+                    serviceWorkerVersion: {{flutter_service_worker_version}},
+                },
                 onEntrypointLoaded: async function(engineInitializer)
                 {
                     // display loading text (uncomment if desired)

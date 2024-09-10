@@ -34,6 +34,10 @@ dependencies:
 
   # to check package status, run -> flutter pub outdated
 
+  # Although we don't use the archive package directly, updating flutter to 3.24 requires this package to be updated
+  # otherwise we get an error: Error: Method not found: 'UnmodifiableUint32ListView'. UnmodifiableUint32ListView(Uint32List(0));
+  archive: ^3.6.1
+
   audioplayers: ^6.0.0
   # MIT
 

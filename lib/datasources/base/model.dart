@@ -490,7 +490,6 @@ class DataSourceModel extends Model implements IDataSource {
 
   void onIndexChange(Observable index) {
     isInBackground = (toInt(index.get()) != 0);
-    int i = 0;
   }
 
   @override

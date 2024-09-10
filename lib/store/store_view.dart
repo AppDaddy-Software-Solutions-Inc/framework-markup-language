@@ -110,9 +110,6 @@ class _ViewState extends State<StoreView>
   @override
   onModelChange(Model model, {String? property, dynamic value}) {
 
-    var b = Binding.fromString(property);
-    if (b?.property == 'busy') return;
-
     // application model
     if (model is ApplicationModel) {
       ApplicationModel app = model;

@@ -87,11 +87,11 @@
         // after build. This adds the version # to the deferred parts
 
         // add flutter.js script
-        var script      = document.createElement("script");
-        script.type     = "text/javascript";
-        script.src      = `flutter.js?v=${serviceWorkerVersion}`;
-        script.defer    = true;
-        document.head.appendChild(script);
+        //var script      = document.createElement("script");
+        //script.type     = "text/javascript";
+        //script.src      = `flutter.js?v=${serviceWorkerVersion}`;
+        //script.defer    = true;
+        //document.head.appendChild(script);
     </script>
 
     <!-- Local Scripts -->
@@ -125,52 +125,32 @@
     <!-- Loading Text -->
     <p id="loadingText" class="centered text">
         <!-- uncomment below if you want to show loading text -->
-        <!-- Loading FML Engine ... -->
+        Loading FML Engine ...
     </p>
 
     <script>
 
-        // Set Flutter Renderer
-        // auto      - automatically chooses which renderer to use. This option chooses the HTML renderer when the app is running in a mobile browser, and CanvasKit renderer when the app is running in a desktop browser.
-        // html      - always use the HTML renderer. Uses a combination of HTML elements, CSS, Canvas elements, and SVG elements. This renderer has a smaller download size.
-        // canvaskit - always use the CanvasKit renderer. This renderer is fully consistent with Flutter mobile and desktop, has faster performance with higher widget density, but adds about 2MB in download size.
-        let renderer = "auto";
-        const userConfig = {'renderer': renderer};
-        console.log("Rendering with " + renderer);
+        {{flutter_js}}
+        {{flutter_build_config}}
 
-        // load main.dart.js
-        window.addEventListener('load', function(ev)
+        _flutter.loader.load(
         {
-            var loadingImage = document.querySelector('#loadingImage');
-            var loadingText  = document.querySelector('#loadingText');
+           onEntrypointLoaded: async function(engineInitializer)
+           {
+             var loadingImage = document.querySelector('#loadingImage');
+             var loadingText  = document.querySelector('#loadingText');
 
-            {{flutter_build_config}}
+             // display loading text (uncomment if desired)
+             // if (loadingText != null) loadingText.textContent = "Initializing engine...";
+             const appRunner = await engineInitializer.initializeEngine();
 
-            // display loading text (uncomment if desired)
-            // if (loadingText != null) loadingText.textContent = "Loading, please wait ...";
+             // remove loading image and text
+             if (loadingImage != null) loadingImage.remove();
+             if (loadingText  != null) loadingText.remove();
 
-            _flutter.loader.load(
-            {
-                config: userConfig,
-                serviceWorker: {serviceWorkerVersion: serviceWorkerVersion},
-                onEntrypointLoaded: async function(engineInitializer)
-                {
-                    // display loading text (uncomment if desired)
-                    // if (loadingText != null) loadingText.textContent = "Initializing engine...";
-
-                    let config = { renderer: renderer, useColorEmoji: true, canvasKitBaseUrl: "/canvaskit/"}
-                    let appRunner = await engineInitializer.initializeEngine(config)
-
-                    // remove loading image and text
-                    if (loadingImage != null) loadingImage.remove();
-                    if (loadingText  != null) loadingText.remove();
-
-                    // run the app
-                    await appRunner.runApp();
-                }
-            });
+             await appRunner.runApp();
+           }
         });
-        </script>
-
-    </body>
+    </script>
+</body>
 </html>

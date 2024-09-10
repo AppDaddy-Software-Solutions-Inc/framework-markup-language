@@ -23,7 +23,7 @@ documentation: https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup
 
 environment:
   sdk: '>=3.3.1 <4.0.0'
-  flutter: '>=3.0.0'
+  flutter: '>=3.24.0'
 
 screenshots:
 

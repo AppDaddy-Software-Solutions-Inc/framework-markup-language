@@ -83,7 +83,7 @@ class ZebraModel extends DataSourceModel implements IDataSource {
         if (data is List<Barcode>) {
           var payload = barcode_detector.Payload();
           for (Barcode barcode in data) {
-            print("Source: $interface Barcode: ${barcode.barcode} Format: ${barcode.format} Date: ${barcode.seen}");
+            if (kDebugMode) print("Source: $interface Barcode: ${barcode.barcode} Format: ${barcode.format} Date: ${barcode.seen}");
             var bc = barcode_detector.Barcode();
             bc.source = fromEnum(interface);
             bc.barcode = barcode.barcode;
@@ -100,7 +100,7 @@ class ZebraModel extends DataSourceModel implements IDataSource {
         if (data is List<RfidTag>) {
           var payload = rfid_detector.Payload();
           for (RfidTag tag in data) {
-            print("Source: $interface Tag: ${tag.id} Rssi: ${tag.rssi}");
+            if (kDebugMode) print("Source: $interface Tag: ${tag.id} Rssi: ${tag.rssi}");
             var tg = rfid_detector.Tag();
             tg.source = fromEnum(interface);
             tg.id = tag.id;

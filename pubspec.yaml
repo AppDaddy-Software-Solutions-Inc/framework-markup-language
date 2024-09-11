@@ -50,9 +50,6 @@ dependencies:
   changeicon: ^1.0.0
   # MIT
 
-  collection: ^1.18.0
-  # BSD-3-Clause
-
   # charts_flutter: ^0.12.0
   community_charts_flutter: ^1.0.4
   # Apache-2.0
@@ -73,20 +70,20 @@ dependencies:
   dart_eval: ^0.7.9
   # BSD-3-Clause
 
-  decimal: ^2.3.3
+  decimal: ^3.0.2
   # Apache-2.0
 
   # file picker with extension support
-  file_picker: ^8.0.6
+  file_picker: ^8.1.2
   # MIT
 
   # Microsoft Logon - Newer versions of these packages require web < 0.5.0
-  firebase_auth: ^5.1.2
-  firebase_core: ^3.2.0
+  firebase_auth: ^5.2.1
+  firebase_core: ^3.4.1
   # firebase_core_platform_interface: ^4.8.0
   # BSD-3-Clause
 
-  fl_chart: ^0.68.0
+  fl_chart: ^0.69.0
 
   flutter_code_editor: ^0.3.1
   # Apache-2.0, MIT
@@ -96,9 +93,6 @@ dependencies:
 
   flutter_beacon: ^0.5.1
   # BSD-3-Clause
-
-  flutter_box_transform: 0.4.4
-  # Apache-2.0
 
   flutter_eval: ^0.7.6
   # BSD-3-Clause
@@ -125,7 +119,7 @@ dependencies:
   flutter_typeahead: ^5.2.0
   # BSD-2-Clause
 
-  geolocator: ^12.0.0
+  geolocator: ^13.0.1
   # MIT
 
   google_fonts: ^6.2.1
@@ -173,7 +167,7 @@ dependencies:
   mime: ^1.0.4
   # BSD-3-Clause
 
-  mqtt_client: ^10.3.0
+  mqtt_client: ^10.5.1
   # BSD-3-Clause, MIT
 
   ndef: ^0.3.1
@@ -245,7 +239,7 @@ dependencies:
   visibility_detector: ^0.4.0+2
   # BSD-3-Clause
 
-  webview_flutter: ^4.8.0
+  webview_flutter: ^4.9.0
   # BSD-3-Clause
 
   xml: ^6.5.0
@@ -254,7 +248,7 @@ dependencies:
   xml2json: ^6.2.3
   # MIT
 
-  zebra123: ^1.1.1
+  zebra123: ^1.1.4
   # MIT
 
   zxing_lib: ^1.1.2

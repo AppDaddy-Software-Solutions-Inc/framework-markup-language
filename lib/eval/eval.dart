@@ -85,6 +85,8 @@ class Eval {
     'toboolean': _toBool,
     'todate': _toDate,
     'toepoch': _toEpoch,
+    'tohex': _toHex,
+    'toint': _toInt,
     'tojson': _toJson,
     'tolower': _toLower,
     'tonum': _toNum,
@@ -337,10 +339,13 @@ class Eval {
   static dynamic _toNum(dynamic value) => toNum(value);
 
   /// Returns an integer from a dynamic value using [toNum]
-  static dynamic _toInt(dynamic value) => toNum(value)?.toInt();
+  static dynamic _toInt(dynamic value) => toInt(value);
 
   /// Returns a double from a dynamic value using [toNum]
   static dynamic _toDouble(dynamic value) => toNum(value)?.toDouble();
+
+  /// Returns a double from a dynamic value using [toNum]
+  static dynamic _toHex(dynamic value, [bool add0xprefix = false]) => toHex(value, add0xprefix);
 
   /// Returns the nearest integer value rounding up
   static dynamic _ceil(dynamic value) {

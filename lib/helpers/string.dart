@@ -95,9 +95,32 @@ int? toInt(dynamic s) {
   try {
     if (s == null) return null;
     if (s is int) return s;
+
+    // hex conversion
+    if (s is String && s.trim().startsWith("0x")) {
+      return int.parse(s.trim().substring(2), radix: 16);
+    }
+
+    // convert to num and round
     num? n = toNum(s);
-    if (n != null) n = n.round();
+    if (n != null) {
+      n = n.round();
+    }
+
     return n as int?;
+  } catch (e) {
+    return null;
+  }
+}
+
+// converts an int to hex
+String? toHex(dynamic s, [bool add0x = false]) {
+  try {
+    var i = toInt(s);
+    if (i == null) return null;
+    var v = i.toRadixString(16);
+    if (add0x) v = "0x$v";
+    return v;
   } catch (e) {
     return null;
   }

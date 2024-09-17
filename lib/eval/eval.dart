@@ -345,7 +345,7 @@ class Eval {
   static dynamic _toDouble(dynamic value) => toNum(value)?.toDouble();
 
   /// Returns a double from a dynamic value using [toNum]
-  static dynamic _toHex(dynamic value, [bool add0x = false]) => toHex(value, add0x);
+  static dynamic _toHex(dynamic value, [bool add0xprefix = false]) => toHex(value, add0xprefix);
 
   /// Returns the nearest integer value rounding up
   static dynamic _ceil(dynamic value) {

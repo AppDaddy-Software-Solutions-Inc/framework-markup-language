@@ -114,12 +114,12 @@ int? toInt(dynamic s) {
 }
 
 // converts an int to hex
-String? toHex(dynamic s, [bool add0x = false]) {
+String? toHex(dynamic s, [bool add0xprefix = false]) {
   try {
     var i = toInt(s);
     if (i == null) return null;
     var v = i.toRadixString(16);
-    if (add0x) v = "0x$v";
+    if (add0xprefix) v = "0x$v";
     return v;
   } catch (e) {
     return null;

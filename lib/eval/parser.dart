@@ -102,10 +102,8 @@ class ExpressionParser {
   // e.g. `foo.bar(baz)`, `1`, `'abc'`, `(a % 2)` (because it's in parenthesis)
   final SettableParser<Expression> token = undefined<Expression>();
 
-  // Also use a map for the binary operations but set their values to their
-  // binary precedence for quick reference:
-  // see [Order of operations](http://en.wikipedia.org/wiki/Order_of_operations#Programming_language)
-  static const Map<String, int> binaryOperations = {
+  // operator precedence (old) - added by olajos
+  static const Map<String, int> binaryOperationsOld = {
     '??':
         1, //Added by isaac to allow null aware operations opposed to nvl syntax.
     '||': 2,
@@ -128,6 +126,33 @@ class ExpressionParser {
     '*': 11,
     '/': 11,
     '%': 11,
+  };
+
+  // operator precedence (new) - added by olajos
+  // support for << and >> bitwise operators
+  static const Map<String, int> binaryOperations = {
+    '??': 0,
+    ';' : 0, // added by olajos
+    '||': 1,
+    '&&': 2,
+    '|' : 3,
+    '^' : 4,
+    '&' : 5,
+    '==': 6,
+    '!=': 6,
+    '<=': 7,
+    '>=': 7,
+    '<<': 7, // changed by olajos. moved ahead of '<' operator.
+    '>>': 7, // changed by olajos. moved ahead of '>' operator
+    '<' : 8,
+    '>' : 8,
+    '+' : 9,
+    '-' : 9,
+    '=' : 9, // added by olajos
+    '*' : 10,
+    '/' : 10,
+    '%' : 10,
+    '~/': 10,
   };
 
   // This function is responsible for gobbling an individual expression,

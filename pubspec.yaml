@@ -248,7 +248,7 @@ dependencies:
   xml2json: ^6.2.3
   # MIT
 
-  zebra123: ^1.1.4
+  zebra123: ^1.1.5
   # MIT
 
   zxing_lib: ^1.1.2

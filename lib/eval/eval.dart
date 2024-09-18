@@ -91,7 +91,6 @@ class Eval {
     'tolower': _toLower,
     'tonum': _toNum,
     'tonumber': _toNum,
-    'toint': _toInt,
     'todouble': _toDouble,
     'tostr': _toString,
     'tostring': _toString,

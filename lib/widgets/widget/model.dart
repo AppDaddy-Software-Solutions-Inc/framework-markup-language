@@ -145,6 +145,7 @@ class Model implements IDataSourceListener {
     "GET",
     "GPS",
     "HTTP",
+    "ICONS",
     "LOG",
     "MQTT",
     "NFC",

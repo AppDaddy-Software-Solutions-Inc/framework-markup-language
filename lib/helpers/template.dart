@@ -2,6 +2,7 @@
 import 'package:fml/datasources/beacon/beacon_model.dart';
 import 'package:fml/datasources/detectors/biometrics/biometrics_detector_model.dart';
 import 'package:fml/datasources/http/patch/model.dart';
+import 'package:fml/datasources/icons/icons_data_model.dart';
 import 'package:fml/datasources/sse/model.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/stash/stash_model.dart';
@@ -771,6 +772,10 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
 
     case "ICON":
       model = IconModel.fromXml(parent, node);
+      break;
+
+    case "ICONS":
+      model = IconsDataModel.fromXml(parent, node);
       break;
 
     case "INT":

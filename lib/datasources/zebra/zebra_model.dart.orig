@@ -100,7 +100,11 @@ class ZebraModel extends DataSourceModel implements IDataSource {
         if (data is List<RfidTag>) {
           var payload = rfid_detector.Payload();
           for (RfidTag tag in data) {
+<<<<<<< HEAD
             if (kDebugMode) print("Source: $interface Tag: ${tag.epc} Rssi: ${tag.rssi}");
+=======
+            if (kDebugMode) print("Source: $interface Epc: ${tag.epc} Rssi: ${tag.rssi}");
+>>>>>>> icons-datasource
             var tg = rfid_detector.Tag();
             tg.source = fromEnum(interface);
             tg.id = tag.epc;

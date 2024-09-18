@@ -32,4 +32,4 @@ build/
 example/android/keystore.properties
 .flutter-plugins
 example/pubspec.lock
-example/pubspec.lock
+pubspec.lock

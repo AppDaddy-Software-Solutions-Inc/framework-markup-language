@@ -652,7 +652,7 @@ class Graphics {
     'balcony_sharp': Icons.balcony_sharp,
     'ballot': Icons.ballot, 'ballot_outlined': Icons.ballot_outlined,
     'ballot_rounded': Icons.ballot_rounded, 'ballot_sharp': Icons.ballot_sharp,
-    'barcode_reader ': Icons.barcode_reader,
+    'barcode_reader': Icons.barcode_reader,
     'bar_chart': Icons.bar_chart,
     'bar_chart_outlined': Icons.bar_chart_outlined,
     'bar_chart_rounded': Icons.bar_chart_rounded,

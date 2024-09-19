@@ -86,10 +86,12 @@ class ZebraModel extends DataSourceModel implements IDataSource {
     switch (function) {
 
       case "start":
+        busy=true;
         reader?.scan(ZebraScanRequest.rfidStartInventory);
         return true;
 
       case "stop":
+        busy=false;
         reader?.scan(ZebraScanRequest.rfidStopInventory);
         return true;
 
@@ -160,6 +162,16 @@ class ZebraModel extends DataSourceModel implements IDataSource {
 
           onSuccess(rfid_detector.Payload.toData(payload));
         }
+        break;
+
+      case ZebraEvents.startRead:
+        if (kDebugMode) print("Source: $interface StartRead");
+        busy = true;
+        break;
+
+      case ZebraEvents.stopRead:
+        if (kDebugMode) print("Source: $interface StopRead");
+        busy = false;
         break;
 
       case ZebraEvents.error:

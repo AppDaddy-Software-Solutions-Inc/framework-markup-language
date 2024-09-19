@@ -109,7 +109,7 @@ dependencies:
   flutter_multi_formatter: ^2.13.0
   # MIT
 
-  flutter_nfc_kit: ^3.4.2
+  flutter_nfc_kit: ^3.5.2
   # MIT
 
   flutter_svg: ^2.0.10+1

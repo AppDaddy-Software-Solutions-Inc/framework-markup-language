@@ -30,6 +30,7 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 build/
 example/android/keystore.properties
-.flutter-plugins
+/.flutter-plugins
 example/pubspec.lock
+/.flutter-plugins-dependencies
 pubspec.lock

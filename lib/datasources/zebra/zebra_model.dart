@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:fml/datasources/datasource_interface.dart';
+import 'package:fml/helpers/string.dart';
 import 'package:fml/helpers/xml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';

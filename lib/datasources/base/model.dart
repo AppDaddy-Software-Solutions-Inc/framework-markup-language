@@ -511,47 +511,6 @@ class DataSourceModel extends Model implements IDataSource {
     if (listeners.contains(listener)) listeners.remove(listener);
   }
 
-  @override
-  Future<bool> clear({int? start, int? end}) async {
-    if ((data != null) && (data!.isNotEmpty)) {
-      int from = 0;
-      int to = data!.length - 1;
-
-      if (start != null) {
-        if (start.isNegative) {
-          from = data!.length + start;
-        } else {
-          from = start;
-        }
-        if (end == null) to = from;
-      }
-
-      if (end != null) {
-        if (end >= 0) {
-          to = end;
-          if (to >= data!.length) to = data!.length - 1;
-        } else {
-          to = data!.length + end;
-        }
-      }
-
-      if ((from <= to) &&
-          (from >= 0) &&
-          (from < data!.length) &&
-          (to >= 0) &&
-          (to < data!.length)) {
-        Data data = Data();
-        int i = 0;
-        for (var row in this.data!) {
-          if ((i < from) || (i > to)) data.add(row);
-          i++;
-        }
-        this.data = data;
-      }
-    }
-    return true;
-  }
-
   /// finds the element in data either by object or by index
   dynamic getElement(dynamic element) {
     if (data == null) return null;
@@ -596,6 +555,51 @@ class DataSourceModel extends Model implements IDataSource {
 
     // insert the values
     return await insert(json, index);
+  }
+
+  @override
+  Future<bool> clear({int? start, int? end}) async {
+    if (data != null && data!.isNotEmpty) {
+      int from = 0;
+      int to = data!.length - 1;
+
+      if (start != null) {
+        if (start.isNegative) {
+          from = data!.length + start;
+        } else {
+          from = start;
+        }
+        if (end == null) to = from;
+      }
+
+      if (end != null) {
+        if (end >= 0) {
+          to = end;
+          if (to >= data!.length) to = data!.length - 1;
+        } else {
+          to = data!.length + end;
+        }
+      }
+
+      if ((from <= to) &&
+          (from >= 0) &&
+          (from < data!.length) &&
+          (to >= 0) &&
+          (to < data!.length)) {
+        Data data = Data();
+        int i = 0;
+        for (var row in this.data!) {
+          if ((i < from) || (i > to)) data.add(row);
+          i++;
+        }
+        this.data = data;
+      }
+
+      // notify listeners of data change
+      notify();
+      onDataChange();
+    }
+    return true;
   }
 
   @override

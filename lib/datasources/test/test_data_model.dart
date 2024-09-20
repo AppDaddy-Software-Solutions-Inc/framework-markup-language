@@ -29,14 +29,16 @@ class TestDataModel extends DataSourceModel implements IDataSource {
       var delay = toInt(Xml.get(node: xml, tag: 'delay')) ?? 0;
 
       if (delay <= 0) {
-        model.data = generate(model.rows);
+        var data = generate(model.rows);
+        model.onSuccess(data, code: 200, message: "Ok");
         return model;
       }
 
+      // delayed for testing
       model.busy = true;
       Future.delayed(Duration(seconds: delay), () {
         var data = generate(model!.rows);
-        model.onData(data);
+        model.onSuccess(data, code: 200, message: "Ok");
         model.busy = false;
       });
     }

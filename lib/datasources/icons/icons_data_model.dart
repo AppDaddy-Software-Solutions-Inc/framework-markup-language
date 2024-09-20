@@ -17,7 +17,8 @@ class IconsDataModel extends DataSourceModel implements IDataSource {
   static IconsDataModel? fromXml(Model parent, XmlElement xml) {
     IconsDataModel? model = IconsDataModel(parent, Xml.get(node: xml, tag: 'id'));
     model.deserialize(xml);
-    model.data = generate();
+    var data = generate();
+    model.onSuccess(data, code: 200, message: "Ok");
     return model;
   }
 

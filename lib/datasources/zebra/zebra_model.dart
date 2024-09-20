@@ -7,12 +7,13 @@ import 'package:fml/helpers/xml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
-import 'package:fml/observable/observables/string.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector.dart' as barcode_detector;
 import 'package:fml/datasources/detectors/rfid/rfid_detector.dart' as rfid_detector;
 import 'package:xml/xml.dart';
 import 'package:zebra123/zebra123.dart';
+
+enum scanMode { scanning, tracking }
 
 class ZebraModel extends DataSourceModel implements IDataSource {
 
@@ -30,16 +31,13 @@ class ZebraModel extends DataSourceModel implements IDataSource {
   }
   bool get connected => _connected?.get() ?? false;
 
-  /// If the zebra device is connected
-  StringObservable? _method;
-  set method(dynamic v) {
-    if (_method != null) {
-      _method!.set(v);
-    } else if (v != null) {
-      _method = StringObservable(Binding.toKey(id, 'method'), v, scope: scope);
-    }
-  }
-  String get method => _method?.get() ?? "either";
+  /// If the zebra device is scanning
+  late final BooleanObservable _scanning;
+  bool get scanning => _scanning.get() ?? false;
+
+  /// If the zebra device is scanning
+  late final BooleanObservable _tracking;
+  bool get tracking => _tracking.get() ?? false;
 
   // disable datasource by default when not top of stack
   // override by setting background="true"
@@ -49,8 +47,17 @@ class ZebraModel extends DataSourceModel implements IDataSource {
   @override
   bool get autoexecute => super.autoexecute ?? true;
 
+  // busy - override since busy is controlled by the zebra device and not ondata success
+  late final BooleanObservable _busy;
+  @override
+  set busy(dynamic v) {}
+  bool get busy => _busy.get() ?? false;
+
   ZebraModel(super.parent, super.id) {
     connected = false;
+    _scanning = BooleanObservable(Binding.toKey(id, 'scanning'), false, scope: scope, listener: onPropertyChange);
+    _tracking = BooleanObservable(Binding.toKey(id, 'tracking'), false, scope: scope, listener: onPropertyChange);
+    _busy     = BooleanObservable(Binding.toKey(id, 'busy'),     false, scope: scope, listener: onPropertyChange);
   }
 
   static ZebraModel? fromXml(Model parent, XmlElement xml) {
@@ -68,9 +75,21 @@ class ZebraModel extends DataSourceModel implements IDataSource {
   @override
   Future<bool> start({bool refresh = false, String? key}) async {
     // connect via the sdk
-    reader ??= Zebra123(callback: onZebraData);
+    reader ??= Zebra123(callback: onZebraEvent);
     reader!.connect();
     return false;
+  }
+
+  void _stopScan() {
+    if (reader == null) return;
+    if (tracking) {
+      _tracking.set(false);
+      reader?.stopTracking();
+    }
+    if (scanning) {
+      reader?.stopScanning();
+      _scanning.set(false);
+    }
   }
 
   @override
@@ -85,20 +104,66 @@ class ZebraModel extends DataSourceModel implements IDataSource {
 
     switch (function) {
 
+      // start scanning
       case "start":
-        busy=true;
-        reader?.scan(ZebraScanRequest.rfidStartInventory);
+
+        if (reader == null) return false;
+        _stopScan();
+
+        // get the scan mode
+        var mode = toEnum(elementAt(arguments, 0), scanMode.values) ?? scanMode.scanning;
+        if (arguments.length < 2) mode = scanMode.scanning;
+
+        switch (mode) {
+
+          // scanning
+          case scanMode.scanning:
+            _scanning.set(true);
+            reader!.startScanning();
+            break;
+
+          // tracking
+          case scanMode.tracking:
+            var tags = (toStr(elementAt(arguments, 1)) ?? "").split(",");
+            _tracking.set(true);
+            reader!.startTracking(tags);
+            break;
+        }
         return true;
 
+      // start scanning
+      case "scan":
+
+        if (reader == null) return false;
+        _stopScan();
+
+        _scanning.set(true);
+        reader!.startScanning();
+        return true;
+
+      // start tracking
+      case "track":
+
+        if (tracking) break;
+        _stopScan();
+
+        var tags = (toStr(elementAt(arguments, 0)) ?? "").split(",");
+        _tracking.set(true);
+        reader!.startTracking(tags);
+        return true;
+
+      // stop scanning or tracking
       case "stop":
-        busy=false;
-        reader?.scan(ZebraScanRequest.rfidStopInventory);
+        _stopScan();
         return true;
 
       case "write":
+        if (reader == null) return;
+        _stopScan();
+
         String? epc = toStr(elementAt(arguments, 0)) ?? "";
         if (isNullOrEmpty(epc)) return false;
-        reader?.write(epc,
+        reader?.writeTag(epc,
             epcNew: toStr(elementAt(arguments, 1)),
             password: toDouble(elementAt(arguments, 2)),
             passwordNew: toDouble(elementAt(arguments, 3)),
@@ -112,11 +177,12 @@ class ZebraModel extends DataSourceModel implements IDataSource {
       case "disconnect":
         return await stop();
     }
+
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
 
-  void onZebraData(ZebraInterfaces interface, ZebraEvents event, dynamic data) {
+  void onZebraEvent(ZebraInterfaces interface, ZebraEvents event, dynamic data) {
 
     if (!enabled) return;
     
@@ -166,12 +232,12 @@ class ZebraModel extends DataSourceModel implements IDataSource {
 
       case ZebraEvents.startRead:
         if (kDebugMode) print("Source: $interface StartRead");
-        busy = true;
+        _busy.set(true);
         break;
 
       case ZebraEvents.stopRead:
         if (kDebugMode) print("Source: $interface StopRead");
-        busy = false;
+        _busy.set(false);
         break;
 
       case ZebraEvents.error:
@@ -196,6 +262,7 @@ class ZebraModel extends DataSourceModel implements IDataSource {
 
   @override
   void dispose() {
+    _stopScan();
     reader?.disconnect();
     reader = null;
     super.dispose();

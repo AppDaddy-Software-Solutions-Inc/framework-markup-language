@@ -67,12 +67,54 @@ class ZebraModel extends DataSourceModel implements IDataSource {
 
   @override
   Future<bool> start({bool refresh = false, String? key}) async {
-
     // connect via the sdk
     reader ??= Zebra123(callback: onZebraData);
     reader!.connect();
     return false;
   }
+
+  @override
+  Future<dynamic> execute(
+      String caller,
+      String propertyOrFunction,
+      List<dynamic> arguments) async {
+
+    /// setter
+    if (scope == null) return null;
+    String function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function) {
+
+      case "start":
+        busy=true;
+        reader?.scan(ZebraScanRequest.rfidStartInventory);
+        return true;
+
+      case "stop":
+        busy=false;
+        reader?.scan(ZebraScanRequest.rfidStopInventory);
+        return true;
+
+      case "write":
+        String? epc = toStr(elementAt(arguments, 0)) ?? "";
+        if (isNullOrEmpty(epc)) return false;
+        reader?.write(epc,
+            epcNew: toStr(elementAt(arguments, 1)),
+            password: toDouble(elementAt(arguments, 2)),
+            passwordNew: toDouble(elementAt(arguments, 3)),
+            data: toStr(elementAt(arguments, 4)),
+        );
+        return true;
+
+      case "connect":
+        return await start();
+
+      case "disconnect":
+        return await stop();
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
+  }
+
 
   void onZebraData(ZebraInterfaces interface, ZebraEvents event, dynamic data) {
 
@@ -104,7 +146,7 @@ class ZebraModel extends DataSourceModel implements IDataSource {
             if (kDebugMode) print("Source: $interface Tag: ${tag.epc} Rssi: ${tag.rssi}");
             var tg = rfid_detector.Tag();
             tg.source = fromEnum(interface);
-            tg.id = tag.epc;
+            tg.epc = tag.epc;
             tg.antenna = tag.antenna;
             tg.rssi = tag.rssi;
             tg.distance = tag.distance;
@@ -114,8 +156,22 @@ class ZebraModel extends DataSourceModel implements IDataSource {
             tg.seen = tag.seen;
             payload.tags.add(tg);
           }
+
+          // order tags by rssi
+          payload.tags.sort((a, b) => (b.rssi ?? 0).compareTo((a.rssi ?? 0)));
+
           onSuccess(rfid_detector.Payload.toData(payload));
         }
+        break;
+
+      case ZebraEvents.startRead:
+        if (kDebugMode) print("Source: $interface StartRead");
+        busy = true;
+        break;
+
+      case ZebraEvents.stopRead:
+        if (kDebugMode) print("Source: $interface StopRead");
+        busy = false;
         break;
 
       case ZebraEvents.error:

@@ -4,7 +4,7 @@ import 'package:fml/data/data.dart';
 
 class Tag {
   String? source;
-  String? id;
+  String? epc;
   int? antenna;
   int? rssi;
   int? distance;
@@ -28,7 +28,7 @@ class Payload {
     for (var tag in payload.tags) {
       Map<dynamic, dynamic> map = <dynamic, dynamic>{};
       map["source"]   = tag.source;
-      map["id"]       = tag.id;
+      map["epc"]      = tag.epc;
       map["antenna"]  = tag.antenna;
       map["rssi"]     = tag.rssi;
       map["distance"] = tag.distance;

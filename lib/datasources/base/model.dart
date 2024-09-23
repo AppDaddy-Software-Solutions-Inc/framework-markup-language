@@ -654,6 +654,20 @@ class DataSourceModel extends Model implements IDataSource {
     return true;
   }
 
+  Future<bool> deleteWhere(dynamic eval) async {
+    if (eval is! String) return true;
+    if (data is! Data) return true;
+
+    for (var element in data!) {
+      if (eval == Json.evaluate(element, eval)) {
+        data!.remove(element);
+      }
+    }
+
+    onDataChange();
+    return true;
+  }
+
   @override
   Future<bool> move(dynamic from, dynamic to,
       {bool notifyListeners = true}) async {
@@ -967,7 +981,7 @@ class DataSourceModel extends Model implements IDataSource {
       case "deletewhere":
       case "removewhere":
         // todo
-        return true;
+        return await deleteWhere(elementAt(arguments, 0));
 
       // move element in the list
       case "move":

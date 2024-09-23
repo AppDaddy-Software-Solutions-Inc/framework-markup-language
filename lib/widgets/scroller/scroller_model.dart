@@ -212,9 +212,19 @@ class ScrollerModel extends BoxModel implements IScrollable {
 
     // find the first child with the specified
     // id and matching value
-    var child = descendants?.toList().firstWhereOrNull((child) => child.id == id && child.value == (value ?? child.value));
-    if (child != null) {
-      view?.scrollToContext(child.context, animate: animate);
+    var children = descendants?.toList();
+var newchild;
+    children?.forEach((child) {
+      if(child.id == id){
+        newchild = child;
+        return;
+      }
+    });
+
+    newchild=newchild;
+
+    if (newchild != null) {
+      view?.scrollToContext(newchild.context, animate: animate);
     }
   }
 

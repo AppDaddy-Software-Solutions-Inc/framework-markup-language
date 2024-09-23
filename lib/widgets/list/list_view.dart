@@ -218,11 +218,15 @@ class ListLayoutViewState extends ViewableWidgetState<ListLayoutView> {
       // regular list
       case false:
 
-        int? items = widget.model.datasource == null ? widget.model.items.length : widget.model.data?.length;
+        // knowing items and extent vastly improves performance
+        // setting the width and/or height of the <ITEM/> is strongly recommended
+        var items  = widget.model.datasource == null ? widget.model.items.length : widget.model.data?.length;
+        var extent = direction == Axis.horizontal ? widget.model.extentWidth : widget.model.extentHeight;
 
         view = ListView.builder(
             reverse: widget.model.reverse,
             itemCount: items,
+            itemExtent: extent,
             physics: widget.model.onpulldown != null
                 ? const AlwaysScrollableScrollPhysics()
                 : null,

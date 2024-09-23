@@ -59,14 +59,19 @@ class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
   }
   dynamic get selected => _selected?.get();
 
+  double? extentWidth;
+  double? extentHeight;
+
   // item extent
   double get itemExtent {
    if (items.isEmpty) return 0;
    switch (direction) {
      case 'horizontal':
+       if (extentWidth != null) return extentWidth!;
        return items.values.first.viewWidth ?? items.values.first.width ?? 0;
      case 'vertical':
      default:
+       if (extentHeight != null) return extentHeight!;
        return items.values.first.viewHeight ?? items.values.first.height ?? 0;
    }
   }
@@ -304,6 +309,9 @@ class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
 
       // set prototype
       prototype = prototypeOf(items.first.element);
+
+      extentWidth  = toDouble(items.first.width);
+      extentHeight = toDouble(items.first.height);
       items.removeAt(0);
     }
 
@@ -327,6 +335,12 @@ class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
     if (items.containsKey(index)) return items[index];
     if (index.isNegative || data.length < index) return null;
 
+    //var mod = index % 10000;
+    //if (items.containsKey(mod)) {
+      //if (items[mod]?.index == index) return items[mod];
+      //items[mod]?.dispose();
+    //}
+
     // build item model
     var model = ListItemModel.fromXml(this, prototype, data: data[index]);
     if (model != null) {
@@ -346,6 +360,7 @@ class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
 
       // save model
       items[index] = model;
+      //items[mod] = model;
     }
 
     return model;

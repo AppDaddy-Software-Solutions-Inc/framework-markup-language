@@ -16,9 +16,7 @@ class IconView extends StatefulWidget implements ViewableWidgetView {
 class _IconViewState extends ViewableWidgetState<IconView> {
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: _build);
-
-  Widget _build(BuildContext context, BoxConstraints constraints) {
+  Widget build(BuildContext context) {
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
@@ -28,7 +26,8 @@ class _IconViewState extends ViewableWidgetState<IconView> {
     // get size
     // we use getWidth() to compute the sizesince an icon's size can be expressed as a %
     // we dont need to do this for widgets that naturally expand in the horizontal direction
-    double? size = widget.model.getWidth(widthParent: constraints.maxWidth) ?? 32;
+    //double? size = widget.model.getWidth(widthParent: constraints.maxWidth) ?? 32;
+    double? size = widget.model.size ?? 32;
 
     // icon color
     Color? color = Theme.of(context).colorScheme.inverseSurface;

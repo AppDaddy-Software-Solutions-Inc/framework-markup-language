@@ -799,6 +799,7 @@ class DrawerViewState extends ViewableWidgetState<DrawerView> implements IDragLi
           : 0;
       activeDrawer = Drawers.top;
     });
+    widget.model.parent?.notifyListeners("dummy", null);
   }
 
   void openBottom() {
@@ -884,7 +885,9 @@ class DrawerViewState extends ViewableWidgetState<DrawerView> implements IDragLi
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
-    
+
+   // print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+
     // get constraints
     double height = constraints.maxHeight.isFinite ? constraints.maxHeight : MediaQuery.of(context).size.height;
     double width  = constraints.maxWidth.isFinite  ? constraints.maxWidth  : MediaQuery.of(context).size.width;

@@ -553,7 +553,7 @@ mixin ViewableMixin on Model implements IDragDrop {
     return v;
   }
 
-  // returns the max height or screen width if unconstrained
+  // returns the max height or screen height if unconstrained
   double get myMaxHeightOrDefault {
     var v = myMaxHeight;
     if (v == double.infinity) v = System().screenheight.toDouble();

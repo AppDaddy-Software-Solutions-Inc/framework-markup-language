@@ -1,5 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
@@ -14,6 +13,7 @@ import 'package:fml/event/event.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
+import 'package:collection/collection.dart';
 
 /// Button [ScrollerModel]
 ///
@@ -212,19 +212,9 @@ class ScrollerModel extends BoxModel implements IScrollable {
 
     // find the first child with the specified
     // id and matching value
-    var children = descendants?.toList();
-var newchild;
-    children?.forEach((child) {
-      if(child.id == id){
-        newchild = child;
-        return;
-      }
-    });
-
-    newchild=newchild;
-
-    if (newchild != null) {
-      view?.scrollToContext(newchild.context, animate: animate);
+    Model? target = descendants?.toList().firstWhereOrNull((child) => child.id == id);
+    if (target?.context != null) {
+      view?.scrollToContext(target!.context!, animate: animate);
     }
   }
 

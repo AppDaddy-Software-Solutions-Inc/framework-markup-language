@@ -50,6 +50,9 @@ dependencies:
   changeicon: ^1.0.0
   # MIT
 
+  collection: 1.18.0
+  # BSD-3-Clause
+
   # charts_flutter: ^0.12.0
   community_charts_flutter: ^1.0.4
   # Apache-2.0

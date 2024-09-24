@@ -13,7 +13,7 @@ import 'package:fml/datasources/detectors/rfid/rfid_detector.dart' as rfid_detec
 import 'package:xml/xml.dart';
 import 'package:zebra123/zebra123.dart';
 
-enum scanMode { scanning, tracking }
+enum ScanMode { scanning, tracking }
 
 class ZebraModel extends DataSourceModel implements IDataSource {
 
@@ -51,6 +51,7 @@ class ZebraModel extends DataSourceModel implements IDataSource {
   late final BooleanObservable _busy;
   @override
   set busy(dynamic v) {}
+  @override
   bool get busy => _busy.get() ?? false;
 
   ZebraModel(super.parent, super.id) {
@@ -111,19 +112,19 @@ class ZebraModel extends DataSourceModel implements IDataSource {
         _stopScan();
 
         // get the scan mode
-        var mode = toEnum(elementAt(arguments, 0), scanMode.values) ?? scanMode.scanning;
-        if (arguments.length < 2) mode = scanMode.scanning;
+        var mode = toEnum(elementAt(arguments, 0), ScanMode.values) ?? ScanMode.scanning;
+        if (arguments.length < 2) mode = ScanMode.scanning;
 
         switch (mode) {
 
           // scanning
-          case scanMode.scanning:
+          case ScanMode.scanning:
             _scanning.set(true);
             reader!.startScanning();
             break;
 
           // tracking
-          case scanMode.tracking:
+          case ScanMode.tracking:
             var tags = (toStr(elementAt(arguments, 1)) ?? "").split(",");
             _tracking.set(true);
             reader!.startTracking(tags);

@@ -882,11 +882,24 @@ class DrawerViewState extends ViewableWidgetState<DrawerView> implements IDragLi
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+  Widget build(BuildContext context) {
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
+    print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
 
-   // print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+    Widget view = LayoutBuilder(builder: _drawerBuilder);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints);
+
+    // apply visual transforms
+    view = applyTransforms(view);
+
+    return view;
+  }
+
+  Widget _drawerBuilder(BuildContext context, BoxConstraints constraints) {
+
+    print('yyyyyyyyyyyyyyyyyyyyyyyyyyyy');
 
     // get constraints
     double height = constraints.maxHeight.isFinite ? constraints.maxHeight : MediaQuery.of(context).size.height;
@@ -945,85 +958,85 @@ class DrawerViewState extends ViewableWidgetState<DrawerView> implements IDragLi
       drawerHandle = widget.model.rounded == false
           ? BorderRadius.zero
           : BorderRadius.only(
-              topLeft: const Radius.elliptical(0, 0),
-              topRight: const Radius.elliptical(0, 0),
-              bottomLeft: Radius.elliptical(
-                  screenWidth * .5,
-                  (screenHeight *
-                          ((widget.model.sizeTop != null)
-                              ? widget.model.sizeBottom! / screenHeight
-                              : 1)) *
-                      0.05),
-              bottomRight: Radius.elliptical(
-                  screenWidth * .5,
-                  (screenHeight *
-                          ((widget.model.sizeBottom != null)
-                              ? widget.model.sizeTop! / screenHeight
-                              : 1)) *
-                      0.05));
+          topLeft: const Radius.elliptical(0, 0),
+          topRight: const Radius.elliptical(0, 0),
+          bottomLeft: Radius.elliptical(
+              screenWidth * .5,
+              (screenHeight *
+                  ((widget.model.sizeTop != null)
+                      ? widget.model.sizeBottom! / screenHeight
+                      : 1)) *
+                  0.05),
+          bottomRight: Radius.elliptical(
+              screenWidth * .5,
+              (screenHeight *
+                  ((widget.model.sizeBottom != null)
+                      ? widget.model.sizeTop! / screenHeight
+                      : 1)) *
+                  0.05));
     } else if (activeDrawer == Drawers.bottom) {
       visibleDrawer = bottom;
       drawerHandle = widget.model.rounded == false
           ? BorderRadius.zero
           : BorderRadius.only(
-              topLeft: Radius.elliptical(
-                  screenWidth * .5,
-                  (screenHeight *
-                          ((widget.model.sizeBottom != null)
-                              ? widget.model.sizeBottom! / screenHeight
-                              : 1)) *
-                      0.05),
-              topRight: Radius.elliptical(
-                  screenWidth * .5,
-                  (screenHeight *
-                          ((widget.model.sizeBottom != null)
-                              ? widget.model.sizeBottom! / screenHeight
-                              : 1)) *
-                      0.05),
-              bottomLeft: const Radius.elliptical(0, 0),
-              bottomRight: const Radius.elliptical(0, 0));
+          topLeft: Radius.elliptical(
+              screenWidth * .5,
+              (screenHeight *
+                  ((widget.model.sizeBottom != null)
+                      ? widget.model.sizeBottom! / screenHeight
+                      : 1)) *
+                  0.05),
+          topRight: Radius.elliptical(
+              screenWidth * .5,
+              (screenHeight *
+                  ((widget.model.sizeBottom != null)
+                      ? widget.model.sizeBottom! / screenHeight
+                      : 1)) *
+                  0.05),
+          bottomLeft: const Radius.elliptical(0, 0),
+          bottomRight: const Radius.elliptical(0, 0));
     } else if (activeDrawer == Drawers.left) {
       visibleDrawer = left;
       drawerHandle = widget.model.rounded == false
           ? BorderRadius.zero
           : BorderRadius.only(
-              topLeft: const Radius.elliptical(0, 0),
-              topRight: Radius.elliptical(
-                  screenHeight * 0.05,
-                  (screenWidth *
-                          ((widget.model.sizeLeft != null)
-                              ? widget.model.sizeLeft! / screenHeight
-                              : 1)) *
-                      .5),
-              bottomLeft: const Radius.elliptical(0, 0),
-              bottomRight: Radius.elliptical(
-                  screenHeight * 0.05,
-                  (screenWidth *
-                          ((widget.model.sizeLeft != null)
-                              ? widget.model.sizeLeft! / screenHeight
-                              : 1)) *
-                      .5));
+          topLeft: const Radius.elliptical(0, 0),
+          topRight: Radius.elliptical(
+              screenHeight * 0.05,
+              (screenWidth *
+                  ((widget.model.sizeLeft != null)
+                      ? widget.model.sizeLeft! / screenHeight
+                      : 1)) *
+                  .5),
+          bottomLeft: const Radius.elliptical(0, 0),
+          bottomRight: Radius.elliptical(
+              screenHeight * 0.05,
+              (screenWidth *
+                  ((widget.model.sizeLeft != null)
+                      ? widget.model.sizeLeft! / screenHeight
+                      : 1)) *
+                  .5));
     } else if (activeDrawer == Drawers.right) {
       visibleDrawer = right;
       drawerHandle = widget.model.rounded == false
           ? BorderRadius.zero
           : BorderRadius.only(
-              topLeft: Radius.elliptical(
-                  screenHeight * 0.05,
-                  (screenWidth *
-                          ((widget.model.sizeRight != null)
-                              ? widget.model.sizeRight! / screenHeight
-                              : 1)) *
-                      .5),
-              topRight: const Radius.elliptical(0, 0),
-              bottomLeft: Radius.elliptical(
-                  screenHeight * 0.05,
-                  (screenWidth *
-                          ((widget.model.sizeRight != null)
-                              ? widget.model.sizeRight! / screenHeight
-                              : 1)) *
-                      .5),
-              bottomRight: const Radius.elliptical(0, 0));
+          topLeft: Radius.elliptical(
+              screenHeight * 0.05,
+              (screenWidth *
+                  ((widget.model.sizeRight != null)
+                      ? widget.model.sizeRight! / screenHeight
+                      : 1)) *
+                  .5),
+          topRight: const Radius.elliptical(0, 0),
+          bottomLeft: Radius.elliptical(
+              screenHeight * 0.05,
+              (screenWidth *
+                  ((widget.model.sizeRight != null)
+                      ? widget.model.sizeRight! / screenHeight
+                      : 1)) *
+                  .5),
+          bottomRight: const Radius.elliptical(0, 0));
     }
 
     double? containerSize(Drawers? drawer) {
@@ -1063,7 +1076,7 @@ class DrawerViewState extends ViewableWidgetState<DrawerView> implements IDragLi
                   ? containerSize(activeDrawer)
                   : screenHeight),
               child:
-                  activeDrawer == Drawers.left ? left ?? Container() : const Offstage()),
+              activeDrawer == Drawers.left ? left ?? Container() : const Offstage()),
         ),
       ),
     );
@@ -1116,7 +1129,7 @@ class DrawerViewState extends ViewableWidgetState<DrawerView> implements IDragLi
                   ? containerSize(activeDrawer)
                   : screenHeight),
               child:
-                  activeDrawer == Drawers.top ? top ?? Container() : const Offstage()),
+              activeDrawer == Drawers.top ? top ?? Container() : const Offstage()),
         ),
       ),
     );
@@ -1233,9 +1246,9 @@ class DrawerViewState extends ViewableWidgetState<DrawerView> implements IDragLi
                                   .onSurfaceVariant))))));
     }
 
-   var drawer = activeDrawer != null
-       ? GestureDetector(onTap: () => closeDrawer(activeDrawer))
-       : Container();
+    var drawer = activeDrawer != null
+        ? GestureDetector(onTap: () => closeDrawer(activeDrawer))
+        : Container();
 
     Widget view = Stack(children: [
       widget.child,
@@ -1248,13 +1261,7 @@ class DrawerViewState extends ViewableWidgetState<DrawerView> implements IDragLi
       rightDrawer,
       topDrawer,
       bottomDrawer,
-    ]); // view;
-
-    // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints);
-
-    // apply visual transforms
-    view = applyTransforms(view);
+    ]);
 
     return view;
   }

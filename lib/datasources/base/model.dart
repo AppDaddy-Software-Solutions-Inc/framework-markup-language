@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/data/dotnotation.dart';
+import 'package:fml/datasources/transforms/filter.dart';
 import 'package:universal_html/html.dart';
 import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
@@ -673,6 +674,32 @@ class DataSourceModel extends Model implements IDataSource {
     return true;
   }
 
+  Future<bool> removeWhere(dynamic test) async {
+
+    // use filter transform to remove rows
+    var model = Filter(this);
+    model.filter = test;
+    model.apply(data);
+    this.data = model.data;
+
+    onDataChange();
+
+    return true;
+  }
+
+  Future<bool> forEach(dynamic eval) async {
+
+    // use filter transform to remove rows
+    // var model = Model(this,null,data: Data());
+    // model.filter = test;
+    // model.apply(data);
+    // this.data = model.data;
+    //
+    // onDataChange();
+
+    return true;
+  }
+
   Future<bool> reverse() async {
     data = data?.reversed;
 
@@ -923,6 +950,7 @@ class DataSourceModel extends Model implements IDataSource {
   @override
   Future<dynamic> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
+
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
 
@@ -964,10 +992,8 @@ class DataSourceModel extends Model implements IDataSource {
         return await delete(0);
 
       // remove where
-      case "deletewhere":
       case "removewhere":
-        // todo
-        return true;
+        return await removeWhere(elementAt(arguments, 0));
 
       // move element in the list
       case "move":
@@ -975,8 +1001,7 @@ class DataSourceModel extends Model implements IDataSource {
 
       // foreach element in the list
       case "foreach":
-        // todo
-        return true;
+        return await forEach(elementAt(arguments, 0));
 
       // reverse the list
       case "reverse":

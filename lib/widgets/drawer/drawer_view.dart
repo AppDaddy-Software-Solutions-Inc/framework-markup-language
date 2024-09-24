@@ -882,32 +882,21 @@ class DrawerViewState extends ViewableWidgetState<DrawerView> implements IDragLi
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => LayoutBuilder(builder: _builder);
 
-    print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-
-    Widget view = LayoutBuilder(builder: _drawerBuilder);
-
-    // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints);
-
-    // apply visual transforms
-    view = applyTransforms(view);
-
-    return view;
-  }
-
-  Widget _drawerBuilder(BuildContext context, BoxConstraints constraints) {
-
-    print('yyyyyyyyyyyyyyyyyyyyyyyyyyyy');
+  Widget _builder(BuildContext context, BoxConstraints constraints) {
 
     // get constraints
     double height = constraints.maxHeight.isFinite ? constraints.maxHeight : MediaQuery.of(context).size.height;
     double width  = constraints.maxWidth.isFinite  ? constraints.maxWidth  : MediaQuery.of(context).size.width;
 
     // set constraints
+    // note: its important to disable notifications when setting any
+    // value in the model tihat triggers onPropertyChange
+    widget.model.disableNotifications();
     widget.model.maxHeight = height;
     widget.model.maxWidth = width;
+    widget.model.enableNotifications();
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
@@ -1262,6 +1251,12 @@ class DrawerViewState extends ViewableWidgetState<DrawerView> implements IDragLi
       topDrawer,
       bottomDrawer,
     ]);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints);
+
+    // apply visual transforms
+    view = applyTransforms(view);
 
     return view;
   }

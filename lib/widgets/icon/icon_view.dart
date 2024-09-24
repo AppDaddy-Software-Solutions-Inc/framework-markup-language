@@ -23,11 +23,13 @@ class _IconViewState extends ViewableWidgetState<IconView> {
 
     IconData? value = widget.model.icon;
 
-    // get size
-    // we use getWidth() to compute the sizesince an icon's size can be expressed as a %
-    // we dont need to do this for widgets that naturally expand in the horizontal direction
-    //double? size = widget.model.getWidth(widthParent: constraints.maxWidth) ?? 32;
+    // icon's size can be expressed as a %
+    // Don't use layoutBuilder() as this causes issues in popover
+    // myMaxWidth traverses up the parent tree to find the max width constraint
     double? size = widget.model.size ?? 32;
+    if (widget.model.widthPercentage != null) {
+      size = (widget.model.widthPercentage! / 100) * widget.model.myMaxWidth;
+    }
 
     // icon color
     Color? color = Theme.of(context).colorScheme.inverseSurface;

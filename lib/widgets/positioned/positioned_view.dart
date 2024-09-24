@@ -36,13 +36,10 @@ class _PositionedViewState extends ViewableWidgetState<PositionedView> {
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
+  Widget build(BuildContext context) {
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
-
 
     // build the child views
     List<Widget> children = widget.model.inflate();

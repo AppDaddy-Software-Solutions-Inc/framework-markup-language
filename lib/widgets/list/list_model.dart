@@ -660,6 +660,34 @@ class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
     return true;
   }
 
+  // this routine iterates through each element in the data
+  // and executes the eval string within the scope of that data
+  Future<bool> forEach(String? eval) async {
+
+    bool ok = true;
+
+    // eval is null or empty
+    if (isNullOrEmpty(eval)) return ok;
+
+    // data is null or empty
+    if (items.isEmpty) return ok;
+
+    // iterate through each data point and execute the eval string
+    for (var item in items.values) {
+
+      // create observable
+      var o = StringObservable(null, eval, scope: item.scope);
+
+      // execute the eval string
+      ok = await EventHandler(item).execute(o);
+
+      // abort?
+      if (ok == false) break;
+    }
+
+    return ok;
+  }
+
   @override
   Future<dynamic> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
@@ -706,6 +734,12 @@ class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
     // de-selects the item by index
       case "clear":
         onTap(null);
+        return true;
+
+    // add an item
+      case "foreach":
+        forEach(
+            toStr(elementAt(arguments, 0)));
         return true;
 
       // scroll +/- pixels

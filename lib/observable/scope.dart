@@ -68,6 +68,8 @@ class Scope {
   }
 
   bool _register(Observable observable) {
+
+    // observables with no key are not registered
     if (observable.key != null) {
       // Replace Listeners
       if (observables.containsKey(observable.key)) {

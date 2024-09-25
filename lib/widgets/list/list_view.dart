@@ -10,6 +10,7 @@ import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/list/list_model.dart';
 import 'package:fml/widgets/list/item/list_item_view.dart';
 import 'package:fml/widgets/list/item/list_item_model.dart';
+import 'package:fml/widgets/measure/measure_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
@@ -180,6 +181,13 @@ class ListLayoutViewState extends ViewableWidgetState<ListLayoutView> {
     return render?.size;
   }
 
+  bool measuredOnce = false;
+  onMeasured(Size size, {dynamic data}) {
+    widget.model.extentWidth  ??= size.width;
+    widget.model.extentHeight ??= size.height;
+    setState(() {measuredOnce = true;});
+  }
+
   @override
   Widget build(BuildContext context) => BoxView(widget.model, builder);
 
@@ -223,16 +231,25 @@ class ListLayoutViewState extends ViewableWidgetState<ListLayoutView> {
         var items  = widget.model.datasource == null ? widget.model.items.length : widget.model.data?.length;
         var extent = direction == Axis.horizontal ? widget.model.extentWidth : widget.model.extentHeight;
 
-        view = ListView.builder(
-            reverse: widget.model.reverse,
-            itemCount: items,
-            itemExtent: extent,
-            physics: widget.model.onpulldown != null
-                ? const AlwaysScrollableScrollPhysics()
-                : null,
-            scrollDirection: direction,
-            controller: controller,
-            itemBuilder: itemBuilder);
+        // measuring the item extent vastly improves scrolling performance
+        if (extent == null && !measuredOnce) {
+          var item = itemBuilder(context, 0);
+          view = Offstage(
+              child: MeasureView(UnconstrainedBox(child: item), onMeasured));
+        }
+
+        else {
+          view = ListView.builder(
+              reverse: widget.model.reverse,
+              itemCount: items,
+              itemExtent: extent,
+              physics: widget.model.onpulldown != null
+                  ? const AlwaysScrollableScrollPhysics()
+                  : null,
+              scrollDirection: direction,
+              controller: controller,
+              itemBuilder: itemBuilder);
+        }
 
         break;
     }

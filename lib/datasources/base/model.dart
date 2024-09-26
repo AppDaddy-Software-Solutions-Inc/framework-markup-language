@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/data/dotnotation.dart';
-import 'package:fml/datasources/transforms/filter.dart';
 import 'package:universal_html/html.dart';
 import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
@@ -674,37 +673,11 @@ class DataSourceModel extends Model implements IDataSource {
     return true;
   }
 
-  Future<bool> removeWhere(dynamic test) async {
-
-    // use filter transform to remove rows
-    var model = Filter(this);
-    model.filter = test;
-    model.apply(data);
-    this.data = model.data;
-
-    onDataChange();
-
-    return true;
-  }
-
-  Future<bool> forEach(dynamic eval) async {
-
-    // use filter transform to remove rows
-    // var model = Model(this,null,data: Data());
-    // model.filter = test;
-    // model.apply(data);
-    // this.data = model.data;
-    //
-    // onDataChange();
-
-    return true;
-  }
 
   Future<bool> reverse() async {
     data = data?.reversed;
 
     // notify listeners of data change
-    notify();
     onDataChange();
 
     return true;
@@ -972,36 +945,18 @@ class DataSourceModel extends Model implements IDataSource {
         var jsonOrXml = toStr(elementAt(arguments, 0)) ?? template;
         return await insert(jsonOrXml, toInt(elementAt(arguments, 1)));
 
-      // add element to the list
-      case "copy":
-        return await copy(elementAt(arguments, 0), elementAt(arguments, 1));
-
       // remove element from the list
       case "delete":
       case "remove":
         return await delete(elementAt(arguments, 0));
 
-      // remove last element from the list
-      case "deletelast":
-      case "removelast":
-        return data != null ? await delete(data!.length - 1) : true;
-
-      // remove first element from the list
-      case "deletefirst":
-      case "removefirst":
-        return await delete(0);
-
-      // remove where
-      case "removewhere":
-        return await removeWhere(elementAt(arguments, 0));
+      // copies an element in the list the the specified index
+      case "copy":
+        return await copy(elementAt(arguments, 0), elementAt(arguments, 1));
 
       // move element in the list
       case "move":
         return await move(elementAt(arguments, 0), elementAt(arguments, 1));
-
-      // foreach element in the list
-      case "foreach":
-        return await forEach(elementAt(arguments, 0));
 
       // reverse the list
       case "reverse":

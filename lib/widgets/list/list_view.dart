@@ -10,6 +10,7 @@ import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/list/list_model.dart';
 import 'package:fml/widgets/list/item/list_item_view.dart';
 import 'package:fml/widgets/list/item/list_item_model.dart';
+import 'package:fml/widgets/measure/measure_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
@@ -180,6 +181,11 @@ class ListLayoutViewState extends ViewableWidgetState<ListLayoutView> {
     return render?.size;
   }
 
+  onMeasured(Size size, {dynamic data}) {
+    widget.model.didMeasureExtent(width: size.width, height: size.height);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) => BoxView(widget.model, builder);
 
@@ -218,21 +224,30 @@ class ListLayoutViewState extends ViewableWidgetState<ListLayoutView> {
       // regular list
       case false:
 
-        // knowing items and extent vastly improves performance
-        // setting the width and/or height of the <ITEM/> is strongly recommended
         var items  = widget.model.datasource == null ? widget.model.items.length : widget.model.data?.length;
-        var extent = direction == Axis.horizontal ? widget.model.extentWidth : widget.model.extentHeight;
 
-        view = ListView.builder(
-            reverse: widget.model.reverse,
-            itemCount: items,
-            itemExtent: extent,
-            physics: widget.model.onpulldown != null
-                ? const AlwaysScrollableScrollPhysics()
-                : null,
-            scrollDirection: direction,
-            controller: controller,
-            itemBuilder: itemBuilder);
+        // knowing an item's extent significantly improves scrolling performance.
+        // setting the width and/or height of the <ITEM/> is strongly recommended
+        // if the extent is not set, the list will measure the first item unless
+        // height="auto" (for vertical lists) or width="auto" (for horizontal lists)
+        if (widget.model.shouldMeasureExtent()) {
+          var item = itemBuilder(context, 0);
+          view = Offstage(
+              child: MeasureView(UnconstrainedBox(child: item), onMeasured));
+        }
+
+        else {
+          view = ListView.builder(
+              reverse: widget.model.reverse,
+              itemCount: items,
+              itemExtent: widget.model.itemExtent,
+              physics: widget.model.onpulldown != null
+                  ? const AlwaysScrollableScrollPhysics()
+                  : null,
+              scrollDirection: direction,
+              controller: controller,
+              itemBuilder: itemBuilder);
+        }
 
         break;
     }

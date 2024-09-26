@@ -226,21 +226,28 @@ class ListLayoutViewState extends ViewableWidgetState<ListLayoutView> {
 
         var items  = widget.model.datasource == null ? widget.model.items.length : widget.model.data?.length;
 
+        var extent = widget.model.extent;
+        if (extent != null && extent <= 0) extent = null;
+
         // knowing an item's extent significantly improves scrolling performance.
         // setting the width and/or height of the <ITEM/> is strongly recommended
         // if the extent is not set, the list will measure the first item unless
         // height="auto" (for vertical lists) or width="auto" (for horizontal lists)
         if (widget.model.shouldMeasureExtent()) {
           var item = itemBuilder(context, 0);
-          view = Offstage(
-              child: MeasureView(UnconstrainedBox(child: item), onMeasured));
+          if (item != null) {
+            view = Offstage(child: MeasureView(UnconstrainedBox(child: item), onMeasured));
+          }
+          else {
+            view = const Offstage();
+          }
         }
 
         else {
           view = ListView.builder(
               reverse: widget.model.reverse,
               itemCount: items,
-              itemExtent: widget.model.itemExtent,
+              itemExtent: extent,
               physics: widget.model.onpulldown != null
                   ? const AlwaysScrollableScrollPhysics()
                   : null,

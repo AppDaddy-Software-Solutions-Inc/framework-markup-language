@@ -61,10 +61,7 @@ class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
 
   double? _extentWidth;
   double? _extentHeight;
-
-  bool _measured       = false;
-  bool _variableWidth  = false;
-  bool _variableHeight = false;
+  bool _measured = false;
 
   // used by the view to determine if it should measure
   // the items extent on layout
@@ -73,17 +70,26 @@ class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
     // already measured?
     if (_measured) return false;
 
-    // item has an defined extent?
-    if (itemExtent != null) return false;
+    // no prototype
+    if (prototype == null) return false;
 
-    // auto?
     switch (directionOf()) {
       case Axis.horizontal:
-        return !_variableWidth;
+
+        // autosize?
+        var auto = Xml.get(node: prototype, tag: 'width')?.trim().toLowerCase() == 'auto';
+        if (auto) return false;
+
       case Axis.vertical:
       default:
-        return !_variableHeight;
+
+        // autosize?
+        var auto = Xml.get(node: prototype, tag: 'height')?.trim().toLowerCase() == 'auto';
+        if (auto) return false;
     }
+
+    // extend defined?
+    return extent == null;
   }
 
   // used by the view to indictate that a layout measurement was performed
@@ -94,23 +100,24 @@ class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
   }
 
   // returns the item extent based on the layout direction
-  double? get itemExtent {
-   if (items.isEmpty) return null;
-   switch (directionOf()) {
-     case Axis.horizontal:
-       if (_extentWidth != null) return _extentWidth;
-       return items.values.first.viewWidth ?? items.values.first.width;
-     case Axis.vertical:
-     default:
-       if (_extentHeight != null) return _extentHeight;
-       return items.values.first.viewHeight ?? items.values.first.height;
-   }
+  double? get extent {
+    double? extent;
+    switch (directionOf()) {
+      case Axis.horizontal:
+        extent = getWidth() ?? _extentWidth;
+      case Axis.vertical:
+      default:
+        extent = getHeight() ?? _extentHeight;
+    }
+
+    // return extent
+    return extent;
   }
 
   // max extent - items * item extent
   double get maxExtent {
     int i = isNullOrEmpty(datasource) ? items.length : data?.length ?? 0;
-    return (itemExtent ?? 0) * i;
+    return (extent ?? 0) * i;
   }
 
   // the list item prototype
@@ -346,26 +353,6 @@ class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
     for (var item in items) {
       this.items[i++] = item;
     }
-
-    // If the items height and/or width isn't set
-    // we look to see if it should be measured
-    // in order to allow more efficient scrolling
-    var xml = prototype ?? (items.isNotEmpty ? items.first.element : null);
-    if (itemExtent == null) {
-      switch (directionOf()) {
-        case Axis.horizontal:
-          if (Xml.get(node: xml, tag: 'width')?.trim().toLowerCase() == 'auto') {
-            _variableWidth = true;
-          }
-          break;
-        case Axis.vertical:
-        default:
-          if (Xml.get(node: xml, tag: 'height')?.trim().toLowerCase() == 'auto') {
-            _variableHeight = true;
-          }
-          break;
-      }
-    }
   }
 
   ListItemModel? getItemModel(int index) {
@@ -579,7 +566,7 @@ class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
         int i = items.values.toList().indexOf(item);
 
         // scroll to that item
-        view?.scrollTo(i * (itemExtent ?? 0), animate: animate);
+        view?.scrollTo(i * (extent ?? 0), animate: animate);
       }
     }
   }

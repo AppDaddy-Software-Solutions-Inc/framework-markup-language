@@ -468,8 +468,7 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
-    // set system sizing
-    // this may no necessary in the future
+    // set system constraints - used for percent sizing
     onLayout(constraints);
 
     // rebuild content?

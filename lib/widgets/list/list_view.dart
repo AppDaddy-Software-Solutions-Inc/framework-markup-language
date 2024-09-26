@@ -181,11 +181,9 @@ class ListLayoutViewState extends ViewableWidgetState<ListLayoutView> {
     return render?.size;
   }
 
-  bool measuredOnce = false;
   onMeasured(Size size, {dynamic data}) {
-    widget.model.extentWidth  ??= size.width;
-    widget.model.extentHeight ??= size.height;
-    setState(() {measuredOnce = true;});
+    widget.model.didMeasureExtent(width: size.width, height: size.height);
+    setState(() {});
   }
 
   @override
@@ -226,13 +224,13 @@ class ListLayoutViewState extends ViewableWidgetState<ListLayoutView> {
       // regular list
       case false:
 
-        // knowing items and extent vastly improves performance
-        // setting the width and/or height of the <ITEM/> is strongly recommended
         var items  = widget.model.datasource == null ? widget.model.items.length : widget.model.data?.length;
-        var extent = direction == Axis.horizontal ? widget.model.extentWidth : widget.model.extentHeight;
 
-        // measuring the item extent vastly improves scrolling performance
-        if (extent == null && !measuredOnce) {
+        // knowing an item's extent significantly improves scrolling performance.
+        // setting the width and/or height of the <ITEM/> is strongly recommended
+        // if the extent is not set, the list will measure the first item unless
+        // height="auto" (for vertical lists) or width="auto" (for horizontal lists)
+        if (widget.model.shouldMeasureExtent()) {
           var item = itemBuilder(context, 0);
           view = Offstage(
               child: MeasureView(UnconstrainedBox(child: item), onMeasured));
@@ -242,7 +240,7 @@ class ListLayoutViewState extends ViewableWidgetState<ListLayoutView> {
           view = ListView.builder(
               reverse: widget.model.reverse,
               itemCount: items,
-              itemExtent: extent,
+              itemExtent: widget.model.itemExtent,
               physics: widget.model.onpulldown != null
                   ? const AlwaysScrollableScrollPhysics()
                   : null,

@@ -183,13 +183,13 @@ class ZebraModel extends DataSourceModel implements IDataSource {
   }
 
 
-  void onZebraEvent(ZebraInterfaces interface, ZebraEvents event, dynamic data) {
+  void onZebraEvent(Interfaces interface, Events event, dynamic data) {
 
     if (!enabled) return;
     
     switch (event) {
 
-      case ZebraEvents.readBarcode:
+      case Events.readBarcode:
         if (data is List<Barcode>) {
           var payload = barcode_detector.Payload();
           for (Barcode barcode in data) {
@@ -206,7 +206,7 @@ class ZebraModel extends DataSourceModel implements IDataSource {
         }
         break;
 
-      case ZebraEvents.readRfid:
+      case Events.readRfid:
         if (data is List<RfidTag>) {
           var payload = rfid_detector.Payload();
           for (RfidTag tag in data) {
@@ -231,26 +231,26 @@ class ZebraModel extends DataSourceModel implements IDataSource {
         }
         break;
 
-      case ZebraEvents.startRead:
+      case Events.startRead:
         if (kDebugMode) print("Source: $interface StartRead");
         _busy.set(true);
         break;
 
-      case ZebraEvents.stopRead:
+      case Events.stopRead:
         if (kDebugMode) print("Source: $interface StopRead");
         _busy.set(false);
         break;
 
-      case ZebraEvents.error:
+      case Events.error:
         if (data is Error) {
           if (kDebugMode) print("Source: $interface Error: ${data.message}");
         }
         break;
 
-      case ZebraEvents.connectionStatus:
+      case Events.connectionStatus:
         if (data is ConnectionStatus) {
           if (kDebugMode) print("Source: $interface ConnectionStatus: ${data.status}");
-          connected = data.status == ZebraConnectionStatus.connected;
+          connected = data.status == Status.connected;
         }
         break;
 

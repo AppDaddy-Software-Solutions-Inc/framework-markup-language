@@ -55,7 +55,7 @@ class ZebraModel extends DataSourceModel implements IDataSource {
   bool get busy => _busy.get() ?? false;
 
   ZebraModel(super.parent, super.id) {
-    connected = false;
+    connected = reader?.connectionStatus == Status.connected;
     _scanning = BooleanObservable(Binding.toKey(id, 'scanning'), false, scope: scope, listener: onPropertyChange);
     _tracking = BooleanObservable(Binding.toKey(id, 'tracking'), false, scope: scope, listener: onPropertyChange);
     _busy     = BooleanObservable(Binding.toKey(id, 'busy'),     false, scope: scope, listener: onPropertyChange);
@@ -78,7 +78,14 @@ class ZebraModel extends DataSourceModel implements IDataSource {
     // connect via the sdk
     reader ??= Zebra123(callback: onZebraEvent);
     reader!.connect();
+    connected = reader!.connectionStatus == Status.connected;
     return false;
+  }
+
+  @override
+  Future<bool> stop() async {
+    reader?.disconnect();
+    return true;
   }
 
   void _stopScan() {
@@ -91,6 +98,7 @@ class ZebraModel extends DataSourceModel implements IDataSource {
       reader?.stopScanning();
       _scanning.set(false);
     }
+    connected = reader!.connectionStatus == Status.connected;
   }
 
   @override

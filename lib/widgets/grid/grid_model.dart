@@ -467,6 +467,155 @@ class GridModel extends BoxModel with FormMixin implements IForm, IScrollable {
   @override
   Axis directionOf() => direction == 'horizontal' ? Axis.horizontal : Axis.vertical;
 
+  // insert an item
+  Future<bool> insertItem(String? jsonOrXml, int? index) async {
+    try {
+      // get index
+      index ??= myDataSource?.data?.indexOf(data) ?? 0;
+      if (index < 0) index = 0;
+      if (index > items.length) index = items.length;
+
+      // add empty element to the data set
+      // important to do this first as
+      // get row model below depends on an entry
+      // in the dataset at specified index
+      disableNotifications();
+      myDataSource?.insert(jsonOrXml, index, notifyListeners: false);
+      data = myDataSource?.data ?? data;
+      enableNotifications();
+
+      // open up a space for the new model
+      insertInHashmap(items, index);
+
+      // create new row
+      var item = getItemModel(index);
+
+      // add row to rows
+      if (item != null) {
+        items[index] = item;
+
+        // fire the rows onInsert event
+        await item.onInsertHandler();
+      }
+
+      // notify
+      data = myDataSource?.notify();
+    } catch (e) {
+      Log().exception(e);
+    }
+    return true;
+  }
+
+  // delete a row
+  Future<bool> deleteItem(int? index) async {
+    try {
+      // get index
+      index ??= myDataSource?.data?.indexOf(data) ?? 0;
+      if (index < 0) index = 0;
+      if (index > items.length) index = items.length;
+
+      // lookup the item
+      var item = items.containsKey(index) ? items[index] : null;
+      if (item != null) {
+        // fire the rows onDelete event
+        bool ok = await item.onDeleteHandler();
+
+        // continue?
+        if (ok) {
+          // reorder hashmap
+          deleteInHashmap(items, index);
+
+          // remove the data associated with the row
+          disableNotifications();
+          myDataSource?.delete(index, notifyListeners: false);
+          data = myDataSource?.data ?? data;
+          enableNotifications();
+
+          // notify
+          data = myDataSource?.notify();
+        }
+      }
+    } catch (e) {
+      Log().exception(e);
+    }
+    return true;
+  }
+
+  // delete a item
+  Future<bool> moveItem(int? fromIndex, int? toIndex) async {
+    try {
+      fromIndex ??= myDataSource?.data?.indexOf(data) ?? 0;
+      toIndex ??= myDataSource?.data?.indexOf(data) ?? 0;
+      if (fromIndex > toIndex) {
+        var index = fromIndex;
+        fromIndex = toIndex;
+        toIndex = index;
+      }
+      if (fromIndex < 0) fromIndex = 0;
+      if (fromIndex > items.length) fromIndex = items.length;
+      if (toIndex < 0) toIndex = 0;
+      if (toIndex > items.length) toIndex = items.length;
+      if (fromIndex == toIndex) return true;
+
+      // reorder hashmap
+      moveInHashmap(items, fromIndex, toIndex);
+
+      // reorder data
+      disableNotifications();
+      myDataSource?.move(fromIndex, toIndex, notifyListeners: false);
+      data = myDataSource?.data ?? data;
+      enableNotifications();
+
+      // notify
+      data = myDataSource?.notify();
+    } catch (e) {
+      Log().exception(e);
+    }
+    return true;
+  }
+
+
+  // this routine iterates through each element in the data
+  // and executes the eval string within the scope of that data
+  Future<bool> forEach(String? eval) async {
+
+    bool ok = true;
+
+    // eval is null or empty
+    if (isNullOrEmpty(eval)) return ok;
+
+    // data is null or empty
+    if (items.isEmpty) return ok;
+
+    // build out all models
+    var i = 0;
+    var item = getItemModel(i);
+    while (item != null) {
+      i++;
+      item = getItemModel(i);
+    }
+
+    // iterate through each data point and execute the eval string
+    for (var item in items.values) {
+
+      // create observable
+      var o = StringObservable(null, eval, scope: item.scope);
+
+      // execute the eval string
+      ok = await EventHandler(item).execute(o);
+
+      // dispose of the observable
+      o.dispose();
+
+      // abort?
+      if (ok == false) {
+        break;
+      }
+    }
+
+    return ok;
+  }
+
   void onDragDrop(IDragDrop droppable, IDragDrop draggable,
       {Offset? dropSpot}) async {
     if (droppable is GridItemModel && draggable is GridItemModel) {
@@ -511,15 +660,6 @@ class GridModel extends BoxModel with FormMixin implements IForm, IScrollable {
         await export();
         return true;
 
-    // selects the item by index
-      case "select":
-        int index = toInt(elementAt(arguments, 0)) ?? -1;
-        if (index >= 0 && index < items.length) {
-          var model = items[index];
-          if (model != null && !model.selected) onTap(model);
-        }
-        return true;
-
     // sort the grid
       case "sort":
         var field = elementAt(arguments, 0);
@@ -538,6 +678,15 @@ class GridModel extends BoxModel with FormMixin implements IForm, IScrollable {
         scrollTo(toStr(elementAt(arguments, 0)), toStr(elementAt(arguments, 1)), animate: toBool(elementAt(arguments, 2)) ?? true);
         return true;
 
+    // selects the item by index
+      case "select":
+        int index = toInt(elementAt(arguments, 0)) ?? -1;
+        if (index >= 0 && index < items.length) {
+          var model = items[index];
+          if (model != null && !model.selected) onTap(model);
+        }
+        return true;
+
     // de-selects the item by index
       case "deselect":
         int index = toInt(elementAt(arguments, 0)) ?? -1;
@@ -545,6 +694,29 @@ class GridModel extends BoxModel with FormMixin implements IForm, IScrollable {
           var model = items[index];
           if (model != null && model.selected == true) onTap(model);
         }
+        return true;
+
+    // add an item
+      case "foreach":
+        forEach(
+            toStr(elementAt(arguments, 0)));
+        return true;
+
+    // move an item
+      case "move":
+        moveItem(toInt(elementAt(arguments, 0)) ?? 0,
+            toInt(elementAt(arguments, 1)) ?? 0);
+        return true;
+
+    // delete an item
+      case "delete":
+        deleteItem(toInt(elementAt(arguments, 0)));
+        return true;
+
+    // add an item
+      case "insert":
+        insertItem(
+            toStr(elementAt(arguments, 0)), toInt(elementAt(arguments, 1)));
         return true;
 
     // de-selects the item by index

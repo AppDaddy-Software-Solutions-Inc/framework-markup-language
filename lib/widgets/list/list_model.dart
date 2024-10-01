@@ -705,6 +705,14 @@ class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
     // data is null or empty
     if (items.isEmpty) return ok;
 
+    // build out all models
+    var i = 0;
+    var item = getItemModel(i);
+    while (item != null) {
+      i++;
+      item = getItemModel(i);
+    }
+
     // iterate through each data point and execute the eval string
     for (var item in items.values) {
 
@@ -714,8 +722,13 @@ class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
       // execute the eval string
       ok = await EventHandler(item).execute(o);
 
+      // dispose of the observable
+      o.dispose();
+
       // abort?
-      if (ok == false) break;
+      if (ok == false) {
+        break;
+      }
     }
 
     return ok;

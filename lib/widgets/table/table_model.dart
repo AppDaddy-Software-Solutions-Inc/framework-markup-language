@@ -1105,6 +1105,12 @@ class TableModel extends BoxModel with FormMixin implements IForm {
             toStr(elementAt(arguments, 0)), toInt(elementAt(arguments, 1)));
         return true;
 
+    // add an item
+      case "foreach":
+        forEach(
+            toStr(elementAt(arguments, 0)));
+        return true;
+
       // autosize the fields
       case "autosize":
         var mode = toStr(elementAt(arguments, 0));
@@ -1241,6 +1247,47 @@ class TableModel extends BoxModel with FormMixin implements IForm {
       Log().exception(e);
     }
     return true;
+  }
+
+  // this routine iterates through each element in the data
+  // and executes the eval string within the scope of that data
+  Future<bool> forEach(String? eval) async {
+
+    bool ok = true;
+
+    // eval is null or empty
+    if (isNullOrEmpty(eval)) return ok;
+
+    // data is null or empty
+    if (rows.isEmpty) return ok;
+
+    // build out all models
+    var i = 0;
+    var row = getRowModel(i);
+    while (row != null) {
+      i++;
+      row = getRowModel(i);
+    }
+
+    // iterate through each data point and execute the eval string
+    for (var row in rows.values) {
+
+      // create observable
+      var o = StringObservable(null, eval, scope: row.scope);
+
+      // execute the eval string
+      ok = await EventHandler(row).execute(o);
+
+      // dispose of the observable
+      o.dispose();
+
+      // abort?
+      if (ok == false) {
+        break;
+      }
+    }
+
+    return ok;
   }
 
   Future<bool> onDragDrop(int dragIndex, int dropIndex) async {

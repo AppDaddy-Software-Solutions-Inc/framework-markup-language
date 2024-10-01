@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/rendering.dart';
 import 'package:fml/datasources/datasource_interface.dart';
+import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
@@ -211,6 +212,24 @@ class GridItemModel extends BoxModel with FormMixin {
 
     busy = false;
 
+    return ok;
+  }
+
+  Future<bool> onInsertHandler() async {
+    // fire the onchange event
+    bool ok = true;
+    if (_onInsert != null) {
+      ok = await EventHandler(this).execute(_onInsert);
+    }
+    return ok;
+  }
+
+  Future<bool> onDeleteHandler() async {
+    // fire the onchange event
+    bool ok = true;
+    if (_onDelete != null) {
+      ok = await EventHandler(this).execute(_onDelete);
+    }
     return ok;
   }
 }

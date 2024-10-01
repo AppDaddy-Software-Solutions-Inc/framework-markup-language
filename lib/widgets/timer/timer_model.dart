@@ -115,6 +115,10 @@ class TimerModel extends Model {
   void stop() {
     if (timer != null && timer!.isActive) timer!.cancel();
   }
+  void reset() {
+    if (timer != null && timer!.isActive) timer!.cancel();
+    start();
+  }
 
   Future<bool> onTimer() async {
     bool ok = true;
@@ -134,6 +138,26 @@ class TimerModel extends Model {
       stop();
       start();
     }
+  }
+
+  @override
+  Future<dynamic> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    bool refresh = toBool(elementAt(arguments, 0)) ?? false;
+    switch (function) {
+      case "start":
+        return start();
+      case "fire":
+        return start();
+      case "stop":
+        return stop();
+      case "reset":
+        return reset();
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   @override

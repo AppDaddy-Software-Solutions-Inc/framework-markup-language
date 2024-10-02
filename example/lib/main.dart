@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
     //String example = 'http://lawapsweb.law.goodyear.com:8081/';
     //String example = 'https://pad.fml.dev';
 
-    var version = "3.3.1";
+    var version = "3.3.2";
 
     // launch the FML engine
     return FmlEngine(

@@ -1,6 +1,6 @@
 name: fml
 
-version: 3.3.1+24
+version: 3.3.2+25
 
 description:
   Framework Markup Language (FML) is a cross platform markup language. This package retrieves, parses, interprets and renders fml pages to native Flutter without the need to compile.
@@ -251,7 +251,7 @@ dependencies:
   xml2json: ^6.2.3
   # MIT
 
-  zebra123: ^3.0.0
+  zebra123: ^3.0.3
   # MIT
 
   zxing_lib: ^1.1.2

@@ -101,6 +101,9 @@ class ZebraModel extends DataSourceModel implements IDataSource {
     connected = reader!.connectionStatus == Status.connected;
   }
 
+  // set the reader mode
+  void _setMode(Modes mode) => reader?.setMode(mode);
+
   @override
   Future<dynamic> execute(
       String caller,
@@ -159,6 +162,14 @@ class ZebraModel extends DataSourceModel implements IDataSource {
         var tags = (toStr(elementAt(arguments, 0)) ?? "").split(",");
         _tracking.set(true);
         reader!.startTracking(tags);
+        return true;
+
+      // set the device mode
+      case "mode":
+
+      // get the scan mode
+        var mode = toEnum(elementAt(arguments, 0), Modes.values) ?? Modes.rfid;
+        _setMode(mode);
         return true;
 
       // stop scanning or tracking

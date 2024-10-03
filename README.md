@@ -31,7 +31,7 @@ The syntactic sugar FML provides for designing user interfaces with the function
 
 &rarr; Download and install the app
 
-<a href="https://apps.apple.com/us/app/flutter-markup-language/id1629916140" rel="apple"><img src='https://fml.dev/images/appstoreblk.svg' height="36"/></a> &nbsp;&nbsp;&nbsp;<a href="https://play.google.com/store/apps/details?id=co.appdaddy.fml" rel="android"><img src='https://fml.dev/images/playstoreblk.svg' height="36"/></a>
+<a href="https://apps.apple.com/us/app/flutter-markup-language/id1629916140" rel="apple"><img src='https://fml.dev/images/appstoreblk.svg' height="36"/></a> &nbsp;&nbsp;&nbsp;<a href="https://play.google.com/store/apps/details?id=dev.fml" rel="android"><img src='https://fml.dev/images/playstoreblk.svg' height="36"/></a>
 
 ##### 2. **Documentation**
 

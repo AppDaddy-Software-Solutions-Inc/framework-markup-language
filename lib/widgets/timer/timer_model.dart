@@ -146,7 +146,7 @@ class TimerModel extends Model {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
 
-    bool refresh = toBool(elementAt(arguments, 0)) ?? false;
+    //bool refresh = toBool(elementAt(arguments, 0)) ?? false;
     switch (function) {
       case "start":
         return start();

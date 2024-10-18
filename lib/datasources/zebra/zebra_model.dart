@@ -6,7 +6,9 @@ import 'package:fml/helpers/string.dart';
 import 'package:fml/helpers/xml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
+import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/boolean.dart';
+import 'package:fml/observable/observables/string.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector.dart' as barcode_detector;
 import 'package:fml/datasources/detectors/rfid/rfid_detector.dart' as rfid_detector;
@@ -54,6 +56,30 @@ class ZebraModel extends DataSourceModel implements IDataSource {
   @override
   bool get busy => _busy.get() ?? false;
 
+  // mode
+  StringObservable? _mode;
+  set mode(dynamic v) {
+    if (toEnum(v, Modes.values) == null) return;
+    if (_mode != null) {
+      _mode!.set(v);
+    } else if (v != null) {
+      _mode = StringObservable(Binding.toKey(id, 'url'), v,
+          scope: scope, listener: _setMode);
+    }
+  }
+  String? get mode => _mode?.get();
+
+  // change reader mode
+  _setMode(Observable observable) async {
+    var mode = toEnum(this.mode, Modes.values);
+    if (reader != null && mode != null) {
+      // in most cases we would want to change the mode of the
+      // physical device itself, bt since we can have multiple zebra datasources
+      // listening to the same physical device, we must keep t as mixed mode.
+      // reader!.setMode(mode);
+    }
+  }
+
   ZebraModel(super.parent, super.id) {
     connected = reader?.connectionStatus == Status.connected;
     _scanning = BooleanObservable(Binding.toKey(id, 'scanning'), false, scope: scope, listener: onPropertyChange);
@@ -73,13 +99,27 @@ class ZebraModel extends DataSourceModel implements IDataSource {
     return model;
   }
 
+  /// Deserializes the FML template elements, attributes and children
+  @override
+  void deserialize(XmlElement xml) {
+    // deserialize
+    super.deserialize(xml);
+
+    // properties
+    mode = Xml.get(node: xml, tag: 'mode');
+  }
+
   @override
   Future<bool> start({bool refresh = false, String? key}) async {
+
     // connect via the sdk
-    reader ??= Zebra123(callback: onZebraEvent);
+    if (reader == null) {
+      reader = Zebra123(callback: onZebraEvent);
+      if (_mode != null) _setMode(_mode!);
+    }
     reader!.connect();
     connected = reader!.connectionStatus == Status.connected;
-    return false;
+    return true;
   }
 
   @override
@@ -100,9 +140,6 @@ class ZebraModel extends DataSourceModel implements IDataSource {
     }
     connected = reader!.connectionStatus == Status.connected;
   }
-
-  // set the reader mode
-  void _setMode(Modes mode) => reader?.setMode(mode);
 
   @override
   Future<dynamic> execute(
@@ -164,14 +201,6 @@ class ZebraModel extends DataSourceModel implements IDataSource {
         reader!.startTracking(tags);
         return true;
 
-      // set the device mode
-      case "mode":
-
-      // get the scan mode
-        var mode = toEnum(elementAt(arguments, 0), Modes.values) ?? Modes.rfid;
-        _setMode(mode);
-        return true;
-
       // stop scanning or tracking
       case "stop":
         _stopScan();
@@ -205,7 +234,8 @@ class ZebraModel extends DataSourceModel implements IDataSource {
   void onZebraEvent(Interfaces interface, Events event, dynamic data) {
 
     if (!enabled) return;
-    
+    var mode = toEnum(this.mode, Modes.values) ?? Modes.mixed;
+
     switch (event) {
 
       case Events.readBarcode:
@@ -221,7 +251,11 @@ class ZebraModel extends DataSourceModel implements IDataSource {
             bc.seen = barcode.seen;
             payload.barcodes.add(bc);
           }
-          onSuccess(barcode_detector.Payload.toData(payload));
+
+          // only return success if barcode or mixed mode
+          if (mode == Modes.barcode || mode == Modes.mixed) {
+            onSuccess(barcode_detector.Payload.toData(payload));
+          }
         }
         break;
 
@@ -246,7 +280,10 @@ class ZebraModel extends DataSourceModel implements IDataSource {
           // order tags by rssi
           payload.tags.sort((a, b) => (b.rssi ?? 0).compareTo((a.rssi ?? 0)));
 
-          onSuccess(rfid_detector.Payload.toData(payload));
+          // only return success if rfid or mixed mode
+          if (mode == Modes.rfid || mode == Modes.mixed) {
+            onSuccess(rfid_detector.Payload.toData(payload));
+          }
         }
         break;
 

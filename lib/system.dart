@@ -527,8 +527,13 @@ class System extends Model implements IEventManager {
     _scheme?.set(app.scheme);
     _host?.set(app.host);
 
-    //  activate the app
-    await app.setActive();
+    //  de-activate all apps
+    for (var app in System.apps) {
+      app.deactivate();
+    }
+
+    // active the requested app
+    await app.activate();
 
     // navigate to page?
     if (navigate) NavigationManager().goto(app.homePage, initiator: launchApplication);

@@ -40,8 +40,6 @@ class ApplicationModel extends Model {
   final _initializing = Completer<bool>();
   Future<bool> get initialized => _initialized.future;
 
-  bool started = false;
-
   // Active user
   late UserModel _user;
   UserModel get user => _user;
@@ -125,9 +123,21 @@ class ApplicationModel extends Model {
   // fml version support
   int? get fmlVersion => toVersionNumber(setting("FML_VERSION"));
 
-  String get homePage => setting("HOME_PAGE") ?? "main.xml";
+  // home page template
+  String  get homePage  => setting("HOME_PAGE") ?? startPage ?? "main.xml";
+
+  // login page template
   String? get loginPage => setting("LOGIN_PAGE");
+
+  // error page template
   String? get errorPage => setting("ERROR_PAGE");
+
+  // user requested start page template
+  String? _startPage;
+  String? get startPage => _startPage;
+
+  // start page has been launched?
+  bool startPageLaunched = false;
 
   // config
   ConfigModel? _config;
@@ -140,18 +150,19 @@ class ApplicationModel extends Model {
   // secure?
   bool get secure => scheme == "https" || scheme == "wss";
 
+  // the application url scheme (http, https)
   String? _scheme;
   String? get scheme => _scheme;
 
+  // the application url host (appdaddy.co, localhost)
   String? _host;
   String? get host => _host;
 
+  // the applications full url less the query
   String? _domain;
   String? get domain => _domain;
 
-  String? _startPage;
-  String? get startPage => _startPage;
-
+  // the applications query string
   Map<String, String>? _queryParameters;
   Map<String, String>? get queryParameters => _queryParameters;
 
@@ -407,16 +418,13 @@ class ApplicationModel extends Model {
     return ok;
   }
 
-  Future<void> setActive() async
+  Future<void> activate() async
   {
     // wait for initialization to complete
     await initialized;
 
     // set current
     System.currentApp = this;
-
-    // set active
-    started = true;
 
     // reload the config?
     //_loadConfig();
@@ -456,6 +464,12 @@ class ApplicationModel extends Model {
           color: color,
           font: font);
     }
+  }
+
+  Future<void> deactivate() async
+  {
+    // mark the start page launch as false
+    startPageLaunched = false;
   }
 
   void close() {

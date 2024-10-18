@@ -58,15 +58,19 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
   }
 
   Future<void> onPageLoaded() async {
+
+    var app = System.currentApp;
+    if (app == null) return;
+
     // open the requested page
-    if (System.currentApp?.startPage != null && System.currentApp?.started == false) {
+    if (app.startPage != null && !app.startPageLaunched) {
 
       // open the requested page
-      _open(System.currentApp?.startPage);
+      _open(app.startPage);
 
-      // clear requested page so we don't continually
-      // open the same page on refresh or reload
-      System.currentApp?.started = true;
+      // mark start page as launched so we don't continually
+      // attempt to open the start page on refresh or reload
+      app.startPageLaunched = true;
     }
   }
 

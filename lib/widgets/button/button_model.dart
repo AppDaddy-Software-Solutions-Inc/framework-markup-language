@@ -172,7 +172,7 @@ class ButtonModel extends BoxModel {
 
     // create text model bound to this label as default
     if (viewableChildren.isEmpty && label != null) {
-      var model = TextModel(this, null, value: "{$id.label}", weight: 500, color: type == 'elevated' ? "{THEME.onprimary}" : null);
+      var model = TextModel(this, null, value: "{$id.label}", weight: 500);
       (children ??= []).add(model);
     }
   }

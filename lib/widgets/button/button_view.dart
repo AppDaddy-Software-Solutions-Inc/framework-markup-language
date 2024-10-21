@@ -20,101 +20,86 @@ class ButtonView extends StatefulWidget implements ViewableWidgetView {
 }
 
 class _ButtonViewState extends ViewableWidgetState<ButtonView> {
-  ButtonStyle _getStyle() {
-    var model = widget.model;
 
-    BorderRadius? radius = BorderRadius.only(
+  ButtonStyle _getStyle() {
+
+    WidgetStateProperty<double?>? elevation = null;
+    WidgetStateProperty<Color?>? background = null;
+
+    // elevated button?
+    if (widget.model.type == 'elevated') {
+
+      // elevation style
+      elevation = WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.hovered)) return 8.0;
+            if (states.contains(WidgetState.focused) ||
+                states.contains(WidgetState.pressed)) return 3.0;
+            return 5.0;
+          });
+
+      // background color style
+      if (!isNullOrEmpty(widget.model.color)) {
+        background = WidgetStateProperty.resolveWith<Color?>(
+              (Set<WidgetState> states) {
+            if (states.contains(WidgetState.hovered)) {
+              return widget.model.color!.withOpacity(0.85);
+            }
+            if (states.contains(WidgetState.focused) ||
+                states.contains(WidgetState.pressed)) {
+              return widget.model.color!.withOpacity(0.2);
+            }
+            if (states.contains(WidgetState.disabled)) {
+              return Theme.of(context).colorScheme.shadow;
+            }
+            return widget.model.color;
+          });
+      }
+    }
+
+    // outlined button
+    WidgetStateProperty<BorderSide?>? border = null;
+    if (widget.model.type == 'outlined') {
+
+      // set border style
+      border = WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return BorderSide(
+              style: BorderStyle.solid,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              width: widget.model.borderWidth ?? 1);
+        }
+        return BorderSide(
+            style: BorderStyle.solid,
+            color: widget.model.color ?? Theme.of(context).colorScheme.primary,
+            width: widget.model.borderWidth ?? 1);
+      });
+    }
+
+    // button shape radius
+    var radius = BorderRadius.only(
         topRight: Radius.circular(widget.model.radiusTopRight),
         bottomRight: Radius.circular(widget.model.radiusBottomRight),
         bottomLeft: Radius.circular(widget.model.radiusBottomLeft),
         topLeft: Radius.circular(widget.model.radiusTopLeft));
 
-    if (model.type == 'elevated') {
-      return ElevatedButton.styleFrom(
-          minimumSize: Size(
-              model.constraints.minWidth ?? 64,
-              (model.constraints.minHeight ?? 0) +
-                  40), //add 40 to the constraint as the width is offset by 40
-          backgroundColor: model.color ?? Theme.of(context).colorScheme.primary,
-          foregroundColor: Theme.of(context).colorScheme.onPrimary,
-          disabledForegroundColor: Theme.of(context).colorScheme.onSurface,
-          shadowColor: Theme.of(context).colorScheme.shadow,
-          shape: RoundedRectangleBorder(borderRadius: radius),
-          elevation: 3);
-    }
+    // button shape
+    var shape = WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: radius));
 
-    var borderWidth = widget.model.borderWidth ?? 1;
+    // button minimum size - add 40 to the constraint as the width is offset by 40
+    var size = Size(widget.model.constraints.minWidth ?? 64, (widget.model.constraints.minHeight ?? 0) + 40);
 
-    var borderSideStyle = model.type == 'outlined'
-        ? WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.disabled)) {
-              return BorderSide(
-                  style: BorderStyle.solid,
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  width: borderWidth);
-            }
-            return BorderSide(
-                style: BorderStyle.solid,
-                color: model.color ?? Theme.of(context).colorScheme.primary,
-                width: borderWidth);
-          })
-        : null;
-
-    var elevationStyle = model.type == 'elevated'
-        ? WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.hovered)) return 8.0;
-            if (states.contains(WidgetState.focused) ||
-                states.contains(WidgetState.pressed)) return 3.0;
-            return 5.0;
-          })
-        : null;
-
-    // Button Type Styling
-    var foregroundColorStyle =
-        (!isNullOrEmpty(model.color) && model.type != 'elevated')
-            ? WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-                if (states.contains(WidgetState.disabled)) {
-                  return Theme.of(context).colorScheme.surfaceContainerHighest;
-                }
-                return model
-                    .color; // not sure if this is the correct color scheme for text.
-              })
-            : null;
-
-    var backgroundColorStyle =
-        (!isNullOrEmpty(model.color) && model.type == 'elevated')
-            ? WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-                if (states.contains(WidgetState.hovered)) {
-                  return model.color!.withOpacity(0.85);
-                }
-                if (states.contains(WidgetState.focused) ||
-                    states.contains(WidgetState.pressed)) {
-                  return model.color!.withOpacity(0.2);
-                }
-                if (states.contains(WidgetState.disabled)) {
-                  return Theme.of(context).colorScheme.shadow;
-                }
-                return model.color;
-              })
-            : null; // Defer to the widget
-
-    var buttonShape =
-        WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: radius));
-
-    return ButtonStyle(
-      minimumSize: WidgetStateProperty.all(Size(
-          model.constraints.minWidth ?? 64,
-          (model.constraints.minHeight ?? 0) +
-              40)), //add 40 to the constraint as the width is offset by 40
-      foregroundColor: foregroundColorStyle,
-      backgroundColor: backgroundColorStyle,
+    // button style
+    var style = ButtonStyle(
+      minimumSize: WidgetStateProperty.all(size),
+      //foregroundColor: foregroundColorStyle,
+      backgroundColor: background,
       // overlayColor: overlayColorStyle,
-      shape: buttonShape,
-      side: borderSideStyle,
-      elevation: elevationStyle,
+      shape: shape,
+      side: border,
+      elevation: elevation,
     );
+
+    return style;
   }
 
   var lastOnClick = 0;

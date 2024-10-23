@@ -163,7 +163,7 @@ class FormFieldModel extends ViewableModel {
   /// returns active alarm
   AlarmModel? getActiveAlarm() {
     for (var alarm in _alarms) {
-      if (alarm.alarming) return alarm;
+      if (alarm.isAlarming) return alarm;
     }
     return null;
   }
@@ -201,7 +201,7 @@ class FormFieldModel extends ViewableModel {
       dynamic post,
       dynamic mandatory,
       dynamic onchange,
-      dynamic onfocuslost,
+      dynamic onblur,
       super.scope}) {
 
     if (editable != null) this.editable = editable;
@@ -209,7 +209,7 @@ class FormFieldModel extends ViewableModel {
     if (post != null) this.post = post;
     if (mandatory != null) this.mandatory = mandatory;
     if (onchange != null) this.onchange = onchange;
-    if (onfocuslost != null) this.onblur = onfocuslost;
+    if (onblur != null) this.onblur = onblur;
 
     alarming = false;
     dirty = false;

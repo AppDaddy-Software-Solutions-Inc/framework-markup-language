@@ -23,8 +23,8 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
 
   ButtonStyle _getStyle() {
 
-    WidgetStateProperty<double?>? elevation = null;
-    WidgetStateProperty<Color?>? background = null;
+    WidgetStateProperty<double?>? elevation;
+    WidgetStateProperty<Color?>? background;
 
     // elevated button?
     if (widget.model.type == 'elevated') {
@@ -57,7 +57,7 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
     }
 
     // outlined button
-    WidgetStateProperty<BorderSide?>? border = null;
+    WidgetStateProperty<BorderSide?>? border;
     if (widget.model.type == 'outlined') {
 
       // set border style

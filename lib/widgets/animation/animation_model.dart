@@ -28,40 +28,6 @@ class AnimationModel extends ViewableModel {
 
   String? get curve => _curve?.get();
 
-  /// bool value to determine how many times the animation repeats
-  ///
-  /// Can take in an integer or string value
-  DoubleObservable? _repeat;
-
-  set repeat(dynamic v) {
-    if ((v is String) &&
-        (v.toLowerCase() == 'forever' ||
-            v.toLowerCase() == 'loop' ||
-            v.toLowerCase() == 'infinite')) v = double.maxFinite;
-    if (_repeat != null) {
-      _repeat!.set(v);
-    } else if (v != null) {
-      _repeat = DoubleObservable(Binding.toKey(id, 'repeat'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double get repeat => _repeat?.get() ?? 1;
-
-  /// Direction to play the Animation in, if set to true will play in reverse, default: false
-  BooleanObservable? _reverse;
-
-  set reverse(dynamic v) {
-    if (_reverse != null) {
-      _reverse!.set(v);
-    } else if (v != null) {
-      _reverse = BooleanObservable(Binding.toKey(id, 'reverse'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  bool get reverse => _reverse?.get() ?? false;
-
   /// Duration an animation takes to play once in milliseconds
   IntegerObservable? _duration;
 
@@ -73,7 +39,6 @@ class AnimationModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   int get duration => _duration?.get() ?? 300;
 
   /// Duration an animation takes to play once in milliseconds
@@ -88,7 +53,6 @@ class AnimationModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   int? get reverseduration => _reverseduration?.get();
 
   /// Play animation on build, default: false
@@ -102,21 +66,7 @@ class AnimationModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get autoplay => _autoplay?.get() ?? false;
-
-  /// Linked allows for passing the animation controller on a single animation. This will allow for the animation to sync to that controller.
-  StringObservable? _linked;
-
-  set linked(dynamic v) {
-    if (_linked != null) {
-      _linked!.set(v);
-    } else if (v != null) {
-      _linked = StringObservable(Binding.toKey(id, 'linked'), v, scope: scope);
-    }
-  }
-
-  String? get linked => _linked?.get();
 
   /// scroll allows for passing the scrollcontroller on a single animation. This will allow for the animation to sync to that controller.
   StringObservable? _scroll;
@@ -190,7 +140,6 @@ class AnimationModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get runonce => _runonce?.get() ?? false;
 
   double controllerValue = 0;
@@ -216,16 +165,14 @@ class AnimationModel extends ViewableModel {
     super.deserialize(xml);
 
     // properties
-    autoplay = Xml.get(node: xml, tag: 'autoplay');
     curve = Xml.get(node: xml, tag: 'curve');
-    repeat = Xml.get(node: xml, tag: 'repeat') ?? 1;
-    reverse = Xml.get(node: xml, tag: 'reverse');
     duration = Xml.get(node: xml, tag: 'duration');
-    linked = Xml.get(node: xml, tag: 'linked');
+    autoplay = Xml.get(node: xml, tag: 'autoplay');
+    runonce = Xml.get(node: xml, tag: 'runonce');
+
     onstart = Xml.get(node: xml, tag: 'onstart');
     oncomplete = Xml.get(node: xml, tag: 'oncomplete');
     ondismiss = Xml.get(node: xml, tag: 'ondismiss');
-    runonce = Xml.get(node: xml, tag: 'runonce');
   }
 
   //we need a reset function to set the controller back to 0 without ticking.

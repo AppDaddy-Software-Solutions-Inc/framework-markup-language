@@ -218,18 +218,20 @@ class _InputViewState extends ViewableWidgetState<InputView>
       if (commitTimer?.isActive ?? false) commitTimer!.cancel();
 
       // trigger onFocusLost event
-      bool ok = await widget.model.onFocusLost(context);
+      bool ok = await widget.model.onBlur(context);
 
       // commit
       if (ok) await _commit();
     }
     else {
+      // trigger onFocusLost event
+      bool ok = await widget.model.onFocus(context);
 
       // mark field as touched
       widget.model.touched = true;
 
       // highlight the text
-      if (widget.model.enabled && widget.model.selectOnFocus) {
+      if (ok && widget.model.enabled && widget.model.selectOnFocus) {
           widget.model.controller?.selection = TextSelection(
           baseOffset: 0, extentOffset: widget.model.controller?.text.length ?? 0);
       }
@@ -581,6 +583,7 @@ class _InputViewState extends ViewableWidgetState<InputView>
         textInputAction: action,
         inputFormatters: formatters,
         style: style,
+        textAlign: widget.model.halign == "end" ? TextAlign.end : widget.model.halign == "center" ? TextAlign.center : TextAlign.start,
         textAlignVertical: widget.model.expand
             ? TextAlignVertical.top
             : TextAlignVertical.center,

@@ -168,18 +168,29 @@ class FormFieldModel extends ViewableModel {
     return null;
   }
 
-  /// The string of events that will be executed when focus is lost.
-  StringObservable? _onfocuslost;
-  set onfocuslost(dynamic v) {
-    if (_onfocuslost != null) {
-      _onfocuslost!.set(v);
+  /// The string of events that will be executed when the input gains focus.
+  StringObservable? _onfocus;
+  set onfocus(dynamic v) {
+    if (_onfocus != null) {
+      _onfocus!.set(v);
     } else if (v != null) {
-      _onfocuslost = StringObservable(Binding.toKey(id, 'onfocuslost'), v,
-          scope: scope, listener: onPropertyChange, lazyEvaluation: true);
+      _onfocus = StringObservable(Binding.toKey(id, 'onfocus'), v,
+          scope: scope, lazyEvaluation: true);
     }
   }
+  String? get onfocus => _onfocus?.get();
 
-  String? get onfocuslost => _onfocuslost?.get();
+  /// The string of events that will be executed when the input loses focus.
+  StringObservable? _onblur;
+  set onblur(dynamic v) {
+    if (_onblur != null) {
+      _onblur!.set(v);
+    } else if (v != null) {
+      _onblur = StringObservable(Binding.toKey(id, 'onblur'), v,
+          scope: scope, lazyEvaluation: true);
+    }
+  }
+  String? get onblur => _onblur?.get();
 
   // field offset
   Offset? offset;
@@ -198,7 +209,7 @@ class FormFieldModel extends ViewableModel {
     if (post != null) this.post = post;
     if (mandatory != null) this.mandatory = mandatory;
     if (onchange != null) this.onchange = onchange;
-    if (onfocuslost != null) this.onfocuslost = onfocuslost;
+    if (onfocuslost != null) this.onblur = onfocuslost;
 
     alarming = false;
     dirty = false;
@@ -216,6 +227,8 @@ class FormFieldModel extends ViewableModel {
     editable = Xml.get(node: xml, tag: 'editable');
     post = Xml.get(node: xml, tag: 'post');
     onchange = Xml.get(node: xml, tag: 'onchange');
+    onfocus = Xml.get(node: xml, tag: 'onfocus');
+    onblur = Xml.get(node: xml, tag: 'onblur');
 
     // build meta tags
     var attributes = xml.attributes.where((node)    => node.name.local == "meta" || node.name.local.startsWith("meta-"));
@@ -364,6 +377,13 @@ class FormFieldModel extends ViewableModel {
     return borderColor ?? Theme.of(context).colorScheme.surfaceContainerHighest;
   }
 
-  Future<bool> onFocusLost(BuildContext context) async =>
-      await EventHandler(this).execute(_onfocuslost);
+  Future<bool> onFocus(BuildContext context) async {
+    if (isNullOrEmpty(_onfocus)) return true;
+    return await EventHandler(this).execute(_onfocus);
+  }
+
+  Future<bool> onBlur(BuildContext context) async {
+    if (isNullOrEmpty(_onblur)) return true;
+    return await EventHandler(this).execute(_onblur);
+  }
 }

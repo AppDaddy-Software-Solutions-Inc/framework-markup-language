@@ -107,7 +107,7 @@ class OptionModel extends RowModel {
     this.value = value;
 
     // selected?
-    selected = Xml.get(node: xml, tag: 'selected');
+    selected = Xml.get(node: xml, tag: 'selected') ?? Xml.get(node: xml, tag: 'startselected');
 
     // add text model
     if (viewableChildren.isEmpty)

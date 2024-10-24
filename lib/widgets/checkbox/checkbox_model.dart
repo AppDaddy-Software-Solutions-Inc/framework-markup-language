@@ -58,7 +58,7 @@ class CheckboxModel extends FormFieldModel implements IFormField {
 
   bool get center => _center?.get() ?? false;
 
-  /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
+  /// If option should be selcted on start
   BooleanObservable? _startSelected;
   set startSelected(dynamic v) {
     if (_startSelected != null) {
@@ -333,6 +333,13 @@ class CheckboxModel extends FormFieldModel implements IFormField {
     super.deserialize(xml);
 
     // checkboxes can have multiple values
+
+    // value is an attribute?
+    var v = Xml.attribute(node: xml, tag: 'value');
+    if (!isNullOrEmpty(v)) value = v?.split(",");
+
+    // add individual element values. this allows setting multiple values that may have commas in them and
+    // cannot be set by an attribute style comma separated list
     var values = Xml.getChildElements(node: xml, tag: 'value');
     values?.forEach((element) {
       String? v = Xml.getText(element);
@@ -349,7 +356,7 @@ class CheckboxModel extends FormFieldModel implements IFormField {
     size = Xml.get(node: xml, tag: 'size');
     startSelected = Xml.get(node: xml, tag: 'startselected');
 
-    // build radio options
+    // build checkbox options
     _buildOptions();
 
     // set the default selected options

@@ -112,19 +112,8 @@ class ButtonModel extends BoxModel {
   }
   String? get type => _type?.get();
 
-  BooleanObservable? _expand;
   @override
-  set expand(dynamic v) {
-    if (_expand != null) {
-      _expand!.set(v);
-    } else if (v != null) {
-      _expand = BooleanObservable(Binding.toKey(id, 'expand'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  @override
-  bool get expand => _expand?.get() ?? false;
+  final bool expandDefault = false;
 
   ButtonModel(super.parent, super.id,
       {

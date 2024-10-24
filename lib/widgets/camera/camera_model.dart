@@ -37,7 +37,6 @@ class CameraModel extends CameraImageModel with ViewableMixin {
       _name = StringObservable(Binding.toKey(id, 'name'), v, scope: scope);
     }
   }
-
   String? get name => _name?.get();
 
   // camera index
@@ -52,12 +51,9 @@ class CameraModel extends CameraImageModel with ViewableMixin {
       _index!.notifyListeners();
     }
   }
-
   int? get index => _index?.get();
 
-  //////////////////
-  /* Render Width */
-  //////////////////
+  // camera render width
   DoubleObservable? _renderwidth;
   set renderwidth(dynamic v) {
     if (_renderwidth != null) {
@@ -67,12 +63,9 @@ class CameraModel extends CameraImageModel with ViewableMixin {
           DoubleObservable(Binding.toKey(id, 'renderwidth'), v, scope: scope);
     }
   }
-
   double get renderwidth => _renderwidth?.get() ?? 0;
 
-  ///////////////////
-  /* Render Height */
-  ///////////////////
+  // camera render height
   DoubleObservable? _renderheight;
   set renderheight(dynamic v) {
     if (_renderheight != null) {
@@ -82,12 +75,9 @@ class CameraModel extends CameraImageModel with ViewableMixin {
           DoubleObservable(Binding.toKey(id, 'renderheight'), v, scope: scope);
     }
   }
-
   double get renderheight => _renderheight?.get() ?? 0;
 
-  //////////////////
-  /* Stream Width */
-  //////////////////
+  // camera source stream width
   DoubleObservable? _streamwidth;
   set streamwidth(dynamic v) {
     if (_streamwidth != null) {
@@ -97,12 +87,9 @@ class CameraModel extends CameraImageModel with ViewableMixin {
           DoubleObservable(Binding.toKey(id, 'streamwidth'), v, scope: scope);
     }
   }
-
   double? get streamwidth => _streamwidth?.get() ?? 0;
 
-  ///////////////////
-  /* Stream Height */
-  ///////////////////
+  // camera source stream height
   DoubleObservable? _streamheight;
   set streamheight(dynamic v) {
     if (_streamheight != null) {
@@ -112,12 +99,9 @@ class CameraModel extends CameraImageModel with ViewableMixin {
           DoubleObservable(Binding.toKey(id, 'streamheight'), v, scope: scope);
     }
   }
-
   double? get streamheight => _streamheight?.get() ?? 0;
 
-  ///////////////////
-  /* Display Width */
-  ///////////////////
+  // camera display width
   DoubleObservable? _displaywidth;
   set displaywidth(dynamic v) {
     if (_displaywidth != null) {
@@ -127,12 +111,9 @@ class CameraModel extends CameraImageModel with ViewableMixin {
           DoubleObservable(Binding.toKey(id, 'displaywidth'), v, scope: scope);
     }
   }
-
   double? get displaywidth => _displaywidth?.get() ?? 0;
 
-  ////////////////////
-  /* Display Height */
-  ////////////////////
+  // camera display height
   DoubleObservable? _displayheight;
   set displayheight(dynamic v) {
     if (_displayheight != null) {
@@ -142,12 +123,9 @@ class CameraModel extends CameraImageModel with ViewableMixin {
           DoubleObservable(Binding.toKey(id, 'displayheight'), v, scope: scope);
     }
   }
-
   double? get displayheight => _displayheight?.get() ?? 0;
 
-  ///////////
-  /* scale */
-  ///////////
+  // camera scale
   BooleanObservable? _scale;
   set scale(dynamic v) {
     if (_scale != null) {
@@ -156,7 +134,6 @@ class CameraModel extends CameraImageModel with ViewableMixin {
       _scale = BooleanObservable(Binding.toKey(id, 'scale'), v, scope: scope);
     }
   }
-
   bool get scale => _scale?.get() ?? false;
 
   // facing camera direction
@@ -169,7 +146,6 @@ class CameraModel extends CameraImageModel with ViewableMixin {
           StringObservable(Binding.toKey(id, 'direction'), v, scope: scope);
     }
   }
-
   String? get direction => _direction?.get();
 
   // camera orientation
@@ -182,7 +158,6 @@ class CameraModel extends CameraImageModel with ViewableMixin {
           StringObservable(Binding.toKey(id, 'orientation'), v, scope: scope);
     }
   }
-
   String? get orientation => _orientation?.get();
 
   // camera resolution
@@ -195,12 +170,9 @@ class CameraModel extends CameraImageModel with ViewableMixin {
           StringObservable(Binding.toKey(id, 'resolution'), v, scope: scope);
     }
   }
-
   String get resolution => _resolution?.get() ?? "medium";
 
-  /////////////
-  /* controls */
-  /////////////
+  // show camera controls?
   BooleanObservable? _controls;
   set controls(dynamic v) {
     if (_controls != null) {
@@ -210,9 +182,9 @@ class CameraModel extends CameraImageModel with ViewableMixin {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get controls => _controls?.get() ?? true;
 
+  // show camera controls?
   BooleanObservable? _togglevisible;
   set togglevisible(dynamic v) {
     if (_togglevisible != null) {
@@ -222,7 +194,6 @@ class CameraModel extends CameraImageModel with ViewableMixin {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get togglevisible => _togglevisible?.get() ?? false;
 
   // on initialized event
@@ -235,7 +206,6 @@ class CameraModel extends CameraImageModel with ViewableMixin {
           scope: scope, lazyEvaluation: true);
     }
   }
-
   String? get oninitialized => _oninitialized?.get();
 
   CameraModel(super.parent, super.id) {
@@ -246,7 +216,6 @@ class CameraModel extends CameraImageModel with ViewableMixin {
   static CameraModel? fromXml(Model parent, XmlElement xml) {
     CameraModel? model;
     try {
-// build model
       model = CameraModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     } catch (e) {

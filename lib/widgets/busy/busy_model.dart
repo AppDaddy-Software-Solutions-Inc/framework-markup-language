@@ -47,7 +47,6 @@ class BusyModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get size {
     var s = _size?.get();
     if (s == null) return null;
@@ -69,20 +68,7 @@ class BusyModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get modal => _modal?.get() ?? false;
-
-  BooleanObservable? _expand;
-  set expand(dynamic v) {
-    if (_expand != null) {
-      _expand!.set(v);
-    } else if (v != null) {
-      _expand = BooleanObservable(Binding.toKey(id, 'expand'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  bool get expand => _expand?.get() ?? true;
 
   BusyModel(Model? parent,
       {String? id,
@@ -98,7 +84,6 @@ class BusyModel extends ViewableModel {
     this.size = size;
     this.color = color;
     this.modal = modal;
-    this.expand = expand;
     if (observable != null) observable.registerListener(onObservableChange);
   }
 
@@ -128,13 +113,6 @@ class BusyModel extends ViewableModel {
     // properties
     size = Xml.get(node: xml, tag: 'size');
     modal = Xml.get(node: xml, tag: 'modal');
-
-    // expand="false" is same as adding attribute shrink
-    var expand = Xml.get(node: xml, tag: 'expand');
-    if (expand == null && Xml.hasAttribute(node: xml, tag: 'shrink')) {
-      expand = 'false';
-    }
-    this.expand = expand;
   }
 
   @override

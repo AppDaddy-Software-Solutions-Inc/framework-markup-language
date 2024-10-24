@@ -58,18 +58,6 @@ class CheckboxModel extends FormFieldModel implements IFormField {
 
   bool get center => _center?.get() ?? false;
 
-  /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
-  BooleanObservable? _startSelected;
-  set startSelected(dynamic v) {
-    if (_startSelected != null) {
-      _startSelected!.set(v);
-    } else if (v != null) {
-      _startSelected = BooleanObservable(Binding.toKey(id, 'startselected'), v, scope: scope);
-    }
-  }
-
-  bool get startSelected => _startSelected?.get() ?? false;
-
   // wrap
   BooleanObservable? _wrap;
   set wrap(dynamic v) {
@@ -288,8 +276,7 @@ class CheckboxModel extends FormFieldModel implements IFormField {
     dynamic label,
     dynamic post,
     dynamic onchange,
-    dynamic wrap,
-        dynamic startSelected,
+    dynamic wrap
   }) {
     if (mandatory != null) this.mandatory = mandatory;
     if (editable != null) this.editable = editable;
@@ -307,7 +294,6 @@ class CheckboxModel extends FormFieldModel implements IFormField {
     if (post != null) this.post = post;
     if (onchange != null) this.onchange = onchange;
     if (wrap != null) this.wrap = wrap;
-    if (startSelected != null) this.startSelected = startSelected;
 
     alarming = false;
     dirty = false;
@@ -333,6 +319,13 @@ class CheckboxModel extends FormFieldModel implements IFormField {
     super.deserialize(xml);
 
     // checkboxes can have multiple values
+
+    // value is an attribute?
+    var v = Xml.attribute(node: xml, tag: 'value');
+    if (!isNullOrEmpty(v)) value = v?.split(",");
+
+    // add individual element values. this allows setting multiple values that may have commas in them and
+    // cannot be set by an attribute style comma separated list
     var values = Xml.getChildElements(node: xml, tag: 'value');
     values?.forEach((element) {
       String? v = Xml.getText(element);
@@ -347,9 +340,8 @@ class CheckboxModel extends FormFieldModel implements IFormField {
     center = Xml.get(node: xml, tag: 'center');
     wrap = Xml.get(node: xml, tag: 'wrap');
     size = Xml.get(node: xml, tag: 'size');
-    startSelected = Xml.get(node: xml, tag: 'startselected');
 
-    // build radio options
+    // build checkbox options
     _buildOptions();
 
     // set the default selected options
@@ -368,6 +360,14 @@ class CheckboxModel extends FormFieldModel implements IFormField {
     if (!isNullOrEmpty(datasource) && options.isNotEmpty) {
       prototype = prototypeOf(options.first.element);
       options.removeAt(0);
+    }
+
+    // insert selected options
+    // we skip this if a value is specified
+    if (_value == null) {
+      for (var option in options) {
+        if (option.selected) _insertAnswer(option.value);
+      }
     }
 
     // build options
@@ -447,12 +447,18 @@ class CheckboxModel extends FormFieldModel implements IFormField {
       // build options
       list?.forEach((row) {
         OptionModel? model = OptionModel.fromXml(this, prototype, data: row);
-        if (model != null) options.add(model);
-       if(startSelected || model!.startSelected) _insertAnswer(model?.value);
+        if (model != null) {
+          options.add(model);
+
+          // if the option is selected, insert the answer unless there has been
+          // user interaction
+          if(model.selected && !touched) _insertAnswer(model.value);
+        }
       });
 
       // set selected option
       _setSelectedOptions(value);
+
     } catch (e) {
       Log().error('Error building list. Error is $e', caller: 'CHECKBOX');
     }

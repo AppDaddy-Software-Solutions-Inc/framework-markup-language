@@ -134,7 +134,6 @@ class DataSourceModel extends Model implements IDataSource {
           scope: scope, lazyEvaluation: true);
     }
   }
-
   String? get onreadsuccess => _onreadsuccess?.get();
 
   // on fail event
@@ -148,7 +147,6 @@ class DataSourceModel extends Model implements IDataSource {
           scope: scope, lazyEvaluation: true);
     }
   }
-
   String? get onfail => _onfail?.get();
 
   // time to idle - clears status message field

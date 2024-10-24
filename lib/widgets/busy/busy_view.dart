@@ -31,10 +31,8 @@ class _BusyViewState extends ViewableWidgetState<BusyView> {
 
     // view
     var modal = widget.model.modal;
-    var size = widget.model.size ?? 32;
-    var col = Theme.of(context).colorScheme.inversePrimary;
-    var color = widget.model.color ??
-        col; // ?? Theme.of(context).colorScheme.inversePrimary ?? Color(0xFF11CDEF).withOpacity(.95);
+    var size  = widget.model.size ?? 32;
+    var color = widget.model.color ?? Theme.of(context).colorScheme.inversePrimary;
 
     if (size < 10) size = 10;
     var stroke = (size / 10.0).ceilToDouble();

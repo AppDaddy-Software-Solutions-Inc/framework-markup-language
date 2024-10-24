@@ -199,7 +199,7 @@ class TableRowCellModel extends BoxModel {
   AlarmModel? getActiveAlarm() {
     if (_alarms == null) return null;
     for (var alarm in _alarms!) {
-      if (alarm.alarming) return alarm;
+      if (alarm.isAlarming) return alarm;
     }
     return null;
   }

@@ -21,23 +21,24 @@ class AlarmModel extends Model {
     if (_text != null) {
       _text!.set(v);
     } else if (v != null) {
-      _text = StringObservable(Binding.toKey(id, 'errortext'), v,
+      _text = StringObservable(Binding.toKey(id, 'text'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
   String? get text => _text?.get();
 
   /// The eval to determine if the error state of the parent is displayed.
-  BooleanObservable? _alarming;
-  set alarming(dynamic v) {
-    if (_alarming != null) {
-      _alarming?.set(v);
+  BooleanObservable? _alarm;
+  set alarm(dynamic v) {
+    if (_alarm != null) {
+      _alarm?.set(v);
     } else if (v != null) {
-      _alarming =
-          BooleanObservable(Binding.toKey(id, 'alarming'), v, scope: scope);
+      _alarm =
+          BooleanObservable(Binding.toKey(id, 'alarm'), v, scope: scope);
     }
   }
-  bool get alarming => _alarming?.get() ?? false;
+  bool get alarm => _alarm?.get() ?? false;
+  bool get isAlarming => _alarm?.get() ?? false;
 
   /// The event string to execute when an alarm is triggered.
   StringObservable? _onalarm;
@@ -63,7 +64,7 @@ class AlarmModel extends Model {
     if (type is AlarmType) this.type = type;
 
     if (text != null) this.text = text;
-    if (alarm != null) alarming = alarm;
+    if (alarm != null) this.alarm = alarm;
 
     // Build a binding to the parent value
     var binding = "{${parent.id}.value}";
@@ -90,7 +91,7 @@ class AlarmModel extends Model {
     super.deserialize(xml);
 
     // set properties
-    alarming =
+    alarm =
         Xml.get(node: xml, tag: 'alarm') ?? Xml.get(node: xml, tag: 'error') ?? Xml.get(node: xml, tag: 'value');
     text =
         Xml.get(node: xml, tag: 'text') ?? Xml.get(node: xml, tag: 'errortext');
@@ -98,7 +99,7 @@ class AlarmModel extends Model {
   }
 
   // listen for changed
-  void onChange(OnChangeCallback callback) => _alarming?.registerListener(callback);
+  void onChange(OnChangeCallback callback) => _alarm?.registerListener(callback);
 
   Future<bool> onAlarm() async {
     if (_onalarm == null) return true;

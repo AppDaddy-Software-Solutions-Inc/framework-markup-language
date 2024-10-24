@@ -24,7 +24,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
     if (v is CapitalizationTypes) _capitalization = v;
     _capitalization = toEnum(v, CapitalizationTypes.values);
   }
-
   CapitalizationTypes? get capitalization => _capitalization;
 
   // controller is maintained in the model so its state is maintained across rebuilds.
@@ -299,7 +298,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
     clear = Xml.get(node: xml, tag: 'clear');
     maxlines = Xml.get(node: xml, tag: 'maxlines');
     expand = Xml.get(node: xml, tag: 'expand');
-    onfocuslost = Xml.get(node: xml, tag: 'onfocuslost');
     keyboardType = Xml.get(node: xml, tag: 'keyboardtype');
     keyboardInput = Xml.get(node: xml, tag: 'keyboardinput');
     allow = Xml.get(node: xml, tag: 'allow');
@@ -307,6 +305,8 @@ class InputModel extends DecoratedInputModel implements IFormField {
     capitalization = Xml.get(node: xml, tag: 'case');
     mask = Xml.get(node: xml, tag: 'mask');
     debounce = Xml.get(node: xml, tag: 'debounce');
+    onfocus = Xml.get(node: xml, tag: 'onfocus');
+    onblur = Xml.get(node: xml, tag: 'onblur') ?? Xml.get(node: xml, tag: 'onfocuslost');
   }
 
   setValidator(String? defaultText) {

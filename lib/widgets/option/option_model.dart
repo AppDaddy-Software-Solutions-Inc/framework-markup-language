@@ -34,16 +34,15 @@ class OptionModel extends RowModel {
   }
   String? get label => _label?.get() ?? value;
 
-  BooleanObservable? _startSelected;
-  set startSelected(dynamic v) {
-    if (_startSelected != null) {
-      _startSelected!.set(v);
+  BooleanObservable? _selected;
+  set selected(dynamic v) {
+    if (_selected != null) {
+      _selected!.set(v);
     } else if (v != null) {
-      _startSelected = BooleanObservable(Binding.toKey(id, 'startselected'), v, scope: scope);
+      _selected = BooleanObservable(Binding.toKey(id, 'selected'), v, scope: scope);
     }
   }
-
-  bool get startSelected => _startSelected?.get() ?? false;
+  bool get selected => _selected?.get() ?? false;
 
   // value
   StringObservable? _value;
@@ -59,10 +58,10 @@ class OptionModel extends RowModel {
   // string to search on
   final List<TagModel> tags = [];
 
-  OptionModel(super.parent, super.id, {dynamic data, String? value, String? label, dynamic startSelected})
+  OptionModel(super.parent, super.id, {dynamic data, String? value, String? label, dynamic selected})
       : super(scope: Scope(parent: parent.scope)) {
-    this.data = data;
-    this.startSelected = startSelected;
+    if (data != null) this.data = data;
+    if (selected != null) this.selected = selected;
     if (value != null) this.value = value;
     if (label != null) this.label = label;
   }
@@ -91,16 +90,13 @@ class OptionModel extends RowModel {
 
     // Properties
     var label = Xml.get(node: xml, tag: 'label');
-    var value = Xml.get(node: xml, tag: 'value');
-    var startSelected = Xml.get(node: xml, tag: 'startselected');
-
-    // <OPTION>xxx</OPTION> style
     if (label == null && viewableChildren.isEmpty) {
       var text = Xml.getText(xml);
       if (!isNullOrEmpty(text)) label = text;
     }
 
     // label specified but not value
+    var value = Xml.get(node: xml, tag: 'value');
     if (value == null && label != null) value = label;
 
     // set option type
@@ -109,7 +105,9 @@ class OptionModel extends RowModel {
     // set label and value
     this.label = label;
     this.value = value;
-    this.startSelected = startSelected;
+
+    // selected?
+    selected = Xml.get(node: xml, tag: 'selected');
 
     // add text model
     if (viewableChildren.isEmpty)

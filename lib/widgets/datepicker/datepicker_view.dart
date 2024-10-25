@@ -173,7 +173,7 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
       // display date picker
       var result = await showDatePicker(
           context: context,
-          initialDatePickerMode: widget.model.mode == "year"
+          initialDatePickerMode: widget.model.cmode == "year"
               ? DatePickerMode.year
               : DatePickerMode.day,
           initialEntryMode: dmode,
@@ -209,7 +209,7 @@ class DatepickerViewState extends ViewableWidgetState<DatepickerView> {
   DatePickerEntryMode _getDatePickerMode() {
 
     // return date picker mode
-    switch (widget.model.mode) {
+    switch (widget.model.cmode) {
       case "calendar":
         return DatePickerEntryMode.calendar;
       case "calendaronly":

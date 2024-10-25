@@ -70,7 +70,7 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
         }
         return BorderSide(
             style: BorderStyle.solid,
-            color: widget.model.color ?? Theme.of(context).colorScheme.primary,
+            color: widget.model.borderColor ?? widget.model.color ?? Theme.of(context).colorScheme.primary,
             width: widget.model.borderWidth ?? 1);
       });
     }

@@ -30,21 +30,8 @@ class ColorpickerModel extends DecoratedInputModel implements IFormField {
       }
     }
   }
-
   @override
   Color? get value => _value?.get();
-
-  /// type of the date picker. Can be "datetime", "date", "time", "range" or "year"
-  StringObservable? _type;
-  set type(dynamic v) {
-    if (_type != null) {
-      _type!.set(v);
-    } else if (v != null) {
-      _type = StringObservable(Binding.toKey(id, 'type'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  String get type => _type?.get()?.trim().toLowerCase() ?? "date";
 
   /// heading of the date picker
   StringObservable? _heading;
@@ -94,7 +81,6 @@ class ColorpickerModel extends DecoratedInputModel implements IFormField {
     
     // deserialize
     super.deserialize(xml);
-
     
     // set properties
     value  = Xml.get(node: xml, tag: fromEnum('value'));
@@ -118,6 +104,7 @@ class ColorpickerModel extends DecoratedInputModel implements IFormField {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
     switch (function) {
+      case "open":
       case "show":
       case "start":
         ColorPickerView.launchPicker(this, context);

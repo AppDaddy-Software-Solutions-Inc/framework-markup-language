@@ -175,18 +175,17 @@ class FormModel extends BoxModel with FormMixin implements IForm {
     return _geocode?.get();
   }
 
-  // on complete event
-  StringObservable? _onComplete;
-  set onComplete(dynamic v) {
-    if (_onComplete != null) {
-      _onComplete!.set(v);
+  // on submit event
+  StringObservable? _onSubmit;
+  set onSubmit(dynamic v) {
+    if (_onSubmit != null) {
+      _onSubmit!.set(v);
     } else if (v != null) {
-      _onComplete = StringObservable(Binding.toKey(id, 'onComplete'), v,
+      _onSubmit = StringObservable(Binding.toKey(id, 'onsubmit'), v,
           scope: scope, lazyEvaluation: true);
     }
   }
-
-  String? get onComplete => _onComplete?.get();
+  String? get onSubmit => _onSubmit?.get();
 
   // on save event
   StringObservable? _onSave;
@@ -194,11 +193,10 @@ class FormModel extends BoxModel with FormMixin implements IForm {
     if (_onSave != null) {
       _onSave!.set(v);
     } else if (v != null) {
-      _onSave = StringObservable(Binding.toKey(id, 'onSave'), v,
+      _onSave = StringObservable(Binding.toKey(id, 'onsave'), v,
           scope: scope, lazyEvaluation: true);
     }
   }
-
   String? get onSave => _onSave?.get();
 
   // on validate event
@@ -207,11 +205,10 @@ class FormModel extends BoxModel with FormMixin implements IForm {
     if (_onValidate != null) {
       _onValidate!.set(v);
     } else if (v != null) {
-      _onValidate = StringObservable(Binding.toKey(id, 'onValidate'), v,
+      _onValidate = StringObservable(Binding.toKey(id, 'onvalidate'), v,
           scope: scope, lazyEvaluation: true);
     }
   }
-
   String? get onValidate => _onValidate?.get();
 
   // failed validation event
@@ -220,11 +217,10 @@ class FormModel extends BoxModel with FormMixin implements IForm {
     if (_onInvalid != null) {
       _onInvalid!.set(v);
     } else if (v != null) {
-      _onInvalid = StringObservable(Binding.toKey(id, 'onInvalid'), v,
+      _onInvalid = StringObservable(Binding.toKey(id, 'oninvalid'), v,
           scope: scope, lazyEvaluation: true);
     }
   }
-
   String? get onInvalid => _onInvalid?.get();
 
   Map<String, String?> get map {
@@ -306,7 +302,7 @@ class FormModel extends BoxModel with FormMixin implements IForm {
     warnOnExit = Xml.attribute(node: xml, tag: 'warnonexit');
 
     // events
-    onComplete = Xml.get(node: xml, tag: 'oncomplete');
+    onSubmit = Xml.get(node: xml, tag: 'onsubmit') ?? Xml.get(node: xml, tag: 'oncomplete');
     onSave = Xml.get(node: xml, tag: 'onsave');
     onValidate = Xml.get(node: xml, tag: 'onvalidate');
     onInvalid = Xml.get(node: xml, tag: 'oninvalid');
@@ -475,7 +471,7 @@ class FormModel extends BoxModel with FormMixin implements IForm {
     if (ok == true) clean();
 
     // fire on complete event
-    if (ok) ok = await EventHandler(this).execute(_onComplete);
+    if (ok) ok = await EventHandler(this).execute(_onSubmit);
 
     // set complete
     if (ok) status = StatusCodes.complete;

@@ -30,7 +30,17 @@ class _GestureViewState extends ViewableWidgetState<GestureView> {
 
     if (!widget.model.enabled) return child;
 
-    return GestureDetector(
+    Widget view = MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: widget.model.onmouseover != null
+            ? onMouseOver
+            : null,
+        onExit: widget.model.onmouseout != null
+            ? onMouseOut
+            : null,
+        child: child);
+
+    view = GestureDetector(
         onTap: onTap,
         onLongPress: onLongPress,
         onDoubleTap: onDoubleTap,
@@ -51,7 +61,9 @@ class _GestureViewState extends ViewableWidgetState<GestureView> {
                 ? onSwipeUp()
                 : onSwipeDown(),
         onSecondaryTap: onRightClick,
-        child: MouseRegion(cursor: SystemMouseCursors.click, child: child));
+        child: view);
+
+    return view;
   }
 
   onTap() async {
@@ -92,5 +104,13 @@ class _GestureViewState extends ViewableWidgetState<GestureView> {
   onRightClick() async {
     Model.unfocus();
     await widget.model.onRightClick(context);
+  }
+
+  onMouseOver(_) async {
+    await widget.model.onMouseOver(context);
+  }
+
+  onMouseOut(_) async {
+    await widget.model.onMouseOut(context);
   }
 }

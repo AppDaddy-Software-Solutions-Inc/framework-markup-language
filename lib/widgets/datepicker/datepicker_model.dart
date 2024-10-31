@@ -22,19 +22,6 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
-  // view
-  BooleanObservable? _view;
-
-  set view(dynamic v) {
-    if (_view != null) {
-      _view!.set(v);
-    } else if (v != null) {
-      _view = BooleanObservable(Binding.toKey(id, 'view'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool? get view => _view?.get();
-
   // readonly
   BooleanObservable? _showicon;
   set showicon(dynamic v) {
@@ -60,16 +47,16 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
   String get type => _type?.get()?.trim().toLowerCase() ?? "date";
 
   /// Mode is the entry mode type of the date picker dialog. Can be input, inputOnly, year, calendar or calendarOnly
-  StringObservable? _mode;
-  set mode(dynamic tmode) {
-    if (_mode != null) {
-      _mode!.set(tmode);
+  StringObservable? _cmode;
+  set cmode(dynamic tmode) {
+    if (_cmode != null) {
+      _cmode!.set(tmode);
     } else if (tmode != null) {
-      _mode = StringObservable(Binding.toKey(id, 'cmode'), tmode,
+      _cmode = StringObservable(Binding.toKey(id, 'cmode'), tmode,
           scope: scope, listener: onPropertyChange);
     }
   }
-  String get mode => _mode?.get()?.toLowerCase().trim() ?? "calendar";
+  String get cmode => _cmode?.get()?.toLowerCase().trim() ?? "calendar";
 
   /// Mode is the entry mode type of the time picker dialog. Can be input, inputOnly, dial or dialOnly
   StringObservable? _tmode;
@@ -231,12 +218,11 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
     value  = Xml.get(node: xml, tag: 'value') ?? defaultValue;
     value2 = Xml.get(node: xml, tag: 'value2');
 
-    view   = Xml.get(node: xml, tag: 'view');
     oldest = Xml.get(node: xml, tag: 'oldest');
     newest = Xml.get(node: xml, tag: 'newest');
     clear  = Xml.get(node: xml, tag: 'clear');
 
-    mode   = Xml.get(node: xml, tag: 'mode');
+    cmode   = Xml.get(node: xml, tag: 'cmode') ?? Xml.get(node: xml, tag: 'mode');
     tmode  = Xml.get(node: xml, tag: 'tmode');
     showicon  = Xml.get(node: xml, tag: 'showicon');
   }
@@ -248,6 +234,8 @@ class DatepickerModel extends DecoratedInputModel implements IFormField {
     var function = propertyOrFunction.toLowerCase().trim();
 
     switch (function) {
+      case "show":
+      case "open":
       case "start":
         await datepicker?.show();
     }

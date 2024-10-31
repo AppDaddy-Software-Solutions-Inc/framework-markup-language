@@ -758,8 +758,8 @@ mixin ViewableMixin on Model implements IDragDrop {
     }
   }
   String? get offscreen => _offscreen?.get();
-
   void offScreen() => !isNullOrEmpty(_offscreen) ? EventHandler(this).execute(_offscreen) : null;
+
 
   /// visible area - percent of object visible on screen
   DoubleObservable? _visibleArea;
@@ -959,7 +959,6 @@ mixin ViewableMixin on Model implements IDragDrop {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get droppable => _droppable?.get() ?? false;
 
   // ondrop - fired on the droppable when the draggable is dropped and after accept
@@ -1143,9 +1142,11 @@ mixin ViewableMixin on Model implements IDragDrop {
     valign = Xml.get(node: xml, tag: 'valign');
     flex = Xml.get(node: xml, tag: 'flex');
     flexfit = Xml.get(node: xml, tag: 'flexfit');
+    selectOnFocus = Xml.get(node: xml, tag: 'selectonfocus');
+
+    // events
     onscreen = Xml.get(node: xml, tag: 'onscreen');
     offscreen = Xml.get(node: xml, tag: 'offscreen');
-    selectOnFocus = Xml.get(node: xml, tag: 'selectonfocus');
 
     // _colors array - sets color1, color2, color3 and colo4
     _colors = Xml.get(node: xml, tag: 'color');

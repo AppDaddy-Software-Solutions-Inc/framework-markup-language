@@ -25,6 +25,9 @@ class ButtonModel extends BoxModel {
   final double defaultMargin = 3;
 
   @override
+  final bool expandDefault = false;
+
+  @override
   double? get marginTop => super.marginTop ?? defaultMargin;
 
   @override
@@ -111,9 +114,6 @@ class ButtonModel extends BoxModel {
     }
   }
   String? get type => _type?.get();
-
-  @override
-  final bool expandDefault = false;
 
   ButtonModel(super.parent, super.id,
       {

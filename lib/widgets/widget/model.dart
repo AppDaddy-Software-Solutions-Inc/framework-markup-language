@@ -614,7 +614,7 @@ class Model implements IDataSourceListener {
 
     // property - default is value
     // we can now use dot notation to specify the property
-    // rather than pass it as an attribute
+    // rather than pass it as an attribute (ex, id.color.set('green))
     var property = elementAt(arguments, 1);
     var key = Binding.toKey(id, property);
 

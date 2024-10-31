@@ -155,7 +155,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   int? get maxlines => _maxlines?.get();
 
   /// The maximum allowable length of the input in number of characters.

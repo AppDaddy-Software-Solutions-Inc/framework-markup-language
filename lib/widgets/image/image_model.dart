@@ -46,18 +46,6 @@ class ImageModel extends ViewableModel {
   }
   String? get fit => _fit?.get();
 
-  // filter
-  StringObservable? _filter;
-  set filter(dynamic v) {
-    if (_filter != null) {
-      _filter!.set(v);
-    } else if (v != null) {
-      _filter = StringObservable(Binding.toKey(id, 'filter'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get filter => _filter?.get();
-
   // interactive
   BooleanObservable? _interactive;
   set interactive(dynamic v) {
@@ -77,8 +65,6 @@ class ImageModel extends ViewableModel {
       dynamic height,
       dynamic opacity,
       dynamic fit,
-      dynamic filter,
-      dynamic flip,
       dynamic interactive}) {
     if (width != null) this.width = width;
     if (height != null) this.height = height;
@@ -87,8 +73,6 @@ class ImageModel extends ViewableModel {
     this.url = url;
     this.defaultvalue = defaultvalue;
     this.fit = fit;
-    this.filter = filter;
-    this.flip = flip;
     this.interactive = interactive;
   }
 
@@ -114,7 +98,6 @@ class ImageModel extends ViewableModel {
     url = Xml.get(node: xml, tag: 'url');
     defaultvalue = Xml.get(node: xml, tag: 'default');
     fit = Xml.get(node: xml, tag: 'fit');
-    filter = Xml.get(node: xml, tag: 'filter');
     interactive = Xml.get(node: xml, tag: 'interactive');
   }
 

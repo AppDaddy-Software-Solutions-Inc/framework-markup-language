@@ -131,6 +131,30 @@ class GestureModel extends ViewableModel {
     return _onrightclick?.get();
   }
 
+  /// mouse over event
+  StringObservable? _onmouseover;
+  set onmouseover(dynamic v) {
+    if (_onmouseover != null) {
+      _onmouseover!.set(v);
+    } else if (v != null) {
+      _onmouseover =
+          StringObservable(Binding.toKey(id, 'onmouseover'), v, scope: scope);
+    }
+  }
+  String? get onmouseover => _onmouseover?.get();
+
+  /// mouse out event
+  StringObservable? _onmouseout;
+  set onmouseout(dynamic v) {
+    if (_onmouseout != null) {
+      _onmouseout!.set(v);
+    } else if (v != null) {
+      _onmouseout =
+          StringObservable(Binding.toKey(id, 'onmouseout'), v, scope: scope);
+    }
+  }
+  String? get onmouseout => _onmouseout?.get();
+
   GestureModel(
     Model super.parent,
     super.id, {
@@ -184,6 +208,9 @@ class GestureModel extends ViewableModel {
     onswipeup = Xml.get(node: xml, tag: 'onswipeup');
     onswipedown = Xml.get(node: xml, tag: 'onswipedown');
     onrightclick = Xml.get(node: xml, tag: 'onrightclick');
+
+    onmouseover = Xml.get(node: xml, tag: 'onmouseover');
+    onmouseout = Xml.get(node: xml, tag: 'onmouseout');
   }
 
   Future<bool> onClick(BuildContext context) async {
@@ -224,6 +251,16 @@ class GestureModel extends ViewableModel {
   Future<bool> onRightClick(BuildContext context) async {
     if (onrightclick == null) return true;
     return await EventHandler(this).execute(_onrightclick);
+  }
+
+  Future<bool> onMouseOver(BuildContext context) async {
+    if (onmouseover == null) return true;
+    return await EventHandler(this).execute(_onmouseover);
+  }
+
+  Future<bool> onMouseOut(BuildContext context) async {
+    if (onmouseout == null) return true;
+    return await EventHandler(this).execute(_onmouseout);
   }
 
   @override

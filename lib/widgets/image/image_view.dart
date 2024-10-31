@@ -37,10 +37,7 @@ class ImageView extends StatefulWidget implements ViewableWidgetView {
       String? defaultImage,
       double? width,
       double? height,
-      String? fit,
-      String? filter,
-      bool fade = true,
-      int? fadeDuration}) {
+      String? fit}) {
     Widget? image;
 
     try {
@@ -57,10 +54,7 @@ class ImageView extends StatefulWidget implements ViewableWidgetView {
                 defaultImage: null,
                 fit: fit,
                 width: width,
-                height: height,
-                filter: filter,
-                fade: fade,
-                fadeDuration: fadeDuration);
+                height: height);
           }
         }
         return const Icon(Icons.broken_image_outlined,
@@ -82,10 +76,7 @@ class ImageView extends StatefulWidget implements ViewableWidgetView {
             defaultImage: null,
             fit: fit,
             width: width,
-            height: height,
-            filter: filter,
-            fade: fade,
-            fadeDuration: fadeDuration);
+            height: height);
       }
 
       // get image type
@@ -99,7 +90,7 @@ class ImageView extends StatefulWidget implements ViewableWidgetView {
                 fit: getFit(fit),
                 width: width,
                 height: height,
-                fadeInDuration: Duration(milliseconds: fadeDuration ?? 300),
+                fadeInDuration: const Duration(milliseconds: 300),
                 imageErrorBuilder: errorHandler);
           }
           break;
@@ -177,7 +168,7 @@ class ImageView extends StatefulWidget implements ViewableWidgetView {
                 fit: getFit(fit),
                 width: width,
                 height: height,
-                fadeInDuration: Duration(milliseconds: fadeDuration ?? 300),
+                fadeInDuration: const Duration(milliseconds: 300),
                 imageErrorBuilder: errorHandler,
               );
             } else {
@@ -251,8 +242,7 @@ class _ImageViewState extends ViewableWidgetState<ImageView> {
             defaultImage: widget.model.defaultvalue,
             width: widget.model.width,
             height: widget.model.height,
-            fit: widget.model.fit,
-            filter: widget.model.filter) ??
+            fit: widget.model.fit) ??
         Container();
 
     // interactive image??

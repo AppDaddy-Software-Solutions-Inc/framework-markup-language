@@ -22,21 +22,32 @@ class _SwitchViewState extends ViewableWidgetState<SwitchView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
+    ColorScheme theme = Theme.of(context).colorScheme;
+
     bool value = widget.model.value;
     String? label = widget.model.label;
     bool canSwitch = widget.model.enabled && widget.model.editable;
 
+    // inactive thumb color (left)
+    var c1 = widget.model.color ?? theme.primary;
+
+    // active thumb color (right)
+    var c2 = widget.model.color2 ?? c1;
+
+    // track color
+    var c3 = widget.model.color3 ?? c1.withOpacity(0.5);
+
+    // border color
+    var c4 = widget.model.borderColor ?? c3;
+
     // view
-    ColorScheme th = Theme.of(context).colorScheme;
     Widget view = Switch.adaptive(
       value: value, onChanged: canSwitch ? onChange : null,
-      // activeColor: th.inversePrimary, activeTrackColor: th.primaryContainer, inactiveThumbColor: th.onInverseSurface, inactiveTrackColor: th.surfaceVariant,);
-      activeColor: widget.model.color ?? th.primary,
-      activeTrackColor:
-          widget.model.color?.withOpacity(0.65) ?? th.inversePrimary,
-      inactiveThumbColor: th.onInverseSurface,
-      inactiveTrackColor: th.surfaceContainerHighest,
-    );
+        inactiveThumbColor: c1,
+        inactiveTrackColor: c3,
+        activeColor: c2,
+        activeTrackColor: c3,
+        trackOutlineColor: WidgetStateProperty.all(c4));
 
     // disabled?
     if (!canSwitch) {
@@ -58,7 +69,7 @@ class _SwitchViewState extends ViewableWidgetState<SwitchView>
           TextView(TextModel(null, null,
               value: label,
               style: 'caption',
-              color: th.onSurfaceVariant.withOpacity(0.75))),
+              color: theme.onSurfaceVariant.withOpacity(0.75))),
           view
         ],
       );

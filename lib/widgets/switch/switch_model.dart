@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/form/form_field_model.dart';
+import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/reactive/reactive_view.dart';
@@ -11,7 +11,7 @@ import 'package:fml/widgets/switch/switch_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class SwitchModel extends FormFieldModel implements IFormField {
+class SwitchModel extends DecoratedInputModel implements IFormField {
 
   // width of the switch
   @override

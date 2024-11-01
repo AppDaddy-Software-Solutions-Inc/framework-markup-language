@@ -76,7 +76,12 @@ mixin BoxMixin {
     var parentWidth = widthOf(child.parent);
     var childWidth = model.getWidth(widthParent: parentWidth);
     if (childWidth != null) {
-      constraints = constraints.tighten(width: childWidth);
+      //constraints = constraints.tighten(width: childWidth);
+      constraints = BoxConstraints(
+          minWidth: childWidth,
+          maxWidth: childWidth,
+          minHeight: constraints.minHeight,
+          maxHeight: constraints.maxHeight);
     }
 
     // get the child's height from the model
@@ -84,7 +89,12 @@ mixin BoxMixin {
     var parentHeight = heightOf(child.parent);
     var childHeight = model.getHeight(heightParent: parentHeight);
     if (childHeight != null) {
-      constraints = constraints.tighten(height: childHeight);
+      //constraints = constraints.tighten(height: childHeight);
+      constraints = BoxConstraints(
+          minWidth: constraints.minWidth,
+          maxWidth: constraints.maxWidth,
+          minHeight: childHeight,
+          maxHeight: childHeight);
     }
 
     // set child min/max widths as defined in the model

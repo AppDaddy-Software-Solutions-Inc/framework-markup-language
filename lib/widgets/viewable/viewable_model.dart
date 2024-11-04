@@ -1020,21 +1020,6 @@ mixin ViewableMixin on Model implements IDragDrop {
   }
   bool? get canDrop => canDropObservable?.get();
 
-  set _colors(dynamic v) {
-    // build colors array
-    if (v is String) {
-      if (!Observable.isEvalSignature(v)) {
-        var s = v.split(',');
-        if (s.isNotEmpty) color = s[0].trim();
-        if (s.length > 1) color2 = s[1].trim();
-        if (s.length > 2) color3 = s[2].trim();
-        if (s.length > 3) color4 = s[3].trim();
-      } else {
-        color = v;
-      }
-    }
-  }
-
   // color
   ColorObservable? _color;
   set color(dynamic v) {
@@ -1042,10 +1027,28 @@ mixin ViewableMixin on Model implements IDragDrop {
       _color!.set(v);
     } else if (v != null) {
       _color = ColorObservable(Binding.toKey(id, 'color'), v,
-          scope: scope, listener: onPropertyChange);
+          scope: scope, listener: onPropertyChange, setter: _colorSetter);
     }
   }
   Color? get color => _color?.get();
+
+  dynamic _colorSetter(dynamic value, {Observable? setter}) {
+
+    var v = value;
+
+    // build colors array
+    if (v is String) {
+      if (!Observable.isEvalSignature(v))
+      {
+        var s = value.split(',');
+        if (s.length > 1) color2 = s[1].trim();
+        if (s.length > 2) color3 = s[2].trim();
+        if (s.length > 3) color4 = s[3].trim();
+        if (s.isNotEmpty) v = s[0].trim();
+      }
+    }
+    return v;
+  }
 
   // color2
   ColorObservable? _color2;
@@ -1148,8 +1151,8 @@ mixin ViewableMixin on Model implements IDragDrop {
     onscreen = Xml.get(node: xml, tag: 'onscreen');
     offscreen = Xml.get(node: xml, tag: 'offscreen');
 
-    // _colors array - sets color1, color2, color3 and colo4
-    _colors = Xml.get(node: xml, tag: 'color');
+    // color
+    color = Xml.get(node: xml, tag: 'color');
 
     // visual transforms
     opacity = Xml.get(node: xml, tag: 'opacity');

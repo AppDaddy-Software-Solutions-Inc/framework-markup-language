@@ -91,7 +91,9 @@ class Scope {
     return true;
   }
 
-  void registerModel(Model model) => models[model.id] = model;
+  void registerModel(Model model) {
+    models[model.id] = model;
+}
 
   void unregisterModel(Model model) {
     models.remove(model.id);
@@ -114,9 +116,9 @@ class Scope {
     return null;
   }
 
-  static Scope? findNamedScope(String? id) {
+  static Scope? findNamedScope(String? id, Model? model) {
     if (id == null || !id.contains(".")) return null;
-    return System.currentApp?.scopeManager.of(id.split(".").first.trim());
+    return System.currentApp?.scopeManager.find(id.split(".").first.trim(), model);
   }
 
   bool bind(Observable target) {
@@ -223,7 +225,7 @@ class Scope {
     }
   }
 
-  void setObservable(String? key, dynamic value) {
+  void setObservable(String? key, dynamic value, Model model) {
 
     Binding? binding = Binding.fromString(key);
 
@@ -241,9 +243,11 @@ class Scope {
     // Create the Observable
     if (observable == null) {
       Scope? scope = this;
+
       if (binding.scope != null) {
-        scope = System.currentApp?.scopeManager.of(binding.scope);
+        scope = System.currentApp?.scopeManager.find(binding.scope, model);
       }
+
       if (scope != null) {
         var observable = StringObservable(binding.key, value, scope: this);
         scope.register(observable);
@@ -317,5 +321,13 @@ class Scope {
 
     // not found
     return null;
+  }
+
+  bool encapsulates(Model model) {
+    if (models.values.contains(model)) return true;
+    for (var scope in children!) {
+      if (scope.encapsulates(model)) return true;
+    }
+    return false;
   }
 }

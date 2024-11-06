@@ -24,6 +24,7 @@ class BoxModel extends ViewableModel {
   // Denotes whether box widgets (row, column) naturally expand or contract
   final bool expandDefault;
 
+  // box drawer?
   DrawerModel? drawer;
 
   // indicates if the widget will grow in

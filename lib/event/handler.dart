@@ -325,7 +325,7 @@ class EventHandler extends Eval {
     if (scope == null) return ok;
 
     // set the variable
-    scope.setObservable(variable.toString(), value?.toString());
+    scope.setObservable(variable.toString(), value?.toString(), model);
 
     return ok;
   }
@@ -836,7 +836,7 @@ class EventHandler extends Eval {
     if (id.contains(".")) {
 
       var parts = id.split(".");
-      scope = Scope.findNamedScope(id) ?? scope;
+      scope = Scope.findNamedScope(id, this.model) ?? scope;
       if (scope != this.model.scope) parts.removeAt(0);
 
       // id should not be set to parts. first as the execute relies on the secondary part of the id to choose the attribute to be set

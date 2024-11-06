@@ -201,20 +201,19 @@ class Model implements IDataSourceListener {
     busy = true;
 
     // scoped widget?
-    var scope = Xml.get(node: xml, tag: 'scope');
-    if (!isNullOrEmpty(scope)) {
+    if (!isNullOrEmpty(Xml.get(node: xml, tag: 'scope'))) {
 
         // unregister from the current scope
-        this.scope?.unregisterModel(this);
+        scope?.unregisterModel(this);
 
         // create a new scope
-        this.scope = Scope(parent: parent?.scope, id: scope);
+        scope = Scope(parent: parent?.scope, id: Xml.get(node: xml, tag: 'scope'));
 
         // register this model with the new scope
-        this.scope?.registerModel(this);
+        scope?.registerModel(this);
 
         // we want to know if the scope is local so we can dispose of it
-        // when the model is destroyed
+        // when the model is disposed
         _scopeIsLocal = true;
     }
 
@@ -226,7 +225,7 @@ class Model implements IDataSourceListener {
     datasource = Xml.get(node: xml, tag: 'datasource') ?? Xml.get(node: xml, tag: 'data');
 
     // register a listener to the datasource if specified
-    IDataSource? source = this.scope?.getDataSource(datasource);
+    IDataSource? source = scope?.getDataSource(datasource);
     source?.register(this);
 
     // we first sort the elements moving vars and datasources to the top of the
@@ -619,7 +618,7 @@ class Model implements IDataSourceListener {
     var key = Binding.toKey(id, property);
 
     // set the binding value
-    scope.setObservable(key, value?.toString());
+    scope.setObservable(key, value?.toString(), model);
 
     return true;
   }

@@ -240,6 +240,9 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
     return myParameters;
   }
 
+  // return true if no outer frameworks
+  bool get isOuterFramework => findAncestorOfExactType(FrameworkModel) == null;
+
   FrameworkModel(Model super.parent, super.id,
       {dynamic key,
       dynamic dependency,
@@ -502,14 +505,18 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager {
   }
 
   Future<bool> onStart(BuildContext context) async {
-    await NavigationManager().onPageLoaded();
+
+    if (isOuterFramework) {
+      NavigationManager().onPageLoaded();
+    }
+
     return await EventHandler(this).execute(_onstart);
   }
 
   void onPush(Map<String?, String>? parameters) {
 
     // set variables from return parameters
-    parameters?.forEach((key, value) => scope?.setObservable(key, value));
+    parameters?.forEach((key, value) => scope?.setObservable(key, value, this));
 
     // fire onReturn event
     if (!isNullOrEmpty(onreturn)) EventHandler(this).execute(_onreturn);

@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/helpers/helpers.dart';
+import 'package:fml/widgets/widget/model.dart';
 
 class ScopeManager {
   final directory = HashMap<String, List<Scope>>();
@@ -29,14 +30,35 @@ class ScopeManager {
     }
   }
 
-  Scope? of(String? id) {
+  Scope? find(String? id, Model? model) {
+
     if (id == null) return null;
-    if (directory.containsKey(id)) return directory[id]!.last;
-    return null;
+    if (!directory.containsKey(id)) return null;
+    if (directory.isEmpty) return null;
+    if (directory.length == 1) return directory[id]!.first;
+    if (model == null) return directory[id]!.last;
+
+    // find names scope containing
+    for (var scope in directory[id]!) {
+
+      // get highest level scope
+      Scope root = scope;
+      while (root.parent != null) {
+        root = root.parent!;
+      }
+
+      // find child scope
+      if (root.encapsulates(model)) {
+        return scope;
+      }
+    }
+
+    return directory[id]!.last;
   }
 
   register(Observable observable) {
-    if ((isNullOrEmpty(observable.key)) || (observable.scope == null)) {
+
+    if (isNullOrEmpty(observable.key) || observable.scope == null) {
       return null;
     }
 

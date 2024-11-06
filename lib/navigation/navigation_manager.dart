@@ -57,7 +57,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
           node: template.document!.rootElement, tag: "linkable"));
   }
 
-  Future<void> onPageLoaded() async {
+  void onPageLoaded() {
 
     var app = System.currentApp;
     if (app == null) return;
@@ -112,16 +112,16 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
       String startPage = System.currentApp?.startPage ?? homePage;
 
       // start page is different than home page?
-      if (homePage != startPage) {
+      if (URI.parse(homePage) != URI.parse(startPage)) {
 
         // get the start page
-        bool linkable = await _pageLinkable(startPage) ?? System.currentApp?.singlePage ?? false;
+        bool linkable = await _pageLinkable(startPage) ?? System.currentApp?.isSinglePageApplication ?? false;
 
         // set start page = home page if not linkable
         if (!linkable) startPage = homePage;
 
         // single page applications always load the home page
-        if (System.currentApp?.singlePage ?? true) startPage = homePage;
+        if (System.currentApp?.isSinglePageApplication ?? true) startPage = homePage;
       }
 
       // open the page
@@ -242,12 +242,6 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
     _pages.clear();
 
     return url;
-  }
-
-  bool _onPopPage(Route route, dynamic result) {
-    if (!route.didPop(result)) return false;
-    popRoute();
-    return true;
   }
 
   CustomMaterialPage _buildPage(String url, {required child, transition}) {
@@ -581,7 +575,6 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
   Widget build(BuildContext context) => Navigator(
     key: navigatorKey,
     pages: List.of(_pages),
-    onPopPage: _onPopPage,
     observers: [NavigationObserver()],
   );
 }

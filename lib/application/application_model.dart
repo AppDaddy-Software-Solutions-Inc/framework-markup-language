@@ -68,7 +68,7 @@ class ApplicationModel extends Model {
 
   // single page application?
   // single page applications restrict navigation to sub pages
-  bool get singlePage => toBool(setting('SINGLE_PAGE_APPLICATION')) ?? false;
+  bool get isSinglePageApplication => toBool(setting('SINGLE_PAGE_APPLICATION')) ?? false;
 
   // company name
   String? get company =>  toStr(setting("COMPANY"));
@@ -124,7 +124,7 @@ class ApplicationModel extends Model {
   int? get fmlVersion => toVersionNumber(setting("FML_VERSION"));
 
   // home page template
-  String  get homePage  => setting("HOME_PAGE") ?? startPage ?? "main.xml";
+  String  get homePage  => setting("HOME_PAGE") ?? "main.xml";
 
   // login page template
   String? get loginPage => setting("LOGIN_PAGE");
@@ -257,7 +257,7 @@ class ApplicationModel extends Model {
 
       // set stash observables
       for (var entry in _stash!.map.entries) {
-        _stash!.scope!.setObservable(entry.key, entry.value);
+        _stash!.scope!.setObservable(entry.key, entry.value, this);
       }
 
       // add STASH scope
@@ -292,6 +292,11 @@ class ApplicationModel extends Model {
           deserialize(template.document!.rootElement);
         }
       }
+    }
+
+    // negate start page if same as home page
+    if (URI.parse(startPage) == URI.parse(homePage)) {
+      _startPage = null;
     }
 
     // mark initialized
@@ -393,7 +398,7 @@ class ApplicationModel extends Model {
       await _stash!.upsert();
 
       // set observable
-      _stash!.scope?.setObservable(key, value);
+      _stash!.scope?.setObservable(key, value, this);
     } catch (e) {
       // stash failure always returns true
       ok = true;
@@ -442,7 +447,7 @@ class ApplicationModel extends Model {
     if (_stash != null)
     {
       for (var entry in _stash!.map.entries) {
-        _stash!.scope?.setObservable(entry.key, entry.value);
+        _stash!.scope?.setObservable(entry.key, entry.value, this);
       }
     }
 

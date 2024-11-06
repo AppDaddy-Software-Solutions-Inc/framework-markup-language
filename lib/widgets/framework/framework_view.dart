@@ -150,8 +150,8 @@ class FrameworkViewState extends State<FrameworkView>
     widget.model.removeListener(this);
 
     // framework is top level model?
-    // cleanup the model
-    if (widget.model.findAncestorOfExactType(FrameworkModel) == null) {
+    // dispose of the model
+    if (widget.model.isOuterFramework) {
       widget.model.dispose();
     }
 

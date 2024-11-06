@@ -16,13 +16,13 @@ class CardModel extends BoxModel {
   @override
   double get elevation => super.elevation ?? 1;
 
-  @override
-  String get radius => super.radius ?? "4";
-
   double get padding => super.paddingTop ?? 5;
 
   @override
   String get border => 'all';
+
+  @override
+  String get borderRadius => super.borderRadius ?? "4";
 
   //overrides
   double? get margins => super.marginTop ?? 5;

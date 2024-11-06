@@ -99,7 +99,7 @@ class ButtonModel extends BoxModel {
   }
 
   @override
-  String get radius => super.radius ?? '5';
+  String get borderRadius => super.borderRadius ?? '5';
 
   /// Type of button
   ///

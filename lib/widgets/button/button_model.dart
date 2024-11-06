@@ -25,7 +25,7 @@ class ButtonModel extends BoxModel {
   final double defaultMargin = 3;
 
   @override
-  final bool expandDefault = false;
+  bool get expandDefault => false;
 
   @override
   double? get marginTop => super.marginTop ?? defaultMargin;

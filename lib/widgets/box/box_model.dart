@@ -492,9 +492,11 @@ class BoxModel extends ViewableModel {
     switch (layout?.toLowerCase().trim()) {
       case 'col':
       case 'column':
+      case 'vertical':
         return LayoutType.column;
 
       case 'row':
+      case 'horizontal':
         return LayoutType.row;
 
       case 'stack':

@@ -40,9 +40,6 @@ class ButtonModel extends BoxModel {
   double? get marginLeft => super.marginLeft ?? defaultMargin;
 
   @override
-  LayoutType get layoutType => BoxModel.getLayoutType(layout);
-
-  @override
   bool get center => true;
 
   @override

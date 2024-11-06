@@ -132,14 +132,24 @@ class LabelledContainerRenderer extends RenderBox
 
   @override
   void paint(PaintingContext context, Offset offset) {
+
+
     // paint the widget
-    paintChild(container!, context, offset);
-    paintChild(label!, context, offset + Offset(gapPadding, 0));
+    if (container != null) {
+      paintChild(container!, context, offset);
+    }
+
+    // paint the label
+    if (label != null) {
+      paintChild(label!, context, offset + Offset(gapPadding, 0));
+    }
+
+    // paint the border
     paintChildBorder(
         paintChildOffset(container!, context, offset),
         context.canvas,
-        decoration!.border!.top,
-        decoration!.borderRadius!.resolve(TextDirection.ltr));
+        (decoration?.border?.top  ?? BorderSide.none),
+        (decoration?.borderRadius ?? BorderRadius.zero).resolve(TextDirection.ltr));
   }
 
   @override

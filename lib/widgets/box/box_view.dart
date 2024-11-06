@@ -309,8 +309,11 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     if (model.borderLabel != null) {
 
       var label = TextModel(null, null,
-          value: model.borderLabel, overflow: "ellipsis")
-          .getView();
+          value: model.borderLabel,
+          color: model.borderLabelColor,
+          size:  model.borderLabelSize,
+          font:  model.borderLabelFont,
+          overflow: "ellipsis").getView();
 
       view = Container(child: view);
       view = ClipPath(clipper: clipper, clipBehavior: Clip.hardEdge, child: view);

@@ -169,28 +169,64 @@ class BoxModel extends ViewableModel {
   }
   String? get borderLabel => _borderLabel?.get();
 
-  // the boxes border radius
-  StringObservable? _radius;
-  set radius(dynamic v) {
-    if (_radius != null) {
-      _radius!.set(v);
+  /// The border label font
+  StringObservable? _borderLabelFont;
+  set borderLabelFont(dynamic v) {
+    if (_borderLabelFont != null) {
+      _borderLabelFont!.set(v);
     } else if (v != null) {
-      _radius = StringObservable(Binding.toKey(id, 'radius'), v,
+      _borderLabelFont = StringObservable(Binding.toKey(id, 'borderlabelfont'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-  String? get radius => _radius?.get()?.toLowerCase();
+  String? get borderLabelFont => _borderLabelFont?.get();
+
+  /// The border label size
+  DoubleObservable? _borderLabelSize;
+  set borderLabelSize(dynamic v) {
+    if (_borderLabelSize != null) {
+      _borderLabelSize!.set(v);
+    } else if (v != null) {
+      _borderLabelSize = DoubleObservable(Binding.toKey(id, 'borderlabelsize'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get borderLabelSize => _borderLabelSize?.get();
+
+  /// The border label color
+  ColorObservable? _borderLabelColor;
+  set borderLabelColor(dynamic v) {
+    if (_borderLabelColor != null) {
+      _borderLabelColor!.set(v);
+    } else if (v != null) {
+      _borderLabelColor = ColorObservable(Binding.toKey(id, 'borderlabelcolor'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get borderLabelColor => _borderLabelColor?.get();
+
+  // the boxes border radius
+  StringObservable? _borderRadius;
+  set borderRadius(dynamic v) {
+    if (_borderRadius != null) {
+      _borderRadius!.set(v);
+    } else if (v != null) {
+      _borderRadius = StringObservable(Binding.toKey(id, 'borderradius'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get borderRadius => _borderRadius?.get()?.toLowerCase();
 
   double get radiusTopRight {
-    if (radius == null) return 0;
-    var radii = radius!.split(',');
+    if (borderRadius == null) return 0;
+    var radii = borderRadius!.split(',');
     if (radii.isEmpty) return 0;
     return toDouble(radii[0]) ?? 0;
   }
 
   double get radiusBottomRight {
-    if (radius == null) return 0;
-    var radii = radius!.split(',');
+    if (borderRadius == null) return 0;
+    var radii = borderRadius!.split(',');
     if (radii.isEmpty) return 0;
     if (radii.length == 1) {
       return toDouble(radii[0]) ?? 0;
@@ -202,8 +238,8 @@ class BoxModel extends ViewableModel {
   }
 
   double get radiusBottomLeft {
-    if (radius == null) return 0;
-    var radii = radius!.split(',');
+    if (borderRadius == null) return 0;
+    var radii = borderRadius!.split(',');
     if (radii.isEmpty) return 0;
     if (radii.length == 1) {
       return toDouble(radii[0]) ?? 0;
@@ -215,8 +251,8 @@ class BoxModel extends ViewableModel {
   }
 
   double get radiusTopLeft {
-    if (radius == null) return 0;
-    var radii = radius!.split(',');
+    if (borderRadius == null) return 0;
+    var radii = borderRadius!.split(',');
     if (radii.isEmpty) return 0;
     if (radii.length == 1) {
       return toDouble(radii[0]) ?? 0;
@@ -393,13 +429,21 @@ class BoxModel extends ViewableModel {
 
     /// border attributes
     border = Xml.get(node: xml, tag: 'border');
-    radius = Xml.get(node: xml, tag: 'radius');
+    borderRadius = Xml.get(node: xml, tag: 'borderradius') ?? Xml.get(node: xml, tag: 'radius');
     borderColor  = Xml.get(node: xml, tag: 'bordercolor');
     borderWidth  = Xml.get(node: xml, tag: 'borderwidth');
-    borderLabel  = Xml.get(node: xml, tag: 'borderlabel');
+
+    // simple border label
+    borderLabel = Xml.get(node: xml, tag: 'borderlabel');
+    if (_borderLabel != null) {
+      borderLabelColor = Xml.get(node: xml, tag: 'borderlabelcolor');
+      borderLabelFont = Xml.get(node: xml, tag: 'borderlabelfont');
+      borderLabelSize = Xml.get(node: xml, tag: 'borderlabelsize');
+    }
+
     // set default border on any border property specified
     if (_border == null &&
-        (_radius != null ||
+        (_borderRadius != null ||
          _borderColor != null ||
          _borderWidth != null ||
          _borderLabel != null)) {

@@ -90,7 +90,7 @@ class TableModel extends BoxModel with FormMixin implements IForm {
   double? get paddingLeft => super.paddingLeft ?? defaultPadding;
 
   @override
-  String get radius => super.radius ?? "10";
+  String get borderRadius => super.borderRadius ?? "10";
 
   @override
   String get halign => super.halign ?? "center";

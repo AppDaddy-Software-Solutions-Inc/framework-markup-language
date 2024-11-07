@@ -30,15 +30,22 @@ class _GestureViewState extends ViewableWidgetState<GestureView> {
 
     if (!widget.model.enabled) return child;
 
-    Widget view = MouseRegion(
-        cursor: SystemMouseCursors.click,
+    Widget view = child;
+
+    // display mouse cursor
+    var cursor = GestureModel.toCursor(widget.model.cursor);
+    if (cursor != SystemMouseCursors.none) {
+      view =
+      MouseRegion(
+        cursor: cursor,
         onEnter: widget.model.onmouseover != null
             ? onMouseOver
             : null,
         onExit: widget.model.onmouseout != null
             ? onMouseOut
             : null,
-        child: child);
+        child: view);
+    }
 
     view = GestureDetector(
         onTap: onTap,

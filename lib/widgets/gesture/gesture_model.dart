@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter/services.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
@@ -10,7 +11,46 @@ import 'package:fml/widgets/gesture/gesture_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
+enum Cursors {
+  alias,
+  allscroll,
+  basic,
+  cell,
+  click,
+  contextmenu,
+  copy,
+  disappearing,
+  forbidden,
+  grab,
+  grabbing,
+  help,
+  move,
+  nodrop,
+  none,
+  precise,
+  progress,
+  resizecolumn,
+  resizedown,
+  resizedownleft,
+  resizedownright,
+  resizeleft,
+  resizeleftright,
+  resizeright,
+  resizerow,
+  resizeup,
+  resizeupdown,
+  resizeupleft,
+  resizeupleftdownright,
+  resizeupright,
+  resizeuprightdownleft,
+  text,
+  verticaltext,
+  wait,
+  zoomin,
+  zoomout}
+
 class GestureModel extends ViewableModel {
+
   /// On click/tap call event
   StringObservable? _onclick;
   set onclick(dynamic v) {
@@ -21,10 +61,7 @@ class GestureModel extends ViewableModel {
           scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
-
-  String? get onclick {
-    return _onclick?.get();
-  }
+  String? get onclick => _onclick?.get();
 
   /// On long click/press call event
   StringObservable? _onlongpress;
@@ -36,10 +73,7 @@ class GestureModel extends ViewableModel {
           scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
-
-  String? get onlongpress {
-    return _onlongpress?.get();
-  }
+  String? get onlongpress => _onlongpress?.get();
 
   /// On double click/tap call event
   StringObservable? _ondoubletap;
@@ -51,10 +85,7 @@ class GestureModel extends ViewableModel {
           scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
-
-  String? get ondoubletap {
-    return _ondoubletap?.get();
-  }
+  String? get ondoubletap => _ondoubletap?.get();
 
   /// When a user swipes left on the child element call event
   StringObservable? _onswipeleft;
@@ -66,10 +97,7 @@ class GestureModel extends ViewableModel {
           scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
-
-  String? get onswipeleft {
-    return _onswipeleft?.get();
-  }
+  String? get onswipeleft => _onswipeleft?.get();
 
   /// When a user swipes right on the child element call event
   StringObservable? _onswiperight;
@@ -81,10 +109,7 @@ class GestureModel extends ViewableModel {
           scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
-
-  String? get onswiperight {
-    return _onswiperight?.get();
-  }
+  String? get onswiperight => _onswiperight?.get();
 
   /// When a user swipes up on the child element call event
   StringObservable? _onswipeup;
@@ -96,10 +121,7 @@ class GestureModel extends ViewableModel {
           scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
-
-  String? get onswipeup {
-    return _onswipeup?.get();
-  }
+  String? get onswipeup => _onswipeup?.get();
 
   /// When a user swipes down on the child element call event
   StringObservable? _onswipedown;
@@ -111,10 +133,7 @@ class GestureModel extends ViewableModel {
           scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
-
-  String? get onswipedown {
-    return _onswipedown?.get();
-  }
+  String? get onswipedown => _onswipedown?.get();
 
   /// When a user swipes down on the child element call event
   StringObservable? _onrightclick;
@@ -126,10 +145,7 @@ class GestureModel extends ViewableModel {
           scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
-
-  String? get onrightclick {
-    return _onrightclick?.get();
-  }
+  String? get onrightclick => _onrightclick?.get();
 
   /// mouse over event
   StringObservable? _onmouseover;
@@ -154,6 +170,18 @@ class GestureModel extends ViewableModel {
     }
   }
   String? get onmouseout => _onmouseout?.get();
+
+  /// mouse cursor on hover
+  StringObservable? _cursor;
+  set cursor(dynamic v) {
+    if (_cursor != null) {
+      _cursor!.set(v);
+    } else if (v != null) {
+      _cursor =
+          StringObservable(Binding.toKey(id, 'cursor'), v, scope: scope);
+    }
+  }
+  String? get cursor => _cursor?.get();
 
   GestureModel(
     Model super.parent,
@@ -211,6 +239,8 @@ class GestureModel extends ViewableModel {
 
     onmouseover = Xml.get(node: xml, tag: 'onmouseover');
     onmouseout = Xml.get(node: xml, tag: 'onmouseout');
+
+    cursor = Xml.get(node: xml, tag: 'cursor');
   }
 
   Future<bool> onClick(BuildContext context) async {
@@ -267,5 +297,84 @@ class GestureModel extends ViewableModel {
   Widget getView({Key? key}) {
     var view = GestureView(this);
     return isReactive ? ReactiveView(this, view) : view;
+  }
+
+  static SystemMouseCursor toCursor(String? cursor) {
+
+    // set system cursor
+    switch (toEnum(cursor?.toLowerCase().trim(), Cursors.values) ?? Cursors.click) {
+      case Cursors.alias:
+        return SystemMouseCursors.alias;
+      case Cursors.allscroll:
+        return SystemMouseCursors.allScroll;
+      case Cursors.basic:
+        return SystemMouseCursors.basic;
+      case Cursors.cell:
+        return SystemMouseCursors.cell;
+      case Cursors.click:
+        return SystemMouseCursors.click;
+      case Cursors.contextmenu:
+        return SystemMouseCursors.contextMenu;
+      case Cursors.copy:
+        return SystemMouseCursors.copy;
+      case Cursors.disappearing:
+        return SystemMouseCursors.disappearing;
+      case Cursors.forbidden:
+        return SystemMouseCursors.forbidden;
+      case Cursors.grab:
+        return SystemMouseCursors.grab;
+      case Cursors.grabbing:
+        return SystemMouseCursors.grabbing;
+      case Cursors.help:
+        return SystemMouseCursors.help;
+      case Cursors.move:
+        return SystemMouseCursors.move;
+      case Cursors.nodrop:
+        return SystemMouseCursors.noDrop;
+      case Cursors.precise:
+        return SystemMouseCursors.precise;
+      case Cursors.progress:
+        return SystemMouseCursors.progress;
+      case Cursors.resizecolumn:
+        return SystemMouseCursors.resizeColumn;
+      case Cursors.resizedown:
+        return SystemMouseCursors.resizeDown;
+      case Cursors.resizedownleft:
+        return SystemMouseCursors.resizeDownLeft;
+      case Cursors.resizedownright:
+        return SystemMouseCursors.resizeDownRight;
+      case Cursors.resizeleft:
+        return SystemMouseCursors.resizeLeft;
+      case Cursors.resizeleftright:
+        return SystemMouseCursors.resizeLeftRight;
+      case Cursors.resizeright:
+        return SystemMouseCursors.resizeRight;
+      case Cursors.resizerow:
+        return SystemMouseCursors.resizeRow;
+      case Cursors.resizeup:
+        return SystemMouseCursors.resizeUp;
+      case Cursors.resizeupdown:
+        return SystemMouseCursors.resizeUpDown;
+      case Cursors.resizeupleft:
+        return SystemMouseCursors.resizeUpLeft;
+      case Cursors.resizeupleftdownright:
+        return SystemMouseCursors.resizeUpLeftDownRight;
+      case Cursors.resizeupright:
+        return SystemMouseCursors.resizeUpRight;
+      case Cursors.resizeuprightdownleft:
+        return SystemMouseCursors.resizeUpRightDownLeft;
+      case Cursors.text:
+        return SystemMouseCursors.text;
+      case Cursors.verticaltext:
+        return SystemMouseCursors.verticalText;
+      case Cursors.wait:
+        return SystemMouseCursors.wait;
+      case Cursors.zoomin:
+        return SystemMouseCursors.zoomIn;
+      case Cursors.zoomout:
+        return SystemMouseCursors.zoomOut;
+      case Cursors.none:
+        return SystemMouseCursors.none;
+    }
   }
 }

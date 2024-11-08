@@ -163,7 +163,6 @@ class TextModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get font => _font?.get() ?? System.theme.font;
 
   // weight
@@ -176,7 +175,6 @@ class TextModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   int? get weight => _weight?.get();
 
   // If the text is raw or uses special chars

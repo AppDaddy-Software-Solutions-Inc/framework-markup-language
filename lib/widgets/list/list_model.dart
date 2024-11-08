@@ -381,7 +381,7 @@ class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
       model.index = index;
 
       // set the selected data
-      if (model.selected == true) {
+      if (model.selected) {
         // this must be done after the build
         WidgetsBinding.instance.addPostFrameCallback((_) => selected = model.data);
       }
@@ -747,7 +747,7 @@ class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
         int index = toInt(elementAt(arguments, 0)) ?? -1;
         if (index >= 0 && index < items.length) {
           var model = items[index];
-          if (model != null && model.selected == false) onTap(model);
+          if (model != null && !model.selected) onTap(model);
         }
         return true;
 
@@ -756,7 +756,7 @@ class ListModel extends BoxModel with FormMixin implements IForm, IScrollable {
         int index = toInt(elementAt(arguments, 0)) ?? -1;
         if (index >= 0 && data != null && index < data.length) {
           var model = items[index];
-          if (model != null && model.selected == true) onTap(model);
+          if (model != null && model.selected) onTap(model);
         }
         return true;
 

@@ -3,12 +3,16 @@ import 'dart:ui';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fml/helpers/image.dart';
-import 'package:fml/platform/platform.vm.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart' as mlkit
     show InputImageMetadata, InputImageFormatValue, InputImageRotationValue, InputImage, InputImageFormat, InputImageRotation;
 import 'package:zxing_lib/common.dart' show HybridBinarizer;
 import 'package:zxing_lib/zxing.dart' as zxing show RGBLuminanceSource;
 import 'package:zxing_lib/zxing.dart' as zxing show BinaryBitmap;
+
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class DetectableImage {
 

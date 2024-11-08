@@ -23,6 +23,15 @@ class PrototypeModel extends BoxModel {
   @override
   bool get expand => false;
 
+  @override
+  String? get layout {
+    var root = parent;
+    while (root != null) {
+      if (root is BoxModel) return root.layout;
+    }
+    return super.layout;
+  }
+
   // prototypes must be in their own scope
   // since they destroy their children once the prototype is created
   // in the deserialize().

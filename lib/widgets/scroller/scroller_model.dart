@@ -35,21 +35,6 @@ class ScrollerModel extends BoxModel implements IScrollable {
   @override
   bool moreRight = false;
 
-  @override
-  set layout(dynamic v) {
-    if (v is String) {
-      switch (v.toLowerCase().trim()) {
-        case 'row':
-        case 'horizontal':
-          super.layout = 'row';
-          break;
-        default:
-          super.layout = 'column';
-          break;
-      }
-    }
-  }
-
   /// If true will display a scrollbar, just used as a backup if flutter's built in scrollbar doesn't work
   BooleanObservable? _scrollbar;
   set scrollbar(dynamic v) {

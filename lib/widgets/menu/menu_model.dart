@@ -6,6 +6,7 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
+import 'package:fml/observable/observables/list.dart';
 import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
@@ -18,8 +19,6 @@ import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class MenuModel extends ViewableModel implements IScrollable {
-  static const String typeList = "list";
-  static const String typeButton = "button";
 
   // to be implemented
   @override
@@ -49,6 +48,20 @@ class MenuModel extends ViewableModel implements IScrollable {
   @override
   bool get canExpandInfinitelyHigh => !hasBoundedHeight;
 
+  // data map from the list item that is currently selected
+  ListObservable? _selected;
+  set selected(dynamic v) {
+    if (_selected != null) {
+      _selected!.set(v);
+    } else if (v != null) {
+      // we don't want this to update the table view so don't add listener: onPropertyChange
+      _selected =
+          ListObservable(Binding.toKey(id, 'selected'), null, scope: scope);
+      _selected!.set(v);
+    }
+  }
+  dynamic get selected => _selected?.get();
+
   // allow drag
   BooleanObservable? _allowDrag;
   set allowDrag(dynamic v) {
@@ -77,32 +90,6 @@ class MenuModel extends ViewableModel implements IScrollable {
       model = null;
     }
     return model;
-  }
-
-  static MenuModel? fromMap(Model parent, Map<String, String> map) {
-    MenuModel? model;
-    try {
-      model = MenuModel(parent, newId());
-      model.unmap(map);
-    } catch (e) {
-      Log().exception(e, caller: 'menu.Model');
-      model = null;
-    }
-    return model;
-  }
-
-  void unmap(Map<String, String> map) {
-    map.forEach((key, value) {
-      MenuItemModel item = MenuItemModel(
-        this,
-        newId(),
-        // url: ,
-        title: key,
-        // subtitle: ,
-        icon: Icons.navigation_outlined,
-      );
-      items.add(item);
-    });
   }
 
   /// Deserializes the FML template elements, attributes and children
@@ -278,10 +265,10 @@ class MenuModel extends ViewableModel implements IScrollable {
   }
 
   @override
-  Future<dynamic> execute(
-      String caller, String propertyOrFunction, List<dynamic> arguments) async {
-    /// setter
+  Future<dynamic> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async {
+
     if (scope == null) return null;
+
     var function = propertyOrFunction.toLowerCase().trim();
 
     switch (function) {
@@ -296,6 +283,21 @@ class MenuModel extends ViewableModel implements IScrollable {
         return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);
+  }
+
+  Future<bool> onTap(MenuItemModel? model) async {
+
+    bool found = false;
+    for (var item in items) {
+      item.selected = (item == model) ? true : false;
+      if (item.selected) {
+        selected = item.data;
+        found = true;
+      }
+    }
+    if (!found) selected = Data();
+
+    return true;
   }
 
   @override

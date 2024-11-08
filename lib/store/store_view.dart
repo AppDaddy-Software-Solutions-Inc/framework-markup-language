@@ -310,7 +310,7 @@ class _ViewState extends State<StoreView>
       // build menu item
       var item = MenuItemModel(
           widget.model,
-          backgroundcolor: Theme.of(context).colorScheme.onSecondary,
+          color: Theme.of(context).colorScheme.onSecondary,
           ObjectKey(app).toString(),
           url: app.url,
           title: app.title,

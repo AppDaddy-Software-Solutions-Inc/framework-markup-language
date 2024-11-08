@@ -108,44 +108,42 @@ class MenuViewState extends ViewableWidgetState<MenuView>  {
     }
   }
 
-  Widget _buildMenuItems(double width) {
-    List<Widget> tilesList = []; //list of tiles
-    List<Widget> tileRows = []; // row of tiles from list
-    List<Row> rowsList = []; // list of rows containing tiles
+  Widget _buildMenuItems(double availableWidth) {
 
     // build menu tiles
+    List<Widget> tiles = [];
     for (var item in widget.model.items) {
-      tilesList.add(item.getView());
+      tiles.add(item.getView());
     }
 
     double menuColPadding = isMobile ? 0.0 : 25.0;
     double tilePadding = isMobile ? 5.0 : 0;
 
-    int tilesPerRow =
-        ((/*MediaQuery.of(context).size.*/ width - (menuColPadding * 2)) ~/
-            (isMobile
-                ? (170 + (tilePadding * 2))
-                : (270 + (tilePadding * 2))));
-    int tileCountForRow = 0;
+    // get tile width
+    var tileWidth   = widget.model.items.isEmpty ? 0 : widget.model.items.first.width;
 
-    for (int i = 0; i < tilesList.length; i++) {
-      tileRows.add(
-          Padding(padding: EdgeInsets.all(tilePadding), child: tilesList[i]));
-      tileCountForRow++;
-      if (tileCountForRow >= tilesPerRow) {
-        rowsList.add(Row(
-          mainAxisSize: MainAxisSize.min,
-          children: tileRows,
-        ));
-        tileRows = [];
-        tileCountForRow = 0;
+    int tilesPerRow =
+        ((availableWidth - (menuColPadding * 2)) ~/ (20 + tileWidth + (tilePadding * 2)));
+
+    List<Row> rows = [];
+    List<Widget> row = [];
+    int ctr = 0;
+    for (int i = 0; i < tiles.length; i++) {
+
+      // add tile to row
+      ctr++;
+      row.add(Padding(padding: EdgeInsets.all(tilePadding), child: tiles[i]));
+
+      // start new row?
+      if (ctr >= tilesPerRow) {
+        rows.add(Row(mainAxisSize: MainAxisSize.min, children: row));
+        row = [];
+        ctr = 0;
       }
-      if (i == tilesList.length - 1 && tileRows.isNotEmpty) {
-        // add partially filled row
-        rowsList.add(Row(
-          mainAxisSize: MainAxisSize.min,
-          children: tileRows,
-        ));
+
+      // add empty tiles partially filled row
+      if (i == tiles.length - 1 && row.isNotEmpty) {
+        rows.add(Row(mainAxisSize: MainAxisSize.min, children: row));
       }
     }
 
@@ -155,7 +153,7 @@ class MenuViewState extends ViewableWidgetState<MenuView>  {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: rowsList,
+              children: rows,
             )));
   }
 

@@ -14,7 +14,19 @@ import 'package:fml/event/handler.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
+// platform
+import 'package:fml/platform/platform.vm.dart'
+if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 class MenuItemModel extends ViewableModel {
+
+  @override
+  double get width  => super.width ?? (isMobile ? 160 : 250);
+
+  @override
+  double get height => super.height ?? (isMobile ? 160 : 250);
+
   // url
   StringObservable? _url;
   set url(dynamic v) {
@@ -25,7 +37,6 @@ class MenuItemModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get url => _url?.get();
 
   // onclick
@@ -38,10 +49,7 @@ class MenuItemModel extends ViewableModel {
           scope: scope, listener: onPropertyChange, lazyEvaluation: true);
     }
   }
-
-  String? get onclick {
-    return _onclick?.get();
-  }
+  String? get onclick => _onclick?.get();
 
   // title
   StringObservable? _title;
@@ -53,7 +61,6 @@ class MenuItemModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get title => _title?.get();
 
   // subtitle
@@ -66,7 +73,6 @@ class MenuItemModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get subtitle => _subtitle?.get();
 
   // icon
@@ -79,12 +85,9 @@ class MenuItemModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   IconData? get icon => _icon?.get();
 
-  ///
   // icon size
-  ///
   DoubleObservable? _iconsize;
   set iconsize(dynamic v) {
     if (_iconsize != null) {
@@ -94,26 +97,9 @@ class MenuItemModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get iconsize => _iconsize?.get();
 
-  //
-  // icon opacity
-  //
-  DoubleObservable? _iconopacity;
-  set iconopacity(dynamic v) {
-    if (_iconopacity != null) {
-      _iconopacity!.set(v);
-    } else if (v != null) {
-      _iconopacity = DoubleObservable(Binding.toKey(id, 'iconopacity'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double? get iconopacity => _iconopacity?.get();
-
   // icon color
-
   ColorObservable? _iconcolor;
   set iconcolor(dynamic v) {
     if (_iconcolor != null) {
@@ -123,12 +109,9 @@ class MenuItemModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   Color? get iconcolor => _iconcolor?.get();
 
-  ///
   // font size
-  ///
   DoubleObservable? _fontsize;
   set fontsize(dynamic v) {
     if (_fontsize != null) {
@@ -138,11 +121,9 @@ class MenuItemModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get fontsize => _fontsize?.get();
 
   // font color
-
   ColorObservable? _fontcolor;
   set fontcolor(dynamic v) {
     if (_fontcolor != null) {
@@ -152,49 +133,19 @@ class MenuItemModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   Color? get fontcolor => _fontcolor?.get();
 
-  // background color
-  ColorObservable? _backgroundcolor;
-  set backgroundcolor(dynamic v) {
-    if (_backgroundcolor != null) {
-      _backgroundcolor!.set(v);
+  // indicates if this item has been selected
+  BooleanObservable? _selected;
+  set selected(dynamic v) {
+    if (_selected != null) {
+      _selected!.set(v);
     } else if (v != null) {
-      _backgroundcolor = ColorObservable(
-          Binding.toKey(id, 'backgroundcolor'), v,
-          scope: scope, listener: onPropertyChange);
+      _selected =
+          BooleanObservable(Binding.toKey(id, 'selected'), v, scope: scope);
     }
   }
-
-  Color? get backgroundcolor => _backgroundcolor?.get();
-
-  // background image
-  StringObservable? _backgroundimage;
-  set backgroundimage(dynamic v) {
-    if (_backgroundimage != null) {
-      _backgroundimage!.set(v);
-    } else if (v != null) {
-      _backgroundimage = StringObservable(
-          Binding.toKey(id, 'backgroundimage'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get backgroundimage => _backgroundimage?.get()?.toLowerCase();
-
-  // font size
-  DoubleObservable? _radius;
-  set radius(dynamic v) {
-    if (_radius != null) {
-      _radius!.set(v);
-    } else if (v != null) {
-      _radius = DoubleObservable(Binding.toKey(id, 'radius'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double? get radius => _radius?.get();
+  bool get selected => _selected?.get() ?? false;
 
   VoidCallback? onLongPress;
   VoidCallback? onTap;
@@ -212,30 +163,31 @@ class MenuItemModel extends ViewableModel {
       dynamic icon,
       dynamic iconcolor,
       dynamic iconsize,
-      dynamic iconopacity,
-      dynamic iconposition,
-      dynamic backgroundimage,
-      dynamic backgroundcolor,
+      dynamic color,
       this.onLongPress,
       this.onTap,
       dynamic radius,
       dynamic enabled,
       String? image})
       : super(scope: Scope(parent: parent.scope)) {
+
     this.title = title;
     this.subtitle = subtitle;
+
     this.url = url;
+    this.onclick = onclick;
+
     this.icon = icon;
     this.iconsize = iconsize;
-    this.iconopacity = iconopacity;
     this.iconcolor = iconcolor;
-    this.onclick = onclick;
+
     this.fontcolor = fontcolor;
     this.fontsize = fontsize;
-    this.backgroundimage = backgroundimage;
-    this.backgroundcolor = backgroundcolor;
-    this.radius = radius;
+
+    this.color = color;
+
     this.enabled = enabled;
+
     if (image != null) this.image = toDataUri(image);
   }
 
@@ -263,23 +215,29 @@ class MenuItemModel extends ViewableModel {
     super.deserialize(xml);
 
     // properties
-    title =
-        Xml.get(node: xml, tag: 'title') ?? Xml.get(node: xml, tag: 'prompt');
+    title = Xml.get(node: xml, tag: 'title');
     subtitle = Xml.get(node: xml, tag: 'subtitle');
+
     url = Xml.get(node: xml, tag: 'url');
+    onclick = Xml.get(node: xml, tag: 'onclick');
+
     fontsize = Xml.get(node: xml, tag: 'fontsize');
     fontcolor = Xml.get(node: xml, tag: 'fontcolor');
+
     icon = Xml.get(node: xml, tag: 'icon');
     iconsize = Xml.get(node: xml, tag: 'iconsize');
     iconcolor = Xml.get(node: xml, tag: 'iconcolor');
-    iconopacity = Xml.get(node: xml, tag: 'iconopacity');
-    backgroundimage = Xml.get(node: xml, tag: 'backgroundimage');
-    onclick = Xml.get(node: xml, tag: 'onclick');
-    radius = Xml.get(node: xml, tag: 'radius');
+
     enabled = Xml.get(node: xml, tag: 'enabled');
   }
 
   Future<bool?> onClick() async {
+
+    var menu = findAncestorOfExactType(MenuModel);
+    if (menu is MenuModel) {
+      menu.onTap(this);
+    }
+
     if (url != null && onclick == null) {
       String? bc;
       try {

@@ -11,11 +11,31 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-enum OpenMethods { tap, longpress, hover, manual }
-
 class TooltipModel extends ViewableModel {
 
-  OpenMethods? openMethod;
+  /// [gesture] Gesture used to open the tooltip
+  StringObservable? _gesture;
+  set gesture(dynamic v) {
+    if (_gesture != null) {
+      _gesture!.set(v);
+    } else if (v != null) {
+      _gesture = StringObservable(Binding.toKey(id, 'gesture'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get gesture => _gesture?.get();
+
+  /// mouse cursor on hover gesture
+  StringObservable? _cursor;
+  set cursor(dynamic v) {
+    if (_cursor != null) {
+      _cursor!.set(v);
+    } else if (v != null) {
+      _cursor =
+          StringObservable(Binding.toKey(id, 'cursor'), v, scope: scope);
+    }
+  }
+  String? get cursor => _cursor?.get();
 
   /// [padding] Padding within the tooltip.
   DoubleObservable? _padding;
@@ -87,7 +107,6 @@ class TooltipModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get arrow => _arrow?.get() ?? true;
 
   /// [timeout] Number of seconds until the tooltip disappears automatically
@@ -133,8 +152,9 @@ class TooltipModel extends ViewableModel {
     timeout = Xml.get(node: xml, tag: 'timeout');
     distance = Xml.get(node: xml, tag: 'distance');
     arrow = Xml.get(node: xml, tag: 'arrow');
-    openMethod =
-        toEnum(Xml.get(node: xml, tag: 'openmethod'), OpenMethods.values);
+
+    gesture = Xml.get(node: xml, tag: 'gesture') ?? Xml.get(node: xml, tag: 'openmethod');
+    cursor  = Xml.get(node: xml, tag: 'cursor');
   }
 
   @override
@@ -147,15 +167,13 @@ class TooltipModel extends ViewableModel {
     switch (function) {
       case "open":
         var view = findListenerOfExactType(TooltipViewState);
-        if (view is TooltipViewState &&
-            context != null &&
-            view.overlayEntry == null) view.showOverlay(context!);
+        if (view is TooltipViewState && view.tooltip == null) view.show();
         return true;
 
       case "close":
         var view = findListenerOfExactType(TooltipViewState);
-        if (view is TooltipViewState && view.overlayEntry != null) {
-          view.hideOverlay();
+        if (view is TooltipViewState && view.tooltip != null) {
+          view.hide();
         }
         return true;
     }

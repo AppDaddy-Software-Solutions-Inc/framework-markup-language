@@ -1,5 +1,6 @@
-name: dev.fml
-version: 3.3.1+24
+name: co.appdaddy.fml
+#package name must be co.appdaddy.fml for play store, dev.fml for play store.
+version: 3.3.3+26
 description: Framework Markup Language
 homepage: https://fml.dev
 repository: https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language.git

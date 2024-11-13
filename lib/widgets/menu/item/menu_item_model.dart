@@ -2,7 +2,6 @@
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/reactive/reactive_view.dart';
 import 'package:fml/widgets/viewable/viewable_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';

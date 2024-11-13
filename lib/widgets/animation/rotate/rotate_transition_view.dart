@@ -1,39 +1,35 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
-import 'package:fml/event/manager.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
-import 'package:fml/widgets/animation/animation_child/slide/slide_transition_model.dart';
+import 'package:fml/widgets/animation/rotate/rotate_transition_model.dart';
 import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:fml/widgets/widget/model.dart';
 
 /// Animation View
 ///
 /// Builds the View from model properties
-class SlideTransitionView extends StatefulWidget {
-  final SlideTransitionModel model;
+class RotateTransitionView extends StatefulWidget {
+  final RotateTransitionModel model;
   final List<Widget> children = [];
   final Widget? child;
   final AnimationController? controller;
 
-  SlideTransitionView(this.model, this.child, this.controller)
+  RotateTransitionView(this.model, this.child, this.controller)
       : super(key: ObjectKey(model));
 
   @override
-  SlideTransitionViewState createState() => SlideTransitionViewState();
+  RotateTransitionViewState createState() => RotateTransitionViewState();
 }
 
-class SlideTransitionViewState extends State<SlideTransitionView>
+class RotateTransitionViewState extends State<RotateTransitionView>
     with TickerProviderStateMixin
     implements IModelListener {
   late AnimationController _controller;
-  List<double> _defaultFrom = [-1, 0];
-  late Animation<Offset> _animation;
-  bool soloRequestBuild = false;
-  String? _direction;
-  TextDirection? _align;
+  late Animation<double> _animation;
+  bool hasLocalController = false;
 
   @override
   void initState() {
@@ -57,7 +53,7 @@ class SlideTransitionViewState extends State<SlideTransitionView>
       _controller.addStatusListener((status) {
         _animationListener(status);
       });
-      soloRequestBuild = true;
+      hasLocalController = true;
     } else {
       _controller = widget.controller!;
     }
@@ -67,37 +63,18 @@ class SlideTransitionViewState extends State<SlideTransitionView>
   didChangeDependencies() {
     // register model listener
     widget.model.registerListener(this);
-
-    // register event listeners
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.animate, onAnimate);
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.reset, onReset);
-
     super.didChangeDependencies();
   }
 
   @override
-  void didUpdateWidget(SlideTransitionView oldWidget) {
+  void didUpdateWidget(RotateTransitionView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model)) {
+    if (oldWidget.model != widget.model) {
       // re-register model listeners
       oldWidget.model.removeListener(this);
       widget.model.registerListener(this);
 
-      if (soloRequestBuild) {
-        // de-register event listeners
-        EventManager.of(oldWidget.model)
-            ?.removeEventListener(EventTypes.animate, onAnimate);
-        EventManager.of(widget.model)
-            ?.removeEventListener(EventTypes.reset, onReset);
-
-        // register event listeners
-        EventManager.of(widget.model)
-            ?.registerEventListener(EventTypes.animate, onAnimate);
-        EventManager.of(widget.model)
-            ?.registerEventListener(EventTypes.reset, onReset);
-
+      if (hasLocalController) {
         _controller.duration = Duration(milliseconds: widget.model.duration);
         _controller.reverseDuration = Duration(
             milliseconds:
@@ -108,17 +85,11 @@ class SlideTransitionViewState extends State<SlideTransitionView>
 
   @override
   void dispose() {
-    if (soloRequestBuild) {
+    if (hasLocalController) {
       stop();
       // remove controller
       _controller.dispose();
-      // de-register event listeners
-      EventManager.of(widget.model)
-          ?.removeEventListener(EventTypes.animate, onAnimate);
-      EventManager.of(widget.model)
-          ?.removeEventListener(EventTypes.reset, onReset);
     }
-
     // remove model listener
     widget.model.removeListener(this);
     super.dispose();
@@ -132,40 +103,20 @@ class SlideTransitionViewState extends State<SlideTransitionView>
 
   @override
   Widget build(BuildContext context) {
-    _direction = widget.model.direction?.toLowerCase();
-
-    if (_direction == "right") {
-      _align = TextDirection.ltr;
-      _defaultFrom = [-1, 0];
-    } else if (_direction == "left") {
-      _align = TextDirection.rtl;
-      _defaultFrom = [-1, 0];
-    } else if (_direction == "up") {
-      _defaultFrom = [0, 1];
-    } else if (_direction == "down") {
-      _defaultFrom = [0, -1];
-    }
-
     // Tween
-    List<String> from = widget.model.from?.split(",") ?? [];
-    if (from.isEmpty) {
-      from.add("-1");
-      from.add("0");
-    } else if (from.length < 2) {
-      from.add("-1");
-    }
-
-    Offset fromOffset = Offset(toDouble(from.elementAt(0)) ?? _defaultFrom[0],
-        toDouble(from.elementAt(1)) ?? _defaultFrom[1]);
-    List<String>? to = widget.model.to.split(",");
-    Offset toOffset =
-        Offset(toDouble(to.elementAt(0)) ?? 0, toDouble(to.elementAt(1)) ?? 0);
+    double from = widget.model.from;
+    double to = widget.model.to;
     double begin = widget.model.begin;
     double end = widget.model.end;
     Curve curve = AnimationHelper.getCurve(widget.model.curve);
-    Tween<Offset> newTween = Tween<Offset>(
-      begin: fromOffset,
-      end: toOffset,
+
+    //start, end, center
+    Alignment align =
+        AnimationHelper.getAlignment(widget.model.align?.toLowerCase());
+
+    Tween<double> newTween = Tween<double>(
+      begin: from,
+      end: to,
     );
 
     if (begin != 0.0 || end != 1.0) {
@@ -185,9 +136,9 @@ class SlideTransitionViewState extends State<SlideTransitionView>
     // Build View
     Widget? view;
 
-    view = SlideTransition(
-      position: _animation,
-      textDirection: _align,
+    view = RotationTransition(
+      alignment: align,
+      turns: _animation,
       child: widget.child,
     );
 

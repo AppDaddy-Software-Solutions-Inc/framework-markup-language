@@ -158,7 +158,6 @@ class EventHandler extends Eval {
     // initialize event handlers
     if (!initialized) {
       functions[fromEnum(EventTypes.alert)] = _handleEventAlert;
-      functions[fromEnum(EventTypes.animate)] = _handleEventAnimate;
       functions[fromEnum(EventTypes.back)] = _handleEventBack;
       functions[fromEnum(EventTypes.build)] = _handleEventBuild;
       functions[fromEnum(EventTypes.clearbranding)] = _handleEventClearBranding;
@@ -167,11 +166,8 @@ class EventHandler extends Eval {
       functions['continue'] = _handleEventContinue;
       functions[fromEnum(EventTypes.copy)] = _handleEventCopy;
       functions[fromEnum(EventTypes.execute)] = _handleEventExecute;
-      functions[fromEnum(EventTypes.focusnode)] = _handleEventFocusNode;
-      functions[fromEnum(EventTypes.keypress)] = _handleEventKeyPress;
       functions[fromEnum(EventTypes.logon)] = _handleEventLogon;
       functions[fromEnum(EventTypes.logoff)] = _handleEventLogoff;
-      functions[fromEnum(EventTypes.fblogon)] = _handleEventFirebaseLogon;
       functions[fromEnum(EventTypes.open)] = _handleEventOpen;
       functions[fromEnum(EventTypes.openjstemplate)] =
           _handleEventOpenJsTemplate;
@@ -179,7 +175,6 @@ class EventHandler extends Eval {
       functions[fromEnum(EventTypes.replace)] = _handleEventReplace;
       functions[fromEnum(EventTypes.replaceroute)] = _handleEventReplace;
       functions[fromEnum(EventTypes.refresh)] = _handleEventRefresh;
-      functions[fromEnum(EventTypes.reset)] = _handleEventReset;
       functions[fromEnum(EventTypes.saveas)] = _handleEventSaveAs;
       functions[fromEnum(EventTypes.set)] = _handleEventSet;
       functions[fromEnum(EventTypes.setbranding)] = _handleEventSetBranding;
@@ -430,8 +425,9 @@ class EventHandler extends Eval {
   }
 
   /// Login using Firebase
-  Future<bool> _handleEventFirebaseLogon(
-      [dynamic provider, dynamic refresh]) async {
+  Future<bool> _handleEventLogon([
+    dynamic provider,
+    dynamic refresh]) async {
 
     if (provider is! String) return false;
 
@@ -441,42 +437,31 @@ class EventHandler extends Eval {
       if (user != null) token = await user.getIdToken();
     }
 
+    // valid token?
     if (token == null) return false;
-    return await _logon(token, false, false, toBool(refresh) ?? true);
-  }
 
-  /// Login using Jason Web Token
-  Future<bool> _handleEventLogon(
-      [dynamic token,
-      dynamic validateSignature,
-      dynamic validateAge,
-      dynamic refresh]) async {
-
-    return _logon(toStr(token) ?? '', toBool(validateSignature) ?? false, toBool(validateAge) ?? false, toBool(refresh) ?? true);
-  }
-
-  Future<bool> _logon(String token, bool? validateAge, bool? validateSignature,
-      bool? refresh) async {
-    // remove bearer header
-    token =
-        token.replaceFirst(RegExp("bearer", caseSensitive: false), "").trim();
+    // replace "bearer" keyword
+    token = token.replaceFirst(RegExp("bearer", caseSensitive: false), "").trim();
 
     // decode token
     Jwt jwt = Jwt.decode(token,
-        validateAge: validateAge ?? false,
-        validateSignature: validateSignature ?? false);
+        validateAge: false,
+        validateSignature: false);
+
     if (jwt.valid) {
+
       // logon
       System.currentApp?.logon(jwt);
 
       // refresh the framework
       if (toBool(refresh) != false) {
-        EventManager.of(model)?.broadcastEvent(
-            model, Event(EventTypes.refresh, parameters: null, model: model));
+        EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.refresh, parameters: null, model: model));
       }
 
       return true;
-    } else {
+    }
+
+    else {
       System.currentApp?.logoff();
       return false;
     }
@@ -506,7 +491,7 @@ class EventHandler extends Eval {
       var options = fbcore.FirebaseOptions(
           appId: "FML",
           messagingSenderId: "FML",
-          projectId: "FML",
+          projectId: "framework-markup-language",
           apiKey: apiKey,
           authDomain: authDomain);
       System.currentApp?.firebase =
@@ -687,35 +672,6 @@ class EventHandler extends Eval {
     return true;
   }
 
-  /// Broadcasts the keypress event to be handled by individual widgets
-  Future<bool> _handleEventKeyPress([dynamic key]) async {
-    Map<String, String?> parameters = <String, String?>{};
-    parameters['key'] = toStr(key);
-    EventManager.of(model)?.broadcastEvent(
-        model, Event(EventTypes.keypress, parameters: parameters));
-    return true;
-  }
-
-  /// Broadcasts the animate event to be handled by individual widgets
-  Future<bool> _handleEventAnimate([dynamic id, dynamic enabled]) async {
-    Map<String, String?> parameters = <String, String?>{};
-    parameters['id'] = toStr(id);
-    parameters['enabled'] = toStr(enabled);
-    EventManager.of(model)?.broadcastEvent(
-        model, Event(EventTypes.animate, parameters: parameters));
-    return true;
-  }
-
-  /// Broadcasts the animate event to be handled by individual widgets
-  Future<bool> _handleEventReset([dynamic id, dynamic enabled]) async {
-    Map<String, String?> parameters = <String, String?>{};
-    parameters['id'] = toStr(id);
-    parameters['enabled'] = toStr(enabled);
-    EventManager.of(model)?.broadcastEvent(
-        model, Event(EventTypes.reset, parameters: parameters));
-    return true;
-  }
-
   /// Calls the trigger with the associated id which then fires it own event(s)
   Future<bool> _handleEventTrigger([dynamic id]) async {
     TriggerModel? trigger;
@@ -758,19 +714,6 @@ class EventHandler extends Eval {
       parameters['font'] = toStr(font);
       EventManager.of(model)?.broadcastEvent(
           model, Event(EventTypes.theme, parameters: parameters));
-    } catch (e) {
-      Log().debug('$e');
-    }
-    return true;
-  }
-
-  /// Broadcasts a node that should act as focused
-  Future<bool> _handleEventFocusNode([dynamic node]) async {
-    try {
-      Map<String, String?> parameters = <String, String?>{};
-      parameters['key'] = toStr(node);
-      EventManager.of(model)?.broadcastEvent(
-          model, Event(EventTypes.focusnode, parameters: parameters));
     } catch (e) {
       Log().debug('$e');
     }

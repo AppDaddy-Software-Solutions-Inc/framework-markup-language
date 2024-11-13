@@ -1,8 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/animation/animation_child/animation_child_model.dart';
-import 'package:fml/widgets/animation/animation_child/rotate/rotate_transition_view.dart';
+import 'package:fml/widgets/animation/base/animation_base_model.dart';
+import 'package:fml/widgets/animation/fade/fade_transition_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -10,8 +10,8 @@ import 'package:fml/helpers/helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class RotateTransitionModel extends AnimationChildModel {
-  /// Curve starting point from
+class FadeTransitionModel extends AnimationBaseModel {
+  /// Curve starting point from 0.0 to 1.0
   DoubleObservable? _from;
 
   set from(dynamic v) {
@@ -23,7 +23,13 @@ class RotateTransitionModel extends AnimationChildModel {
     }
   }
 
-  double get from => _from?.get() ?? 0.0;
+  double get from {
+    if (_from == null) return 0.0;
+    double f = _from?.get() ?? 0.0;
+    if (f < 0.0) f = 0.0;
+    if (f > 1.0) f = 1.0;
+    return f;
+  }
 
   /// Curve ending point from 1.0 to 0.0
   DoubleObservable? _to;
@@ -37,28 +43,20 @@ class RotateTransitionModel extends AnimationChildModel {
     }
   }
 
-  double get to => _to?.get() ?? 1.0;
-
-  /// Curve ending point from 1.0 to 0.0
-  StringObservable? _align;
-
-  set align(dynamic v) {
-    if (_align != null) {
-      _align!.set(v);
-    } else if (v != null) {
-      _align = StringObservable(Binding.toKey(id, 'align'), v,
-          scope: scope, listener: onPropertyChange);
-    }
+  double get to {
+    if (_to == null) return 1.0;
+    double f = _to?.get() ?? 1.0;
+    if (f < 0.0) f = 0.0;
+    if (f > 1.0) f = 1.0;
+    return f;
   }
 
-  String? get align => _align?.get();
+  FadeTransitionModel(super.parent, super.id); // ; {key: value}
 
-  RotateTransitionModel(super.parent, super.id); // ; {key: value}
-
-  static RotateTransitionModel? fromXml(Model parent, XmlElement xml) {
-    RotateTransitionModel? model;
+  static FadeTransitionModel? fromXml(Model parent, XmlElement xml) {
+    FadeTransitionModel? model;
     try {
-      model = RotateTransitionModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = FadeTransitionModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     } catch (e) {
       Log().debug(e.toString());
@@ -75,7 +73,6 @@ class RotateTransitionModel extends AnimationChildModel {
 
     from = Xml.get(node: xml, tag: 'from');
     to = Xml.get(node: xml, tag: 'to');
-    align = Xml.get(node: xml, tag: 'align');
   }
 
   @override
@@ -88,19 +85,19 @@ class RotateTransitionModel extends AnimationChildModel {
     switch (function) {
       case "animate":
       case "start":
-        var view = findListenerOfExactType(RotateTransitionViewState);
-        if (view is RotateTransitionViewState) {
+        var view = findListenerOfExactType(FadeTransitionViewState);
+        if (view is FadeTransitionViewState) {
           view.start();
         }
         return true;
 
       case "stop":
-        var view = findListenerOfExactType(RotateTransitionViewState);
-        if (view is RotateTransitionViewState) view.stop();
+        var view = findListenerOfExactType(FadeTransitionViewState);
+        if (view is FadeTransitionViewState) view.stop();
         return true;
       case "reset":
-        var view = findListenerOfExactType(RotateTransitionViewState);
-        if (view is RotateTransitionViewState) view.reset();
+        var view = findListenerOfExactType(FadeTransitionViewState);
+        if (view is FadeTransitionViewState) view.reset();
         return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);
@@ -108,5 +105,5 @@ class RotateTransitionModel extends AnimationChildModel {
 
   @override
   Widget getAnimatedView(Widget child, {AnimationController? controller}) =>
-      RotateTransitionView(this, child, controller);
+      FadeTransitionView(this, child, controller);
 }

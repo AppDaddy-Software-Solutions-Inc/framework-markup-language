@@ -10,7 +10,7 @@ import 'package:fml/widgets/animation/animation_model.dart';
 
 /// Animation Model
 /// Defines the properties;
-class AnimationChildModel extends AnimationModel {
+class AnimationBaseModel extends AnimationModel {
   /// Point at which the animation begins in the controllers value range of 0-1
   DoubleObservable? _begin;
 
@@ -50,12 +50,12 @@ class AnimationChildModel extends AnimationModel {
     return f;
   }
 
-  AnimationChildModel(super.parent, super.id); // ; {key: value}
+  AnimationBaseModel(super.parent, super.id); // ; {key: value}
 
-  static AnimationChildModel? fromXml(Model parent, XmlElement xml) {
-    AnimationChildModel? model;
+  static AnimationBaseModel? fromXml(Model parent, XmlElement xml) {
+    AnimationBaseModel? model;
     try {
-      model = AnimationChildModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = AnimationBaseModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     } catch (e) {
       Log().debug(e.toString());

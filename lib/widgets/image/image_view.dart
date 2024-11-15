@@ -31,13 +31,14 @@ class ImageView extends StatefulWidget implements ViewableWidgetView {
   State<ImageView> createState() => _ImageViewState();
 
   /// Get an image widget from any image type
-  static dynamic getImage(String? url, bool animate,
+  static dynamic getImage(String? url,
       {Scope? scope,
-      Color? color,
-      String? defaultImage,
-      double? width,
-      double? height,
-      String? fit}) {
+       bool fadeIn = true,
+       Color? color,
+       String? defaultImage,
+       double? width,
+       double? height,
+       String? fit}) {
     Widget? image;
 
     try {
@@ -50,7 +51,8 @@ class ImageView extends StatefulWidget implements ViewableWidgetView {
           if (defaultImage.toLowerCase().trim() == 'none') {
             return Container();
           } else {
-            return getImage(defaultImage, animate,
+            return getImage(defaultImage,
+                fadeIn: fadeIn,
                 defaultImage: null,
                 fit: fit,
                 width: width,
@@ -72,7 +74,8 @@ class ImageView extends StatefulWidget implements ViewableWidgetView {
               size: 36, color: Colors.grey);
         }
         if (defaultImage.toLowerCase().trim() == 'none') return Container();
-        return getImage(defaultImage, animate,
+        return getImage(defaultImage,
+            fadeIn: fadeIn,
             defaultImage: null,
             fit: fit,
             width: width,
@@ -161,7 +164,7 @@ class ImageView extends StatefulWidget implements ViewableWidgetView {
                     ? ColorFilter.mode(color, BlendMode.srcIn)
                     : null);
           } else {
-            if (animate) {
+            if (fadeIn) {
               image = FadeInImage.memoryNetwork(
                 placeholder: placeholder,
                 image: uri.url,
@@ -235,8 +238,18 @@ class _ImageViewState extends ViewableWidgetState<ImageView> {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
+    // use fade in image bt=y default
+    bool fadeIn = true;
+
+    // trying to use FadeInImage within animations is problematic
+    if (widget.model.animations != null) fadeIn = false;
+
+    // trying to use FadeInImage with urls that have no extension is problematic
+    if (URI.parse(widget.model.url)?.pageExtension == null) fadeIn = false;
+
     // get the image
-    Widget view = ImageView.getImage(widget.model.url, widget.model.animations == null,
+    Widget view = ImageView.getImage(widget.model.url,
+            fadeIn: fadeIn,
             color: widget.model.color,
             scope: Scope.of(widget.model),
             defaultImage: widget.model.defaultvalue,

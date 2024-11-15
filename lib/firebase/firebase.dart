@@ -53,8 +53,11 @@ class Firebase {
       // logoff any existing user
       await logoff();
 
-      var provider = auth.OAuthProvider("$providerId.com");
-      provider.scopes.addAll(['profile','email']);
+      var id = "${fromEnum(providerId)}.com";
+      var scopes = ['profile','email'];
+
+      var provider = auth.OAuthProvider(id);
+      provider.scopes.addAll(scopes);
 
       Map<String, String> parameters = <String, String>{};
       parameters["prompt"] = 'select_account';

@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="dev.fml">
+    package="co.appdaddy.fml">
 
     <uses-permission android:name="android.permission.INTERNET" android:required="true" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />

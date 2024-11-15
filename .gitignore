@@ -34,3 +34,4 @@ example/android/keystore.properties
 example/pubspec.lock
 /.flutter-plugins-dependencies
 pubspec.lock
+example/android/app/google-services.json

@@ -166,7 +166,6 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
   @override
   Future<bool> popRoute() async => _goBack(1, initiator: popRoute);
 
-
   // this value is used in part to control web navigation
   static bool _isNavigatingWebHistory = false;
 
@@ -571,10 +570,17 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
     }
   }
 
+  bool _onPopPage(Route route, dynamic result) {
+    if (!route.didPop(result)) return false;
+    popRoute();
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) => Navigator(
     key: navigatorKey,
     pages: List.of(_pages),
+    onPopPage: _onPopPage,
     observers: [NavigationObserver()],
   );
 }

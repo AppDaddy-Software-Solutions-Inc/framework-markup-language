@@ -1,41 +1,39 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
-import 'package:fml/event/manager.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
-import 'package:fml/widgets/animation/animation_child/rotate/rotate_transition_model.dart';
+import 'package:fml/widgets/animation/tween/tween_model.dart';
 import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:fml/widgets/widget/model.dart';
 
 /// Animation View
 ///
 /// Builds the View from model properties
-class RotateTransitionView extends StatefulWidget {
-  final RotateTransitionModel model;
+class TweenView extends StatefulWidget {
+  final TweenModel model;
   final List<Widget> children = [];
   final Widget? child;
   final AnimationController? controller;
 
-  RotateTransitionView(this.model, this.child, this.controller)
+  TweenView(this.model, this.child, this.controller)
       : super(key: ObjectKey(model));
 
   @override
-  RotateTransitionViewState createState() => RotateTransitionViewState();
+  TweenViewState createState() => TweenViewState();
 }
 
-class RotateTransitionViewState extends State<RotateTransitionView>
+class TweenViewState extends State<TweenView>
     with TickerProviderStateMixin
     implements IModelListener {
   late AnimationController _controller;
-  late Animation<double> _animation;
-  bool soloRequestBuild = false;
+  late Animation<dynamic> _animation;
+  bool hasLocalController = false;
 
   @override
   void initState() {
     super.initState();
-
     if (widget.controller == null) {
       _controller = AnimationController(
           vsync: this,
@@ -54,49 +52,40 @@ class RotateTransitionViewState extends State<RotateTransitionView>
       _controller.addStatusListener((status) {
         _animationListener(status);
       });
-      soloRequestBuild = true;
+      hasLocalController = true;
     } else {
       _controller = widget.controller!;
     }
+
+    widget.model.value = widget.model.from;
+
+    _controller.addListener(() {
+      setState(() {
+        if (widget.model.type == "color") {
+          widget.model.value = "#${_animation.value.value.toRadixString(16)}";
+        } else {
+          widget.model.value = _animation.value.toString();
+        }
+      });
+    });
   }
 
   @override
   didChangeDependencies() {
     // register model listener
     widget.model.registerListener(this);
-
-    if (soloRequestBuild) {
-      // register event listeners
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.animate, onAnimate);
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.reset, onReset);
-    }
-
     super.didChangeDependencies();
   }
 
   @override
-  void didUpdateWidget(RotateTransitionView oldWidget) {
+  void didUpdateWidget(TweenView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model)) {
+    if (oldWidget.model != widget.model) {
       // re-register model listeners
       oldWidget.model.removeListener(this);
       widget.model.registerListener(this);
 
-      if (soloRequestBuild) {
-        // de-register event listeners
-        EventManager.of(oldWidget.model)
-            ?.removeEventListener(EventTypes.animate, onAnimate);
-        EventManager.of(widget.model)
-            ?.removeEventListener(EventTypes.reset, onReset);
-
-        // register event listeners
-        EventManager.of(widget.model)
-            ?.registerEventListener(EventTypes.animate, onAnimate);
-        EventManager.of(widget.model)
-            ?.registerEventListener(EventTypes.reset, onReset);
-
+      if (hasLocalController) {
         _controller.duration = Duration(milliseconds: widget.model.duration);
         _controller.reverseDuration = Duration(
             milliseconds:
@@ -107,16 +96,12 @@ class RotateTransitionViewState extends State<RotateTransitionView>
 
   @override
   void dispose() {
-    if (soloRequestBuild) {
+    if (hasLocalController) {
       stop();
       // remove controller
       _controller.dispose();
-      // de-register event listeners
-      EventManager.of(widget.model)
-          ?.removeEventListener(EventTypes.animate, onAnimate);
-      EventManager.of(widget.model)
-          ?.removeEventListener(EventTypes.reset, onReset);
     }
+
     // remove model listener
     widget.model.removeListener(this);
     super.dispose();
@@ -131,20 +116,30 @@ class RotateTransitionViewState extends State<RotateTransitionView>
   @override
   Widget build(BuildContext context) {
     // Tween
-    double from = widget.model.from;
-    double to = widget.model.to;
     double begin = widget.model.begin;
     double end = widget.model.end;
     Curve curve = AnimationHelper.getCurve(widget.model.curve);
+    dynamic from;
+    dynamic to;
+    Tween<dynamic> newTween;
 
-    //start, end, center
-    Alignment align =
-        AnimationHelper.getAlignment(widget.model.align?.toLowerCase());
+    // we must check from != to and begin !< end
 
-    Tween<double> newTween = Tween<double>(
-      begin: from,
-      end: to,
-    );
+    if (widget.model.type == "color") {
+      from = toColor(widget.model.from) ?? Colors.white;
+      to = toColor(widget.model.to) ?? Colors.black;
+      newTween = ColorTween(
+        begin: from,
+        end: to,
+      );
+    } else {
+      from = toDouble(widget.model.from) ?? 0;
+      to = toDouble(widget.model.to) ?? 1;
+      newTween = Tween<double>(
+        begin: from,
+        end: to,
+      );
+    }
 
     if (begin != 0.0 || end != 1.0) {
       curve = Interval(
@@ -160,17 +155,8 @@ class RotateTransitionViewState extends State<RotateTransitionView>
       parent: _controller,
     ));
 
-    // Build View
-    Widget? view;
-
-    view = RotationTransition(
-      alignment: align,
-      turns: _animation,
-      child: widget.child,
-    );
-
     // Return View
-    return view;
+    return Container(child: widget.child);
   }
 
   void onAnimate(Event event) {

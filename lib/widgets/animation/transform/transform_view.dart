@@ -2,11 +2,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
-import 'package:fml/event/manager.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
-import 'package:fml/widgets/animation/animation_child/transform/transform_model.dart';
+import 'package:fml/widgets/animation/transform/transform_model.dart';
 import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:fml/widgets/widget/model.dart';
 
@@ -35,7 +34,7 @@ class TransformViewState extends State<TransformView>
   late Animation<double> _xTranslateAnimation;
   late Animation<double> _yTranslateAnimation;
   late Animation<double> _zTranslateAnimation;
-  bool soloRequestBuild = false;
+  bool hasLocalController = false;
 
   @override
   void initState() {
@@ -59,7 +58,7 @@ class TransformViewState extends State<TransformView>
       _controller.addStatusListener((status) {
         _animationListener(status);
       });
-      soloRequestBuild = true;
+      hasLocalController = true;
     } else {
       _controller = widget.controller!;
     }
@@ -73,39 +72,18 @@ class TransformViewState extends State<TransformView>
   didChangeDependencies() {
     // register model listener
     widget.model.registerListener(this);
-
-    if (soloRequestBuild) {
-      // register event listeners
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.animate, onAnimate);
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.reset, onReset);
-    }
-
     super.didChangeDependencies();
   }
 
   @override
   void didUpdateWidget(TransformView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model)) {
+    if (oldWidget.model != widget.model) {
       // re-register model listeners
       oldWidget.model.removeListener(this);
       widget.model.registerListener(this);
 
-      if (soloRequestBuild) {
-        // de-register event listeners
-        EventManager.of(oldWidget.model)
-            ?.removeEventListener(EventTypes.animate, onAnimate);
-        EventManager.of(widget.model)
-            ?.removeEventListener(EventTypes.reset, onReset);
-
-        // register event listeners
-        EventManager.of(widget.model)
-            ?.registerEventListener(EventTypes.animate, onAnimate);
-        EventManager.of(widget.model)
-            ?.registerEventListener(EventTypes.reset, onReset);
-
+      if (hasLocalController) {
         _controller.duration = Duration(milliseconds: widget.model.duration);
         _controller.reverseDuration = Duration(
             milliseconds:
@@ -116,15 +94,10 @@ class TransformViewState extends State<TransformView>
 
   @override
   void dispose() {
-    if (soloRequestBuild) {
+    if (hasLocalController) {
       stop();
       // remove controller
       _controller.dispose();
-      // de-register event listeners
-      EventManager.of(widget.model)
-          ?.removeEventListener(EventTypes.animate, onAnimate);
-      EventManager.of(widget.model)
-          ?.removeEventListener(EventTypes.reset, onReset);
     }
 
     // remove model listener

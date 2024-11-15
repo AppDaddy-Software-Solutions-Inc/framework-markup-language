@@ -92,7 +92,6 @@ class FrameworkViewState extends State<FrameworkView>
     NavigationObserver().registerListener(this);
 
     // register event listeners
-    widget.model.registerEventListener(EventTypes.home, onHome);
     widget.model.registerEventListener(EventTypes.close, onClose);
     widget.model.registerEventListener(EventTypes.maximize, onMaximize);
     widget.model.registerEventListener(EventTypes.showtemplate, onShowTemplate);
@@ -112,13 +111,11 @@ class FrameworkViewState extends State<FrameworkView>
       NavigationObserver().registerListener(this);
 
       // remove old event listeners
-      oldWidget.model.removeEventListener(EventTypes.home, onHome);
       oldWidget.model.removeEventListener(EventTypes.close, onClose);
       oldWidget.model.removeEventListener(EventTypes.maximize, onMaximize);
       oldWidget.model.removeEventListener(EventTypes.showtemplate, onShowTemplate);
 
       // register new event listeners
-      widget.model.registerEventListener(EventTypes.home, onHome);
       widget.model.registerEventListener(EventTypes.close, onClose);
       widget.model.registerEventListener(EventTypes.maximize, onMaximize);
       widget.model.registerEventListener(EventTypes.showtemplate, onShowTemplate);
@@ -156,7 +153,6 @@ class FrameworkViewState extends State<FrameworkView>
     }
 
     // remove event listeners
-    widget.model.removeEventListener(EventTypes.home, onHome);
     widget.model.removeEventListener(EventTypes.close, onClose);
     widget.model.removeEventListener(EventTypes.maximize, onMaximize);
     widget.model.removeEventListener(EventTypes.showtemplate, onShowTemplate);
@@ -280,11 +276,6 @@ class FrameworkViewState extends State<FrameworkView>
     swiping = false;
     start = 0;
     last = 0;
-  }
-
-  void onHome(Event event) {
-    event.handled = true;
-    NavigationManager().back(NavigationManager().pages.length - 1);
   }
 
   void onShowTemplate(Event event) {

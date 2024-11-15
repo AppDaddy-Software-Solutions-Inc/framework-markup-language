@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED
 import 'package:flutter/material.dart';
-import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/widget/model_interface.dart';
@@ -57,32 +56,9 @@ class AnimationViewState extends ViewableWidgetState<AnimationView>
   }
 
   @override
-  didChangeDependencies() {
-    // register event listeners
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.animate, onAnimate);
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.reset, onReset);
-
-    super.didChangeDependencies();
-  }
-
-  @override
   void didUpdateWidget(AnimationView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model)) {
-      // de-register event listeners
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.animate, onAnimate);
-      EventManager.of(widget.model)
-          ?.removeEventListener(EventTypes.reset, onReset);
-
-      // register event listeners
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.animate, onAnimate);
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.reset, onReset);
-
+    if (oldWidget.model != widget.model) {
       _controller!.duration = Duration(milliseconds: widget.model.duration);
       _controller!.reverseDuration = Duration(
           milliseconds: widget.model.reverseduration ?? widget.model.duration);
@@ -93,13 +69,6 @@ class AnimationViewState extends ViewableWidgetState<AnimationView>
   void dispose() {
     // remove controller
     _controller?.dispose();
-
-    // de-register event listeners
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.animate, onAnimate);
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.reset, onReset);
-
     model?.removeListener(this);
 
     super.dispose();

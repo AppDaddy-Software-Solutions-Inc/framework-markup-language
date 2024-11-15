@@ -1,14 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'dart:core';
-import 'package:firebase_auth/firebase_auth.dart' deferred as fbauth;
-import 'package:firebase_core/firebase_core.dart' deferred as fbcore;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/dialog/manager.dart';
 import 'package:fml/eval/evaluator.dart';
 import 'package:fml/eval/expressions.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/firebase/firebase.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
@@ -158,7 +157,6 @@ class EventHandler extends Eval {
     // initialize event handlers
     if (!initialized) {
       functions[fromEnum(EventTypes.alert)] = _handleEventAlert;
-      functions[fromEnum(EventTypes.animate)] = _handleEventAnimate;
       functions[fromEnum(EventTypes.back)] = _handleEventBack;
       functions[fromEnum(EventTypes.build)] = _handleEventBuild;
       functions[fromEnum(EventTypes.clearbranding)] = _handleEventClearBranding;
@@ -167,11 +165,8 @@ class EventHandler extends Eval {
       functions['continue'] = _handleEventContinue;
       functions[fromEnum(EventTypes.copy)] = _handleEventCopy;
       functions[fromEnum(EventTypes.execute)] = _handleEventExecute;
-      functions[fromEnum(EventTypes.focusnode)] = _handleEventFocusNode;
-      functions[fromEnum(EventTypes.keypress)] = _handleEventKeyPress;
       functions[fromEnum(EventTypes.logon)] = _handleEventLogon;
       functions[fromEnum(EventTypes.logoff)] = _handleEventLogoff;
-      functions[fromEnum(EventTypes.fblogon)] = _handleEventFirebaseLogon;
       functions[fromEnum(EventTypes.open)] = _handleEventOpen;
       functions[fromEnum(EventTypes.openjstemplate)] =
           _handleEventOpenJsTemplate;
@@ -179,7 +174,6 @@ class EventHandler extends Eval {
       functions[fromEnum(EventTypes.replace)] = _handleEventReplace;
       functions[fromEnum(EventTypes.replaceroute)] = _handleEventReplace;
       functions[fromEnum(EventTypes.refresh)] = _handleEventRefresh;
-      functions[fromEnum(EventTypes.reset)] = _handleEventReset;
       functions[fromEnum(EventTypes.saveas)] = _handleEventSaveAs;
       functions[fromEnum(EventTypes.set)] = _handleEventSet;
       functions[fromEnum(EventTypes.setbranding)] = _handleEventSetBranding;
@@ -430,124 +424,86 @@ class EventHandler extends Eval {
   }
 
   /// Login using Firebase
-  Future<bool> _handleEventFirebaseLogon(
-      [dynamic provider, dynamic refresh]) async {
+  Future<bool> _handleEventLogon([
+    dynamic provider,
+    dynamic refresh]) async {
 
-    if (provider is! String) return false;
+    try
+    {
+      // no current app
+      var app = System.currentApp;
+      if (app == null) return false;
 
-    String? token;
-    if (!isNullOrEmpty(provider)) {
-      var user = await _firebaseLogon(provider, <String>['email', 'profile']);
+      // firebase not defined
+      var firebase = app.firebase;
+      if (firebase == null) return false;
+
+      // firebase provider
+      var providerId = toEnum(provider, Providers.values);
+      if (providerId == null) return false;
+
+      String? token;
+      var user = await firebase.logon(providerId);
       if (user != null) token = await user.getIdToken();
-    }
 
-    if (token == null) return false;
-    return await _logon(token, false, false, toBool(refresh) ?? true);
-  }
+      // valid token?
+      if (token == null) return false;
 
-  /// Login using Jason Web Token
-  Future<bool> _handleEventLogon(
-      [dynamic token,
-      dynamic validateSignature,
-      dynamic validateAge,
-      dynamic refresh]) async {
+      // replace "bearer" keyword
+      token = token.replaceFirst(RegExp("bearer", caseSensitive: false), "").trim();
 
-    return _logon(toStr(token) ?? '', toBool(validateSignature) ?? false, toBool(validateAge) ?? false, toBool(refresh) ?? true);
-  }
+      // decode token
+      Jwt jwt = Jwt.decode(token,
+          validateAge: false,
+          validateSignature: false);
 
-  Future<bool> _logon(String token, bool? validateAge, bool? validateSignature,
-      bool? refresh) async {
-    // remove bearer header
-    token =
-        token.replaceFirst(RegExp("bearer", caseSensitive: false), "").trim();
+      // valid token?
+      if (jwt.valid) {
 
-    // decode token
-    Jwt jwt = Jwt.decode(token,
-        validateAge: validateAge ?? false,
-        validateSignature: validateSignature ?? false);
-    if (jwt.valid) {
-      // logon
-      System.currentApp?.logon(jwt);
+        // logon
+        System.currentApp?.logon(jwt);
 
-      // refresh the framework
-      if (toBool(refresh) != false) {
-        EventManager.of(model)?.broadcastEvent(
-            model, Event(EventTypes.refresh, parameters: null, model: model));
+        // refresh the framework
+        if (toBool(refresh) ?? false) {
+          EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.refresh, parameters: null, model: model));
+        }
+
+        return true;
       }
 
-      return true;
-    } else {
-      System.currentApp?.logoff();
+      // Invalid token?
+      else {
+        System.currentApp?.logoff();
+        return false;
+      }
+    }
+    catch (e) {
+      Log().error("Error logging in firebase user. Error is $e");
       return false;
     }
   }
 
   /// Logs a user off
   Future<bool> _handleEventLogoff([dynamic refresh]) async {
-    bool ok = await System.currentApp?.logoff() ?? true;
 
-    // Refresh the Framework
-    if ((ok) && (toBool(refresh) != false)) {
-      EventManager.of(model)?.broadcastEvent(
-          model, Event(EventTypes.refresh, parameters: null, model: model));
+    var app = System.currentApp;
+    if (app == null) return true;
+
+    // logoff system
+    await app.logoff();
+
+    // log off firebase
+    var firebase = app.firebase;
+    if (firebase != null && firebase.connected) {
+      firebase.logoff();
     }
 
-    return ok;
-  }
-
-  Future<bool> _firebaseInit() async {
-    if (System.currentApp?.firebase == null) {
-      String apiKey = System.currentApp?.firebaseApiKey ?? '0000000000';
-      String? authDomain = System.currentApp?.firebaseAuthDomain;
-
-      await fbauth.loadLibrary();
-      await fbcore.loadLibrary();
-
-      var options = fbcore.FirebaseOptions(
-          appId: "FML",
-          messagingSenderId: "FML",
-          projectId: "FML",
-          apiKey: apiKey,
-          authDomain: authDomain);
-      System.currentApp?.firebase =
-          await fbcore.Firebase.initializeApp(options: options);
+    // refresh the framework
+    if (toBool(refresh) ?? false) {
+      EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.refresh, parameters: null, model: model));
     }
+
     return true;
-  }
-
-  Future<dynamic> _firebaseLogon(String provider, List<String> scopes) async {
-    dynamic user;
-    try {
-      await _firebaseInit();
-      await _firebaseLogoff();
-
-      var provider0 = fbauth.OAuthProvider(provider);
-      provider0.scopes.addAll(scopes);
-
-      Map<String, String> parameters = <String, String>{};
-      parameters["prompt"] = 'select_account';
-      provider0.setCustomParameters(parameters);
-
-      var credential =
-          await fbauth.FirebaseAuth.instance.signInWithPopup(provider0);
-      user = credential.user;
-    } catch (e) {
-      user = null;
-      //System.toast("Ooops. There was a problem logging in ...", duration: 2);
-      Log().error("Error logging in firebase user. Error is $e");
-    }
-    return user;
-  }
-
-  Future<bool> _firebaseLogoff() async {
-    bool ok = true;
-    try {
-      await _firebaseInit();
-      await fbauth.FirebaseAuth.instance.signOut();
-    } catch (e) {
-      Log().error("Error logging out the firebase user. Error is $e");
-    }
-    return ok;
   }
 
   /// Plays a sound
@@ -664,9 +620,7 @@ class EventHandler extends Eval {
   }
 
   /// Depreciated, see [EventHandler._handleEventClose]
-  Future<bool> _handleEventBack([dynamic p]) async {
-    return _handleEventClose(p);
-  }
+  Future<bool> _handleEventBack([dynamic p]) async => _handleEventClose(p);
 
   /// Broadcasts the refresh event to be handled by individual widgets
   Future<bool> _handleEventRefresh() async {
@@ -684,35 +638,6 @@ class EventHandler extends Eval {
     } catch (e) {
       Log().error("Error in saveAs(). Error is $e");
     }
-    return true;
-  }
-
-  /// Broadcasts the keypress event to be handled by individual widgets
-  Future<bool> _handleEventKeyPress([dynamic key]) async {
-    Map<String, String?> parameters = <String, String?>{};
-    parameters['key'] = toStr(key);
-    EventManager.of(model)?.broadcastEvent(
-        model, Event(EventTypes.keypress, parameters: parameters));
-    return true;
-  }
-
-  /// Broadcasts the animate event to be handled by individual widgets
-  Future<bool> _handleEventAnimate([dynamic id, dynamic enabled]) async {
-    Map<String, String?> parameters = <String, String?>{};
-    parameters['id'] = toStr(id);
-    parameters['enabled'] = toStr(enabled);
-    EventManager.of(model)?.broadcastEvent(
-        model, Event(EventTypes.animate, parameters: parameters));
-    return true;
-  }
-
-  /// Broadcasts the animate event to be handled by individual widgets
-  Future<bool> _handleEventReset([dynamic id, dynamic enabled]) async {
-    Map<String, String?> parameters = <String, String?>{};
-    parameters['id'] = toStr(id);
-    parameters['enabled'] = toStr(enabled);
-    EventManager.of(model)?.broadcastEvent(
-        model, Event(EventTypes.reset, parameters: parameters));
     return true;
   }
 
@@ -758,19 +683,6 @@ class EventHandler extends Eval {
       parameters['font'] = toStr(font);
       EventManager.of(model)?.broadcastEvent(
           model, Event(EventTypes.theme, parameters: parameters));
-    } catch (e) {
-      Log().debug('$e');
-    }
-    return true;
-  }
-
-  /// Broadcasts a node that should act as focused
-  Future<bool> _handleEventFocusNode([dynamic node]) async {
-    try {
-      Map<String, String?> parameters = <String, String?>{};
-      parameters['key'] = toStr(node);
-      EventManager.of(model)?.broadcastEvent(
-          model, Event(EventTypes.focusnode, parameters: parameters));
     } catch (e) {
       Log().debug('$e');
     }

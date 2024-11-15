@@ -161,7 +161,6 @@ class ImageView extends StatefulWidget implements ViewableWidgetView {
                     ? ColorFilter.mode(color, BlendMode.srcIn)
                     : null);
           } else {
-            animate = false;
             if (animate) {
               image = FadeInImage.memoryNetwork(
                 placeholder: placeholder,

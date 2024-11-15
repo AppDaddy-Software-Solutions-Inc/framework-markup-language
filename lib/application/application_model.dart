@@ -2,9 +2,9 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fml/config/config_model.dart';
+import 'package:fml/firebase/firebase.dart';
 import 'package:fml/fml.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -47,9 +47,7 @@ class ApplicationModel extends Model {
   // Jwt
   Jwt? get jwt => _user.jwt;
 
-  // used for social media
-  FirebaseApp? firebase;
-
+  // scope manager
   ScopeManager scopeManager = ScopeManager();
 
   // application url
@@ -108,10 +106,6 @@ class ApplicationModel extends Model {
   // theme - font
   String get font => toStr(setting('FONT'))?.trim() ?? FmlEngine.defaultFont;
 
-  // firebase settings
-  String? get firebaseApiKey => toStr(setting("FIREBASE_API_KEY"));
-  String? get firebaseAuthDomain => toStr(setting("FIREBASE_AUTH_DOMAIN"));
-
   // default page transition
   PageTransitions? get transition => toEnum(setting("TRANSITION"), PageTransitions.values);
 
@@ -143,6 +137,23 @@ class ApplicationModel extends Model {
   ConfigModel? _config;
   String? setting(String key) => (_config?.settings.containsKey(key) ?? false) ? _config?.settings[key] : null;
   bool get configured => _config != null;
+
+  // firebase
+  Firebase? _firebase;
+  Firebase? get firebase {
+
+    // firbase already created
+    if (_firebase != null) return _firebase;
+
+    // firebase config defined?
+    var config = _config?.firebase;
+    if (config == null) return null;
+
+    // initialize firebase
+    _firebase = Firebase(config);
+
+    return _firebase;
+  }
 
   // application stash
   Stash? _stash;

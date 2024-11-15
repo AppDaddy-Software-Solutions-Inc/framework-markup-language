@@ -1,8 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/animation/animation_child/animation_child_model.dart';
-import 'package:fml/widgets/animation/animation_child/size/size_transition_view.dart';
+import 'package:fml/widgets/animation/base/animation_base_model.dart';
+import 'package:fml/widgets/animation/size/size_transition_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -12,7 +12,7 @@ import 'package:fml/helpers/helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class SizeTransitionModel extends AnimationChildModel {
+class SizeTransitionModel extends AnimationBaseModel {
   /// Curve starting point from 0.0 to 1.0
   DoubleObservable? _from;
 

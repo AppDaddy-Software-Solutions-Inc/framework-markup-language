@@ -1,14 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'dart:core';
-import 'package:firebase_auth/firebase_auth.dart' deferred as fbauth;
-import 'package:firebase_core/firebase_core.dart' deferred as fbcore;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/dialog/manager.dart';
 import 'package:fml/eval/evaluator.dart';
 import 'package:fml/eval/expressions.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/firebase/firebase.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
@@ -429,110 +428,82 @@ class EventHandler extends Eval {
     dynamic provider,
     dynamic refresh]) async {
 
-    if (provider is! String) return false;
+    try
+    {
+      // no current app
+      var app = System.currentApp;
+      if (app == null) return false;
 
-    String? token;
-    if (!isNullOrEmpty(provider)) {
-      var user = await _firebaseLogon(provider, <String>['email', 'profile']);
+      // firebase not defined
+      var firebase = app.firebase;
+      if (firebase == null) return false;
+
+      // firebase provider
+      var providerId = toEnum(provider, Providers.values);
+      if (providerId == null) return false;
+
+      String? token;
+      var user = await firebase.logon(providerId);
       if (user != null) token = await user.getIdToken();
-    }
 
-    // valid token?
-    if (token == null) return false;
+      // valid token?
+      if (token == null) return false;
 
-    // replace "bearer" keyword
-    token = token.replaceFirst(RegExp("bearer", caseSensitive: false), "").trim();
+      // replace "bearer" keyword
+      token = token.replaceFirst(RegExp("bearer", caseSensitive: false), "").trim();
 
-    // decode token
-    Jwt jwt = Jwt.decode(token,
-        validateAge: false,
-        validateSignature: false);
+      // decode token
+      Jwt jwt = Jwt.decode(token,
+          validateAge: false,
+          validateSignature: false);
 
-    if (jwt.valid) {
+      // valid token?
+      if (jwt.valid) {
 
-      // logon
-      System.currentApp?.logon(jwt);
+        // logon
+        System.currentApp?.logon(jwt);
 
-      // refresh the framework
-      if (toBool(refresh) != false) {
-        EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.refresh, parameters: null, model: model));
+        // refresh the framework
+        if (toBool(refresh) ?? false) {
+          EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.refresh, parameters: null, model: model));
+        }
+
+        return true;
       }
 
-      return true;
+      // Invalid token?
+      else {
+        System.currentApp?.logoff();
+        return false;
+      }
     }
-
-    else {
-      System.currentApp?.logoff();
+    catch (e) {
+      Log().error("Error logging in firebase user. Error is $e");
       return false;
     }
   }
 
   /// Logs a user off
   Future<bool> _handleEventLogoff([dynamic refresh]) async {
-    bool ok = await System.currentApp?.logoff() ?? true;
 
-    // Refresh the Framework
-    if ((ok) && (toBool(refresh) != false)) {
-      EventManager.of(model)?.broadcastEvent(
-          model, Event(EventTypes.refresh, parameters: null, model: model));
+    var app = System.currentApp;
+    if (app == null) return true;
+
+    // logoff system
+    await app.logoff();
+
+    // log off firebase
+    var firebase = app.firebase;
+    if (firebase != null && firebase.connected) {
+      firebase.logoff();
     }
 
-    return ok;
-  }
-
-  Future<bool> _firebaseInit() async {
-    if (System.currentApp?.firebase == null) {
-      String apiKey = System.currentApp?.firebaseApiKey ?? '0000000000';
-      String? authDomain = System.currentApp?.firebaseAuthDomain;
-
-      await fbauth.loadLibrary();
-      await fbcore.loadLibrary();
-
-      var options = fbcore.FirebaseOptions(
-          appId: "FML",
-          messagingSenderId: "FML",
-          projectId: "framework-markup-language",
-          apiKey: apiKey,
-          authDomain: authDomain);
-      System.currentApp?.firebase =
-          await fbcore.Firebase.initializeApp(options: options);
+    // refresh the framework
+    if (toBool(refresh) ?? false) {
+      EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.refresh, parameters: null, model: model));
     }
+
     return true;
-  }
-
-  Future<dynamic> _firebaseLogon(String provider, List<String> scopes) async {
-    dynamic user;
-    try {
-      await _firebaseInit();
-      await _firebaseLogoff();
-
-      var provider0 = fbauth.OAuthProvider(provider);
-      provider0.scopes.addAll(scopes);
-
-      Map<String, String> parameters = <String, String>{};
-      parameters["prompt"] = 'select_account';
-      provider0.setCustomParameters(parameters);
-
-      var credential =
-          await fbauth.FirebaseAuth.instance.signInWithPopup(provider0);
-      user = credential.user;
-    } catch (e) {
-      user = null;
-      //System.toast("Ooops. There was a problem logging in ...", duration: 2);
-      Log().error("Error logging in firebase user. Error is $e");
-    }
-    return user;
-  }
-
-  Future<bool> _firebaseLogoff() async {
-    bool ok = true;
-    try {
-      await _firebaseInit();
-      await fbauth.FirebaseAuth.instance.signOut();
-    } catch (e) {
-      Log().error("Error logging out the firebase user. Error is $e");
-    }
-    return ok;
   }
 
   /// Plays a sound
@@ -649,9 +620,7 @@ class EventHandler extends Eval {
   }
 
   /// Depreciated, see [EventHandler._handleEventClose]
-  Future<bool> _handleEventBack([dynamic p]) async {
-    return _handleEventClose(p);
-  }
+  Future<bool> _handleEventBack([dynamic p]) async => _handleEventClose(p);
 
   /// Broadcasts the refresh event to be handled by individual widgets
   Future<bool> _handleEventRefresh() async {

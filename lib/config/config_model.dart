@@ -5,11 +5,14 @@ import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class ConfigModel {
+
   ConfigModel();
 
   String? xml;
   Map<String, String?> settings = <String, String?>{};
   Map<String, String?> parameters = <String, String?>{};
+
+  XmlElement? firebase;
 
   static Future<ConfigModel?> fromXml(XmlElement xml) async {
     ConfigModel? model;
@@ -55,13 +58,22 @@ class ConfigModel {
 
     // settings
     for (dynamic node in e.children) {
+
       if (node is XmlElement) {
         String key = node.localName;
         String? value = Xml.get(node: node, tag: 'value');
 
-        if (isNullOrEmpty(value)) value = Xml.getText(node);
-        if (!isNullOrEmpty(key) && (key.toLowerCase() != 'parameter')) {
-          settings[key] = value;
+        // firebase segment?
+        if (key.toUpperCase() == 'FIREBASE') {
+          firebase = node.copy();
+        }
+
+        // other
+        else {
+          if (isNullOrEmpty(value)) value = Xml.getText(node);
+          if (!isNullOrEmpty(key) && (key.toLowerCase() != 'parameter')) {
+            settings[key] = value;
+          }
         }
       }
     }

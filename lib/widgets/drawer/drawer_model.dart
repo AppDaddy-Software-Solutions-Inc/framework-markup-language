@@ -249,6 +249,83 @@ class DrawerModel extends ViewableModel {
     }
   }
 
+  void open() {
+
+    // get the view
+    DrawerViewState? view = findListenerOfExactType(DrawerViewState);
+
+    // left drawer?
+    if (id == idLeft) {
+      view?.openDrawer(Drawers.left);
+      return;
+    }
+
+    // right drawer?
+    if (id == idRight) {
+      view?.openDrawer(Drawers.right);
+      return;
+    }
+
+    // top drawer?
+    if (id == idTop) {
+      view?.openDrawer(Drawers.top);
+      return;
+    }
+
+    // bottom drawer?
+    if (id == idBottom) {
+      view?.openDrawer(Drawers.bottom);
+      return;
+    }
+  }
+
+  void close() {
+
+    // get the view
+    DrawerViewState? view = findListenerOfExactType(DrawerViewState);
+
+    // left drawer?
+    if (id == idLeft) {
+      view?.closeDrawer(Drawers.left);
+      return;
+    }
+
+    // right drawer?
+    if (id == idRight) {
+      view?.closeDrawer(Drawers.right);
+      return;
+    }
+
+    // top drawer?
+    if (id == idTop) {
+      view?.closeDrawer(Drawers.top);
+      return;
+    }
+
+    // bottom drawer?
+    if (id == idBottom) {
+      view?.closeDrawer(Drawers.bottom);
+      return;
+    }
+  }
+
+  @override
+  Future<dynamic> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+    switch (function) {
+    // show template
+      case "open":
+        open();
+        return true;
+      case "close":
+        close();
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
+  }
+
   @override
   Widget getView({Key? key}) {
     var view = DrawerView(this, Container());

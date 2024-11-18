@@ -244,9 +244,6 @@ class _ImageViewState extends ViewableWidgetState<ImageView> {
     // trying to use FadeInImage within animations is problematic
     if (widget.model.animations != null) fadeIn = false;
 
-    // trying to use FadeInImage with urls that have no extension is problematic
-    if (URI.parse(widget.model.url)?.pageExtension == null) fadeIn = false;
-
     // get the image
     Widget view = ImageView.getImage(widget.model.url,
             fadeIn: fadeIn,

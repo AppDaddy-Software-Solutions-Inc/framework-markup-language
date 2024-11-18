@@ -570,6 +570,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
     }
   }
 
+  // this routine handles instances where the native system
+  // does a Navigator.of(context).pop(). This happens on IOS
+  // where the user swipes back
   bool _onPopPage(Route route, dynamic result) {
     if (!route.didPop(result)) return false;
     popRoute();
@@ -580,6 +583,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
   Widget build(BuildContext context) => Navigator(
     key: navigatorKey,
     pages: List.of(_pages),
+    // do not remove (see above)
     onPopPage: _onPopPage,
     observers: [NavigationObserver()],
   );

@@ -77,6 +77,20 @@ class UserModel extends Model {
       // set connected = true
       _connected.set(true);
 
+      // // convert picture to a data uri
+      // if (jwt.claims.keys.contains("picture")) {
+      //   var url = jwt.claims["picture"];
+      //   if (!isNullOrEmpty(url)) {
+      //
+      //     //Map<String, String> headers = {};
+      //     //headers["referrerPolicy"] = "no-referrer";
+      //     var uri = await URI.toUriData(url!,  headers: {});
+      //     if (uri != null) {
+      //       jwt.claims["picture"] = uri.toString();
+      //     }
+      //   }
+      // }
+
       // set user claims
       jwt.claims.forEach((key, value) {
         key = key.toLowerCase().trim();

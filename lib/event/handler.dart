@@ -172,7 +172,6 @@ class EventHandler extends Eval {
           _handleEventOpenJsTemplate;
       // replace (legacy) overlaps with Eval() function replace. use replaceRoute()
       functions[fromEnum(EventTypes.replace)] = _handleEventReplace;
-      functions[fromEnum(EventTypes.replaceroute)] = _handleEventReplace;
       functions[fromEnum(EventTypes.refresh)] = _handleEventRefresh;
       functions[fromEnum(EventTypes.saveas)] = _handleEventSaveAs;
       functions[fromEnum(EventTypes.set)] = _handleEventSet;

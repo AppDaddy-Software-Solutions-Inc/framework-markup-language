@@ -38,7 +38,7 @@ dependencies:
   # otherwise we get an error: Error: Method not found: 'UnmodifiableUint32ListView'. UnmodifiableUint32ListView(Uint32List(0));
   archive: ^3.6.1
 
-  audioplayers: ^6.0.0
+  audioplayers: ^6.1.0
   # MIT
 
   camera: ^0.11.0
@@ -272,7 +272,6 @@ flutter:
 
   assets:
     - assets/
-    - assets/audio/
     - assets/fonts/
 
   fonts:

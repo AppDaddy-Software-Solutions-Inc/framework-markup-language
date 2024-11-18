@@ -8,13 +8,10 @@ import 'package:fml/eval/evaluator.dart';
 import 'package:fml/eval/expressions.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/firebase/firebase.dart';
-import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/template/template_manager.dart';
 import 'package:fml/token/token.dart';
-import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/eval/eval.dart';
@@ -170,16 +167,9 @@ class EventHandler extends Eval {
       functions[fromEnum(EventTypes.open)] = _handleEventOpen;
       functions[fromEnum(EventTypes.openjstemplate)] =
           _handleEventOpenJsTemplate;
-      // replace (legacy) overlaps with Eval() function replace. use replaceRoute()
-      functions[fromEnum(EventTypes.replace)] = _handleEventReplace;
-      functions[fromEnum(EventTypes.replaceroute)] = _handleEventReplace;
       functions[fromEnum(EventTypes.refresh)] = _handleEventRefresh;
       functions[fromEnum(EventTypes.saveas)] = _handleEventSaveAs;
       functions[fromEnum(EventTypes.set)] = _handleEventSet;
-      functions[fromEnum(EventTypes.setbranding)] = _handleEventSetBranding;
-      functions[fromEnum(EventTypes.showdebug)] = _handleEventShowDebug;
-      functions[fromEnum(EventTypes.showlog)] = _handleEventShowLog;
-      functions[fromEnum(EventTypes.showtemplate)] = _handleEventShowTemplate;
       functions[fromEnum(EventTypes.sound)] = _handleEventSound;
       functions[fromEnum(EventTypes.stash)] = _handleEventStash;
       functions[fromEnum(EventTypes.theme)] = _handleEventTheme;
@@ -507,44 +497,36 @@ class EventHandler extends Eval {
   }
 
   /// Plays a sound
-  Future<bool> _handleEventSound(
-      [dynamic file, dynamic url, dynamic duration]) async {
-    Log().debug("Framework onSound()");
+  Future<bool> _handleEventSound([dynamic url, dynamic duration]) async {
 
-    file = toStr(file);
     url = toStr(url);
     duration = toInt(duration) ?? 0;
 
     try {
+
       if (isDesktop) {
         Log().debug("[DESKTOP] Framework onSound()");
         Log().debug('TBD: sound support for desktops');
         return true;
       }
 
-      //////////////////////
-      /* Play Local Sound */
-      //////////////////////
-      if (!isNullOrEmpty(file)) {
-        Sound.playLocal('/assets/audio/$file', duration: duration);
+      // play default beep
+      if (isNullOrEmpty(url)) {
+        Sound.playLocal('/assets/audio/beep.mp3', duration: duration);
         return true;
       }
 
-      ///////////////////////
-      /* Play Remote Sound */
-      ///////////////////////
-      if (!isNullOrEmpty(url)) {
-        Sound.playRemote(url, duration: duration);
-        return true;
+      // play defined sound
+      switch (url.toLowerCase()) {
+        case "beep" : Sound.playLocal('/assets/audio/beep.mp3', duration: duration); break;
+        case "weo"  : Sound.playLocal('/assets/audio/weo.mp3', duration: duration); break;
+        default:
+          Sound.playRemote(url, duration: duration);
+          break;
       }
+    }
 
-      //////////
-      /* Beep */
-      //////////
-      file = "beep.mp3";
-      Sound.playLocal('/assets/audio/$file', duration: duration);
-      return true;
-    } catch (e) {
+    catch (e) {
       Log().debug("Framework onSound()");
       Log().exception(e);
     }
@@ -586,19 +568,6 @@ class EventHandler extends Eval {
     return true;
   }
 
-  /// Broadcasts the open event to be handled by individual widgets
-  Future<bool> _handleEventReplace([dynamic url, dynamic transition]) async {
-    Map<String, String?> parameters = <String, String?>{};
-    parameters['url'] = toStr(url);
-    parameters['transition'] = toStr(transition);
-    parameters['replace'] = "true";
-    if (url != null && url != '') {
-      EventManager.of(model)?.broadcastEvent(
-          model, Event(EventTypes.open, parameters: parameters, model: model));
-    }
-    return true;
-  }
-
   /// Builds a template from a String and opens in a modal or new window
   Future<bool> _handleEventBuild(
       [dynamic xml, dynamic isModal, dynamic transition]) async {
@@ -634,7 +603,7 @@ class EventHandler extends Eval {
   Future<bool> _handleEventSaveAs([dynamic text, dynamic title]) async {
     try {
       var bytes = utf8.encode(text);
-      Platform.fileSaveAs(bytes, title ?? 'file.text');
+      Platform.fileSaveAs(bytes, title ?? 'file.txt');
     } catch (e) {
       Log().error("Error in saveAs(). Error is $e");
     }
@@ -685,46 +654,6 @@ class EventHandler extends Eval {
           model, Event(EventTypes.theme, parameters: parameters));
     } catch (e) {
       Log().debug('$e');
-    }
-    return true;
-  }
-
-  /// display the template
-  Future<bool> _handleEventShowDebug() async {
-    FrameworkView? framework = NavigationManager().frameworkOf();
-    if (framework != null) {
-      FrameworkModel model = framework.model;
-      EventManager.of(model)?.executeEvent(model, "DEBUG.open()");
-      return true;
-    }
-    return false;
-  }
-
-  /// display the template
-  Future<bool> _handleEventShowLog() async {
-    FrameworkView? framework = NavigationManager().frameworkOf();
-    if (framework != null) {
-      FrameworkModel model = framework.model;
-      EventManager.of(model)
-          ?.executeEvent(model, "SYSTEM.LOG.export('html',false)");
-      return true;
-    }
-    return false;
-  }
-
-  /// display the template
-  Future<bool> _handleEventShowTemplate() async {
-    EventManager.of(model)?.broadcastEvent(
-        model, Event(EventTypes.showtemplate, parameters: null));
-    return true;
-  }
-
-  // sets app branding
-  Future<bool> _handleEventSetBranding(dynamic icon) async {
-    try {
-      System.setBranding(icon);
-    } catch (e) {
-      Log().error("Error in setBranding(). Error is $e");
     }
     return true;
   }

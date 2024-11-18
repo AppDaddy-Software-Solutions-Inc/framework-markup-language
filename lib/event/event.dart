@@ -19,22 +19,13 @@ enum EventTypes {
   open,
   openjstemplate,
   refresh,
-  replace,
   saveas,
-  save,
   set,
-  setbranding,
-  showdebug,
-  showlog,
-  showtemplate,
   sound,
-  start,
   stash,
-  stop,
   theme,
   toast,
   trigger,
-  validate,
   wait
 }
 

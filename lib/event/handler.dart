@@ -168,7 +168,6 @@ class EventHandler extends Eval {
       functions[fromEnum(EventTypes.openjstemplate)] =
           _handleEventOpenJsTemplate;
       // replace (legacy) overlaps with Eval() function replace. use replaceRoute()
-      functions[fromEnum(EventTypes.replace)] = _handleEventReplace;
       functions[fromEnum(EventTypes.refresh)] = _handleEventRefresh;
       functions[fromEnum(EventTypes.saveas)] = _handleEventSaveAs;
       functions[fromEnum(EventTypes.set)] = _handleEventSet;
@@ -514,14 +513,14 @@ class EventHandler extends Eval {
 
       // play default beep
       if (isNullOrEmpty(url)) {
-        Sound.playLocal('/assets/audio/beep.mp3', duration: duration);
+        Sound.playAsset('audio/beep.wav', duration: duration);
         return true;
       }
 
       // play defined sound
       switch (url.toLowerCase()) {
-        case "beep" : Sound.playLocal('/assets/audio/beep.mp3', duration: duration); break;
-        case "weo"  : Sound.playLocal('/assets/audio/weo.mp3', duration: duration); break;
+        case "beep" : Sound.playAsset('audio/beep.mp3', duration: duration); break;
+        case "weo"  : Sound.playAsset('audio/weo.mp3', duration: duration); break;
         default:
           Sound.playRemote(url, duration: duration);
           break;

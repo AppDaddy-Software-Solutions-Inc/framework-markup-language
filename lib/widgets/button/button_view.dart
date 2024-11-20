@@ -23,54 +23,40 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
 
   ButtonStyle _getStyle() {
 
-    WidgetStateProperty<double?>? elevation;
-    WidgetStateProperty<Color?>? background;
+    var theme  = Theme.of(context);
+
+    WidgetStateProperty<Color?>? backgroundColor;
 
     // elevated button?
     if (widget.model.type == 'elevated') {
-
-      // elevation style
-      elevation = WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.hovered)) return 8.0;
-            if (states.contains(WidgetState.focused) ||
-                states.contains(WidgetState.pressed)) return 3.0;
-            return 5.0;
-          });
-
-      // background color style
-      if (!isNullOrEmpty(widget.model.color)) {
-        background = WidgetStateProperty.resolveWith<Color?>(
+      var color = widget.model.color;
+      backgroundColor = WidgetStateProperty.resolveWith<Color?>(
               (Set<WidgetState> states) {
-            if (states.contains(WidgetState.hovered)) {
-              return widget.model.color!.withOpacity(0.85);
-            }
-            if (states.contains(WidgetState.focused) ||
-                states.contains(WidgetState.pressed)) {
-              return widget.model.color!.withOpacity(0.2);
-            }
             if (states.contains(WidgetState.disabled)) {
-              return Theme.of(context).colorScheme.shadow;
+              return color?.withOpacity(0.12) ?? theme.colorScheme.onSurface.withOpacity(0.12);
             }
-            return widget.model.color;
+            if (states.contains(WidgetState.hovered)) {
+              return color?.withOpacity(0.5) ?? theme.colorScheme.surfaceContainerHigh;
+            }
+            return color ?? theme.colorScheme.surfaceContainerLow;
           });
-      }
     }
 
     // outlined button
     WidgetStateProperty<BorderSide?>? border;
     if (widget.model.type == 'outlined') {
-
+      var color = widget.model.borderColor ?? widget.model.color;
       // set border style
       border = WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.disabled)) {
           return BorderSide(
               style: BorderStyle.solid,
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              color: color?.withOpacity(0.12) ?? theme.colorScheme.outlineVariant,
               width: widget.model.borderWidth ?? 1);
         }
         return BorderSide(
             style: BorderStyle.solid,
-            color: widget.model.borderColor ?? widget.model.color ?? Theme.of(context).colorScheme.primary,
+            color: color ?? theme.colorScheme.outline,
             width: widget.model.borderWidth ?? 1);
       });
     }
@@ -91,12 +77,10 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
     // button style
     var style = ButtonStyle(
       minimumSize: WidgetStateProperty.all(size),
-      //foregroundColor: foregroundColorStyle,
-      backgroundColor: background,
-      // overlayColor: overlayColorStyle,
+      // foregroundColor: foregroundColor,
+      backgroundColor: backgroundColor,
       shape: shape,
       side: border,
-      elevation: elevation,
     );
 
     return style;

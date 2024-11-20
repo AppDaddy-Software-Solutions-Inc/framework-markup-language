@@ -105,12 +105,13 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
 
   onMaximizeWindow() {
     if (widget.model.closeable == false) return;
-    setState(() {
-      dx = 0;
-      dy = 0;
-      width = maxWidth;
-      height = maxHeight;
-    });
+    dx = 0;
+    dy = 0;
+    width = maxWidth;
+    height = maxHeight;
+
+    // set resized width and height
+    widget.model.setSize(width, height);
   }
 
   onMaximize() {
@@ -127,25 +128,28 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
   }
 
   onRestoreToOriginal() {
-    setState(() {
-      minimized = false;
-      maximized = false;
-      dx = originalDx;
-      dy = originalDy;
-      width = originalWidth;
-      height = originalHeight;
-    });
+
+    minimized = false;
+    maximized = false;
+    dx = originalDx;
+    dy = originalDy;
+    width = originalWidth;
+    height = originalHeight;
+
+    // set resized width and height
+    widget.model.setSize(width, height);
   }
 
   onRestoreToLast() {
-    setState(() {
-      minimized = false;
-      maximized = false;
-      dx = lastDx;
-      dy = lastDy;
-      width = lastWidth;
-      height = lastHeight;
-    });
+    minimized = false;
+    maximized = false;
+    dx = lastDx;
+    dy = lastDy;
+    width = lastWidth;
+    height = lastHeight;
+
+    // set resized width and height
+    widget.model.setSize(width, height);
   }
 
   onRestore() {
@@ -160,8 +164,10 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
   onClose() {
     if (widget.model.closeable == false) return;
 
+    widget.model.resetSize();
+
     ModalManagerView? manager =
-        context.findAncestorWidgetOfExactType<ModalManagerView>();
+    context.findAncestorWidgetOfExactType<ModalManagerView>();
     if (manager != null) {
       manager.model.unpark(widget);
       manager.model.modals.remove(widget);
@@ -186,116 +192,123 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
   }
 
   onResizeBR(DragUpdateDetails details) {
+
     if (!widget.model.resizeable) return;
     if (((width ?? 0) + details.delta.dx) < minimumWidth) return;
     if (((height ?? 0) + details.delta.dy) < minimumHeight) return;
 
-    setState(() {
-      width = (width ?? 0) + details.delta.dx;
-      height = (height ?? 0) + details.delta.dy;
+    // compute new size
+    width = lastWidth = (width ?? 0) + details.delta.dx;
+    height = lastHeight = (height ?? 0) + details.delta.dy;
 
-      lastDx = dx;
-      lastDy = dy;
-
-      lastWidth = width;
-      lastHeight = height;
-    });
+    // set resized width and height
+    widget.model.setSize(width, height);
   }
 
   onResizeBL(DragUpdateDetails details) {
+
     if (!widget.model.resizeable) return;
     if (((width ?? 0) - details.delta.dx) < minimumWidth) return;
     if (((height ?? 0) + details.delta.dy) < minimumHeight) return;
 
-    setState(() {
-      width = (width ?? 0) - details.delta.dx;
-      height = (height ?? 0) + details.delta.dy;
+    // compute new size
+    width = lastWidth = (width ?? 0) - details.delta.dx;
+    height = lastHeight = (height ?? 0) + details.delta.dy;
 
-      dx = dx! + details.delta.dx;
-      lastDx = dx;
+    // compute new position
+    dx = lastDx = dx! + details.delta.dx;
 
-      lastWidth = width;
-      lastHeight = height;
-    });
+    // set resized width and height
+    widget.model.setSize(width, height);
   }
 
   onResizeTL(DragUpdateDetails details) {
+
     if (!widget.model.resizeable) return;
     if (((width ?? 0) - details.delta.dx) < minimumWidth) return;
     if (((height ?? 0) + details.delta.dy) < minimumHeight) return;
 
-    setState(() {
-      width = (width ?? 0) - details.delta.dx;
-      height = (height ?? 0) - details.delta.dy;
+    // compute new size
+    width = lastWidth = (width ?? 0) - details.delta.dx;
+    height = lastHeight = (height ?? 0) - details.delta.dy;
 
-      dx = dx! + details.delta.dx;
-      dy = dy! + details.delta.dy;
+    // compute new position
+    dx = lastDx = dx! + details.delta.dx;
+    dy = lastDy = dy! + details.delta.dy;
 
-      lastDx = dx;
-      lastDy = dy;
-
-      lastWidth = width;
-      lastHeight = height;
-    });
+    // set resized width and height
+    widget.model.setSize(width, height);
   }
 
   onResizeTR(DragUpdateDetails details) {
+
     if (!widget.model.resizeable) return;
     if (((width ?? 0) + details.delta.dx) < minimumWidth) return;
     if (((height ?? 0) - details.delta.dy) < minimumHeight) return;
 
-    setState(() {
-      width = (width ?? 0) + details.delta.dx;
-      height = (height ?? 0) - details.delta.dy;
+    // compute new size
+    width = lastWidth = (width ?? 0) + details.delta.dx;
+    height = lastHeight = (height ?? 0) - details.delta.dy;
 
-      dy = dy! + details.delta.dy;
-      lastDy = dy;
+    // compute new position
+    dy = lastDy = dy! + details.delta.dy;
 
-      lastWidth = width;
-      lastHeight = height;
-    });
+    // set resized width and height
+    widget.model.setSize(width, height);
   }
 
   onResizeT(DragUpdateDetails details) {
+
     if (!widget.model.resizeable) return;
     if (((height ?? 0) - details.delta.dy) < minimumHeight) return;
-    setState(() {
-      height = (height ?? 0) - details.delta.dy;
-      dy = dy! + details.delta.dy;
-      lastDy = dy;
-      lastHeight = height;
-    });
+
+    // compute new size
+    height = lastHeight = (height ?? 0) - details.delta.dy;
+
+    // compute new position
+    dy = lastDy = dy! + details.delta.dy;
+
+    // set resized width and height
+    widget.model.setSize(width, height);
   }
 
   onResizeB(DragUpdateDetails details) {
+
     if (!widget.model.resizeable) return;
     if (((height ?? 0) + details.delta.dy) < minimumHeight) return;
 
-    setState(() {
-      height = (height ?? 0) + details.delta.dy;
-      lastHeight = height;
-    });
+    // compute new size
+    height = lastHeight = (height ?? 0) + details.delta.dy;
+
+    // set resized width and height
+    widget.model.setSize(width, height);
   }
 
   onResizeL(DragUpdateDetails details) {
+
     if (!widget.model.resizeable) return;
     if (((width ?? 0) - details.delta.dx) < minimumWidth) return;
-    setState(() {
-      width = (width ?? 0) - details.delta.dx;
-      dx = dx! + details.delta.dx;
-      lastDx = dx;
-      lastWidth = width;
-    });
+
+    // compute new size
+    width = lastWidth = (width ?? 0) - details.delta.dx;
+
+    // compute new position
+    dx = lastDx = dx! + details.delta.dx;
+
+    // set resized width and height
+    widget.model.setSize(width, height);
   }
 
   onResizeR(DragUpdateDetails details) {
+
     if (!widget.model.resizeable) return;
     if (((width ?? 0) + details.delta.dx) < minimumWidth) return;
-    setState(() {
-      width = (width ?? 0) + details.delta.dx;
-      lastDx = dx;
-      lastWidth = width;
-    });
+
+    // compute new size
+    width = lastWidth = (width ?? 0) + details.delta.dx;
+
+    // set resized width and height
+    widget.model.setSize(width, height);
   }
 
   onDrag(DragUpdateDetails details) {
@@ -319,8 +332,6 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
       lastDy = dy;
       lastWidth = width;
       lastHeight = height;
-
-      // print('on drag $dx,$dy...');
     });
   }
 
@@ -357,7 +368,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
 
   Widget _buildHeader(ColorScheme t) {
 
-    Color c1 = widget.model.borderColor ?? t.surfaceContainerHighest;
+    Color c1 = widget.model.borderColor ?? t.outline;
     Color c2 = ColorHelper.highlight(c1, .5);
     Color c3 = ColorHelper.highlight(c1, 1);
 

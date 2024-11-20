@@ -21,25 +21,31 @@ class ButtonView extends StatefulWidget implements ViewableWidgetView {
 
 class _ButtonViewState extends ViewableWidgetState<ButtonView> {
 
+  ColorScheme? colorScheme;
+  Brightness? brightness;
+
   ButtonStyle _getStyle() {
 
-    var theme  = Theme.of(context);
-
-    WidgetStateProperty<Color?>? backgroundColor;
+    var theme = Theme.of(context);
 
     // elevated button?
+    WidgetStateProperty<Color?>? backgroundColor;
     if (widget.model.type == 'elevated') {
-      var color = widget.model.color;
-      backgroundColor = WidgetStateProperty.resolveWith<Color?>(
-              (Set<WidgetState> states) {
-            if (states.contains(WidgetState.disabled)) {
-              return color?.withOpacity(0.12) ?? theme.colorScheme.onSurface.withOpacity(0.12);
-            }
-            if (states.contains(WidgetState.hovered)) {
-              return color?.withOpacity(0.5) ?? theme.colorScheme.surfaceContainerHigh;
-            }
-            return color ?? theme.colorScheme.surfaceContainerLow;
-          });
+
+      var color    = theme.colorScheme.surfaceContainerLow;
+      var disabled = theme.colorScheme.surfaceContainer.withOpacity(0.12);
+      var hovered  = theme.colorScheme.surfaceContainerHigh;
+      if (widget.model.color != null) {
+        color = widget.model.color!;
+        disabled = color.withOpacity(.5);
+        hovered  = ColorHelper.darken(color);
+      }
+
+      backgroundColor = WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+        if (states.contains(WidgetState.disabled)) return disabled;
+        if (states.contains(WidgetState.hovered))  return hovered;
+        return color;
+      });
     }
 
     // outlined button

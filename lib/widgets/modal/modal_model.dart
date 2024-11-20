@@ -190,23 +190,9 @@ class ModalModel extends BoxModel {
       case "open":
         var view = findListenerOfExactType(ModalViewState);
         if (view == null) {
-          // modal width
-          if (arguments.isNotEmpty) width = toStr(arguments[0]);
 
-          // modal height
-          if (arguments.length > 1) height = toStr(arguments[1]);
-
-          // resizeable
-          if (arguments.length > 2) resizeable = toBool(arguments[2]) ?? true;
-
-          // closeable
-          if (arguments.length > 3) closeable = toBool(arguments[3]) ?? true;
-
-          // draggable
-          if (arguments.length > 4) draggable = toBool(arguments[4]) ?? true;
-
-          // modal
-          if (arguments.length > 5) modal = toBool(arguments[5]) ?? true;
+          // modal?
+          if (arguments.isNotEmpty) modal = toBool(arguments[0]) ?? false;
 
           open(getView());
         }

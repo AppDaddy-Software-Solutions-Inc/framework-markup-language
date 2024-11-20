@@ -91,8 +91,18 @@ class ThemeModel extends ViewableModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   Color? get outline => _outline?.get();
+
+  ColorObservable? _outlineVariant;
+  set outlineVariant(dynamic v) {
+    if (_outlineVariant != null) {
+      _outlineVariant!.set(v);
+    } else if (v != null) {
+      _outlineVariant = ColorObservable(Binding.toKey('outlinevariant'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get outlineVariant => _outlineVariant?.get();
 
   ColorObservable? _surface;
   set surface(dynamic v) {
@@ -380,6 +390,7 @@ class ThemeModel extends ViewableModel {
     onBackground = Xml.get(node: xml, tag: 'onbackground');
     shadow = Xml.get(node: xml, tag: 'shadow');
     outline = Xml.get(node: xml, tag: 'outline');
+    outlineVariant = Xml.get(node: xml, tag: 'outlinevariant');
     surface = Xml.get(node: xml, tag: 'surface');
     onSurface = Xml.get(node: xml, tag: 'onsurface');
     surfaceVariant = Xml.get(node: xml, tag: 'surfacevariant');

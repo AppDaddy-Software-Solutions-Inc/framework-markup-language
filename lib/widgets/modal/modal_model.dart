@@ -124,7 +124,6 @@ class ModalModel extends BoxModel {
       _x!.set(v, notify: false);
     }
   }
-
   double? get x => _x?.get();
 
   DoubleObservable? _y;
@@ -137,8 +136,24 @@ class ModalModel extends BoxModel {
       _y!.set(v, notify: false);
     }
   }
-
   double? get y => _y?.get();
+
+  // holds the resized width and height
+  Size? _size;
+
+  @override
+  double? get width {
+    var w = _size?.width;
+    if (w == null || w == double.negativeInfinity) return super.width;
+    return w;
+  }
+
+  @override
+  double? get height {
+    var h = _size?.height;
+    if (h == null || h == double.negativeInfinity) return super.height;
+    return h;
+  }
 
   static ModalModel? fromXml(Model parent, XmlElement xml) {
     ModalModel? model;
@@ -204,6 +219,20 @@ class ModalModel extends BoxModel {
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
+  // called to resize the modal
+  // we do not want to change width and height directly since
+  // they may be bindables
+  void setSize(double? width, double? height) {
+    _size = Size(width ?? double.negativeInfinity, height ?? double.negativeInfinity);
+    notifyListeners(null, null);
+  }
+
+  // called when modal is closed
+  // this allows original width and height to take precedence
+  void resetSize() {
+    _size = null;
+  }
+
   void open(ModalView view) {
     ModalManagerView? manager =
         context?.findAncestorWidgetOfExactType<ModalManagerView>();
@@ -221,6 +250,7 @@ class ModalModel extends BoxModel {
           context?.findAncestorWidgetOfExactType<ModalManagerView>();
       if (manager != null) manager.model.refresh();
     }
+    resetSize();
   }
 
   void dismiss() {

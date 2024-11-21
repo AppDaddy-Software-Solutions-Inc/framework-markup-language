@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:math';
+
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/reactive/reactive_view.dart';
@@ -221,7 +223,7 @@ class BoxModel extends ViewableModel {
     if (borderRadius == null) return 0;
     var radii = borderRadius!.split(',');
     if (radii.isEmpty) return 0;
-    return toDouble(radii[0]) ?? 0;
+    return max(toDouble(radii[0]) ?? 0,0);
   }
 
   double get radiusBottomRight {
@@ -229,10 +231,10 @@ class BoxModel extends ViewableModel {
     var radii = borderRadius!.split(',');
     if (radii.isEmpty) return 0;
     if (radii.length == 1) {
-      return toDouble(radii[0]) ?? 0;
+      return max(toDouble(radii[0]) ?? 0,0);
     }
     if (radii.length > 1) {
-      return toDouble(radii[1]) ?? 0;
+      return max(toDouble(radii[1]) ?? 0,0);
     }
     return 0;
   }
@@ -242,10 +244,10 @@ class BoxModel extends ViewableModel {
     var radii = borderRadius!.split(',');
     if (radii.isEmpty) return 0;
     if (radii.length == 1) {
-      return toDouble(radii[0]) ?? 0;
+      return max(toDouble(radii[0]) ?? 0,0);
     }
     if (radii.length > 2) {
-      return toDouble(radii[2]) ?? 0;
+      return max(toDouble(radii[2]) ?? 0,0);
     }
     return 0;
   }
@@ -255,10 +257,10 @@ class BoxModel extends ViewableModel {
     var radii = borderRadius!.split(',');
     if (radii.isEmpty) return 0;
     if (radii.length == 1) {
-      return toDouble(radii[0]) ?? 0;
+      return max(toDouble(radii[0]) ?? 0,0);
     }
     if (radii.length > 3) {
-      return toDouble(radii[3]) ?? 0;
+      return max(toDouble(radii[3]) ?? 0,0);
     }
     return 0;
   }

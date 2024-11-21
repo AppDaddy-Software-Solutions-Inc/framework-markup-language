@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/helpers/color.dart';
@@ -6,8 +8,8 @@ import 'package:fml/widgets/measure/measure_view.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/modal/modal_manager_view.dart';
-import 'package:fml/widgets/modal/modal_model.dart';
+import 'package:fml/widgets/window/window_manager_view.dart';
+import 'package:fml/widgets/window/window_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 
 // platform
@@ -15,27 +17,22 @@ import 'package:fml/platform/platform.vm.dart'
 if (dart.library.io) 'package:fml/platform/platform.vm.dart'
 if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
-class ModalView extends StatefulWidget implements ViewableWidgetView {
+class WindowView extends StatefulWidget implements ViewableWidgetView {
   @override
-  final ModalModel model;
+  final WindowModel model;
 
-  ModalView(this.model) : super(key: ObjectKey(model));
+  WindowView(this.model) : super(key: ObjectKey(model));
 
   @override
-  State<ModalView> createState() => ModalViewState();
+  State<WindowView> createState() => WindowViewState();
 }
 
-class ModalViewState extends ViewableWidgetState<ModalView> {
-  static double headerSize = 30;
-  static double headerIconSize = headerSize - 10;
-  static double headerIconDividerSize = 5;
-  static double minimumWidth =
-      (headerIconSize * 3) + (headerIconDividerSize * 4);
-  static double minimumHeight = headerIconSize;
+class WindowViewState extends ViewableWidgetState<WindowView> {
+
+  static double headerHeight  = 30;
+  static double toolbarHeight = headerHeight/2;
 
   Widget? body;
-
-  double padding = 15;
 
   double? dx;
   double? dy;
@@ -45,9 +42,11 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
 
   bool atMaxHeight = false;
   late double maxHeight;
+  late double minHeight;
 
   bool atMaxWidth = false;
   late double maxWidth;
+  late double minWidth;
 
   bool minimized = false;
   bool maximized = false;
@@ -74,7 +73,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
 
   @override
   void initState() {
-    width = widget.model.width;
+    width  = widget.model.width;
     height = widget.model.height;
     dx = widget.model.x;
     dy = widget.model.y;
@@ -162,15 +161,13 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
   }
 
   onClose() {
-    if (widget.model.closeable == false) return;
-
     widget.model.resetSize();
 
-    ModalManagerView? manager =
-    context.findAncestorWidgetOfExactType<ModalManagerView>();
+    WindowManagerView? manager =
+    context.findAncestorWidgetOfExactType<WindowManagerView>();
     if (manager != null) {
       manager.model.unpark(widget);
-      manager.model.modals.remove(widget);
+      manager.model.windows.remove(widget);
       manager.model.refresh();
     }
 
@@ -182,11 +179,11 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
 
   onDismiss() {
     if (!widget.model.dismissable) return;
-    ModalManagerView? manager =
-        context.findAncestorWidgetOfExactType<ModalManagerView>();
+    WindowManagerView? manager =
+        context.findAncestorWidgetOfExactType<WindowManagerView>();
     if (manager != null) {
       manager.model.unpark(widget);
-      manager.model.modals.remove(widget);
+      manager.model.windows.remove(widget);
       manager.model.refresh();
     }
   }
@@ -194,8 +191,8 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
   onResizeBR(DragUpdateDetails details) {
 
     if (!widget.model.resizeable) return;
-    if (((width ?? 0) + details.delta.dx) < minimumWidth) return;
-    if (((height ?? 0) + details.delta.dy) < minimumHeight) return;
+    if (((width ?? 0) + details.delta.dx)  < minWidth) return;
+    if (((height ?? 0) + details.delta.dy) < minHeight) return;
 
     // compute new size
     width = lastWidth = (width ?? 0) + details.delta.dx;
@@ -208,8 +205,8 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
   onResizeBL(DragUpdateDetails details) {
 
     if (!widget.model.resizeable) return;
-    if (((width ?? 0) - details.delta.dx) < minimumWidth) return;
-    if (((height ?? 0) + details.delta.dy) < minimumHeight) return;
+    if (((width ?? 0) - details.delta.dx) < minWidth) return;
+    if (((height ?? 0) + details.delta.dy) < minHeight) return;
 
     // compute new size
     width = lastWidth = (width ?? 0) - details.delta.dx;
@@ -225,8 +222,8 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
   onResizeTL(DragUpdateDetails details) {
 
     if (!widget.model.resizeable) return;
-    if (((width ?? 0) - details.delta.dx) < minimumWidth) return;
-    if (((height ?? 0) + details.delta.dy) < minimumHeight) return;
+    if (((width ?? 0) - details.delta.dx) < minWidth) return;
+    if (((height ?? 0) + details.delta.dy) < minHeight) return;
 
     // compute new size
     width = lastWidth = (width ?? 0) - details.delta.dx;
@@ -243,8 +240,8 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
   onResizeTR(DragUpdateDetails details) {
 
     if (!widget.model.resizeable) return;
-    if (((width ?? 0) + details.delta.dx) < minimumWidth) return;
-    if (((height ?? 0) - details.delta.dy) < minimumHeight) return;
+    if (((width ?? 0) + details.delta.dx) < minWidth) return;
+    if (((height ?? 0) - details.delta.dy) < minHeight) return;
 
     // compute new size
     width = lastWidth = (width ?? 0) + details.delta.dx;
@@ -260,7 +257,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
   onResizeT(DragUpdateDetails details) {
 
     if (!widget.model.resizeable) return;
-    if (((height ?? 0) - details.delta.dy) < minimumHeight) return;
+    if (((height ?? 0) - details.delta.dy) < minHeight) return;
 
     // compute new size
     height = lastHeight = (height ?? 0) - details.delta.dy;
@@ -275,7 +272,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
   onResizeB(DragUpdateDetails details) {
 
     if (!widget.model.resizeable) return;
-    if (((height ?? 0) + details.delta.dy) < minimumHeight) return;
+    if (((height ?? 0) + details.delta.dy) < minHeight) return;
 
     // compute new size
     height = lastHeight = (height ?? 0) + details.delta.dy;
@@ -287,7 +284,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
   onResizeL(DragUpdateDetails details) {
 
     if (!widget.model.resizeable) return;
-    if (((width ?? 0) - details.delta.dx) < minimumWidth) return;
+    if (((width ?? 0) - details.delta.dx) < minWidth) return;
 
     // compute new size
     width = lastWidth = (width ?? 0) - details.delta.dx;
@@ -302,7 +299,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
   onResizeR(DragUpdateDetails details) {
 
     if (!widget.model.resizeable) return;
-    if (((width ?? 0) + details.delta.dx) < minimumWidth) return;
+    if (((width ?? 0) + details.delta.dx) < minWidth) return;
 
     // compute new size
     width = lastWidth = (width ?? 0) + details.delta.dx;
@@ -320,11 +317,11 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
         var viewport = MediaQuery.of(context).size;
         if (dx!.isNegative) dx = 0;
         if (dy!.isNegative) dy = 0;
-        if (dx! + (width! + (padding * 2)) > viewport.width) {
-          dx = viewport.width - (width! + (padding * 2));
+        if (dx! + width! > viewport.width) {
+          dx = viewport.width - width!;
         }
-        if (dy! + (height! + (padding * 2)) > viewport.height) {
-          dy = viewport.height - (height! + (padding * 2));
+        if (dy! + height! > viewport.height) {
+          dy = viewport.height - height!;
         }
       }
 
@@ -353,109 +350,186 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
   }
 
   onBringToFront(TapDownDetails? details) {
-    ModalManagerView? overlay =
-        context.findAncestorWidgetOfExactType<ModalManagerView>();
+    WindowManagerView? overlay =
+        context.findAncestorWidgetOfExactType<WindowManagerView>();
     if (overlay != null) overlay.model.bringToFront(widget);
   }
 
   void onCloseEvent(Event event) {
     String? id = (event.parameters != null) ? event.parameters!['id'] : null;
-    if ((isNullOrEmpty(id)) || (id == widget.model.id)) {
-      event.handled = true;
-      onClose();
+    if (isNullOrEmpty(id) || id == widget.model.id) {
+      if (widget.model.closeable) {
+        event.handled = true;
+        onClose();
+      }
     }
   }
 
   Widget _buildHeader(ColorScheme t) {
 
-    Color c1 = widget.model.borderColor ?? t.outline;
+    Color c1 = widget.model.borderColor;
     Color c2 = ColorHelper.highlight(c1, .5);
-    Color c3 = ColorHelper.highlight(c1, 1);
-
-    var divider = SizedBox(width: headerIconDividerSize, height: 1);
-
-    // window is maximized?
-    bool isMaximized = atMaxHeight && atMaxWidth;
-
-    // Build View
-    Widget close = (!widget.model.closeable)
-        ? Container()
-        : GestureDetector(
-            onTap: () => onClose(),
-            child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                onHover: (ev) => setState(() => closeHovered = true),
-                onExit: (ev) => setState(() => closeHovered = false),
-                child: UnconstrainedBox(
-                    child: SizedBox(
-                        height: headerIconSize,
-                        width: headerIconSize,
-                        child: Icon(Icons.close,
-                            size: headerIconSize - 4,
-                            color: !closeHovered ? c2 : c3)))));
-
-    Widget minimize =
-        (!widget.model.closeable || widget.model.modal)
-            ? Container()
-            : GestureDetector(
-                onTap: () => onMinimize(),
-                child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    onHover: (ev) => setState(() => minimizeHovered = true),
-                    onExit: (ev) => setState(() => minimizeHovered = false),
-                    child: UnconstrainedBox(
-                        child: SizedBox(
-                            height: headerIconSize,
-                            width: headerIconSize,
-                            child: Icon(Icons.horizontal_rule,
-                                size: headerIconSize - 4,
-                                color: !minimizeHovered ? c2 : c3)))));
-
-    Widget maximize = (!widget.model.closeable || widget.model.modal)
-        ? Container()
-        : GestureDetector(
-            onTap: () => isMaximized ? onRestoreToLast() : onMaximizeWindow(),
-            child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                onHover: (ev) => setState(() => maximizedHovered = true),
-                onExit: (ev) => setState(() => maximizedHovered = false),
-                child: UnconstrainedBox(
-                    child: SizedBox(
-                        height: headerIconSize,
-                        width: headerIconSize,
-                        child: Icon(
-                            isMaximized
-                                ? Icons.crop_7_5_sharp
-                                : Icons.crop_square_sharp,
-                            size: headerIconSize - 4,
-                            color: !maximizedHovered ? c2 : c3)))));
 
     // build header top radius
     // the body radius tops are overridden ion the model
     // and set to zero
-    double radius = widget.model.headerRadius;
-    if (radius <= 0) radius = 5;
-    BorderRadius? containerRadius = BorderRadius.only(
+    var radius = widget.model.headerRadius;
+    BorderRadius? containerRadius;
+    if (radius > 0) {
+      containerRadius = BorderRadius.only(
         topRight: Radius.circular(radius), topLeft: Radius.circular(radius));
-
-    Widget toolbar = Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: [minimize, divider, maximize, divider, close, divider]);
+    }
 
     // title
+    Widget view = const Offstage();
     if (!isNullOrEmpty(widget.model.title)) {
-      Widget title = DefaultTextStyle(style: TextStyle(color: c2, fontSize: headerSize * .45, fontWeight: FontWeight.bold), child: Text(widget.model.title!, overflow: TextOverflow.ellipsis));
-      title = Center(child: title);
-      toolbar = Stack(children: [title,toolbar]);
+      Widget title = DefaultTextStyle(style: TextStyle(color: c2, fontSize: headerHeight * .45, fontWeight: FontWeight.bold), child: Text(widget.model.title!, overflow: TextOverflow.ellipsis));
+      view = Center(child: title);
     }
 
     return Container(
         decoration: BoxDecoration(borderRadius: containerRadius, color: c1),
         width: width!,
-        height: headerSize,
-        child: toolbar);
+        height: headerHeight,
+        child: view);
+  }
+
+  Widget _buildToolbar(ColorScheme t) {
+
+    Color c1 = widget.model.borderColor;
+    Color c2 = ColorHelper.highlight(c1, .5);
+    Color c3 = ColorHelper.highlight(c1, 1);
+
+    // window is maximized?
+    bool isMaximized = atMaxHeight && atMaxWidth;
+
+    const double padding = 5;
+    const placeholder = Offstage();
+
+    // Build View
+    Widget close = placeholder;
+    if (widget.model.closeable) {
+
+        var icon = Icon(Icons.close, size: toolbarHeight, color: closeHovered ? c3 : c2);
+
+        close = GestureDetector(
+        onTap: () => onClose(),
+        child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            onHover: (ev) => setState(() => closeHovered = true),
+            onExit: (ev) => setState(() => closeHovered = false),
+            child: Padding(padding: const EdgeInsets.only(left: padding, right: padding), child: icon)));
+    }
+
+    Widget minimize = placeholder;
+    if (widget.model.resizeable) {
+
+        var icon = Icon(Icons.horizontal_rule, size: toolbarHeight, color: minimizeHovered ? c3 : c2);
+
+        minimize = GestureDetector(
+        onTap: () => onMinimize(),
+        child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            onHover: (ev) => setState(() => minimizeHovered = true),
+            onExit: (ev) => setState(() => minimizeHovered = false),
+            child: Padding(padding: const EdgeInsets.only(left: padding, right: padding), child: icon)));
+    }
+
+    Widget maximize = placeholder;
+    if (widget.model.resizeable) {
+
+        var icon = Icon(isMaximized ? Icons.content_copy_sharp  : Icons.crop_square_sharp, size: toolbarHeight, color: maximizedHovered ? c3 : c2);
+
+        maximize = GestureDetector(
+        onTap: () => isMaximized ? onRestoreToLast() : onMaximizeWindow(),
+        child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            onHover: (ev) => setState(() => maximizedHovered = true),
+            onExit: (ev) => setState(() => maximizedHovered = false),
+            child: Padding(padding: const EdgeInsets.only(left: padding, right: padding), child: icon)));
+    }
+
+    Widget toolbar = Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min, children: [minimize, maximize, close]);
+
+    return toolbar;
+  }
+
+  Widget _buildResizer(Alignment alignment) {
+
+    if (!widget.model.resizeable) return const Offstage();
+
+    switch (alignment) {
+
+      case Alignment.bottomRight:
+        return GestureDetector(
+            onPanUpdate: onResizeBR,
+            onTapDown: onBringToFront,
+            child: const MouseRegion(
+                cursor: SystemMouseCursors.resizeUpLeftDownRight,
+                child: Icon(Icons.apps, size: 24, color: Colors.transparent)));
+
+       case Alignment.bottomLeft:
+        return GestureDetector(
+            onPanUpdate: onResizeBL,
+            onTapDown: onBringToFront,
+            child: const MouseRegion(
+                cursor: SystemMouseCursors.resizeUpRightDownLeft,
+                child: Icon(Icons.apps, size: 24, color: Colors.transparent)));
+
+        case Alignment.topLeft:
+          return GestureDetector(
+            onPanUpdate: onResizeTL,
+            onTapDown: onBringToFront,
+            child: const MouseRegion(
+                cursor: SystemMouseCursors.resizeUpLeftDownRight,
+                child: Icon(Icons.apps, size: 24, color: Colors.transparent)));
+
+         case Alignment.topRight:
+          return GestureDetector(
+            onPanUpdate: onResizeTR,
+            onTapDown: onBringToFront,
+            child: const MouseRegion(
+                cursor: SystemMouseCursors.resizeUpRightDownLeft,
+                child: Icon(Icons.apps, size: 24, color: Colors.transparent)));
+
+      case Alignment.centerLeft :
+        return GestureDetector(
+            onPanUpdate: onResizeL,
+            onTapDown: onBringToFront,
+            child: MouseRegion(
+                cursor: SystemMouseCursors.resizeLeftRight,
+                child: SizedBox(width: isMobile ? 34 : 24, height: height)));
+
+      case Alignment.centerRight:
+        return GestureDetector(
+            onPanUpdate: onResizeR,
+            onTapDown: onBringToFront,
+            child: MouseRegion(
+                cursor: SystemMouseCursors.resizeLeftRight,
+                child: SizedBox(width: isMobile ? 34 : 24, height: height)));
+
+      case Alignment.topCenter:
+        return GestureDetector(
+            onPanUpdate: onResizeT,
+            onTapDown: onBringToFront,
+            child: MouseRegion(
+                cursor: SystemMouseCursors.resizeUpDown,
+                child: SizedBox(width: width, height: isMobile ? 34 : 24)));
+
+      case Alignment.bottomCenter:
+        return GestureDetector(
+            onPanUpdate: onResizeB,
+            onTapDown: onBringToFront,
+            child: MouseRegion(
+                cursor: SystemMouseCursors.resizeUpDown,
+                child: SizedBox(width: width, height: isMobile ? 34 : 24)));
+
+      default:
+        return const Offstage();
+    }
   }
 
   @override
@@ -473,107 +547,52 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
     ColorScheme theme = Theme.of(context).colorScheme;
 
     // Overlay Manager
-    ModalManagerView? manager =
-        context.findAncestorWidgetOfExactType<ModalManagerView>();
+    WindowManagerView? manager =
+        context.findAncestorWidgetOfExactType<WindowManagerView>();
 
     // SafeArea
     double sa = MediaQuery.of(context).padding.top;
 
+    // screen size
+    var size = MediaQuery.of(context).size;
+
+    // header size
+    headerHeight = widget.model.titleBar ? 30 : 0;
+
     // Exceeds Width of Viewport
     atMaxWidth = false;
-    maxWidth = MediaQuery.of(context).size.width;
-    if (width! >= (maxWidth - (padding * 4))) {
+    maxWidth = min(widget.model.maxWidth ?? size.width, size.width);
+    if (width! >= maxWidth) {
       atMaxWidth = true;
-      width = (maxWidth - (padding * 4));
+      width = maxWidth;
     }
-    if (width! <= minimumWidth) width = minimumWidth;
+    minWidth = widget.model.minWidth ?? (headerHeight - 10) * 3;
+    if (width! <= minWidth) {
+      width = minWidth;
+    }
 
     // Exceeds Height of Viewport
     atMaxHeight = false;
-    maxHeight = MediaQuery.of(context).size.height - sa;
-    if (height! >= (maxHeight - (padding * 4))) {
+    maxHeight = min(widget.model.maxHeight ?? size.height, size.height) - sa - headerHeight;
+    if (height! >= maxHeight) {
       atMaxHeight = true;
-      height = (maxHeight - (padding * 4));
+      height = maxHeight;
     }
-    if (height! <= minimumHeight) height = minimumHeight;
+    minHeight = widget.model.minHeight ?? headerHeight;
+    if (height! <= minHeight) {
+      height = minHeight;
+    }
 
     // Content Box
-    body ??= Material(child: BoxView(widget.model, (_,__) => widget.model.inflate()));
+    body ??= Material(color: Colors.transparent, child: BoxView(widget.model, (_,__) => widget.model.inflate()));
 
     // Non-Minimized View
     if (!minimized) {
-      Widget resize =
-          const Icon(Icons.apps, size: 24, color: Colors.transparent);
-      Widget resizeableBR = !widget.model.resizeable
-          ? Container()
-          : GestureDetector(
-              onPanUpdate: onResizeBR,
-              onTapDown: onBringToFront,
-              child: MouseRegion(
-                  cursor: SystemMouseCursors.resizeUpLeftDownRight,
-                  child: resize));
-      Widget resizeableBL = !widget.model.resizeable
-          ? Container()
-          : GestureDetector(
-              onPanUpdate: onResizeBL,
-              onTapDown: onBringToFront,
-              child: MouseRegion(
-                  cursor: SystemMouseCursors.resizeUpRightDownLeft,
-                  child: resize));
-      Widget resizeableTL = !widget.model.resizeable
-          ? Container()
-          : GestureDetector(
-              onPanUpdate: onResizeTL,
-              onTapDown: onBringToFront,
-              child: MouseRegion(
-                  cursor: SystemMouseCursors.resizeUpLeftDownRight,
-                  child: resize));
-      Widget resizeableTR = !widget.model.resizeable
-          ? Container()
-          : GestureDetector(
-              onPanUpdate: onResizeTR,
-              onTapDown: onBringToFront,
-              child: MouseRegion(
-                  cursor: SystemMouseCursors.resizeUpRightDownLeft,
-                  child: resize));
 
-      Widget resize2 =
-          SizedBox(width: isMobile ? 34 : 24, height: height);
-      Widget resizeableL = !widget.model.resizeable
-          ? Container()
-          : GestureDetector(
-              onPanUpdate: onResizeL,
-              onTapDown: onBringToFront,
-              child: MouseRegion(
-                  cursor: SystemMouseCursors.resizeLeftRight, child: resize2));
-      Widget resizeableR = !widget.model.resizeable
-          ? Container()
-          : GestureDetector(
-              onPanUpdate: onResizeR,
-              onTapDown: onBringToFront,
-              child: MouseRegion(
-                  cursor: SystemMouseCursors.resizeLeftRight, child: resize2));
-
-      Widget resize3 =
-          SizedBox(width: width, height: isMobile ? 34 : 24);
-      Widget resizeableT = !widget.model.resizeable
-          ? Container()
-          : GestureDetector(
-              onPanUpdate: onResizeT,
-              onTapDown: onBringToFront,
-              child: MouseRegion(
-                  cursor: SystemMouseCursors.resizeUpDown, child: resize3));
-      Widget resizeableB = !widget.model.resizeable
-          ? Container()
-          : GestureDetector(
-              onPanUpdate: onResizeB,
-              onTapDown: onBringToFront,
-              child: MouseRegion(
-                  cursor: SystemMouseCursors.resizeUpDown, child: resize3));
 
       // Positioned
-      dx ??= (maxWidth / 2) - ((width! + (padding * 2)) / 2);
-      dy ??= (maxHeight / 2) - ((height! + (padding * 2)) / 2) + sa;
+      dx ??= (maxWidth / 2) - (width! / 2);
+      dy ??= (maxHeight / 2) - (height! / 2) + sa;
 
       // Original Size/Position
       originalDx ??= dx;
@@ -587,31 +606,30 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
       lastWidth ??= width;
       lastHeight ??= height;
 
-      Widget frame = UnconstrainedBox(
-          child: ClipRect(
-              child: SizedBox(height: height, width: width, child: body)));
+      // lower frame including the contents
+      Widget frame = UnconstrainedBox(child: SizedBox(height: height, width: width, child: body));
 
-      double headerHeight = 30;
-      var header = _buildHeader(theme);
+      var header  = headerHeight > 0 ? _buildHeader(theme) : const Offstage();
+      var toolbar = headerHeight > 0 ? _buildToolbar(theme) : const Offstage();
 
       // View
       Widget content = UnconstrainedBox(
           child: Container(
               color: Colors.transparent,
-              height: height! + (padding * 2) + headerHeight,
-              width: width! + (padding * 2),
+              height: height! + headerHeight,
+              width: width!,
               child: Stack(children: [
-                Positioned(top: padding, left: padding, child: header),
-                Positioned(
-                    top: headerHeight + padding, left: padding, child: frame),
-                Positioned(top: 0, left: 0, child: resizeableL),
-                Positioned(top: 0, right: 0, child: resizeableR),
-                Positioned(top: 0, left: 0, child: resizeableT),
-                Positioned(bottom: 0, left: 0, child: resizeableB),
-                Positioned(top: 0, left: 0, child: resizeableTL),
-                Positioned(bottom: 0, left: 0, child: resizeableBL),
-                Positioned(bottom: 0, right: 0, child: resizeableBR),
-                Positioned(top: 0, right: 0, child: resizeableTR),
+                Positioned(top: 0, left: 0, child: header),
+                Positioned(top: headerHeight, left: 0, child: frame),
+                Positioned(top: 0, left: 0, child: _buildResizer(Alignment.centerLeft)),
+                Positioned(top: 0, right: 0, child: _buildResizer(Alignment.centerRight)),
+                Positioned(top: 0, left: 0, child: _buildResizer(Alignment.topCenter)),
+                Positioned(bottom: 0, left: 0, child: _buildResizer(Alignment.bottomCenter)),
+                Positioned(top: 0, left: 0, child: _buildResizer(Alignment.topLeft)),
+                Positioned(bottom: 0, left: 0, child: _buildResizer(Alignment.bottomLeft)),
+                Positioned(top: 0, right: 0, child: _buildResizer(Alignment.topRight)),
+                Positioned(bottom: 0, right: 0, child: _buildResizer(Alignment.bottomRight)),
+                Positioned(top: (headerHeight - toolbarHeight)/2, right: min(widget.model.headerRadius, headerHeight)/2, child: toolbar),
               ])));
 
       // Remove from Park

@@ -125,6 +125,7 @@ class DrawerViewState extends ViewableWidgetState<DrawerView> implements IDragLi
     if (event.parameters == null) return;
 
     if (!isNullOrEmpty(event.parameters!['url'])) {
+
       if (event.parameters!['url'] == widget.model.idLeft) {
         event.handled = true;
         openDrawer(Drawers.left);
@@ -911,7 +912,7 @@ class DrawerViewState extends ViewableWidgetState<DrawerView> implements IDragLi
     top = widget.model.top != null ? BoxView(widget.model.top!, (_,__) => widget.model.top!.inflate()) : null;
     bottom = widget.model.bottom != null ? BoxView(widget.model.bottom!, (_,__) => widget.model.bottom!.inflate()) : null;
     left = widget.model.left != null ? BoxView(widget.model.left!, (_,__) => widget.model.left!.inflate()) : null;
-    right = widget.model.right != null ? BoxView(widget.model.right!, (_,__) => widget.model.left!.inflate()) : null;
+    right = widget.model.right != null ? BoxView(widget.model.right!, (_,__) => widget.model.right!.inflate()) : null;
 
     double screenHeight = height;
     double screenWidth = width;

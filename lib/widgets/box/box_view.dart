@@ -101,7 +101,7 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     if (model.border == 'none') return null;
 
     var width = model.borderWidth ?? 1;
-    var color = model.borderColor ?? theme.colorScheme.onInverseSurface;
+    var color = model.borderColor ?? theme.colorScheme.outline;
 
     // simple border on all sides
     if (model.border == 'all') {
@@ -189,7 +189,7 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     return Opacity(opacity: opacity, child: view);
   }
 
-  static BorderRadius? _getBorderRadius(BoxModel model)
+  static BorderRadius? getBorderRadius(BoxModel model)
   {
     bool hasBorderRadius = model.radiusTopRight > 0 || model.radiusBottomRight > 0 || model.radiusBottomLeft > 0 || model.radiusTopLeft > 0;
     if (!hasBorderRadius) return null;
@@ -446,7 +446,7 @@ class BoxViewState extends ViewableWidgetState<BoxView> {
     view = _addPadding(model, view);
 
     // get the border radius
-    var borderRadius = _getBorderRadius(model);
+    var borderRadius = getBorderRadius(model);
 
     // build the inner content box
     view = _buildInnerBox(model, context, view, constraints, borderRadius, alignment.aligned);

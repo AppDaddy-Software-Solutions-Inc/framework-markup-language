@@ -2,14 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/modal/modal_manager_view.dart';
+import 'package:fml/widgets/window/window_manager_view.dart';
 import 'package:fml/widgets/widget/model.dart';
+import 'package:fml/widgets/window/window_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'modal_view.dart';
 
-class ModalModel extends BoxModel {
+class WindowModel extends BoxModel {
   final Widget? child;
 
   @override
@@ -21,7 +21,7 @@ class ModalModel extends BoxModel {
   @override
   bool get needsVisibilityDetector => false;
 
-  ModalModel(Model super.parent, super.id,
+  WindowModel(Model super.parent, super.id,
       {this.child,
       dynamic title,
       dynamic width,
@@ -50,14 +50,25 @@ class ModalModel extends BoxModel {
   @override
   String get border => "all";
 
+  @override
+  Color get borderColor {
+      if (super.borderColor != null) return super.borderColor!;
+      if (color != null && !titleBar) return color!;
+      if (context != null) return Theme.of(context!).colorScheme.outline;
+      return Colors.transparent;
+  }
+
   // returns thge modal border radius for the header
-  double get headerRadius => super.radiusTopRight;
+  double get headerRadius {
+    if (borderRadius == null) return 5;
+    return super.radiusTopRight;
+  }
 
   @override
-  double get radiusTopRight => 0;
+  double get radiusTopRight => titleBar ? 0 : super.radiusTopRight;
 
   @override
-  double get radiusTopLeft => 0;
+  double get radiusTopLeft => titleBar ? 0 : super.radiusTopLeft;
 
   // title
   StringObservable? _title;
@@ -69,8 +80,19 @@ class ModalModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get title => _title?.get();
+
+  // show title bar
+  BooleanObservable? _titleBar;
+  set titleBar(dynamic v) {
+    if (_titleBar != null) {
+      _titleBar!.set(v);
+    } else if (v != null) {
+      _titleBar = BooleanObservable(Binding.toKey(id, 'titlebar'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get titleBar => _titleBar?.get() ?? true;
 
   // modal
   BooleanObservable? _modal;
@@ -109,7 +131,7 @@ class ModalModel extends BoxModel {
   bool get closeable => _closeable?.get() ?? true;
 
   bool get minimized {
-    var view = findListenerOfExactType(ModalViewState);
+    var view = findListenerOfExactType(WindowViewState);
     if (view != null) return view!.minimized;
     return false;
   }
@@ -124,7 +146,6 @@ class ModalModel extends BoxModel {
       _x!.set(v, notify: false);
     }
   }
-
   double? get x => _x?.get();
 
   DoubleObservable? _y;
@@ -137,13 +158,29 @@ class ModalModel extends BoxModel {
       _y!.set(v, notify: false);
     }
   }
-
   double? get y => _y?.get();
 
-  static ModalModel? fromXml(Model parent, XmlElement xml) {
-    ModalModel? model;
+  // holds the resized width and height
+  Size? _size;
+
+  @override
+  double? get width {
+    var w = _size?.width;
+    if (w == null || w == double.negativeInfinity) return super.width;
+    return w;
+  }
+
+  @override
+  double? get height {
+    var h = _size?.height;
+    if (h == null || h == double.negativeInfinity) return super.height;
+    return h;
+  }
+
+  static WindowModel? fromXml(Model parent, XmlElement xml) {
+    WindowModel? model;
     try {
-      model = ModalModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = WindowModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     } catch (e) {
       Log().exception(e, caller: 'modal.Model');
@@ -159,6 +196,7 @@ class ModalModel extends BoxModel {
     super.deserialize(xml);
 
     // properties
+    titleBar = Xml.get(node: xml, tag: 'titlebar');
     title = Xml.get(node: xml, tag: 'title');
     dismissable = Xml.get(node: xml, tag: 'dismissable');
     resizeable = Xml.get(node: xml, tag: 'resizeable');
@@ -173,25 +211,11 @@ class ModalModel extends BoxModel {
     var function = propertyOrFunction.toLowerCase().trim();
     switch (function) {
       case "open":
-        var view = findListenerOfExactType(ModalViewState);
+        var view = findListenerOfExactType(WindowViewState);
         if (view == null) {
-          // modal width
-          if (arguments.isNotEmpty) width = toStr(arguments[0]);
 
-          // modal height
-          if (arguments.length > 1) height = toStr(arguments[1]);
-
-          // resizeable
-          if (arguments.length > 2) resizeable = toBool(arguments[2]) ?? true;
-
-          // closeable
-          if (arguments.length > 3) closeable = toBool(arguments[3]) ?? true;
-
-          // draggable
-          if (arguments.length > 4) draggable = toBool(arguments[4]) ?? true;
-
-          // modal
-          if (arguments.length > 5) modal = toBool(arguments[5]) ?? true;
+          // modal?
+          if (arguments.isNotEmpty) modal = toBool(arguments[0]) ?? false;
 
           open(getView());
         }
@@ -204,30 +228,55 @@ class ModalModel extends BoxModel {
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
-  void open(ModalView view) {
-    ModalManagerView? manager =
-        context?.findAncestorWidgetOfExactType<ModalManagerView>();
+  // called to resize the modal
+  // we do not want to change width and height directly since
+  // they may be bindables
+  void setSize(double? width, double? height) {
+    _size = Size(width ?? double.negativeInfinity, height ?? double.negativeInfinity);
+    notifyListeners(null, null);
+  }
+
+  // called when modal is closed
+  // this allows original width and height to take precedence
+  void resetSize() {
+    _size = null;
+  }
+
+  void open(WindowView view) {
+    WindowManagerView? manager =
+        context?.findAncestorWidgetOfExactType<WindowManagerView>();
     if (manager != null) {
-      manager.model.modals.add(view);
+      manager.model.windows.add(view);
       manager.model.refresh();
     }
   }
 
   void close() {
-    var view = findListenerOfExactType(ModalViewState);
+    var view = findListenerOfExactType(WindowViewState);
     if (view != null) {
       view!.onClose();
-      ModalManagerView? manager =
-          context?.findAncestorWidgetOfExactType<ModalManagerView>();
+      WindowManagerView? manager =
+          context?.findAncestorWidgetOfExactType<WindowManagerView>();
       if (manager != null) manager.model.refresh();
     }
+    resetSize();
   }
 
   void dismiss() {
-    var view = findListenerOfExactType(ModalViewState);
+    var view = findListenerOfExactType(WindowViewState);
     if (view != null) view!.onDismiss();
   }
 
   @override
-  ModalView getView({Key? key}) => ModalView(this);
+  void dispose() async {
+
+    // close window if open
+    close();
+
+    // cleanup children
+    super.dispose();
+  }
+
+  @override
+  WindowView getView({Key? key}) => WindowView(this);
 }

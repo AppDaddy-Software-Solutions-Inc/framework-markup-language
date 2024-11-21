@@ -94,7 +94,6 @@ class FrameworkViewState extends State<FrameworkView>
     // register event listeners
     widget.model.registerEventListener(EventTypes.close, onClose);
     widget.model.registerEventListener(EventTypes.maximize, onMaximize);
-    widget.model.registerEventListener(EventTypes.showtemplate, onShowTemplate);
 
     super.didChangeDependencies();
   }
@@ -113,12 +112,10 @@ class FrameworkViewState extends State<FrameworkView>
       // remove old event listeners
       oldWidget.model.removeEventListener(EventTypes.close, onClose);
       oldWidget.model.removeEventListener(EventTypes.maximize, onMaximize);
-      oldWidget.model.removeEventListener(EventTypes.showtemplate, onShowTemplate);
 
       // register new event listeners
       widget.model.registerEventListener(EventTypes.close, onClose);
       widget.model.registerEventListener(EventTypes.maximize, onMaximize);
-      widget.model.registerEventListener(EventTypes.showtemplate, onShowTemplate);
 
       // remove old model listener
       oldWidget.model.removeListener(this);
@@ -155,7 +152,6 @@ class FrameworkViewState extends State<FrameworkView>
     // remove event listeners
     widget.model.removeEventListener(EventTypes.close, onClose);
     widget.model.removeEventListener(EventTypes.maximize, onMaximize);
-    widget.model.removeEventListener(EventTypes.showtemplate, onShowTemplate);
 
     super.dispose();
   }
@@ -276,11 +272,6 @@ class FrameworkViewState extends State<FrameworkView>
     swiping = false;
     start = 0;
     last = 0;
-  }
-
-  void onShowTemplate(Event event) {
-    event.handled = true;
-    widget.model.showTemplate();
   }
 
   void onClose(Event event) {

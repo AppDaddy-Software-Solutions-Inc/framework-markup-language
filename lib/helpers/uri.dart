@@ -151,7 +151,7 @@ extension URI on Uri {
     return uri;
   }
 
-  static Future<UriData?> toUriData(String url, {String? domain}) async {
+  static Future<UriData?> toUriData(String url, {String? domain, Map<String, String>? headers}) async {
     try {
       // parse the url
       Uri? uri = parse(url, domain: domain);
@@ -181,7 +181,7 @@ extension URI on Uri {
       }
 
       // remote image file
-      var response = await Http.get(uri.url);
+      var response = await Http.get(uri.url, headers: headers);
       if (response.statusCode == HttpStatus.ok) {
         var bytes = response.bytes;
         var mime = await Mime.type(uri.url);

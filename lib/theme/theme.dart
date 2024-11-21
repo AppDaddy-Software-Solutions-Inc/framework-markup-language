@@ -163,6 +163,7 @@ class ThemeNotifier with ChangeNotifier {
     System.theme.onBackground = _themeData.colorScheme.onSurface;
     System.theme.shadow = _themeData.colorScheme.shadow;
     System.theme.outline = _themeData.colorScheme.outline;
+    System.theme.outlineVariant = _themeData.colorScheme.outlineVariant;
 
     System.theme.surface = _themeData.colorScheme.surface;
     System.theme.onSurface = _themeData.colorScheme.onSurface;

@@ -6,7 +6,7 @@ import 'package:fml/event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
-import 'package:fml/widgets/modal/modal_model.dart';
+import 'package:fml/widgets/window/window_model.dart';
 import 'package:fml/widgets/tabview/tabview_model.dart';
 import 'package:fml/helpers/helpers.dart';
 
@@ -106,7 +106,7 @@ class _TabViewState extends ViewableWidgetState<TabView> with TickerProviderStat
       modal = toBool(event.parameters!['modal']) ?? false;
       if (modal) return;
     }
-    if (event.model?.findDescendantOfExactType(ModalModel, id: url) != null) return;
+    if (event.model?.findDescendantOfExactType(WindowModel, id: url) != null) return;
 
     // mark event as handled
     event.handled = true;

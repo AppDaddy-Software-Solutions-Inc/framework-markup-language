@@ -1,26 +1,26 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/modal/modal_manager_view.dart';
-import 'package:fml/widgets/modal/modal_view.dart';
+import 'package:fml/widgets/window/window_manager_view.dart';
+import 'package:fml/widgets/window/window_view.dart';
 
-class ModalManagerModel {
-  final List<ModalView?> modals = [];
-  final List<ModalView?> parking = [];
+class WindowManagerModel {
+  final List<WindowView?> windows = [];
+  final List<WindowView?> parking = [];
   final Widget child;
 
-  ModalManagerViewState? state;
+  WindowManagerViewState? state;
 
-  ModalManagerModel(this.child);
+  WindowManagerModel(this.child);
 
   void refresh() => state?.refresh();
 
   void dispose() {
-    modals.clear();
+    windows.clear();
     parking.clear();
     state = null;
   }
 
-  int? park(ModalView modal) {
+  int? park(WindowView modal) {
     if (!modal.model.minimized) return null;
 
     // Already Parked
@@ -35,7 +35,7 @@ class ModalManagerModel {
     return space;
   }
 
-  void unpark(ModalView modal) {
+  void unpark(WindowView modal) {
     // Free Up Space
     if ((parking.contains(modal))) {
       parking[parking.indexOf(modal)] = null;
@@ -43,9 +43,9 @@ class ModalManagerModel {
   }
 
   void bringToFront(Widget widget) {
-    if ((modals.contains(widget)) && (widget != modals.last)) {
-      modals.remove(widget);
-      modals.add(widget as ModalView);
+    if ((windows.contains(widget)) && (widget != windows.last)) {
+      windows.remove(widget);
+      windows.add(widget as WindowView);
       refresh();
     }
   }

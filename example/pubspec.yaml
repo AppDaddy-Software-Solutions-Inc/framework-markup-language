@@ -29,6 +29,7 @@ flutter:
   assets:
     - assets/
     - assets/images/
+    - assets/audio/
     - assets/applications/
 
     - assets/applications/example/

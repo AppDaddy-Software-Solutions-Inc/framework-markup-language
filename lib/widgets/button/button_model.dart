@@ -45,6 +45,9 @@ class ButtonModel extends BoxModel {
   @override
   String get border => 'none';
 
+  @override
+  LayoutType get layoutType => BoxModel.getLayoutType(layout, defaultLayout: LayoutType.row);
+
   /// The number of milliseconds used for allowing the next click
   /// and firing the onclick event
   IntegerObservable? _debounce;

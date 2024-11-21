@@ -50,14 +50,25 @@ class ModalModel extends BoxModel {
   @override
   String get border => "all";
 
+  @override
+  Color get borderColor {
+      if (super.borderColor != null) return super.borderColor!;
+      if (color != null && !titleBar) return color!;
+      if (context != null) return Theme.of(context!).colorScheme.outline;
+      return Colors.transparent;
+  }
+
   // returns thge modal border radius for the header
-  double get headerRadius => super.radiusTopRight;
+  double get headerRadius {
+    if (borderRadius == null) return 5;
+    return super.radiusTopRight;
+  }
 
   @override
-  double get radiusTopRight => 0;
+  double get radiusTopRight => titleBar ? 0 : super.radiusTopRight;
 
   @override
-  double get radiusTopLeft => 0;
+  double get radiusTopLeft => titleBar ? 0 : super.radiusTopLeft;
 
   // title
   StringObservable? _title;
@@ -69,8 +80,19 @@ class ModalModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get title => _title?.get();
+
+  // show title bar
+  BooleanObservable? _titleBar;
+  set titleBar(dynamic v) {
+    if (_titleBar != null) {
+      _titleBar!.set(v);
+    } else if (v != null) {
+      _titleBar = BooleanObservable(Binding.toKey(id, 'titlebar'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get titleBar => _titleBar?.get() ?? true;
 
   // modal
   BooleanObservable? _modal;
@@ -174,6 +196,7 @@ class ModalModel extends BoxModel {
     super.deserialize(xml);
 
     // properties
+    titleBar = Xml.get(node: xml, tag: 'titlebar');
     title = Xml.get(node: xml, tag: 'title');
     dismissable = Xml.get(node: xml, tag: 'dismissable');
     resizeable = Xml.get(node: xml, tag: 'resizeable');
@@ -242,6 +265,16 @@ class ModalModel extends BoxModel {
   void dismiss() {
     var view = findListenerOfExactType(ModalViewState);
     if (view != null) view!.onDismiss();
+  }
+
+  @override
+  void dispose() async {
+
+    // close window if open
+    close();
+
+    // cleanup children
+    super.dispose();
   }
 
   @override

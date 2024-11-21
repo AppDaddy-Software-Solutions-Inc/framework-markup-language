@@ -1,18 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/modal/modal_manager_model.dart';
-import 'package:fml/widgets/modal/modal_view.dart';
+import 'package:fml/widgets/window/window_manager_model.dart';
+import 'package:fml/widgets/window/window_view.dart';
 
-class ModalManagerView extends StatefulWidget {
-  final ModalManagerModel model;
+class WindowManagerView extends StatefulWidget {
+  final WindowManagerModel model;
 
-  ModalManagerView(this.model) : super(key: ObjectKey(model));
+  WindowManagerView(this.model) : super(key: ObjectKey(model));
 
   @override
-  ModalManagerViewState createState() => ModalManagerViewState();
+  WindowManagerViewState createState() => WindowManagerViewState();
 }
 
-class ModalManagerViewState extends State<ModalManagerView> {
+class WindowManagerViewState extends State<WindowManagerView> {
   void refresh() {
     setState(() {});
   }
@@ -24,7 +24,7 @@ class ModalManagerViewState extends State<ModalManagerView> {
   }
 
   @override
-  void didUpdateWidget(ModalManagerView oldWidget) {
+  void didUpdateWidget(WindowManagerView oldWidget) {
     super.didUpdateWidget(oldWidget);
     widget.model.state = this;
   }
@@ -45,7 +45,7 @@ class ModalManagerViewState extends State<ModalManagerView> {
   Widget build(BuildContext context) {
     List<Widget> children = [];
     children.add(widget.model.child);
-    for (var modal in widget.model.modals) {
+    for (var modal in widget.model.windows) {
       if (modal != null) {
         Widget view = modal;
         if (modal.model.modal) {
@@ -69,7 +69,7 @@ class ModalManagerViewState extends State<ModalManagerView> {
     return Stack(fit: StackFit.passthrough, children: children);
   }
 
-  void onDismiss(ModalView? modal) {
+  void onDismiss(WindowView? modal) {
     if (modal != null) modal.model.dismiss();
   }
 }

@@ -8,8 +8,8 @@ import 'package:fml/widgets/measure/measure_view.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/modal/modal_manager_view.dart';
-import 'package:fml/widgets/modal/modal_model.dart';
+import 'package:fml/widgets/window/window_manager_view.dart';
+import 'package:fml/widgets/window/window_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 
 // platform
@@ -17,17 +17,17 @@ import 'package:fml/platform/platform.vm.dart'
 if (dart.library.io) 'package:fml/platform/platform.vm.dart'
 if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
-class ModalView extends StatefulWidget implements ViewableWidgetView {
+class WindowView extends StatefulWidget implements ViewableWidgetView {
   @override
-  final ModalModel model;
+  final WindowModel model;
 
-  ModalView(this.model) : super(key: ObjectKey(model));
+  WindowView(this.model) : super(key: ObjectKey(model));
 
   @override
-  State<ModalView> createState() => ModalViewState();
+  State<WindowView> createState() => WindowViewState();
 }
 
-class ModalViewState extends ViewableWidgetState<ModalView> {
+class WindowViewState extends ViewableWidgetState<WindowView> {
 
   static double headerHeight  = 30;
   static double toolbarHeight = headerHeight/2;
@@ -163,11 +163,11 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
   onClose() {
     widget.model.resetSize();
 
-    ModalManagerView? manager =
-    context.findAncestorWidgetOfExactType<ModalManagerView>();
+    WindowManagerView? manager =
+    context.findAncestorWidgetOfExactType<WindowManagerView>();
     if (manager != null) {
       manager.model.unpark(widget);
-      manager.model.modals.remove(widget);
+      manager.model.windows.remove(widget);
       manager.model.refresh();
     }
 
@@ -179,11 +179,11 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
 
   onDismiss() {
     if (!widget.model.dismissable) return;
-    ModalManagerView? manager =
-        context.findAncestorWidgetOfExactType<ModalManagerView>();
+    WindowManagerView? manager =
+        context.findAncestorWidgetOfExactType<WindowManagerView>();
     if (manager != null) {
       manager.model.unpark(widget);
-      manager.model.modals.remove(widget);
+      manager.model.windows.remove(widget);
       manager.model.refresh();
     }
   }
@@ -350,8 +350,8 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
   }
 
   onBringToFront(TapDownDetails? details) {
-    ModalManagerView? overlay =
-        context.findAncestorWidgetOfExactType<ModalManagerView>();
+    WindowManagerView? overlay =
+        context.findAncestorWidgetOfExactType<WindowManagerView>();
     if (overlay != null) overlay.model.bringToFront(widget);
   }
 
@@ -459,7 +459,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
 
   Widget _buildResizer(Alignment alignment) {
 
-    if (!widget.model.resizeable) return Offstage();
+    if (!widget.model.resizeable) return const Offstage();
 
     switch (alignment) {
 
@@ -467,7 +467,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
         return GestureDetector(
             onPanUpdate: onResizeBR,
             onTapDown: onBringToFront,
-            child: MouseRegion(
+            child: const MouseRegion(
                 cursor: SystemMouseCursors.resizeUpLeftDownRight,
                 child: Icon(Icons.apps, size: 24, color: Colors.transparent)));
 
@@ -475,25 +475,25 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
         return GestureDetector(
             onPanUpdate: onResizeBL,
             onTapDown: onBringToFront,
-            child: MouseRegion(
+            child: const MouseRegion(
                 cursor: SystemMouseCursors.resizeUpRightDownLeft,
-                child: const Icon(Icons.apps, size: 24, color: Colors.transparent)));
+                child: Icon(Icons.apps, size: 24, color: Colors.transparent)));
 
         case Alignment.topLeft:
           return GestureDetector(
             onPanUpdate: onResizeTL,
             onTapDown: onBringToFront,
-            child: MouseRegion(
+            child: const MouseRegion(
                 cursor: SystemMouseCursors.resizeUpLeftDownRight,
-                child: const Icon(Icons.apps, size: 24, color: Colors.transparent)));
+                child: Icon(Icons.apps, size: 24, color: Colors.transparent)));
 
          case Alignment.topRight:
           return GestureDetector(
             onPanUpdate: onResizeTR,
             onTapDown: onBringToFront,
-            child: MouseRegion(
+            child: const MouseRegion(
                 cursor: SystemMouseCursors.resizeUpRightDownLeft,
-                child: const Icon(Icons.apps, size: 24, color: Colors.transparent)));
+                child: Icon(Icons.apps, size: 24, color: Colors.transparent)));
 
       case Alignment.centerLeft :
         return GestureDetector(
@@ -528,7 +528,7 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
                 child: SizedBox(width: width, height: isMobile ? 34 : 24)));
 
       default:
-        return Offstage();
+        return const Offstage();
     }
   }
 
@@ -547,8 +547,8 @@ class ModalViewState extends ViewableWidgetState<ModalView> {
     ColorScheme theme = Theme.of(context).colorScheme;
 
     // Overlay Manager
-    ModalManagerView? manager =
-        context.findAncestorWidgetOfExactType<ModalManagerView>();
+    WindowManagerView? manager =
+        context.findAncestorWidgetOfExactType<WindowManagerView>();
 
     // SafeArea
     double sa = MediaQuery.of(context).padding.top;

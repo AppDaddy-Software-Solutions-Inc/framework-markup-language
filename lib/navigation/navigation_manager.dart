@@ -4,10 +4,10 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:fml/template/template_manager.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/modal/modal_manager_model.dart';
-import 'package:fml/widgets/modal/modal_manager_view.dart';
-import 'package:fml/widgets/modal/modal_model.dart';
-import 'package:fml/widgets/modal/modal_view.dart';
+import 'package:fml/widgets/window/window_manager_model.dart';
+import 'package:fml/widgets/window/window_manager_view.dart';
+import 'package:fml/widgets/window/window_model.dart';
+import 'package:fml/widgets/window/window_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/page.dart';
@@ -88,9 +88,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
     if (_pages.last is! CustomMaterialPage) return null;
 
     if (page is! CustomMaterialPage) return null;
-    if (page.child is! ModalManagerView) return null;
+    if (page.child is! WindowManagerView) return null;
 
-    var manager = page.child as ModalManagerView;
+    var manager = page.child as WindowManagerView;
     if (manager.model.child is! FrameworkView)  return null;
 
     return manager.model.child as FrameworkView;
@@ -372,12 +372,12 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
         var view = FrameworkModel.fromUrl(framework, url,
             refresh: refresh ?? false, dependency: dependency)
             .getView();
-        ModalManagerView? manager =
-        model.context?.findAncestorWidgetOfExactType<ModalManagerView>();
+        WindowManagerView? manager =
+        model.context?.findAncestorWidgetOfExactType<WindowManagerView>();
         if (manager != null) {
-          var modal = ModalView(ModalModel(model, null,
+          var modal = WindowView(WindowModel(model, null,
               child: view, modal: false, width: width, height: height));
-          manager.model.modals.add(modal);
+          manager.model.windows.add(modal);
           manager.model.refresh();
           ok = true;
         }
@@ -411,7 +411,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration>
         break;
 
       default:
-        view = ModalManagerView(ModalManagerModel(FrameworkModel.fromUrl(
+        view = WindowManagerView(WindowManagerModel(FrameworkModel.fromUrl(
             System.currentApp!, url,
             refresh: refresh, dependency: dependency)
             .getView()));

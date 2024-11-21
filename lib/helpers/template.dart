@@ -74,7 +74,7 @@ import 'package:fml/widgets/map/marker/map_marker_model.dart';
 import 'package:fml/widgets/map/map_model.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
-import 'package:fml/widgets/modal/modal_model.dart';
+import 'package:fml/widgets/window/window_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/option/tag_model.dart';
 import 'package:fml/widgets/package/package_model.dart';
@@ -842,8 +842,9 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
       model = MenuModel.fromXml(parent, node);
       break;
 
+    case "WINDOW":
     case "MODAL":
-      model = ModalModel.fromXml(parent, node);
+      model = WindowModel.fromXml(parent, node);
       break;
 
     case "MQTT":
@@ -1217,10 +1218,6 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
         // splitter views are simple BoxModel's
         model = BoxModel.fromXml(parent, node);
       }
-      break;
-
-    case "WINDOW":
-      model = FrameworkModel.fromXml(parent, node);
       break;
 
     case "XAXIS":

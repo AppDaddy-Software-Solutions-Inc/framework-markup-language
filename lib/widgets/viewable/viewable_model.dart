@@ -6,7 +6,7 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
-import 'package:fml/widgets/modal/modal_model.dart';
+import 'package:fml/widgets/window/window_model.dart';
 import 'package:fml/widgets/prototype/prototype_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:xml/xml.dart';
@@ -1293,7 +1293,7 @@ mixin ViewableMixin on Model implements IDragDrop {
     // process children
     List<Widget> views = [];
     for (var model in viewableChildren) {
-      if (model is! ModalModel) {
+      if (model is! WindowModel) {
         var view = model.getView();
         views.add(view);
       }

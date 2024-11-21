@@ -2,14 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/modal/modal_manager_view.dart';
+import 'package:fml/widgets/window/window_manager_view.dart';
 import 'package:fml/widgets/widget/model.dart';
+import 'package:fml/widgets/window/window_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'modal_view.dart';
 
-class ModalModel extends BoxModel {
+class WindowModel extends BoxModel {
   final Widget? child;
 
   @override
@@ -21,7 +21,7 @@ class ModalModel extends BoxModel {
   @override
   bool get needsVisibilityDetector => false;
 
-  ModalModel(Model super.parent, super.id,
+  WindowModel(Model super.parent, super.id,
       {this.child,
       dynamic title,
       dynamic width,
@@ -131,7 +131,7 @@ class ModalModel extends BoxModel {
   bool get closeable => _closeable?.get() ?? true;
 
   bool get minimized {
-    var view = findListenerOfExactType(ModalViewState);
+    var view = findListenerOfExactType(WindowViewState);
     if (view != null) return view!.minimized;
     return false;
   }
@@ -177,10 +177,10 @@ class ModalModel extends BoxModel {
     return h;
   }
 
-  static ModalModel? fromXml(Model parent, XmlElement xml) {
-    ModalModel? model;
+  static WindowModel? fromXml(Model parent, XmlElement xml) {
+    WindowModel? model;
     try {
-      model = ModalModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = WindowModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     } catch (e) {
       Log().exception(e, caller: 'modal.Model');
@@ -211,7 +211,7 @@ class ModalModel extends BoxModel {
     var function = propertyOrFunction.toLowerCase().trim();
     switch (function) {
       case "open":
-        var view = findListenerOfExactType(ModalViewState);
+        var view = findListenerOfExactType(WindowViewState);
         if (view == null) {
 
           // modal?
@@ -242,28 +242,28 @@ class ModalModel extends BoxModel {
     _size = null;
   }
 
-  void open(ModalView view) {
-    ModalManagerView? manager =
-        context?.findAncestorWidgetOfExactType<ModalManagerView>();
+  void open(WindowView view) {
+    WindowManagerView? manager =
+        context?.findAncestorWidgetOfExactType<WindowManagerView>();
     if (manager != null) {
-      manager.model.modals.add(view);
+      manager.model.windows.add(view);
       manager.model.refresh();
     }
   }
 
   void close() {
-    var view = findListenerOfExactType(ModalViewState);
+    var view = findListenerOfExactType(WindowViewState);
     if (view != null) {
       view!.onClose();
-      ModalManagerView? manager =
-          context?.findAncestorWidgetOfExactType<ModalManagerView>();
+      WindowManagerView? manager =
+          context?.findAncestorWidgetOfExactType<WindowManagerView>();
       if (manager != null) manager.model.refresh();
     }
     resetSize();
   }
 
   void dismiss() {
-    var view = findListenerOfExactType(ModalViewState);
+    var view = findListenerOfExactType(WindowViewState);
     if (view != null) view!.onDismiss();
   }
 
@@ -278,5 +278,5 @@ class ModalModel extends BoxModel {
   }
 
   @override
-  ModalView getView({Key? key}) => ModalView(this);
+  WindowView getView({Key? key}) => WindowView(this);
 }

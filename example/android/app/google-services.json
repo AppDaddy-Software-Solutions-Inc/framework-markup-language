@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:1088639803327:android:e49d5b5b02b3558d2f4b0a",
         "android_client_info": {
-          "package_name": "dev.fml"
+          "package_name": "co.appdaddy.fml"
         }
       },
       "oauth_client": [

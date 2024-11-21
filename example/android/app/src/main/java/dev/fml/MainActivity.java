@@ -1,4 +1,4 @@
-package dev.fml;
+package co.appdaddy.fml;
 
 import io.flutter.embedding.android.FlutterActivity;
 

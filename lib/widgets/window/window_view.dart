@@ -61,9 +61,7 @@ class WindowViewState extends ViewableWidgetState<WindowView> {
   double? lastWidth;
   double? lastHeight;
 
-  bool closeHovered = false;
-  bool minimizeHovered = false;
-  bool maximizedHovered = false;
+  bool mustPosition = false;
 
   onMeasured(Size size, {dynamic data}) {
     height ??= size.height;
@@ -75,8 +73,7 @@ class WindowViewState extends ViewableWidgetState<WindowView> {
   void initState() {
     width  = widget.model.width;
     height = widget.model.height;
-    dx = widget.model.x;
-    dy = widget.model.y;
+    mustPosition = widget.model.left != null || widget.model.right != null || widget.model.top != null || widget.model.bottom != null;
     super.initState();
   }
 
@@ -396,9 +393,7 @@ class WindowViewState extends ViewableWidgetState<WindowView> {
 
   Widget _buildToolbar(ColorScheme t) {
 
-    Color c1 = widget.model.borderColor;
-    Color c2 = ColorHelper.highlight(c1, .5);
-    Color c3 = ColorHelper.highlight(c1, 1);
+    Color color = ColorHelper.highlight(widget.model.borderColor, .5);
 
     // window is maximized?
     bool isMaximized = atMaxHeight && atMaxWidth;
@@ -410,42 +405,36 @@ class WindowViewState extends ViewableWidgetState<WindowView> {
     Widget close = placeholder;
     if (widget.model.closeable) {
 
-        var icon = Icon(Icons.close, size: toolbarHeight, color: closeHovered ? c3 : c2);
+        var icon = Icon(Icons.close, size: toolbarHeight, color: color);
 
         close = GestureDetector(
         onTap: () => onClose(),
         child: MouseRegion(
             cursor: SystemMouseCursors.click,
-            onHover: (ev) => setState(() => closeHovered = true),
-            onExit: (ev) => setState(() => closeHovered = false),
             child: Padding(padding: const EdgeInsets.only(left: padding, right: padding), child: icon)));
     }
 
     Widget minimize = placeholder;
     if (widget.model.resizeable) {
 
-        var icon = Icon(Icons.horizontal_rule, size: toolbarHeight, color: minimizeHovered ? c3 : c2);
+        var icon = Icon(Icons.horizontal_rule, size: toolbarHeight, color: color);
 
         minimize = GestureDetector(
         onTap: () => onMinimize(),
         child: MouseRegion(
             cursor: SystemMouseCursors.click,
-            onHover: (ev) => setState(() => minimizeHovered = true),
-            onExit: (ev) => setState(() => minimizeHovered = false),
             child: Padding(padding: const EdgeInsets.only(left: padding, right: padding), child: icon)));
     }
 
     Widget maximize = placeholder;
     if (widget.model.resizeable) {
 
-        var icon = Icon(isMaximized ? Icons.content_copy_sharp  : Icons.crop_square_sharp, size: toolbarHeight, color: maximizedHovered ? c3 : c2);
+        var icon = Icon(isMaximized ? Icons.content_copy_sharp  : Icons.crop_square_sharp, size: toolbarHeight, color: color);
 
         maximize = GestureDetector(
         onTap: () => isMaximized ? onRestoreToLast() : onMaximizeWindow(),
         child: MouseRegion(
             cursor: SystemMouseCursors.click,
-            onHover: (ev) => setState(() => maximizedHovered = true),
-            onExit: (ev) => setState(() => maximizedHovered = false),
             child: Padding(padding: const EdgeInsets.only(left: padding, right: padding), child: icon)));
     }
 
@@ -589,6 +578,17 @@ class WindowViewState extends ViewableWidgetState<WindowView> {
     // Non-Minimized View
     if (!minimized) {
 
+      // set positioning?
+      if (mustPosition) {
+
+        if (widget.model.left  != null) dx = widget.model.left;
+        if (widget.model.right != null) dx = widget.model.right! + width!;
+
+        if (widget.model.top    != null) dy = widget.model.top;
+        if (widget.model.bottom != null) dy = widget.model.bottom! + height!;
+
+        mustPosition = false;
+      }
 
       // Positioned
       dx ??= (maxWidth / 2) - (width! / 2);

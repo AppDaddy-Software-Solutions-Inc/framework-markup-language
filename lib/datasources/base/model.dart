@@ -362,7 +362,6 @@ class DataSourceModel extends Model implements IDataSource {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   int get rowcount => _rowcount?.get() ?? 0;
 
   // posting body
@@ -593,6 +592,9 @@ class DataSourceModel extends Model implements IDataSource {
         this.data = data;
       }
 
+      // set rowcount
+      rowcount = this.data?.length ?? 0;
+
       // notify listeners of data change
       notify();
       onDataChange();
@@ -775,6 +777,7 @@ class DataSourceModel extends Model implements IDataSource {
 
   Future<bool> onFail(Data data,
       {int? code, String? message, Observable? onFailOverride}) async {
+
     // set data
     this.data = data;
 

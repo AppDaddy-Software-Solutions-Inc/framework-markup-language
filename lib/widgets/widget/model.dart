@@ -62,19 +62,22 @@ class Model implements IDataSourceListener {
     } else if (v != null) {
       final key = Binding.toKey(id, 'data');
 
-      _data =
-          ListObservable(key, null, scope: scope, listener: onPropertyChange,
+      _data = ListObservable(key,
+          null,
 
-              // inline setter
-              // used to set values within the data element
-              // when twoway binding is used
-              setter: (dynamic value, {Observable? setter}) {
-        if (setter?.twoway == null) return value;
-        var bdg = Binding.fromString(setter?.signature);
-        var tag = bdg?.toString().replaceFirst("$key.", "");
-        Data.write(data, tag, value);
-        return data;
-      });
+          scope: scope,
+
+          listener: onPropertyChange,
+
+          // inline setter
+          // used to set values within the data element
+          // when twoway binding is used
+          setter: (dynamic value, {Observable? setter}) {
+            if (setter?.twoway == null) return value;
+            var tag = Binding.fromString(setter?.signature)?.toString().replaceFirst("$key.", "");
+            Data.write(data, tag, value);
+            return data;
+          });
 
       // set the value
       _data!.set(v);

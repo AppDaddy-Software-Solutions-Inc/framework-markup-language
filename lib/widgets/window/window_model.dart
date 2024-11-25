@@ -177,6 +177,74 @@ class WindowModel extends BoxModel {
     return h;
   }
 
+  // left
+  // bool _leftIsPercent = false;
+  DoubleObservable? _left;
+  set left(dynamic v) {
+    if (_left != null) {
+      _left!.set(v);
+    } else if (v != null) {
+      if (isPercent(v)) {
+        // _leftIsPercent = true;
+        v = v.split("%")[0];
+      }
+      _left = DoubleObservable(Binding.toKey(id, 'left'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get left => _left?.get();
+
+  // right
+  // bool _rightIsPercent = false;
+  DoubleObservable? _right;
+  set right(dynamic v) {
+    if (_right != null) {
+      _right!.set(v);
+    } else if (v != null) {
+      if (isPercent(v)) {
+        // _rightIsPercent = true;
+        v = v.split("%")[0];
+      }
+      _right = DoubleObservable(Binding.toKey(id, 'right'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get right => _right?.get();
+
+  // top
+  // bool _topIsPercent = false;
+  DoubleObservable? _top;
+  set top(dynamic v) {
+    if (_top != null) {
+      _top!.set(v);
+    } else if (v != null) {
+      if (isPercent(v)) {
+        // _topIsPercent = true;
+        v = v.split("%")[0];
+      }
+      _top = DoubleObservable(Binding.toKey(id, 'top'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get top => _top?.get();
+
+  // bottom
+  // bool _bottomIsPercent = false;
+  DoubleObservable? _bottom;
+  set bottom(dynamic v) {
+    if (_bottom != null) {
+      _bottom!.set(v);
+    } else if (v != null) {
+      if (isPercent(v)) {
+        // _bottomIsPercent = true;
+        v = v.split("%")[0];
+      }
+      _bottom = DoubleObservable(Binding.toKey(id, 'bottom'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get bottom => _bottom?.get();
+
   static WindowModel? fromXml(Model parent, XmlElement xml) {
     WindowModel? model;
     try {
@@ -198,10 +266,16 @@ class WindowModel extends BoxModel {
     // properties
     titleBar = Xml.get(node: xml, tag: 'titlebar');
     title = Xml.get(node: xml, tag: 'title');
+
     dismissable = Xml.get(node: xml, tag: 'dismissable');
-    resizeable = Xml.get(node: xml, tag: 'resizeable');
+
     closeable = Xml.get(node: xml, tag: 'closeable');
     modal = Xml.get(node: xml, tag: 'modal');
+
+    left = Xml.get(node: xml, tag: 'left');
+    right = Xml.get(node: xml, tag: 'right');
+    top = Xml.get(node: xml, tag: 'top');
+    bottom = Xml.get(node: xml, tag: 'bottom');
   }
 
   @override

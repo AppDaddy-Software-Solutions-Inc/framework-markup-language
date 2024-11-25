@@ -266,8 +266,9 @@ class WindowModel extends BoxModel {
     // properties
     titleBar = Xml.get(node: xml, tag: 'titlebar');
     title = Xml.get(node: xml, tag: 'title');
+
     dismissable = Xml.get(node: xml, tag: 'dismissable');
-    resizeable = Xml.get(node: xml, tag: 'resizeable');
+
     closeable = Xml.get(node: xml, tag: 'closeable');
     modal = Xml.get(node: xml, tag: 'modal');
 

@@ -37,7 +37,7 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
       var hovered  = theme.colorScheme.surfaceContainerHigh;
       if (widget.model.color != null) {
         color = widget.model.color!;
-        disabled = color.withOpacity(.5);
+        disabled = color.withOpacity(.12);
         hovered  = ColorHelper.darken(color);
       }
 
@@ -122,6 +122,11 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
     var onClick = (widget.model.onclick != null && widget.model.enabled) ?
         () => onClickHandler() : null;
 
+    // If onclick is null or enabled is false we fade the button
+    if (widget.model.onclick == null || !widget.model.enabled) {
+      body = Opacity(opacity: 0.5, child: body); // Disabled
+    }
+
     Widget view;
     switch (widget.model.type) {
       case 'outlined':
@@ -133,11 +138,6 @@ class _ButtonViewState extends ViewableWidgetState<ButtonView> {
       default:
         view = TextButton(style: style, onPressed: onClick, child: body);
         break;
-    }
-
-    // If onclick is null or enabled is false we fade the button
-    if (widget.model.onclick == null || !widget.model.enabled) {
-      view = Opacity(opacity: 0.9, child: view); // Disabled
     }
 
     return view;

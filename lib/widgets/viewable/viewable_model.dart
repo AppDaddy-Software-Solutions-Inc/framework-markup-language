@@ -930,11 +930,46 @@ mixin ViewableMixin on Model implements IDragDrop {
       _draggable!.set(v);
     } else if (v != null) {
       _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v,
-          scope: scope, listener: onPropertyChange);
+          scope: scope, listener: onPropertyChange, setter: (v, {setter}) {
+          
+          if (v is! String) return toBool(v);
+          if (Observable.isEvalSignature(v)) return v;
+          
+          var s = v.split(",");
+          if (s.length == 0) return null;
+          if (s.length == 1) return toBool(v);
+          draggableWidth  = s[0].trim();
+          draggableHeight = s[1].trim();
+          return null;
+      });
     }
   }
   bool get draggable => _draggable?.get() ?? false;
 
+  // draggbleWidth
+  BooleanObservable? _draggableWidth;
+  set draggableWidth(dynamic v) {
+    if (_draggableWidth != null) {
+      _draggableWidth!.set(v);
+    } else if (v != null) {
+      _draggableWidth = BooleanObservable(Binding.toKey(id, 'draggblewidth'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool? get draggableWidth => _draggableWidth?.get();
+
+  // draggableHeight
+  BooleanObservable? _draggableHeight;
+  set draggableHeight(dynamic v) {
+    if (_draggableHeight != null) {
+      _draggableHeight!.set(v);
+    } else if (v != null) {
+      _draggableHeight = BooleanObservable(Binding.toKey(id, 'draggbleheight'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool? get draggableHeight => _draggableHeight?.get();
+  
   // ondrag
   @override
   StringObservable? onDragObservable;
@@ -1158,6 +1193,8 @@ mixin ViewableMixin on Model implements IDragDrop {
     opacity = Xml.get(node: xml, tag: 'opacity');
     rotation = Xml.get(node: xml, tag: 'rotate') ?? Xml.get(node: xml, tag: 'rotation');
     flip = Xml.get(node: xml, tag: 'flip');
+
+    // resize
     resizeable = Xml.get(node: xml, tag: 'resizeable');
 
     // drag

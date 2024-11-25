@@ -543,14 +543,14 @@ class WindowViewState extends ViewableWidgetState<WindowView> {
     double sa = MediaQuery.of(context).padding.top;
 
     // screen size
-    var size = MediaQuery.of(context).size;
+    var display = MediaQuery.of(context).size;
 
     // header size
     headerHeight = widget.model.titleBar ? 30 : 0;
 
     // Exceeds Width of Viewport
     atMaxWidth = false;
-    maxWidth = min(widget.model.maxWidth ?? size.width, size.width);
+    maxWidth = min(widget.model.maxWidth ?? display.width, display.width);
     if (width! >= maxWidth) {
       atMaxWidth = true;
       width = maxWidth;
@@ -562,7 +562,7 @@ class WindowViewState extends ViewableWidgetState<WindowView> {
 
     // Exceeds Height of Viewport
     atMaxHeight = false;
-    maxHeight = min(widget.model.maxHeight ?? size.height, size.height) - sa - headerHeight;
+    maxHeight = min(widget.model.maxHeight ?? display.height, display.height) - sa - headerHeight;
     if (height! >= maxHeight) {
       atMaxHeight = true;
       height = maxHeight;
@@ -582,10 +582,10 @@ class WindowViewState extends ViewableWidgetState<WindowView> {
       if (mustPosition) {
 
         if (widget.model.left  != null) dx = widget.model.left;
-        if (widget.model.right != null) dx = widget.model.right! + width!;
+        if (widget.model.right != null) dx = display.width - width! - widget.model.right!;
 
         if (widget.model.top    != null) dy = widget.model.top;
-        if (widget.model.bottom != null) dy = widget.model.bottom! + height!;
+        if (widget.model.bottom != null) dy = display.height - height! - widget.model.bottom!;
 
         mustPosition = false;
       }

@@ -154,10 +154,12 @@ class Binding {
 
       // parse
       if (v is List) {
-        if ((offset != null) && (offset! >= 0) && (v.length > offset!)) {
-          v = v[offset!];
+        if (offset != null && offset! >= 0) {
+          if (v.length > offset!)
+               v = v[offset!];
+          else v = null;
         }
-        if (dotnotation != null) v = Data.read(v, dotnotation?.signature);
+        if (v != null && dotnotation != null) v = Data.read(v, dotnotation?.signature);
       }
 
       // nothing

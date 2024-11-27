@@ -9,7 +9,7 @@ import 'package:fml/helpers/helpers.dart';
 
 enum SortTypes { none, ascending, descending }
 
-class Sort extends TransformModel implements ITransform {
+class Sort extends TransformModel implements IDataTransform {
 
   // field
   StringObservable? _field;

@@ -8,7 +8,8 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Pivot extends TransformModel implements ITransform {
+class Pivot extends TransformModel implements IDataTransform {
+
   // column
   StringObservable? _column;
   set column(dynamic v) {

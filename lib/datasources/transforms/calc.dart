@@ -10,7 +10,8 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Calc extends TransformModel implements ITransform {
+class Calc extends TransformModel implements IDataTransform {
+
   static const String sum = "sum";
   static const String min = "min";
   static const String max = "max";

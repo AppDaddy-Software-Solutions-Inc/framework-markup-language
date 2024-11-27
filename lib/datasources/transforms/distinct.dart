@@ -7,10 +7,9 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Distinct extends TransformModel implements ITransform {
-  ///////////
+class Distinct extends TransformModel implements IDataTransform {
+
   /* field */
-  ///////////
   StringObservable? _field;
   set field(dynamic v) {
     if (_field != null) {
@@ -19,12 +18,11 @@ class Distinct extends TransformModel implements ITransform {
       _field = StringObservable(Binding.toKey(id, 'field'), v, scope: scope);
     }
   }
-
   String? get field => _field?.get();
 
   Distinct(Model? parent, {String? id, dynamic enabled, dynamic field})
       : super(parent, id) {
-    this.enabled = enabled ?? true;
+    this.enabled = enabled;
     this.field = field;
   }
 
@@ -36,53 +34,29 @@ class Distinct extends TransformModel implements ITransform {
         id: id,
         enabled: Xml.get(node: xml, tag: 'enabled'),
         field: Xml.get(node: xml, tag: 'field'));
+
     model.deserialize(xml);
+
     return model;
   }
 
-  @override
-  void deserialize(XmlElement xml) {
-    // Deserialize
-    super.deserialize(xml);
-  }
-
   _fromList(Data? data) {
-    if (data == null) return null;
 
-    List<Map<String, dynamic>> distinctList = [];
-    List<String?> uniqueFields = [];
+    if (data == null) return;
 
-    if (field == null) {
-      data.toSet().toList();
-    } else {
-      for (dynamic l in data) {
-        if (!uniqueFields.contains(l[field])) {
-          uniqueFields.add(l[field]);
-          distinctList.add(Map<String, dynamic>.from(l));
-        }
-      }
-      data.clear();
-      data.addAll(distinctList);
-    }
-  }
+    if (isNullOrEmpty(field)) return;
 
-  String encode(String v) {
-    List<String?>? bindings = Binding.getBindingStrings(v);
-    if (bindings != null) {
-      for (var binding in bindings) {
-        if (!binding!.contains(".")) {
-          v = v.replaceAll(
-              binding, binding.replaceAll("{", "[[[[").replaceAll("}", "]]]]"));
-        }
+    Map<String, dynamic> distinct = {};
+
+    for (var row in data) {
+      var value = toStr(Data.read(row, field)) ?? "";
+      if (!distinct.containsKey(value)) {
+        distinct[value] = row;
       }
     }
-    return v;
-  }
 
-  String decode(String v) {
-    v = v.replaceAll("[[[[", "{");
-    v = v.replaceAll("]]]]", "}");
-    return v;
+    data.clear();
+    data.addAll(distinct.values);
   }
 
   @override

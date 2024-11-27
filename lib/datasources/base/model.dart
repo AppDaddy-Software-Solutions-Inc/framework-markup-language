@@ -81,7 +81,6 @@ class DataSourceModel extends Model implements IDataSource {
           StringObservable(Binding.toKey(id, 'queuetype'), v, scope: scope);
     }
   }
-
   String get queuetype => _queuetype?.get() ?? 'replace';
 
   // max record to retain
@@ -593,7 +592,7 @@ class DataSourceModel extends Model implements IDataSource {
       }
 
       // set rowcount
-      rowcount = this.data?.length ?? 0;
+      rowcount = data?.length ?? 0;
 
       // notify listeners of data change
       notify();
@@ -673,7 +672,6 @@ class DataSourceModel extends Model implements IDataSource {
     return true;
   }
 
-
   Future<bool> reverse() async {
     data = data?.reversed;
 
@@ -686,93 +684,96 @@ class DataSourceModel extends Model implements IDataSource {
   @override
   Future<bool> onSuccess(Data data,
       {int? code, String? message, Observable? onSuccessOverride}) async {
+
     // set busy
     busy = true;
 
+    // get transforms
+    var transforms = children?.whereType<IDataTransform>() ?? [];
+
+    // type - default is replace
+    var type = toEnum(queuetype, ListTypes.values) ?? ListTypes.replace;
+
+    // apply transforms to incoming data
+    if (type == ListTypes.replace) {
+      for (var transform in transforms) {
+        await transform.apply(data);
+      }
+    }
+
+    // build new list
+    var myData = Data();
+
+    // manipulate the new list
+    switch (type) {
+
+      // last in first out
+      // first in first out
+      case ListTypes.lifo:
+      case ListTypes.fifo:
+
+        // add existing data
+        if (this.data != null) myData.addAll(this.data!);
+
+        // add new data
+        myData.addAll(data);
+
+        break;
+
+      // add new data to the end of the list
+      case ListTypes.append:
+
+        // add existing data
+        if (this.data != null) myData.addAll(this.data!);
+
+        // add new data
+        myData.addAll(data);
+
+        break;
+
+      // add new data to front of the list
+      case ListTypes.prepend:
+
+        // add new data
+        myData.addAll(data);
+
+        // add existing data
+        if (this.data != null) myData.addAll(this.data!);
+
+        break;
+
+      // replace doesn't need to do anything
+      case ListTypes.replace:
+
+        // do nothing
+        myData = data;
+
+        break;
+    }
+
+    // apply transforms to resultant data
+    if (type != ListTypes.replace) {
+      for (var transform in transforms) {
+        await transform.apply(myData);
+      }
+    }
+
+    // truncate the list to size = maxrecords
     // max records
     int maxrecords = this.maxrecords ?? 10000;
     if (maxrecords.isNegative) maxrecords = 0;
-
-    // apply data transforms
-    if (children != null) {
-      for (Model model in children!) {
-        if (model is ITransform) {
-          await (model as ITransform).apply(data);
-        }
-      }
+    while (myData.isNotEmpty && myData.length > maxrecords) {
+      type == ListTypes.lifo ? myData.removeAt(0) : myData.removeLast();
     }
 
-    // type - default is replace
-    ListTypes? type = toEnum(queuetype, ListTypes.values);
+    // set data
+    data = myData;
 
-    // Fifo - Oldest -> Newest
-    if (type == ListTypes.fifo) {
-      Data temp = Data();
-      if (this.data != null) {
-        for (var element in this.data!) {
-          temp.add(element);
-        }
-      }
-      for (var element in data) {
-        temp.add(element);
-      }
-      if (temp.length > maxrecords) {
-        temp.removeRange(0, temp.length - maxrecords);
-      }
-      data = temp;
-    }
-
-    // Lifo - Newest > Oldest
-    if (type == ListTypes.lifo) {
-      Data temp = Data();
-      for (var element in data) {
-        temp.add(element);
-      }
-      if (this.data != null) {
-        for (var element in this.data!) {
-          temp.add(element);
-        }
-      }
-      if (temp.length > maxrecords) {
-        temp.removeRange(temp.length - maxrecords - 1, temp.length);
-      }
-      data = temp;
-    }
-
-    // Append
-    if (type == ListTypes.append) {
-      Data temp = Data();
-      if (this.data != null) {
-        for (var element in this.data!) {
-          temp.add(element);
-        }
-      }
-      for (var element in data) {
-        temp.add(element);
-      }
-      data = temp;
-    }
-
-    // Prepend
-    if (type == ListTypes.prepend) {
-      Data temp = Data();
-      for (var element in data) {
-        temp.add(element);
-      }
-      if (this.data != null) {
-        for (var element in this.data!) {
-          temp.add(element);
-        }
-      }
-      data = temp;
-    }
-
-    // Truncate List
-    if (data.length > maxrecords) data.removeRange(maxrecords, data.length);
-
-    // Return Success
+    // return success
     return await onData(data,
-        code: code, message: message, onSuccessOverride: onSuccessOverride);
+        code: code,
+        message: message,
+        onSuccessOverride: onSuccessOverride);
   }
 
   Future<bool> onFail(Data data,
@@ -934,6 +935,7 @@ class DataSourceModel extends Model implements IDataSource {
         : Json.encode(Json.copy(data![0], withValues: false));
 
     switch (function) {
+
       // clear the list
       case "clear":
         return await clear(

@@ -8,7 +8,8 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Filter extends TransformModel implements ITransform {
+class Filter extends TransformModel implements IDataTransform {
+
   /// enabled
   BooleanObservable? _enabled;
   @override

@@ -382,8 +382,11 @@ class Eval {
     if (pat == null || pat == '') {
       return false;
     }
-    if (value is List) return value.contains(_toString(pat));
-    if (value is String) return value.contains(_toString(pat));
+    if (value is String) return value.contains(toStr(pat) ?? "");
+    if (value is List) {
+      if (value.isEmpty) return false;
+      return value.contains(pat);
+    }
     return false;
   }
 

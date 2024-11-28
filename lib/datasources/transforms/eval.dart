@@ -9,7 +9,8 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Eval extends TransformModel implements ITransform {
+class Eval extends TransformModel implements IDataTransform {
+
   @override
   final String? source;
   final String? target;

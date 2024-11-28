@@ -936,7 +936,7 @@ mixin ViewableMixin on Model implements IDragDrop {
           if (Observable.isEvalSignature(v)) return v;
           
           var s = v.split(",");
-          if (s.length == 0) return null;
+          if (s.isEmpty) return null;
           if (s.length == 1) return toBool(v);
           draggableWidth  = s[0].trim();
           draggableHeight = s[1].trim();

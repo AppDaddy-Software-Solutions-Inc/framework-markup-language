@@ -16,7 +16,6 @@ class TransformModel extends Model {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get enabled => _enabled?.get() ?? true;
 
   // row element
@@ -30,7 +29,6 @@ class TransformModel extends Model {
       _row!.set(v);
     }
   }
-
   get row => _row?.get();
 
   /// source

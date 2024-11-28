@@ -59,16 +59,15 @@ class ZebraModel extends DataSourceModel implements IDataSource {
   // mode
   StringObservable? _mode;
   set mode(dynamic v) {
-    if (toEnum(v, Modes.values) == null) return;
     if (_mode != null) {
       _mode!.set(v);
     } else if (v != null) {
-      _mode = StringObservable(Binding.toKey(id, 'url'), v,
+      _mode = StringObservable(Binding.toKey(id, 'mode'), v,
           scope: scope, listener: _setMode);
     }
   }
   String? get mode => _mode?.get();
-
+  
   // change reader mode
   _setMode(Observable observable) async {
     var mode = toEnum(this.mode, Modes.values);
@@ -231,6 +230,16 @@ class ZebraModel extends DataSourceModel implements IDataSource {
   }
 
 
+  String _setBarcodeFormat(String? format) {
+
+    if (format == null) return fromEnum(barcode_detector.BarcodeFormats.unknown) ?? "unknown";
+
+    format = format.toLowerCase();
+    format = format.replaceFirst("label-type-","");
+
+    return fromEnum(toEnum(format, barcode_detector.BarcodeFormats.values)) ?? format;
+  }
+
   void onZebraEvent(Interfaces interface, Events event, dynamic data) {
 
     if (!enabled) return;
@@ -242,13 +251,16 @@ class ZebraModel extends DataSourceModel implements IDataSource {
         if (data is List<Barcode>) {
           var payload = barcode_detector.Payload();
           for (Barcode barcode in data) {
+
             if (kDebugMode) print("Source: $interface Barcode: ${barcode.barcode} Format: ${barcode.format} Date: ${barcode.seen}");
             var bc = barcode_detector.Barcode();
+
             bc.source = fromEnum(interface);
             bc.barcode = barcode.barcode;
             bc.display = barcode.barcode;
-            bc.format = barcode.format;
-            bc.seen = barcode.seen;
+            bc.format  = _setBarcodeFormat(barcode.format);
+            bc.seen    = barcode.seen;
+
             payload.barcodes.add(bc);
           }
 

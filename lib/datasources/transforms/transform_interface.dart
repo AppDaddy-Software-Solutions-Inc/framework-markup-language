@@ -1,6 +1,6 @@
 import 'package:fml/data/data.dart';
 
-abstract class ITransform {
+abstract class IDataTransform {
   bool? get enabled;
   Future<void> apply(Data? data);
 }

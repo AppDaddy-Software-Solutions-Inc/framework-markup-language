@@ -6,7 +6,8 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Format extends TransformModel implements ITransform {
+class Format extends TransformModel implements IDataTransform {
+
   final String? filter;
 
   Format(Model parent, {String? id, this.filter}) : super(parent, id);

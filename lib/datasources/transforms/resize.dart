@@ -8,7 +8,8 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Resize extends ImageTransformModel implements ITransform {
+class Resize extends ImageTransformModel implements IDataTransform {
+
   /// width
   IntegerObservable? _width;
   set width(dynamic v) {

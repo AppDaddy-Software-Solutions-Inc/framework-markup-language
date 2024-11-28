@@ -7,7 +7,8 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Crop extends ImageTransformModel implements ITransform {
+class Crop extends ImageTransformModel implements IDataTransform {
+
   /// x-coordinate offset
   IntegerObservable? _x;
   set x(dynamic v) {

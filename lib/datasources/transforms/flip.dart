@@ -8,7 +8,8 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Flip extends ImageTransformModel implements ITransform {
+class Flip extends ImageTransformModel implements IDataTransform {
+
   /// axis
   StringObservable? _axis;
   set axis(dynamic v) {

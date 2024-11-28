@@ -6,19 +6,14 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Grayscale extends ImageTransformModel implements ITransform {
+class Grayscale extends ImageTransformModel implements IDataTransform {
+
   Grayscale(Model parent, {String? id}) : super(parent, id);
 
   static Grayscale? fromXml(Model parent, XmlElement xml) {
     Grayscale model = Grayscale(parent, id: Xml.get(node: xml, tag: 'id'));
     model.deserialize(xml);
     return model;
-  }
-
-  @override
-  void deserialize(XmlElement xml) {
-    // Deserialize
-    super.deserialize(xml);
   }
 
   @override

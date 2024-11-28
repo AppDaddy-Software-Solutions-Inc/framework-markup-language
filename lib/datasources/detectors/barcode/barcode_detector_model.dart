@@ -76,7 +76,7 @@ class BarcodeDetectorModel extends DetectorModel implements IDetectable {
     if (format != null) formats = format.split(",");
     for (String format in formats) {
       format = format.trim().toUpperCase();
-      BarcodeFormats? f = toEnum(format, BarcodeFormats.values);
+      var f = toEnum(format, BarcodeFormats.values);
       if (f != null) {
         barcodeFormats ??= [];
         if (!barcodeFormats!.contains(f)) barcodeFormats!.add(f);

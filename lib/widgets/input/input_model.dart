@@ -368,6 +368,22 @@ class InputModel extends DecoratedInputModel implements IFormField {
   }
 
   @override
+  Future<dynamic> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function) {
+      case "clear":
+        _value?.set('');
+        return true;
+    }
+
+    return super.execute(caller, propertyOrFunction, arguments);
+  }
+
+  @override
   Widget getView({Key? key}) {
     var view = InputView(this);
     return isReactive ? ReactiveView(this, view) : view;

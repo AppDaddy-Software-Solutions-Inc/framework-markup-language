@@ -10,7 +10,20 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class ImageTransformModel extends TransformModel {
+
   final isolate = ImageTransformIsolate();
+
+  /// source
+  StringObservable? _source;
+  set source(dynamic v) {
+    if (_source != null) {
+      _source!.set(v);
+    } else if (v != null) {
+      _source = StringObservable(Binding.toKey(id, 'source'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get source => _source?.get();
 
   /// target
   StringObservable? _target;
@@ -22,12 +35,12 @@ class ImageTransformModel extends TransformModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get target => _target?.get();
 
   ImageTransformModel(super.parent, super.id);
 
   static ImageTransformModel? fromXml(Model parent, XmlElement xml) {
+
     ImageTransformModel? model;
     try {
       model = ImageTransformModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -46,6 +59,7 @@ class ImageTransformModel extends TransformModel {
     super.deserialize(xml);
 
     // properties
+    source = Xml.get(node: xml, tag: 'source');
     target = Xml.get(node: xml, tag: 'target');
   }
 

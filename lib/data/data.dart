@@ -228,23 +228,34 @@ class Data with ListMixin<dynamic> {
   // reads a value from the data list
   static dynamic read(dynamic data, String? tag) => Json.read(data, tag);
 
-  static Map<String?, dynamic> find(List<Binding>? bindings, dynamic data) {
-    Map<String?, dynamic> values = <String?, dynamic>{};
-    List<String?> processed = [];
-    if (bindings != null) {
-      for (Binding binding in bindings) {
-        // fully qualified data binding name (datasource.data.field1.field2.field3...fieldn)
-        if ((binding.source == 'data')) {
-          String? signature = binding.property +
-              (binding.dotnotation?.signature != null
-                  ? ".${binding.dotnotation!.signature}"
-                  : "");
-          if (!processed.contains(binding.signature)) {
-            processed.add(binding.signature);
-            var value = read(data, signature) ?? "";
-            values[binding.signature] = value;
-          }
-        }
+  // reads values from the bindings with source=data
+  static Map<String?, dynamic> readBindings(List<Binding>? bindings, dynamic data) {
+
+    var values = <String?, dynamic>{};
+    if (bindings == null) return values;
+
+    // we are only concerned with data bindings
+    var db = bindings.where((binding) => binding.source == 'data');
+    if (db.isEmpty) return values;
+
+    // holds a list of previously read values
+    List<String?> read = [];
+
+    // read bound data values (dot notation)
+    for (var binding in db) {
+
+      // build the signature
+      var property  = binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "";
+      var signature = binding.property + property;
+
+      // not already read?
+      if (!read.contains(binding.signature)) {
+
+        // read the value
+        values[binding.signature] = Data.read(data, signature) ?? "";
+
+        // mark read
+        read.add(binding.signature);
       }
     }
 

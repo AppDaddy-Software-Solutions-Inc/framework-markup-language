@@ -8,7 +8,7 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Pivot extends TransformModel implements IDataTransform {
+class Pivot extends TransformModel implements ITransform {
 
   // column
   StringObservable? _column;
@@ -24,7 +24,6 @@ class Pivot extends TransformModel implements IDataTransform {
 
   // row
   StringObservable? _row;
-  @override
   set row(dynamic v) {
     if (_row != null) {
       _row!.set(v);
@@ -33,8 +32,6 @@ class Pivot extends TransformModel implements IDataTransform {
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  @override
   String? get row => _row?.get();
 
   // field
@@ -73,7 +70,6 @@ class Pivot extends TransformModel implements IDataTransform {
     }
   }
   bool get addSummaryColumns => _addSummaryColumns?.get() ?? false;
-
 
   Pivot(Model? parent,
       {String? id, String? row, String? column, String? field, dynamic addSummaryRows, dynamic addSummaryColumns})

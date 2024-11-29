@@ -8,7 +8,20 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Filter extends TransformModel implements IDataTransform {
+class Filter extends TransformModel implements ITransform {
+
+  // row element
+  ListObservable? _row;
+  set row(dynamic v) {
+    if (_row != null) {
+      _row!.set(v);
+    } else if (v != null) {
+      _row = ListObservable(Binding.toKey(id, 'row'), null,
+          scope: scope, listener: onPropertyChange);
+      _row!.set(v);
+    }
+  }
+  get row => _row?.get();
 
   /// enabled
   BooleanObservable? _enabled;
@@ -47,7 +60,6 @@ class Filter extends TransformModel implements IDataTransform {
           scope: scope, listener: onFilterChange);
     }
   }
-
   bool get filter => _filter?.get() ?? false;
 
   Filter(Model? parent, {String? id, dynamic enabled, dynamic filter})
@@ -84,6 +96,7 @@ class Filter extends TransformModel implements IDataTransform {
 
     // Filter the results out
     data.removeWhere((row) {
+
       // change the row data
       // this causes the filter to re-evaluate
       this.row = row;

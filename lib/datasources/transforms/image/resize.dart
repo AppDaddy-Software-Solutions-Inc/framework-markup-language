@@ -1,14 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/transforms/transform_interface.dart';
-import 'package:fml/datasources/transforms/image_transform_model.dart';
+import 'package:fml/datasources/transforms/image/image_transform_model.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/integer.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Resize extends ImageTransformModel implements IDataTransform {
+class Resize extends ImageTransformModel implements ITransform {
 
   /// width
   IntegerObservable? _width;
@@ -20,7 +20,6 @@ class Resize extends ImageTransformModel implements IDataTransform {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   int get width => _width?.get() ?? 0;
 
   /// height
@@ -33,7 +32,6 @@ class Resize extends ImageTransformModel implements IDataTransform {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   int get height => _height?.get() ?? 0;
 
   Resize(Model parent, {String? id}) : super(parent, id);

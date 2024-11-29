@@ -151,6 +151,7 @@ class EventHandler extends Eval {
   }
 
   initialize() {
+
     // initialize event handlers
     if (!initialized) {
       functions[fromEnum(EventTypes.alert)] = _handleEventAlert;

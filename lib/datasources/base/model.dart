@@ -1,12 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/data/dotnotation.dart';
+import 'package:fml/datasources/transforms/transform_interface.dart';
 import 'package:universal_html/html.dart';
 import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/datasource_listener_interface.dart';
-import 'package:fml/datasources/transforms/transform_interface.dart';
 import 'package:fml/hive/data.dart' as hive;
 import 'package:fml/datasources/data/model.dart';
 import 'package:fml/log/manager.dart';
@@ -20,6 +20,7 @@ import 'package:fml/helpers/helpers.dart';
 enum ListTypes { replace, lifo, fifo, append, prepend }
 
 class DataSourceModel extends Model implements IDataSource {
+
   // data override
   @override
   Data? get data {
@@ -689,7 +690,7 @@ class DataSourceModel extends Model implements IDataSource {
     busy = true;
 
     // get transforms
-    var transforms = children?.whereType<IDataTransform>() ?? [];
+    var transforms = children?.whereType<ITransform>() ?? [];
 
     // type - default is replace
     var type = toEnum(queuetype, ListTypes.values) ?? ListTypes.replace;

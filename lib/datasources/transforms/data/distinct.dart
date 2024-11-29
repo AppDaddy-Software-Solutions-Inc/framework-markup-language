@@ -7,7 +7,7 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Distinct extends TransformModel implements IDataTransform {
+class Distinct extends TransformModel implements ITransform {
 
   /* field */
   StringObservable? _field;

@@ -17,7 +17,7 @@ import 'package:fml/widgets/scroller/scroller_interface.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/grid/grid_view.dart' as grid_view;
 import 'package:fml/widgets/grid/item/grid_item_model.dart';
-import 'package:fml/datasources/transforms/sort.dart' as sort_transform;
+import 'package:fml/datasources/transforms/data/sort.dart' as sort_transform;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';

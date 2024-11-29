@@ -10,12 +10,11 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Query extends TransformModel implements IDataTransform {
+class Query extends TransformModel implements ITransform {
 
-  @override
   final String? source;
-
   final String? target;
+
   HttpModel? ds;
 
   Query(Model parent, {String? id, this.source, this.target})
@@ -34,6 +33,7 @@ class Query extends TransformModel implements IDataTransform {
 
   @override
   void deserialize(XmlElement xml) {
+
     // deserialize
     super.deserialize(xml);
 

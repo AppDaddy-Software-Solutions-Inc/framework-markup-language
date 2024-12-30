@@ -151,6 +151,7 @@ class EventHandler extends Eval {
   }
 
   initialize() {
+
     // initialize event handlers
     if (!initialized) {
       functions[fromEnum(EventTypes.alert)] = _handleEventAlert;
@@ -195,6 +196,7 @@ class EventHandler extends Eval {
     var myVariables = <String, dynamic>{};
 
     try {
+
       // format the expression
       if (myExpression.contains(nonQuotedSemiColons)) {
         myExpression = formatExpression(myExpression);
@@ -202,13 +204,18 @@ class EventHandler extends Eval {
 
       // build variable map and modify expression
       variables.forEach((key, value) {
+
         i++;
+
         var myKey = "___V$i";
+
         myVariables[myKey] = toNum(value, allowMalformed: false) ??
             toBool(value, allowFalse: ['false'], allowTrue: ['true']) ??
             value;
+
         myExpression = myExpression.replaceAll("$key", myKey);
       });
+
       variables.clear();
       variables.addAll(myVariables);
 

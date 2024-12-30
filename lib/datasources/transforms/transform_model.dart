@@ -6,6 +6,7 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class TransformModel extends Model {
+
   /// enabled
   BooleanObservable? _enabled;
   set enabled(dynamic v) {
@@ -17,32 +18,6 @@ class TransformModel extends Model {
     }
   }
   bool get enabled => _enabled?.get() ?? true;
-
-  // row element
-  ListObservable? _row;
-  set row(dynamic v) {
-    if (_row != null) {
-      _row!.set(v);
-    } else if (v != null) {
-      _row = ListObservable(Binding.toKey(id, 'row'), null,
-          scope: scope, listener: onPropertyChange);
-      _row!.set(v);
-    }
-  }
-  get row => _row?.get();
-
-  /// source
-  StringObservable? _source;
-  set source(dynamic v) {
-    if (_source != null) {
-      _source!.set(v);
-    } else if (v != null) {
-      _source = StringObservable(Binding.toKey(id, 'source'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get source => _source?.get();
 
   TransformModel(super.parent, super.id);
 
@@ -61,11 +36,11 @@ class TransformModel extends Model {
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
+
     // deserialize
     super.deserialize(xml);
 
     // properties
     enabled = Xml.get(node: xml, tag: 'enabled');
-    source = Xml.get(node: xml, tag: 'source');
   }
 }

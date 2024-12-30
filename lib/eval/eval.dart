@@ -5,6 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:fml/crypto/crypto.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/helpers/time.dart';
+import 'package:fml/observable/binding.dart';
 import 'package:fml/system.dart';
 import 'package:intl/intl.dart';
 import 'package:fml/eval/evaluator.dart';
@@ -96,7 +97,22 @@ class Eval {
     'tostring': _toString,
     'toupper': _toUpper,
     'toxml': _toXml,
+    'tolist': _toList,
     'truncate': _truncate,
+
+    // list functions
+    'first': _first,
+    'last': _last,
+    'min': _minimum,
+    'minimum': _minimum,
+    'max': _maximum,
+    'maximum': _maximum,
+    'sum' : _sum,
+    'avg': _average,
+    'average': _average,
+    'count' : _count,
+    'read': _read,
+    'write': _write,
   };
 
   static dynamic evaluate(String? expression, {
@@ -115,14 +131,28 @@ class Eval {
     var myFunctions = <String?, dynamic>{};
 
     try {
+
       // setup variable substitutions
       variables?.forEach((key, value) {
         i++;
+
         var myKey = "___V$i";
-        myVariables[myKey] = toNum(value, allowMalformed: false) ??
-            toBool(value, allowFalse: ['false'], allowTrue: ['true']) ??
-            value;
-        myExpression = myExpression.replaceAll(key!, myKey);
+
+        if (key != null) {
+
+          // set signature
+          if (value == null) {
+
+          }
+
+          // set variables
+          myVariables[myKey] = toNum(value, allowMalformed: false) ??
+              toBool(value, allowFalse: ['false'], allowTrue: ['true']) ??
+              value;
+
+          // set expression
+          myExpression = myExpression.replaceAll(key, myKey);
+        }
       });
 
       // add variables
@@ -131,7 +161,7 @@ class Eval {
       // add functions
       myFunctions.addAll(functions);
 
-      // add alternate functions that dont clash
+      // add alternate functions that don't clash
       altFunctions?.forEach((key, value) =>
           myFunctions.containsKey(key) ? null : myFunctions[key] = value);
 
@@ -605,6 +635,243 @@ class Eval {
     }
 
     return null;
+  }
+
+  /// Returns list of records matching a where clause
+  static dynamic _toList([dynamic data, dynamic where]) {
+
+    // value is a list?
+    if (data is List && data.isNotEmpty) {
+
+      // no where clause?
+      // return the list as is
+      if (where is! String) return data;
+
+      // apply where clause
+      var matches = Data();
+      List<Binding>? bindings = Binding.getBindings(where);
+      for (var row in data) {
+
+        // get bindings from the row
+        var variables = Data.readBindings(bindings, row);
+
+        // ok?
+        var match = toBool(evaluate(where, variables: variables)) ?? false;
+        if (match) matches.add(row);
+      }
+
+      return matches;
+    }
+
+    return null;
+  }
+
+  /// Returns first record matching a where clause
+  static dynamic _first([dynamic value, dynamic where]) {
+    if (value is String && value.isNotEmpty) return value[0];
+    var data = _toList(value, where);
+    if (data is Data && data.isNotEmpty) return data.first;
+    return null;
+  }
+
+  /// Returns last record matching a where clause
+  static dynamic _last([dynamic value, dynamic where]) {
+    if (value is String && value.isNotEmpty) return value[value.length - 1];
+    var data = _toList(value, where);
+    if (data is Data && data.isNotEmpty) return data.last;
+    return null;
+  }
+
+  /// Returns minimum of 2 values or sum of a list field
+  static dynamic _minimum([dynamic v1, dynamic v2, dynamic where]) {
+
+    // data list
+    if (v1 is Data && v2 is String) {
+
+      if (where is String && !isNullOrEmpty(where)) v1 = _toList(v1, where);
+      v2 = toStr(v2);
+
+      double? minimum;
+      if (v1 is! Data || v1.isEmpty || isNullOrEmpty(v2)) return minimum;
+
+      for (var row in v1) {
+
+        // get value
+        var value = toDouble(Data.read(row, v2));
+
+        // set minimum
+        if (value != null && (minimum == null || value < minimum)) minimum = value;
+      }
+
+      return minimum;
+    }
+
+    // compare
+    if (v1.runtimeType == v2.runtimeType) {
+      return v1.compareTo(v2) < 0 ? v1 : v2;
+    }
+
+    if (v1 != null && v2 == null) return v1;
+    if (v1 == null && v2 != null) return v2;
+
+    return null;
+  }
+
+  /// Returns maximum of 2 values or sum of a list field
+  static dynamic _maximum([dynamic v1, dynamic v2, dynamic where]) {
+
+    // data list
+    if (v1 is Data && v2 is String) {
+
+      if (where is String && !isNullOrEmpty(where)) v1 = _toList(v1, where);
+      v2 = toStr(v2);
+
+      double? maximum;
+      if (v1 is! Data || v1.isEmpty || isNullOrEmpty(v2)) return maximum;
+
+      for (var row in v1) {
+
+        // get value
+        var value = toDouble(Data.read(row, v2));
+
+        // set maximum
+        if (value != null && (maximum == null || value > maximum)) maximum = value;
+      }
+
+      return maximum;
+    }
+
+    // compare
+    if (v1.runtimeType == v2.runtimeType) {
+      return v1.compareTo(v2) < 0 ? v2 : v1;
+    }
+
+    if (v1 != null && v2 == null) return v1;
+    if (v1 == null && v2 != null) return v2;
+
+    return null;
+  }
+
+  /// Returns sum of 2 values or sum of a list field
+  static dynamic _sum([dynamic v1, dynamic v2, dynamic where]) {
+
+    // data list
+    if (v1 is Data && v2 is String) {
+
+      if (where is String && !isNullOrEmpty(where)) v1 = _toList(v1, where);
+      v2 = toStr(v2);
+
+      double? sum;
+      if (v1 is! Data || v1.isEmpty || isNullOrEmpty(v2)) return sum;
+
+      for (var row in v1) {
+
+        // get value
+        var value = toDouble(Data.read(row, v2));
+
+        // add to running sum
+        if (value != null) sum = (sum ?? 0) + value;
+      }
+
+      return sum;
+    }
+
+    // sum
+    v1 = toDouble(v1);
+    v2 = toDouble(v2);
+    if (v1 != null && v2 != null) return v1 + v2;
+    if (v1 != null && v2 == null) return v1;
+    if (v1 == null && v2 != null) return v2;
+
+    return null;
+  }
+
+  /// Returns sum of 2 values or sum of a list field
+  static dynamic _average([dynamic v1, dynamic v2, dynamic where]) {
+
+    double? average;
+
+    // data list
+    if (v1 is Data && v2 is String) {
+
+      if (where is String && !isNullOrEmpty(where)) v1 = _toList(v1, where);
+      v2 = toStr(v2);
+
+      double? sum;
+      int? count;
+      if (v1 is! Data || v1.isEmpty || isNullOrEmpty(v2)) return average;
+
+      for (var row in v1) {
+
+        // get value
+        var value = toDouble(Data.read(row, v2));
+
+        // calculate sum and count
+        if (value != null) {
+          sum = (sum ?? 0) + value;
+          count = (count ?? 0) + 1;
+        }
+      }
+
+      if (sum != null && count != null && count > 0) {
+        average = sum / count;
+      }
+    }
+
+    return average;
+  }
+
+  /// Returns sum of 2 values or sum of a list field
+  static dynamic _count([dynamic v1, dynamic v2, dynamic where]) {
+
+    int? count;
+
+    // data list
+    if (v1 is Data && v2 is String) {
+
+      if (where is String && !isNullOrEmpty(where)) v1 = _toList(v1, where);
+      v2 = toStr(v2);
+
+      if (v1 is! Data || v1.isEmpty || isNullOrEmpty(v2)) return null;
+
+      double? count;
+      for (var row in v1) {
+
+        // get value
+        var value = toDouble(Data.read(row, v2));
+
+        // calculate sum and count
+        if (value != null) count = (count ?? 0) + 1;
+      }
+    }
+
+    return count;
+  }
+
+  /// Returns/Reads the value of v1
+  static dynamic _read([dynamic v1, dynamic field]) {
+
+    // read field in first record
+    if (v1 is Data && v1.isNotEmpty && field is String) {
+      var value = Data.read(v1.first, field);
+      return value;
+    }
+
+    // first entry in the list
+    if (v1 is List && v1.isNotEmpty) return v1.first;
+
+    return v1;
+  }
+
+  /// Reads a value from the first record
+  static dynamic _write([dynamic data, dynamic field, dynamic value]) {
+
+    // read field in first record
+    if (data is Data && data.isNotEmpty && field is String) {
+      Data.write(data.first, field, value);
+      return true;
+    }
+    return false;
   }
 
   /// Returns the modular of a number and a divisor

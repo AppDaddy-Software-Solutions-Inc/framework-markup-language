@@ -275,8 +275,8 @@ class System extends Model implements IEventManager {
     _version = StringObservable(Binding.toKey('version'), FmlEngine.version,
         scope: scope);
 
-    _uuid = StringObservable(Binding.toKey('uuid'), newId(),
-        scope: scope, getter: newId);
+    _uuid = StringObservable(Binding.toKey('uuid'), newId(prefix: ""),
+        scope: scope, getter: () => newId(prefix: ""));
 
     // this satisfies/eliminates the compiler warning
     if (kDebugMode) {

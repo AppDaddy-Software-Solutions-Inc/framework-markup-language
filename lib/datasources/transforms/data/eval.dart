@@ -9,9 +9,8 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Eval extends TransformModel implements IDataTransform {
+class Eval extends TransformModel implements ITransform {
 
-  @override
   final String? source;
   final String? target;
 
@@ -40,8 +39,9 @@ class Eval extends TransformModel implements IDataTransform {
 
     List<Binding>? bindings = Binding.getBindings(source);
     for (var row in list) {
+
       // get variables
-      Map<String?, dynamic> variables = Data.find(bindings, row);
+      var variables = Data.readBindings(bindings, row);
 
       // evaluate
       var value = fml_eval.Eval.evaluate(source, variables: variables);

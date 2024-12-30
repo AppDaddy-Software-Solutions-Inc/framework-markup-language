@@ -10,7 +10,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class Calc extends TransformModel implements IDataTransform {
+class Calc extends TransformModel implements ITransform {
 
   static const String sum = "sum";
   static const String min = "min";
@@ -22,7 +22,6 @@ class Calc extends TransformModel implements IDataTransform {
   static const String total = "total";
   static const String evaluate = "eval";
 
-  @override
   final String? source;
   final String? target;
   final String? precision;
@@ -120,19 +119,34 @@ class Calc extends TransformModel implements IDataTransform {
     return results;
   }
 
-  Map? _calcTotal(Data list) {
-    if (source == null) return null;
-    Map duplicates = {};
+  Map<String, double>? _calcTotal(Data list) {
 
-    for (var element in list) {
-      var value = Data.read(element, source);
-      if (!duplicates.containsKey(value)) {
-        duplicates[value] = 1;
-      } else {
-        duplicates[value] += 1;
+    if (source == null) return null;
+
+    var duplicates = <String, Map<String, double>>{};
+
+    for (var row in list) {
+      var group = _getGroup(row);
+      var value = Data.read(row, source);
+      if (group != null && value != null) {
+        if (!duplicates.containsKey(group)) {
+          var map = <String, double>{};
+          map[value] = 0;
+          duplicates[group] = map;
+        }
+        duplicates[group]![value] = duplicates[group]![value]! + 1;
       }
     }
-    return duplicates;
+
+    var results = <String, double>{};
+    for (var group in duplicates.keys) {
+      var sum = 0.0;
+      for (var value in duplicates[group]!.values) {
+        sum += value;
+      }
+      results[group] = sum;
+    }
+    return results;
   }
 
   HashMap<String, double>? _calcSum(Data list) {
@@ -210,11 +224,10 @@ class Calc extends TransformModel implements IDataTransform {
   _cnt(Data? list) {
     if ((list == null) || (source == null)) return null;
     HashMap<String, double>? map = _calcCnt(list);
-
     if (map != null) {
       for (var row in list) {
         String? group = _getGroup(row);
-        if ((_inGroup(row, group)) && (map.containsKey(group))) {
+        if (_inGroup(row, group) && map.containsKey(group)) {
           Data.write(row, target, toInt(map[group!]));
         }
       }
@@ -224,14 +237,12 @@ class Calc extends TransformModel implements IDataTransform {
   //Total calculates the total occurences in each field and prints to a source. Would be useful to add this feature to DISTINCT.
   _total(Data? list) {
     if ((list == null) || (source == null)) return null;
-    Map? map = _calcTotal(list);
-
+    var map = _calcTotal(list);
     if (map != null) {
       for (var row in list) {
         String? group = _getGroup(row);
-        var value = Data.read(row, source);
-        if ((_inGroup(row, group)) && map.containsKey(value)) {
-          Data.write(row, target, toInt(map[value]));
+        if (_inGroup(row, group) && map.containsKey(group)) {
+          Data.write(row, target, toInt(map[group!]));
         }
       }
     }
@@ -257,8 +268,9 @@ class Calc extends TransformModel implements IDataTransform {
     List<Binding>? bindings = Binding.getBindings(source);
     for (var row in list) {
       try {
-        // get variables
-        Map<String?, dynamic> variables = Data.find(bindings, row);
+
+        // get bound variables
+        var variables = Data.readBindings(bindings, row);
 
         // evaluate
         dynamic value;

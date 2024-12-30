@@ -8,7 +8,7 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class GYWaterfall extends TransformModel implements IDataTransform {
+class GYWaterfall extends TransformModel implements ITransform {
 
   // column
   StringObservable? _x;

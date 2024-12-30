@@ -131,20 +131,28 @@ class Eval {
     var myFunctions = <String?, dynamic>{};
 
     try {
+
       // setup variable substitutions
       variables?.forEach((key, value) {
         i++;
 
         var myKey = "___V$i";
-        var mySig = "___SIGNATURE$i";
 
-        myVariables[myKey] = toNum(value, allowMalformed: false) ??
-            toBool(value, allowFalse: ['false'], allowTrue: ['true']) ??
-            value;
+        if (key != null) {
 
-        myVariables[mySig] = key;
+          // set signature
+          if (value == null) {
 
-        myExpression = myExpression.replaceAll(key!, myKey);
+          }
+
+          // set variables
+          myVariables[myKey] = toNum(value, allowMalformed: false) ??
+              toBool(value, allowFalse: ['false'], allowTrue: ['true']) ??
+              value;
+
+          // set expression
+          myExpression = myExpression.replaceAll(key, myKey);
+        }
       });
 
       // add variables
@@ -153,7 +161,7 @@ class Eval {
       // add functions
       myFunctions.addAll(functions);
 
-      // add alternate functions that dont clash
+      // add alternate functions that don't clash
       altFunctions?.forEach((key, value) =>
           myFunctions.containsKey(key) ? null : myFunctions[key] = value);
 
@@ -1239,10 +1247,4 @@ class Eval {
   static bool? _isValidExpiryDate(dynamic num) => _isNullOrEmpty(num)
       ? null
       : TextInputValidators().isExpiryValid(toStr(num) ?? "");
-}
-
-class lateDynamic
-{
-  late dynamic value;
-  lateDynamic(this.value);
 }

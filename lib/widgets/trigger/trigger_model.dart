@@ -32,14 +32,9 @@ class TriggerModel extends Model {
 
   @override
   void deserialize(XmlElement xml) {
-    /////////////////
-    /* Deserialize */
-    /////////////////
     super.deserialize(xml);
 
-    ///////////
-    /* Cases */
-    ///////////
+    // cases
     cases.clear();
     List<TriggerConditionModel> conditions =
         findChildrenOfExactType(TriggerConditionModel)

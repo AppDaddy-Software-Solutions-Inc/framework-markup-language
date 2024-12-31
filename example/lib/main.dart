@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     //String example = 'https://test.appdaddy.co';
     //String example = 'http://10.69.4.245:81/';
     //String example = 'http://in4.pro';
-   String example = 'https://pad.fml.dev';
+   String example = 'https://jet.fml.dev';
     //String example = 'http://napapsweb.nap.goodyear.com:8081/';
     //String example = 'https://pad.fml.dev';
 

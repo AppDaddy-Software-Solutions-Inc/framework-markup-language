@@ -89,7 +89,7 @@ class MapMarkerModel extends ViewableModel {
 
   void onMarkerChange(Observable observable) {
     if (parent is MapModel) {
-      (parent as MapModel).notifyListeners(observable.key, observable.get());
+      (parent as MapModel).onMarkerChange(this, observable);
     }
   }
 

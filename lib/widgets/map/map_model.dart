@@ -37,7 +37,6 @@ class MapModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get latitude => _latitude?.get();
 
   // longitude
@@ -50,7 +49,6 @@ class MapModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   double? get longitude => _longitude?.get();
 
   // zoom level
@@ -66,24 +64,23 @@ class MapModel extends BoxModel {
   double? get zoom => _zoom?.get();
 
   // autozoom
-  BooleanObservable? _autozoom;
-  set autozoom(dynamic v) {
-    if (_autozoom != null) {
-      _autozoom!.set(v);
+  BooleanObservable? _fit;
+  set fit(dynamic v) {
+    if (_fit != null) {
+      _fit!.set(v);
     } else if (v != null) {
-      _autozoom = BooleanObservable(Binding.toKey(id, 'autozoom'), v,
+      _fit = BooleanObservable(Binding.toKey(id, 'fit'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-  bool get autozoom => _autozoom?.get() ?? true;
+  bool get fit => _fit?.get() ?? true;
 
   List<MapMarkerModel> markers = [];
 
   MapModel(Model super.parent, super.id,
-      {dynamic zoom, dynamic visible}) {
+      {dynamic fit, dynamic zoom, dynamic visible}) {
     // instantiate busy observable
     busy = false;
-
     this.zoom = zoom;
     this.visible = visible;
   }
@@ -108,7 +105,7 @@ class MapModel extends BoxModel {
 
     // properties
     zoom = Xml.get(node: xml, tag: 'zoom');
-    autozoom = Xml.get(node: xml, tag: 'autozoom');
+    fit = Xml.get(node: xml, tag: 'fit') ?? true;
     latitude = Xml.get(node: xml, tag: 'latitude');
     longitude = Xml.get(node: xml, tag: 'longitude');
 
@@ -166,7 +163,7 @@ class MapModel extends BoxModel {
           : null;
       if (prototypes == null) return true;
 
-      // Remove Old Locations
+      // Remove old markers
       var obsoleteMarkers =
           markers.where((model) => source.id == model.datasource);
       markers.removeWhere((model) => obsoleteMarkers.contains(model));
@@ -174,7 +171,7 @@ class MapModel extends BoxModel {
         model.dispose();
       }
 
-      // build new locations
+      // build new markers
       if ((list != null) && (list.isNotEmpty)) {
         for (var prototype in prototypes) {
           for (var data in list) {
@@ -185,7 +182,7 @@ class MapModel extends BoxModel {
         }
       }
 
-      // we recreate the markers array which genertaes a new hashCode
+      // we recreate the markers array which generates a new hashCode
       // the view checks this hashCode to see if it needs to rebuild the marker list
       markers = markers.toList();
 
@@ -195,6 +192,15 @@ class MapModel extends BoxModel {
     }
 
     return true;
+  }
+
+  void onMarkerChange(MapMarkerModel marker, Observable observable) {
+
+    // we recreate the markers array which generates a new hashCode
+    // the view checks this hashCode to see if it needs to rebuild the marker list
+    markers = markers.toList();
+
+    notifyListeners(observable.key, observable.get());
   }
 
   @override

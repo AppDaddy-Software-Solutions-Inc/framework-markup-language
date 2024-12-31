@@ -29,16 +29,15 @@ class _MapViewState extends ViewableWidgetState<MapView> {
   LatLngBounds? bounds;
   double? rotation;
 
-  bool dirty = false;
   void onMapEvent(MapEvent event) {
-    if (dirty) return;
+    if (!widget.model.fit) return;
     if (event.source == MapEventSource.doubleTapZoomAnimationController ||
         event.source == MapEventSource.doubleTap ||
         event.source == MapEventSource.doubleTapHold ||
         event.source == MapEventSource.dragStart ||
         event.source == MapEventSource.dragEnd ||
         event.source == MapEventSource.scrollWheel ||
-        event.source == MapEventSource.multiFingerGestureStart) dirty = true;
+        event.source == MapEventSource.multiFingerGestureStart) widget.model.fit = false;
   }
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
@@ -51,7 +50,7 @@ class _MapViewState extends ViewableWidgetState<MapView> {
   }
 
   void applyMapSettings() {
-    if (!dirty) {
+    if (widget.model.fit) {
       fitBounds();
     }
   }

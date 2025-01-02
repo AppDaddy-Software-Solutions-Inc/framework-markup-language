@@ -1,15 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/http/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class HttpDeleteModel extends HttpModel implements IDataSource {
-  // method
+class HttpDeleteModel extends HttpModel {
+
   @override
-  String get method => "delete";
+  HttpMethods get method => HttpMethods.delete;
 
   HttpDeleteModel(super.parent, super.id);
 

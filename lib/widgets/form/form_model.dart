@@ -5,6 +5,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/data/dotnotation.dart';
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/datasources/datasource_interface.dart';
+import 'package:fml/datasources/http/model.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/box/box_model.dart';
@@ -389,7 +390,9 @@ class FormModel extends BoxModel with FormMixin implements IForm {
             source.body = await FormMixin.buildPostingBody(this, fields,
                 rootname: source.root ?? "FORM");
           }
-          ok = await source.start(key: form!.key);
+
+          // start the data source
+          ok = (source is HttpModel) ? await source.start(formKey: form!.key) : await source.start();
         }
         if (!ok) {
           break;

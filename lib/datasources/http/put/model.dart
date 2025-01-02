@@ -7,9 +7,9 @@ import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class HttpPutModel extends HttpModel implements IDataSource {
-  // method
+
   @override
-  String get method => "put";
+  HttpMethods get method => HttpMethods.put;
 
   HttpPutModel(super.parent, super.id);
 

@@ -1,15 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/datasources/http/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class HttpPostModel extends HttpModel implements IDataSource {
-  // method
+class HttpPostModel extends HttpModel {
+
   @override
-  String get method => "post";
+  HttpMethods get method => HttpMethods.post;
 
   HttpPostModel(super.parent, super.id);
 

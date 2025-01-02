@@ -126,7 +126,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener {
   }
 
   @override
-  Future<bool> start({bool refresh = false, String? key}) async {
+  Future<bool> start() async {
     bool ok = true;
 
     if (!isMobile) {

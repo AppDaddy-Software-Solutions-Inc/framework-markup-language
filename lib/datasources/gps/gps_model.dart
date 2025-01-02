@@ -42,7 +42,7 @@ class GpsModel extends DataSourceModel implements IDataSource, IGpsListener {
   }
 
   @override
-  Future<bool> start({bool refresh = false, String? key}) async {
+  Future<bool> start() async {
     System().gps.registerListener(this);
     return true;
   }

@@ -90,7 +90,7 @@ class BeaconModel extends DataSourceModel
   }
 
   @override
-  Future<bool> start({bool refresh = false, String? key}) async {
+  Future<bool> start() async {
     bool ok = true;
     try {
       Reader().registerListener(this);

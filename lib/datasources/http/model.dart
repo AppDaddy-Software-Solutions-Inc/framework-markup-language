@@ -18,11 +18,16 @@ import 'package:fml/platform/platform.vm.dart'
 if (dart.library.io) 'package:fml/platform/platform.vm.dart'
 if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
-enum Methods { get, put, post, patch, delete }
+enum HttpMethods { get, put, post, patch, delete }
 
 enum Types { background, foreground, either }
 
 class HttpModel extends DataSourceModel implements IDataSource {
+
+  // default method
+  // others override this
+  HttpMethods get method => HttpMethods.get;
+
   // headers
   Map<String, String>? headers;
 
@@ -39,21 +44,7 @@ class HttpModel extends DataSourceModel implements IDataSource {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get refresh => _refresh?.get() ?? false;
-
-  // method
-  StringObservable? _method;
-  set method(dynamic v) {
-    if (_method != null) {
-      _method!.set(v);
-    } else if (v != null) {
-      _method = StringObservable(Binding.toKey(id, 'method'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get method => _method?.get();
 
   // timeout
   IntegerObservable? _timeout;
@@ -121,7 +112,6 @@ class HttpModel extends DataSourceModel implements IDataSource {
 
     // properties
     refresh = Xml.get(node: xml, tag: 'refresh');
-    method = Xml.attribute(node: xml, tag: 'method');
     timeout = Xml.get(node: xml, tag: 'timeout');
     url = Xml.get(node: xml, tag: 'url') ?? Xml.get(node: xml, tag: 'URL');
     canRunInForeground = toBool(Xml.get(node: xml, tag: 'foreground')) ?? true;
@@ -144,21 +134,20 @@ class HttpModel extends DataSourceModel implements IDataSource {
 
   onUrlChange(Observable observable) {
     if (initialized && enabled && autoexecute == true) {
-      start(refresh: refresh);
+      start();
     }
   }
 
   @override
-  Future<bool> start({bool refresh = false, String? key}) async {
+  Future<bool> start({bool refresh = false, String? formKey}) async {
     if (!enabled) return false;
-
     busy = true;
-    bool ok = await _start(refresh, key);
+    bool ok = await _start(refresh, formKey);
     busy = false;
     return ok;
   }
 
-  Future<bool> _start(bool refresh, String? key) async {
+  Future<bool> _start(bool refresh, String? formKey) async {
     bool ok = true;
 
     // replace file references
@@ -193,9 +182,9 @@ class HttpModel extends DataSourceModel implements IDataSource {
       // save transaction
       Post post = Post(
           key: newId(),
-          formKey: key,
+          formKey: formKey,
           status: Post.statusINCOMPLETE,
-          method: fromEnum(this.method),
+          method: fromEnum(method),
           url: this.url,
           headers: headers,
           body: body,
@@ -215,29 +204,29 @@ class HttpModel extends DataSourceModel implements IDataSource {
     busy = true;
 
     HttpResponse? response;
-    Methods method = toEnum(this.method, Methods.values) ?? Methods.get;
+
     switch (method) {
-      case Methods.get:
+      case HttpMethods.get:
         response = await Http.get(url,
-            headers: headers, timeout: timeout, refresh: refresh);
+            headers: headers, timeout: timeout, refresh: this.refresh);
         break;
 
-      case Methods.post:
+      case HttpMethods.post:
         response = await Http.post(url, body ?? '',
             headers: headers, timeout: timeout);
         break;
 
-      case Methods.put:
+      case HttpMethods.put:
         response =
             await Http.put(url, body ?? '', headers: headers, timeout: timeout);
         break;
 
-      case Methods.patch:
+      case HttpMethods.patch:
         response =
             await Http.patch(url, body, headers: headers, timeout: timeout);
         break;
 
-      case Methods.delete:
+      case HttpMethods.delete:
         response = await Http.delete(url, headers: headers, timeout: timeout);
         break;
     }
@@ -279,7 +268,6 @@ class HttpModel extends DataSourceModel implements IDataSource {
     bool refresh = toBool(elementAt(arguments, 0)) ?? false;
     switch (function) {
       case "start":
-        return await start(refresh: refresh);
       case "fire":
         return await start(refresh: refresh);
       // case "stop" : return await stop(); // missing implementation

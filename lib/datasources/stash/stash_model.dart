@@ -28,7 +28,7 @@ class StashModel extends DataSourceModel implements IDataSource {
   }
 
   @override
-  Future<bool> start({bool refresh = false, String? key}) async {
+  Future<bool> start() async {
     if (!enabled) return false;
 
     busy = true;

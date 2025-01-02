@@ -18,7 +18,7 @@ abstract class IDataSource {
 
   Model? get parent;
 
-  Future<bool> start({bool refresh = false, String? key});
+  Future<bool> start();
   Future<bool> stop();
   Future<bool> clear({int? start, int? end});
   register(IDataSourceListener listener);

@@ -123,29 +123,39 @@ class Calc extends TransformModel implements ITransform {
 
     if (source == null) return null;
 
-    var duplicates = <String, Map<String, double>>{};
+    var totals = <String, Map<String, double>>{};
 
     for (var row in list) {
       var group = _getGroup(row);
+
       var value = Data.read(row, source);
+
       if (group != null && value != null) {
-        if (!duplicates.containsKey(group)) {
-          var map = <String, double>{};
-          map[value] = 0;
-          duplicates[group] = map;
+
+        // add the group
+        if (!totals.containsKey(group)) {
+          totals[group] = <String, double>{};
         }
-        duplicates[group]![value] = duplicates[group]![value]! + 1;
+
+        // add the value
+        if (!totals[group]!.containsKey(value)) {
+          totals[group]![value] = 0;
+        }
+
+        // increment the total
+        totals[group]![value] = totals[group]![value]! + 1;
       }
     }
 
     var results = <String, double>{};
-    for (var group in duplicates.keys) {
+    for (var group in totals.keys) {
       var sum = 0.0;
-      for (var value in duplicates[group]!.values) {
+      for (var value in totals[group]!.values) {
         sum += value;
       }
       results[group] = sum;
     }
+
     return results;
   }
 

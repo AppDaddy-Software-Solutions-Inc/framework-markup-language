@@ -917,7 +917,7 @@ class DataSourceModel extends Model implements IDataSource {
 
   // override this function
   @override
-  Future<bool> start({bool refresh = false, String? key}) async => true;
+  Future<bool> start() async => true;
 
   // override this function
   @override

@@ -286,11 +286,19 @@ class Observable {
           variables[binding.signature] = replacementValue;
         }
 
+        // non string 1:1 replacement of a value
         else if (this is! StringObservable &&
             bindings!.length == 1 &&
             signature != null &&
             signature!.replaceFirst(binding.signature, "").trim().isEmpty) {
+
+          // set replacement value
           value = replacementValue ?? source?.get();
+
+          // special case where dot notation value was not not found in the list
+          if (replacementValue == null && value is List && this.bindings!.first.dotnotation != null) {
+            value = null;
+          }
           break;
         }
 

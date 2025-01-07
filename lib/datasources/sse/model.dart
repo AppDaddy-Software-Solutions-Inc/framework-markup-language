@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/sse/lib/src/channel.dart';
 import 'package:fml/datasources/http/model.dart';
-import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
@@ -11,10 +10,14 @@ import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class SseModel extends HttpModel implements IDataSource {
+class SseModel extends HttpModel {
+
   late final SseChannel channel;
 
   String? events;
+
+  @override
+  HttpMethods method = HttpMethods.get;
 
   // connected
   BooleanObservable? _connected;
@@ -26,7 +29,6 @@ class SseModel extends HttpModel implements IDataSource {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get connected => _connected?.get() ?? false;
 
   SseModel(super.parent, super.id) {
@@ -53,6 +55,7 @@ class SseModel extends HttpModel implements IDataSource {
 
     // properties
     events = Xml.get(node: xml, tag: 'events');
+    method = toEnum(Xml.get(node: xml, tag: 'events'),HttpMethods.values) ?? HttpMethods.get;
   }
 
   @override
@@ -62,7 +65,7 @@ class SseModel extends HttpModel implements IDataSource {
   }
 
   @override
-  Future<bool> start({bool refresh = false, String? key}) async {
+  Future<bool> start({bool refresh = false, String? formKey}) async {
     bool ok = true;
     busy = true;
 
@@ -73,7 +76,7 @@ class SseModel extends HttpModel implements IDataSource {
         channel = SseChannel.connect(uri,
             headers: headers,
             body: body,
-            method: method,
+            method: fromEnum(method),
             events: events?.split(","));
         channel.stream.listen(_onData, onError: _onError, onDone: _onDone);
         connected = true;

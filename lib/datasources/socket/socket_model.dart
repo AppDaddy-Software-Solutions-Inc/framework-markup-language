@@ -152,7 +152,7 @@ class SocketModel extends DataSourceModel
   }
 
   @override
-  Future<bool> start({bool refresh = false, String? key}) async {
+  Future<bool> start() async {
     bool ok = true;
     if (socket == null && url != null) socket = Socket(url!, this);
     if (socket != null) {

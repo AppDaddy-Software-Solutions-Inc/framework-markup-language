@@ -23,7 +23,6 @@ class MapMarkerModel extends ViewableModel {
       _latitude!.registerListener(onMarkerChange);
     }
   }
-
   double? get latitude => _latitude?.get();
 
   /// longitude
@@ -37,7 +36,6 @@ class MapMarkerModel extends ViewableModel {
       _longitude!.registerListener(onMarkerChange);
     }
   }
-
   double? get longitude => _longitude?.get();
 
   MapMarkerModel(Model super.parent, super.id,

@@ -53,12 +53,21 @@ class _MapViewState extends ViewableWidgetState<MapView> {
     if (widget.model.fit) {
       fitBounds();
     }
+    if (bounds == null && center != null && zoom !=  null) {
+      controller!.move(center!, zoom!);
+    }
   }
 
   void fitBounds() {
     if (bounds != null) {
-      CameraFit fit = CameraFit.bounds(bounds: bounds!, padding: const EdgeInsets.all(50));
-      controller?.fitCamera(fit);
+      try {
+        CameraFit fit = CameraFit.bounds(
+            bounds: bounds!, padding: const EdgeInsets.all(50));
+        controller?.fitCamera(fit);
+      }
+      catch(e) {
+        int i = 0;
+      }
     }
   }
 
@@ -88,7 +97,13 @@ class _MapViewState extends ViewableWidgetState<MapView> {
       // build markers
       List<LatLng> points = [];
       for (MapMarkerModel model in widget.model.markers) {
-        if (model.latitude != null && model.longitude != null) {
+        if (model.latitude != null   &&
+            model.latitude! <= 90    &&
+            model.latitude! >= -90   &&
+            model.longitude != null  &&
+            model.longitude! <= 180  &&
+            model.longitude! >= -180) {
+
           var width = model.width ?? 20;
           if (width < 5 || width > 200) width = 20;
 
@@ -107,15 +122,12 @@ class _MapViewState extends ViewableWidgetState<MapView> {
         }
       }
 
-      // set center point
-      if (points.length == 1) {
-        center ??= points.first;
-      }
-
       // set bounds
       bounds = null;
       if (points.length > 1) {
         bounds = LatLngBounds.fromPoints(points);
+        if (bounds?.south == bounds?.north) bounds = null;
+        if (bounds?.east == bounds?.west) bounds = null;
       }
     } catch (e) {
       Log().debug('$e');
@@ -155,6 +167,9 @@ class _MapViewState extends ViewableWidgetState<MapView> {
       if (widget.model.latitude != null && widget.model.longitude != null) {
         center = LatLng(widget.model.latitude!, widget.model.longitude!);
       }
+      else if (markers.length == 1) {
+        center = markers.first.point;
+      }
 
       // rotation
       rotation = 0.0;
@@ -162,7 +177,7 @@ class _MapViewState extends ViewableWidgetState<MapView> {
       // fit
       CameraFit? fit;
       if (bounds != null) {
-        fit = CameraFit.bounds(bounds: bounds!, padding: const EdgeInsets.all(50));
+        fit = CameraFit.bounds(bounds: bounds!, padding: const EdgeInsets.all(250));
       }
 
       // map options

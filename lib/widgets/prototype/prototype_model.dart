@@ -24,6 +24,12 @@ class PrototypeModel extends BoxModel {
   bool get expand => false;
 
   @override
+  bool get wrap {
+                                                                                                                                                                    if (parent is BoxModel) return (parent as BoxModel).wrap;
+    return false;
+  }
+
+  @override
   String? get layout {
     var root = parent;
     while (root != null) {

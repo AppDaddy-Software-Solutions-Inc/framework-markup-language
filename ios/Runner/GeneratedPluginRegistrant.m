@@ -60,12 +60,6 @@
 @import flutter_keyboard_visibility;
 #endif
 
-#if __has_include(<flutter_nfc_kit/FlutterNfcKitPlugin.h>)
-#import <flutter_nfc_kit/FlutterNfcKitPlugin.h>
-#else
-@import flutter_nfc_kit;
-#endif
-
 #if __has_include(<geolocator_apple/GeolocatorPlugin.h>)
 #import <geolocator_apple/GeolocatorPlugin.h>
 #else
@@ -132,8 +126,8 @@
 @import video_player_avfoundation;
 #endif
 
-#if __has_include(<webview_flutter_wkwebview/FLTWebViewFlutterPlugin.h>)
-#import <webview_flutter_wkwebview/FLTWebViewFlutterPlugin.h>
+#if __has_include(<webview_flutter_wkwebview/WebViewFlutterPlugin.h>)
+#import <webview_flutter_wkwebview/WebViewFlutterPlugin.h>
 #else
 @import webview_flutter_wkwebview;
 #endif
@@ -150,7 +144,6 @@
   [FLTFirebaseCorePlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseCorePlugin"]];
   [FlutterBeaconPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterBeaconPlugin"]];
   [FlutterKeyboardVisibilityPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterKeyboardVisibilityPlugin"]];
-  [FlutterNfcKitPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterNfcKitPlugin"]];
   [GeolocatorPlugin registerWithRegistrar:[registry registrarForPlugin:@"GeolocatorPlugin"]];
   [FLTGoogleMapsPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTGoogleMapsPlugin"]];
   [GoogleMlKitBarcodeScanningPlugin registerWithRegistrar:[registry registrarForPlugin:@"GoogleMlKitBarcodeScanningPlugin"]];
@@ -162,7 +155,7 @@
   [PrintingPlugin registerWithRegistrar:[registry registrarForPlugin:@"PrintingPlugin"]];
   [URLLauncherPlugin registerWithRegistrar:[registry registrarForPlugin:@"URLLauncherPlugin"]];
   [FVPVideoPlayerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FVPVideoPlayerPlugin"]];
-  [FLTWebViewFlutterPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTWebViewFlutterPlugin"]];
+  [WebViewFlutterPlugin registerWithRegistrar:[registry registrarForPlugin:@"WebViewFlutterPlugin"]];
 }
 
 @end

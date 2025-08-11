@@ -76,8 +76,23 @@ class TableHeaderModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get sortable => _sortable?.get() ?? table?.sortable ?? true;
+
+  /// allow column resize?
+  BooleanObservable? _resizeable;
+
+  @override
+  set resizeable(dynamic v) {
+    if (_resizeable != null) {
+      _resizeable!.set(v);
+    } else if (v != null) {
+      _resizeable = BooleanObservable(Binding.toKey(id, 'sortable'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  @override
+  bool get resizeable => _resizeable?.get() ?? table?.resizeable ?? true;
 
   // column uses editable
   bool get maybeEditable => _editable != null;
@@ -92,7 +107,6 @@ class TableHeaderModel extends BoxModel {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool? get editable => _editable?.get() ?? table?.editable;
 
   // allow filtering

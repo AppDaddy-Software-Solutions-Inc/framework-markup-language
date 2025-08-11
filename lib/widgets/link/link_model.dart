@@ -136,15 +136,8 @@ class LinkModel extends ColumnModel {
 
   Future<bool> onClick(BuildContext context) async {
     if (!isNullOrEmpty(url)) {
-      if (url!.startsWith('tel:') ||
-          url!.startsWith('geo:') ||
-          url!.startsWith('mailto:') ||
-          url!.startsWith('smsto:') ||
-          url!.startsWith('facetime:') ||
-          url!.startsWith('facetime-audio:')) {
-        Uri? uri = Uri.tryParse(url!);
+        Uri? uri = URI.parse(url!);
         if (uri != null) launchUrl(uri);
-      }
     }
     if (onclick == null) return true;
     return await EventHandler(this).execute(_onclick);

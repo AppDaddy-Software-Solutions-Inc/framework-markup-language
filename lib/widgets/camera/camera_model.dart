@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:camera/camera.dart' show CameraLensDirection;
-import 'package:camera/camera.dart' show XFile;
-import 'package:fml/datasources/camera/model.dart';
+import 'package:camera/camera.dart' show CameraLensDirection, XFile;
+import 'package:fml/datasources/camera/camera_model.dart';
 import 'package:fml/helpers/mime.dart';
 import 'package:fml/widgets/camera/camera_view.dart';
 import 'package:fml/log/manager.dart';

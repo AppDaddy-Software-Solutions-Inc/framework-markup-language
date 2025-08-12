@@ -34,10 +34,6 @@ dependencies:
 
   # to check package status, run -> flutter pub outdated
 
-  # Although we don't use the archive package directly, updating flutter to 3.24 requires this package to be updated
-  # otherwise we get an error: Error: Method not found: 'UnmodifiableUint32ListView'. UnmodifiableUint32ListView(Uint32List(0));
-  archive: ^3.6.1
-
   audioplayers: ^6.1.0
   # MIT
 
@@ -47,7 +43,7 @@ dependencies:
   camera_windows: ^0.2.5
   # BSD-3-Clause
 
-  changeicon: ^1.0.0
+  # changeicon: ^1.0.0
   # MIT
 
   collection: ^1.18.0
@@ -70,34 +66,34 @@ dependencies:
   crypto: ^3.0.2
   # BSD-3-Clause
 
-  dart_eval: ^0.7.9
+  dart_eval: ^0.8.1
   # BSD-3-Clause
 
   decimal: ^3.0.2
   # Apache-2.0
 
   # file picker with extension support
-  file_picker: ^8.1.2
+  file_picker: ^10.3.1
   # MIT
 
   # Microsoft Logon - Newer versions of these packages require web < 0.5.0
-  firebase_auth: ^5.3.4
-  firebase_core: ^3.9.0
+  firebase_auth: ^6.0.1
+  firebase_core: ^4.0.0
   # firebase_core_platform_interface: ^4.8.0
   # BSD-3-Clause
 
   fl_chart: ^0.69.0
 
-  flutter_code_editor: ^0.3.1
+  flutter_code_editor: ^0.3.4
   # Apache-2.0, MIT
 
   flex_color_picker: ^3.5.1
   # BSD-3-Clause
 
-  flutter_beacon: ^0.5.1
+  #flutter_beacon: ^0.5.1
   # BSD-3-Clause
 
-  flutter_eval: ^0.7.6
+  flutter_eval: ^0.8.0
   # BSD-3-Clause
 
   flutter_highlight: ^0.7.0
@@ -106,7 +102,7 @@ dependencies:
   flutter_image_transform: ^1.0.1
   # MIT
 
-  flutter_map: ^7.0.2
+  flutter_map: ^8.2.1
   # BSD-3-Clause
 
   flutter_multi_formatter: ^2.13.0
@@ -122,25 +118,19 @@ dependencies:
   flutter_typeahead: ^5.2.0
   # BSD-2-Clause
 
-  geolocator: ^13.0.1
+  geolocator: ^14.0.2
   # MIT
 
   google_fonts: ^6.2.1
   # Apache-2.0
 
-  google_mlkit_barcode_scanning: ^0.13.0
+  google_mlkit_barcode_scanning: ^0.14.1
   # MIT
 
   # google_mlkit_face_detection: ^0.2.0
 
-  google_mlkit_text_recognition: ^0.14.0
+  google_mlkit_text_recognition: ^0.15.0
   # MIT
-
-  google_maps_flutter: ^2.9.0
-  # BSD-3-Clause
-
-  google_maps_flutter_web: ^0.5.10
-  # BSD-3-Clause, MIT
 
   highlight: ^0.7.0
   # MIT
@@ -155,13 +145,13 @@ dependencies:
   image: ^4.2.0
   # MIT
 
-  intl: ^0.19.0
+  intl: ^0.20.2
   # BSD-3-Clause
 
   jaguar_jwt: ^3.0.0
   # BSD-3-Clause
 
-  jiffy: ^6.3.1
+  jiffy: ^6.4.3
   # MIT
 
   latlong2: ^0.9.0
@@ -202,7 +192,7 @@ dependencies:
   pluto_grid_plus_export: ^1.0.4
   # MIT
 
-  pointycastle: ^3.9.1
+  pointycastle: ^4.0.0
   # MIT
 
   provider: ^6.0.3
@@ -236,7 +226,7 @@ dependencies:
   video_player: ^2.9.1
   # BSD-3-Clause
 
-  video_player_win: ^2.3.9
+  video_player_win: ^3.2.0
   # BSD-3-Clause
 
   visibility_detector: ^0.4.0+2

@@ -11,8 +11,9 @@ import 'package:fml/widgets/video/video_model.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
-import 'package:video_player_win/video_player_win_plugin.dart';
+
+import 'package:video_player/video_player.dart' deferred as v1;
+import 'package:video_player_win/video_player_win_plugin.dart' deferred as v2;
 
 // platform
 import 'package:fml/platform/platform.vm.dart'
@@ -30,7 +31,7 @@ class VideoView extends StatefulWidget implements ViewableWidgetView {
 }
 
 class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPlayer {
-  VideoPlayerController? _controller;
+  dynamic _controller;
   IconView? playButton;
   IconModel playButtonModel =
       IconModel(null, null, icon: Icons.play_arrow, size: 65, color: Colors.white);
@@ -65,7 +66,7 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
 
     // If running on windows ensure to register the Windows Media Player
     if (isDesktop && Platform.operatingSystem == 'windows') {
-      WindowsVideoPlayer.registerWith();
+      v2.WindowsVideoPlayer.registerWith();
     }
 
     // set player
@@ -183,7 +184,7 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
       _controller?.dispose();
 
       // create new controller
-      _controller = VideoPlayerController.networkUrl(uri);
+      _controller = v1.VideoPlayerController.networkUrl(uri);
 
       // wait for the controller to initialize
       await _controller?.initialize();
@@ -266,18 +267,31 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
     return true;
   }
 
+  static Completer? libraryLoader;
+
   @override
   Widget build(BuildContext context) {
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
+    // load the library
+    if (libraryLoader == null) {
+      libraryLoader = Completer();
+      v1.loadLibrary().then((value) {
+        v2.loadLibrary().then((value) {
+          libraryLoader!.complete(true);
+          setState(() {});
+        });});
+    }
+    if (!libraryLoader!.isCompleted) return Offstage();
+
     // create the view
     Widget view = Container();
 
     if (_controller != null && _controller!.value.isInitialized) {
 
-      Widget videoPlayer = VideoPlayer(_controller!);
+      Widget videoPlayer = v1.VideoPlayer(_controller!);
 
       // size to cover parent container
       videoPlayer = SizedBox.expand(
@@ -286,14 +300,14 @@ class VideoViewState extends ViewableWidgetState<VideoView> implements IVideoPla
             child: SizedBox(
               width: _controller!.value.size.width,
               height: _controller!.value.size.height,
-              child: VideoPlayer(_controller!),
+              child: v1.VideoPlayer(_controller!),
             ),
           ));
 
-      var subTitles = ClosedCaption(text: _controller!.value.caption.text);
+      var subTitles = v1.ClosedCaption(text: _controller!.value.caption.text);
 
       var progressBar = widget.model.controls
-          ? VideoProgressIndicator(_controller!, allowScrubbing: true)
+          ? v1.VideoProgressIndicator(_controller!, allowScrubbing: true)
           : const Offstage();
 
       var playButton =

@@ -24,7 +24,6 @@ import 'package:fml/widgets/table/table_header_cell_model.dart';
 import 'package:fml/widgets/table/table_row_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:flutter/material.dart';
-import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -40,7 +39,7 @@ class TableModel extends BoxModel with FormMixin implements IForm {
   static String dynamicTableValue1 = "{field}";
   static String dynamicTableValue2 = "[*]";
 
-  PlutoGridStateManager? stateManager;
+  dynamic stateManager;
 
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;

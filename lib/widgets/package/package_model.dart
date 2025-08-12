@@ -1,25 +1,29 @@
 import 'dart:async';
-import 'package:dart_eval/dart_eval.dart';
-import 'package:dart_eval/dart_eval_bridge.dart';
-import 'package:dart_eval/stdlib/core.dart';
+
+import 'package:flutter_eval/flutter_eval.dart' deferred as eval;
+import 'package:dart_eval/dart_eval.dart' deferred as eval1;
+import 'package:dart_eval/dart_eval_bridge.dart' deferred as eval2;
+import 'package:dart_eval/stdlib/core.dart' deferred as eval3;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_eval/flutter_eval.dart' deferred as eval;
 import 'package:fml/eval/eval.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/helpers/uri.dart';
 import 'package:fml/helpers/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:xml/xml.dart';
 import 'package:http/http.dart' as http;
 
 class PackageModel extends Model {
 
+  // holds compiled package plugins
+  static Map<dynamic, dynamic> plugins = {};
+
   final Completer<bool> initialized = Completer<bool>();
 
-  Runtime? _runtime;
+  dynamic _runtime;
   String? _name;
   String? _dart;
   String? _url;
@@ -87,8 +91,8 @@ class PackageModel extends Model {
       dynamic cacheKey = _url?.hashCode ?? _dart?.hashCode;
 
       // cached?
-      if (System.plugins.containsKey(cacheKey)) {
-        _runtime = System.plugins[cacheKey];
+      if (plugins.containsKey(cacheKey)) {
+        _runtime = plugins[cacheKey];
       }
 
       // force reload?
@@ -104,6 +108,9 @@ class PackageModel extends Model {
 
           // deferred library load
           await eval.loadLibrary();
+          await eval1.loadLibrary();
+          await eval2.loadLibrary();
+          await eval3.loadLibrary();
 
           // parse the url
           var uri = URI.parse(_url);
@@ -120,13 +127,13 @@ class PackageModel extends Model {
             var bytes = response.bodyBytes;
 
             // load the plugin
-            _runtime = Runtime(ByteData.sublistView(bytes));
+            _runtime = eval2.Runtime(ByteData.sublistView(bytes));
 
             // load eval plugin
             _runtime!.addPlugin(eval.flutterEvalPlugin);
 
             // cache the plugin
-            System.plugins[cacheKey] = _runtime!;
+            plugins[cacheKey] = _runtime!;
           }
         }
 
@@ -135,25 +142,28 @@ class PackageModel extends Model {
 
           // deferred library load
           await eval.loadLibrary();
+          await eval1.loadLibrary();
+          await eval2.loadLibrary();
+          await eval3.loadLibrary();
 
           var parts = _name?.replaceFirst("package:", "").split("/");
           var name = (parts?.isNotEmpty ?? true) ? parts!.first : "";
           var file = (parts?.isNotEmpty ?? true) ? parts!.length > 1 ? parts.last : ""  : "";
 
-          final compiler = Compiler();
+          final compiler = eval1.Compiler();
           compiler.addPlugin(eval.flutterEvalPlugin);
           final program = compiler.compile({name : { file : _dart! }});
 
           var bytes = program.write();
 
           // load the plugin
-          _runtime = Runtime(ByteData.sublistView(bytes));
+          _runtime = eval2.Runtime(ByteData.sublistView(bytes));
 
           // load eval plugin
           _runtime!.addPlugin(eval.flutterEvalPlugin);
 
           // cache the plugin
-          System.plugins[cacheKey] = _runtime!;
+          plugins[cacheKey] = _runtime!;
         }
       }
     }
@@ -173,29 +183,31 @@ class PackageModel extends Model {
   dynamic _wrap(dynamic value) {
 
     // null?
-    if (value == null) return const $null();
+    if (value == null) return eval3.$null();
 
     // String?
-    if (value is String) return $String(value);
+    if (value is String) return eval3.$String(value);
 
     // Boolean?
-    if (value is bool) return $bool(value);
+    if (value is bool) return eval3.$bool(value);
 
     // Integer?
-    if (value is int) return $int(value);
+    if (value is int) return eval3.$int(value);
 
     // Double?
-    if (value is double) return $double(value);
+    if (value is double) return eval3.$double(value);
 
     // Color?
-    if (value is Color) return $String(toStr(value) ?? "");
+    if (value is Color) return eval3.$String(toStr(value) ?? "");
 
     // Function?
     if (value is Function) {
-
-      // Callback functions must be of type "EvalCallableFunc"
-      // EvalCallableFunc => $Value? Function(Runtime runtime, $Value? target, List<$Value?> args)
-     return (value is EvalCallableFunc) ? $Closure(value) : const $null();
+      try {
+        dynamic v = value;
+        return eval2.$Closure(v);
+      }
+      catch(e) {}
+      return eval3.$null();
     }
 
     // otherwise return the value
@@ -203,15 +215,16 @@ class PackageModel extends Model {
   }
 
   dynamic _unwrap(dynamic value) {
-    if (value is $Value) {
+    try {
       value = value.$reified;
     }
+    catch(e) {}
     return value;
   }
 
   // {setter} call back function
   // must be EvalCallableFunc => $Value? Function(Runtime runtime, $Value? target, List<$Value?> args)
-  $Value? _getCallback(Runtime runtime, $Value? target, List<$Value?> args) {
+  dynamic _getCallback(dynamic runtime, dynamic target, List<dynamic> args) {
 
     String? key = toStr(_unwrap(args.isNotEmpty ? args.first : null));
     dynamic val;
@@ -228,7 +241,7 @@ class PackageModel extends Model {
 
   // {getter} call back function
   // must be EvalCallableFunc => $Value? Function(Runtime runtime, $Value? target, List<$Value?> args)
-  $Value? _setCallback(Runtime runtime, $Value? target, List<$Value?> args) {
+  dynamic _setCallback(dynamic runtime, dynamic target, List<dynamic> args) {
 
     String? key = toStr(_unwrap(args.isNotEmpty ? args.first : null));
     dynamic val = _unwrap(args.isNotEmpty && args.length > 1 ? args[1] : null);
@@ -240,7 +253,7 @@ class PackageModel extends Model {
         observable?.set(val);
       }
     }
-    return const $null();
+    return eval3.$null();
   }
 
   Widget _errorBuilder(dynamic exception, StackTrace? stackTrace) {

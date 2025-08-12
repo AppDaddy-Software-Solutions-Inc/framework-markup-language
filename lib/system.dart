@@ -1,8 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:core';
-import 'package:changeicon/changeicon.dart';
+//import 'package:changeicon/changeicon.dart';
 import 'package:collection/collection.dart';
-import 'package:dart_eval/dart_eval_bridge.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/connection/connection.dart';
@@ -71,9 +70,6 @@ class System extends Model implements IEventManager {
   // current theme
   static late ThemeModel _theme;
   static ThemeModel get theme => _theme;
-
-  // holds compiled package plugins
-  static Map<dynamic, Runtime> plugins = {};
 
   // post master service
   final PostMaster postmaster = PostMaster();
@@ -396,7 +392,7 @@ class System extends Model implements IEventManager {
 
   /// changes the desktop icon
   static const mainIcon = 'MainActivity';
-  static Changeicon? _changeIconPlugin;
+  //static Changeicon? _changeIconPlugin;
   static void setBranding(String? icon)
   {
     if (kIsWeb) return;
@@ -416,10 +412,10 @@ class System extends Model implements IEventManager {
     if (companies.isEmpty) return;
 
     // initialize the plugin
-    if (_changeIconPlugin == null) {
-      Changeicon.initialize(classNames: [mainIcon, ...companies]);
-      _changeIconPlugin = Changeicon();
-    }
+    // if (_changeIconPlugin == null) {
+    //   Changeicon.initialize(classNames: [mainIcon, ...companies]);
+    //   _changeIconPlugin = Changeicon();
+    // }
 
     // trim icon
     icon = icon?.toLowerCase().trim();
@@ -427,11 +423,11 @@ class System extends Model implements IEventManager {
     // change the icon
     if (!isNullOrEmpty(icon) && companies.contains(icon))
     {
-      _changeIconPlugin?.switchIconTo(classNames: [icon!]);
+      //_changeIconPlugin?.switchIconTo(classNames: [icon!]);
     }
     else
     {
-      _changeIconPlugin?.switchIconTo(classNames: [mainIcon]);
+      //_changeIconPlugin?.switchIconTo(classNames: [mainIcon]);
     }
   }
 

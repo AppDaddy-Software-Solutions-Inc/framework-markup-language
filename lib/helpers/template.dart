@@ -1,5 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/datasources/beacon/beacon_model.dart';
 import 'package:fml/datasources/detectors/biometrics/biometrics_detector_model.dart';
 import 'package:fml/datasources/http/patch/model.dart';
 import 'package:fml/datasources/icons/icons_data_model.dart';
@@ -15,7 +14,6 @@ import 'package:fml/datasources/detectors/text/text_detector_model.dart';
 import 'package:fml/datasources/data/model.dart';
 import 'package:fml/datasources/gps/gps_model.dart';
 import 'package:fml/datasources/http/model.dart';
-import 'package:fml/datasources/mqtt/mqtt_model.dart';
 import 'package:fml/datasources/nfc/nfc_model.dart';
 import 'package:fml/datasources/socket/socket_model.dart';
 import 'package:fml/datasources/zebra/zebra_model.dart';
@@ -507,7 +505,7 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
       break;
 
     case "BEACON":
-      model = BeaconModel.fromXml(parent, node);
+      //model = BeaconModel.fromXml(parent, node);
       break;
 
     case "BIOMETRIC":
@@ -848,7 +846,7 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
       break;
 
     case "MQTT":
-      model = MqttModel.fromXml(parent, node);
+      //model = MqttModel.fromXml(parent, node);
       break;
 
     case "NFC":

@@ -4,9 +4,9 @@ import 'dart:ui';
 import 'package:camera/camera.dart' show CameraImage;
 import 'package:camera/camera.dart' show CameraDescription;
 import 'package:cross_file/cross_file.dart';
-import 'package:zxing_lib/common.dart' show HybridBinarizer;
-import 'package:zxing_lib/zxing.dart' show RGBLuminanceSource;
-import 'package:zxing_lib/zxing.dart' show BinaryBitmap;
+import 'package:zxing_lib/common.dart' deferred as zxing1 show HybridBinarizer;
+import 'package:zxing_lib/zxing.dart' deferred as zxing2 show RGBLuminanceSource;
+import 'package:zxing_lib/zxing.dart' deferred as zxing3 show BinaryBitmap;
 import 'package:fml/helpers/helpers.dart';
 
 class DetectableImage {
@@ -33,11 +33,15 @@ class DetectableImage {
     // decode pixels
     List<int> pixels = ImageHelper.toPixelsFromRgba(bytes);
 
+    await zxing1.loadLibrary();
+    await zxing2.loadLibrary();
+    await zxing3.loadLibrary();
+
     // get luminance
-    var source = RGBLuminanceSource(width, height, pixels);
+    var source = zxing2.RGBLuminanceSource(width, height, pixels);
 
     // get bitmap
-    BinaryBitmap bitmap = BinaryBitmap(HybridBinarizer(source));
+    var bitmap = zxing3.BinaryBitmap(zxing1.HybridBinarizer(source));
 
     return DetectableImage(bitmap);
   }

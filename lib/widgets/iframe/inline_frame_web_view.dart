@@ -5,7 +5,7 @@ import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:fml/widgets/widget/model.dart';
 import 'package:universal_html/html.dart' as universal_html;
 import 'package:universal_html/js.dart' as universal_js;
-import 'dart:ui' as dart_ui;
+import 'dart:ui_web' as ui;
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'inline_frame_model.dart';
@@ -104,7 +104,7 @@ class IFrameWidget extends StatelessWidget implements IModelListener {
 
     // register the IFrame
     // ignore: undefined_prefixed_name
-    dart_ui.platformViewRegistry
+    ui.platformViewRegistry
         .registerViewFactory(id, (int viewId) => iframe);
 
     // register a model listener

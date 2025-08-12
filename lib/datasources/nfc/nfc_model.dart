@@ -9,9 +9,13 @@ import 'package:fml/event/handler.dart';
 import 'package:xml/xml.dart';
 import 'payload.dart';
 import 'nfc_listener_interface.dart';
-import 'nfc.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
+
+// nfc
+import 'nfc.mobile.dart'
+if (dart.library.io) 'nfc.mobile.dart'
+if (dart.library.html) 'nfc.web.dart';
 
 // platform
 import 'package:fml/platform/platform.vm.dart'

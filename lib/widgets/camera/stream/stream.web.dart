@@ -8,7 +8,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
-import 'dart:ui' as ui;
+import 'dart:ui_web' as ui;
 import 'package:fml/datasources/file/file.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
 import 'package:fml/widgets/widget/model.dart';

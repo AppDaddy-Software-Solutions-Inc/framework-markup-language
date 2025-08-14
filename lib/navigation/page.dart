@@ -152,7 +152,6 @@ class CustomPageBasedMaterialPageRoute<T> extends PageRoute<T>
 
       // platform specific
       case PageTransitions.platform:
-      default:
         PageTransitionsBuilder builder = const ZoomPageTransitionsBuilder();
 
         var platform = Theme.of(context).platform;

@@ -479,7 +479,7 @@ class DataSourceModel extends Model implements IDataSource {
 
     // find cdata node
     var cdata = xml.children.firstWhereOrNull((child) => child is XmlCDATA);
-    if (data != null) return cdata!.value?.trim();
+    if (cdata != null) return cdata!.value?.trim();
 
     // no body
     return null;

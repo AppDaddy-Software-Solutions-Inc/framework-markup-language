@@ -131,10 +131,6 @@ class WidgetAlignment {
         mainAlignment = MainAxisAlignment.spaceEvenly;
         mainWrapAlignment = WrapAlignment.spaceEvenly;
         break;
-      default:
-        mainAlignment = MainAxisAlignment.start;
-        mainWrapAlignment = WrapAlignment.start;
-        break;
     }
   }
 

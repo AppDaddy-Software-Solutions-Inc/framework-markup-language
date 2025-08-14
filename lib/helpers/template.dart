@@ -50,6 +50,7 @@ import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/datepicker/datepicker_model.dart';
 import 'package:fml/datasources/http/delete/model.dart';
+import 'package:fml/widgets/echart/echart_model.dart';
 import 'package:fml/widgets/editor/editor_model.dart';
 import 'package:fml/widgets/field/field_model.dart';
 import 'package:fml/widgets/filepicker/filepicker_model.dart';
@@ -568,6 +569,10 @@ Model? fromXmlNode(Model parent, XmlElement node, Scope? scope, dynamic data) {
 
     case "CHART":
       model = ChartModel.fromXml(parent, node);
+      break;
+
+    case "ECHART":
+      model = eChartModel.fromXml(parent, node);
       break;
 
     case "COLORPICKER":

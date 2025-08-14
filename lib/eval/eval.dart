@@ -1216,7 +1216,9 @@ class Eval {
     if (subtract == null ||
         subtract is! String ||
         dts == null ||
-        dts is! String) return null;
+        dts is! String) {
+      return null;
+    }
     TimeUnitDuration addTUD = TimeUnitDuration.fromString(subtract);
     if (addTUD.amount == 0) return null;
     DateTime? dt = toDate(dts);

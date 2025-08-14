@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:fml/widgets/widget/model_interface.dart';
 import 'package:fml/widgets/widget/model.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:universal_html/html.dart' as universal_html;
 import 'package:universal_html/js.dart' as universal_js;
 import 'dart:ui_web' as ui;
@@ -35,7 +36,9 @@ class _InlineFrameViewState extends ViewableWidgetState<InlineFrameView> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => LayoutBuilder(builder: _build);
+
+  Widget _build(BuildContext context, BoxConstraints constraints) {
     InlineFrameModel model = widget.model;
 
     // Check if widget is visible before wasting resources on building it
@@ -53,6 +56,12 @@ class _InlineFrameViewState extends ViewableWidgetState<InlineFrameView> {
 
     // apply user defined constraints
     view = applyConstraints(view, widget.model.constraints);
+
+    // add interceptor
+    if (!widget.model.enabled) {
+      var interceptor = PointerInterceptor(child: Container(color: Colors.transparent, width: constraints.maxWidth, height: constraints.maxHeight));
+      view = Stack(children: [view, interceptor],);
+    }
 
     return view;
   }

@@ -132,6 +132,9 @@ dependencies:
   google_mlkit_text_recognition: ^0.15.0
   # MIT
 
+  graphify: ^1.2.0
+  # Apache-2.0, MIT
+
   highlight: ^0.7.0
   # MIT
 
@@ -191,6 +194,8 @@ dependencies:
 
   pluto_grid_plus_export: ^1.0.4
   # MIT
+
+  pointer_interceptor: 0.10.1+2
 
   pointycastle: ^4.0.0
   # MIT

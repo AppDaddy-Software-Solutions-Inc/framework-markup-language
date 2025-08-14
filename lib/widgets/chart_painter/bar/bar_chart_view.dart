@@ -80,10 +80,10 @@ class _ChartViewState extends ViewableWidgetState<BarChartView> {
         fontSize: widget.model.yaxis.labelsize ?? 8,
         color: Theme.of(context).colorScheme.outline);
     return SideTitleWidget(
-      axisSide: meta.axisSide,
       space: (widget.model.yaxis.padding ?? 16) /2,
       angle: widget.model.yaxis.labelrotation,
       fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
+      axisSide: meta.axisSide,
       child: Text(value.toString(), style: style, textAlign: TextAlign.center),
     );
   }

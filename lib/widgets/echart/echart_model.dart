@@ -163,6 +163,7 @@ class eChartModel extends BoxModel {
     }
     return true;
   }
+
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
@@ -170,8 +171,10 @@ class eChartModel extends BoxModel {
     super.deserialize(xml);
 
     // find cdata node - option
+    disableNotifications();
     var cdata = xml.children.firstWhereOrNull((child) => child is XmlCDATA);
     if (cdata?.value != null) option = cdata!.value?.trim();
+    enableNotifications();
   }
 
   @override

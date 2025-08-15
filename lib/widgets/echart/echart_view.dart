@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:fml/widgets/echart/echart_model.dart';
@@ -17,7 +18,9 @@ class eChartView extends StatefulWidget implements ViewableWidgetView {
 
 class _eChartViewState extends ViewableWidgetState<eChartView> {
 
-  GraphifyView? graph;
+  bool initialized = false;
+  GraphifyView? egraph;
+  Map<String,dynamic> option = {};
   final controller = GraphifyController();
 
   @override
@@ -25,6 +28,14 @@ class _eChartViewState extends ViewableWidgetState<eChartView> {
     controller.dispose();
     super.dispose();
   }
+   int rebuilds = 0;
+
+  Timer? timer;
+  void rebuild() {
+    if (widget.model.options == option) return;
+    if (mounted) setState(() {});
+  }
+
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: _build);
@@ -34,18 +45,21 @@ class _eChartViewState extends ViewableWidgetState<eChartView> {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return const Offstage();
 
-    Widget view;
-
     // build graph
-    if (graph == null) {
-      graph = GraphifyView(controller: controller, initialOptions: widget.model.options);
+    if (egraph == null) {
+      option = widget.model.options;
+      egraph = GraphifyView(controller: controller, initialOptions: option, onCreated: () => initialized = true);
+      timer = Timer(Duration(seconds: 1), () => rebuild());
     }
-    else {
-      controller.update(widget.model.options);
+
+    else if (option != widget.model.options && !timer!.isActive) {
+      option = widget.model.options;
+      controller.update(option);
+      timer = Timer(Duration(seconds: 1), () => rebuild());
     }
 
     // set view
-    view = graph as Widget;
+    Widget view = egraph as Widget;
 
     // add interceptor
     if (!widget.model.enabled) {

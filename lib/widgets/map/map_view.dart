@@ -1,6 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:async' show Completer;
-
 import 'package:flutter_map/flutter_map.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
@@ -24,14 +22,14 @@ class MapView extends StatefulWidget implements ViewableWidgetView {
 class _MapViewState extends ViewableWidgetState<MapView> {
 
   // flutter map controller
-  dynamic controller;
+  MapController? controller;
 
   LatLng? center;
   double? zoom;
-  dynamic bounds;
+  LatLngBounds? bounds;
   double? rotation;
 
-  void onMapEvent(dynamic event) {
+  void onMapEvent(MapEvent event) {
     if (!widget.model.fit) return;
     if (event.source == MapEventSource.doubleTapZoomAnimationController ||
         event.source == MapEventSource.doubleTap ||
@@ -63,7 +61,7 @@ class _MapViewState extends ViewableWidgetState<MapView> {
   void fitBounds() {
     if (bounds != null) {
       try {
-        var fit = CameraFit.bounds(
+        CameraFit fit = CameraFit.bounds(
             bounds: bounds!, padding: const EdgeInsets.all(50));
         controller?.fitCamera(fit);
       }
@@ -84,7 +82,7 @@ class _MapViewState extends ViewableWidgetState<MapView> {
   }
 
   // builds/rebuilds markers array
-  final List<dynamic> markers = [];
+  final List<Marker> markers = [];
   int markerHash = 0;
   void _buildMarkers() {
     try {
@@ -136,9 +134,8 @@ class _MapViewState extends ViewableWidgetState<MapView> {
     }
   }
 
-  Widget _buildMap() {
+  FlutterMap? _buildMap() {
     try {
-
       // add map layers
       List<Widget> layers = [];
       for (var url in widget.model.layers) {
@@ -156,8 +153,7 @@ class _MapViewState extends ViewableWidgetState<MapView> {
       _buildMarkers();
 
       // add markers layer
-      dynamic m = markers;
-      layers.add(MarkerLayer(markers: m));
+      layers.add(MarkerLayer(markers: markers));
 
       // create a new controller
       controller ??= MapController();
@@ -179,13 +175,13 @@ class _MapViewState extends ViewableWidgetState<MapView> {
       rotation = 0.0;
 
       // fit
-      dynamic fit;
+      CameraFit? fit;
       if (bounds != null) {
         fit = CameraFit.bounds(bounds: bounds!, padding: const EdgeInsets.all(250));
       }
 
       // map options
-      var options = MapOptions(
+      MapOptions options = MapOptions(
           keepAlive: true,
           initialZoom: zoom!,
           initialCenter: center!,
@@ -208,7 +204,7 @@ class _MapViewState extends ViewableWidgetState<MapView> {
       Log().exception("There was a problem building the map. Error is $e",
           caller: 'widget.map.View');
     }
-    return Offstage();
+    return null;
   }
 
   @override
@@ -224,7 +220,7 @@ class _MapViewState extends ViewableWidgetState<MapView> {
 
     // build the map
     var map = _buildMap();
-    children.insert(0, map);
+    if (map != null) children.insert(0, map);
 
     // view
     Widget view = children.length > 1 ? Stack(children: children) : children.first;

@@ -137,6 +137,9 @@ class eChartModel extends BoxModel {
       source["source"] = d;
       (options[k] as List).add(source);
     }
+
+    // trigger view update
+    onPropertyChange(observable);
   }
 
   @override

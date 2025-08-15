@@ -1,12 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:fml/widgets/echart/echart_model.dart';
 import 'package:fml/widgets/viewable/viewable_view.dart';
 import 'package:graphify/graphify.dart';
-import 'package:fml/log/manager.dart';
 
 class eChartView extends StatefulWidget implements ViewableWidgetView {
 
@@ -39,46 +36,12 @@ class _eChartViewState extends ViewableWidgetState<eChartView> {
 
     Widget view;
 
-    Map<String, dynamic> map = {};
-    try {
-      var v =widget.model.option;
-      map = jsonDecode(v);
-    }
-    catch(e)
-    {
-      Log().error(e.toString());
-    }
-
-    // get data
-    var dataset = [];
-    for (var id in widget.model.dataset) {
-      var s = widget.model.scope?.getDataSource(id);
-      if (s != null) dataset.add(s.data);
-    }
-
-    for (var set in dataset) {
-
-      // no dataset
-      if (!map.containsKey("dataset")) map["dataset"] = [];
-
-      // single dataset
-      if (map["dataset"] is Map) {
-        var m = map["dataset"];
-        map["dataset"] = [];
-        map["dataset"].add(m);
-      }
-
-      var source = Map<String, dynamic>();
-      source["source"] = set;
-      (map["dataset"] as List).add(source);
-    }
-
     // build graph
     if (graph == null) {
-      graph = GraphifyView(controller: controller, initialOptions: map);
+      graph = GraphifyView(controller: controller, initialOptions: widget.model.options);
     }
     else {
-      controller.update(map);
+      controller.update(widget.model.options);
     }
 
     // set view

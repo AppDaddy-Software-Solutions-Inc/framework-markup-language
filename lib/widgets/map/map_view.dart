@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async' show Completer;
 
-import 'package:flutter_map/flutter_map.dart' deferred as fmap;
+import 'package:flutter_map/flutter_map.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +23,6 @@ class MapView extends StatefulWidget implements ViewableWidgetView {
 
 class _MapViewState extends ViewableWidgetState<MapView> {
 
-  static Completer? libraryLoader;
-
   // flutter map controller
   dynamic controller;
 
@@ -35,13 +33,13 @@ class _MapViewState extends ViewableWidgetState<MapView> {
 
   void onMapEvent(dynamic event) {
     if (!widget.model.fit) return;
-    if (event.source == fmap.MapEventSource.doubleTapZoomAnimationController ||
-        event.source == fmap.MapEventSource.doubleTap ||
-        event.source == fmap.MapEventSource.doubleTapHold ||
-        event.source == fmap.MapEventSource.dragStart ||
-        event.source == fmap.MapEventSource.dragEnd ||
-        event.source == fmap.MapEventSource.scrollWheel ||
-        event.source == fmap.MapEventSource.multiFingerGestureStart) widget.model.fit = false;
+    if (event.source == MapEventSource.doubleTapZoomAnimationController ||
+        event.source == MapEventSource.doubleTap ||
+        event.source == MapEventSource.doubleTapHold ||
+        event.source == MapEventSource.dragStart ||
+        event.source == MapEventSource.dragEnd ||
+        event.source == MapEventSource.scrollWheel ||
+        event.source == MapEventSource.multiFingerGestureStart) widget.model.fit = false;
   }
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
@@ -65,7 +63,7 @@ class _MapViewState extends ViewableWidgetState<MapView> {
   void fitBounds() {
     if (bounds != null) {
       try {
-        var fit = fmap.CameraFit.bounds(
+        var fit = CameraFit.bounds(
             bounds: bounds!, padding: const EdgeInsets.all(50));
         controller?.fitCamera(fit);
       }
@@ -117,7 +115,7 @@ class _MapViewState extends ViewableWidgetState<MapView> {
           // build marker
           var point = LatLng(model.latitude!, model.longitude!);
           points.add(point);
-          var marker = fmap.Marker(
+          var marker = Marker(
               point: point,
               width: width,
               height: height,
@@ -129,7 +127,7 @@ class _MapViewState extends ViewableWidgetState<MapView> {
       // set bounds
       bounds = null;
       if (points.length > 1) {
-        bounds = fmap.LatLngBounds.fromPoints(points);
+        bounds = LatLngBounds.fromPoints(points);
         if (bounds?.south == bounds?.north) bounds = null;
         if (bounds?.east == bounds?.west) bounds = null;
       }
@@ -141,26 +139,15 @@ class _MapViewState extends ViewableWidgetState<MapView> {
   Widget _buildMap() {
     try {
 
-      // load the library
-      if (libraryLoader == null) {
-        libraryLoader = Completer();
-        fmap.loadLibrary().then((value) {
-          libraryLoader!.complete(true);
-          setState(() {
-          });
-        });
-      }
-      if (!libraryLoader!.isCompleted) return Offstage();
-
       // add map layers
       List<Widget> layers = [];
       for (var url in widget.model.layers) {
-        layers.add(fmap.TileLayer(urlTemplate: url, userAgentPackageName: 'fml.dev'));
+        layers.add(TileLayer(urlTemplate: url, userAgentPackageName: 'fml.dev'));
       }
 
       // add default layer if none
       if (widget.model.layers.isEmpty) {
-        layers.add(fmap.TileLayer(
+        layers.add(TileLayer(
             urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
             userAgentPackageName: 'fml.dev'));
       }
@@ -170,10 +157,10 @@ class _MapViewState extends ViewableWidgetState<MapView> {
 
       // add markers layer
       dynamic m = markers;
-      layers.add(fmap.MarkerLayer(markers: m));
+      layers.add(MarkerLayer(markers: m));
 
       // create a new controller
-      controller ??= fmap.MapController();
+      controller ??= MapController();
 
       // zoom
       zoom = widget.model.zoom ?? 13;
@@ -194,11 +181,11 @@ class _MapViewState extends ViewableWidgetState<MapView> {
       // fit
       dynamic fit;
       if (bounds != null) {
-        fit = fmap.CameraFit.bounds(bounds: bounds!, padding: const EdgeInsets.all(250));
+        fit = CameraFit.bounds(bounds: bounds!, padding: const EdgeInsets.all(250));
       }
 
       // map options
-      var options = fmap.MapOptions(
+      var options = MapOptions(
           keepAlive: true,
           initialZoom: zoom!,
           initialCenter: center!,
@@ -207,7 +194,7 @@ class _MapViewState extends ViewableWidgetState<MapView> {
           initialCameraFit: fit);
 
       // map
-      var map = fmap.FlutterMap(
+      var map = FlutterMap(
           mapController: controller,
           options: options,
           children: layers);
@@ -237,7 +224,7 @@ class _MapViewState extends ViewableWidgetState<MapView> {
 
     // build the map
     var map = _buildMap();
-    if (map != null) children.insert(0, map);
+    children.insert(0, map);
 
     // view
     Widget view = children.length > 1 ? Stack(children: children) : children.first;
